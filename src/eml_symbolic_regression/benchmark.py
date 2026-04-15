@@ -16,6 +16,7 @@ import numpy as np
 
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
 from .datasets import demo_specs, proof_dataset_manifest
+from .expression import format_constant_value, parse_constant_value
 from .optimize import TrainingConfig, fit_eml_tree
 from .proof import (
     EVIDENCE_CLASSES,
@@ -81,6 +82,7 @@ class DatasetConfig:
 @dataclass(frozen=True)
 class OptimizerBudget:
     depth: int = 2
+    constants: tuple[complex, ...] = (1.0,)
     steps: int = 20
     restarts: int = 1
     lr: float = 0.05
@@ -93,9 +95,16 @@ class OptimizerBudget:
     max_power: int = 3
 
     @classmethod
-    def from_mapping(cls, payload: Mapping[str, Any] | None) -> "OptimizerBudget":
+    def from_mapping(cls, payload: Mapping[str, Any] | None, *, path: str = "optimizer") -> "OptimizerBudget":
         payload = payload or {}
         values = {field_name: payload.get(field_name, getattr(cls, field_name)) for field_name in cls.__dataclass_fields__}
+        constants = values["constants"]
+        if not isinstance(constants, (list, tuple)):
+            raise BenchmarkValidationError("malformed_budget", "constants must be a list", path=f"{path}.constants")
+        try:
+            values["constants"] = tuple(parse_constant_value(value) for value in constants)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise BenchmarkValidationError("invalid_budget", "constants must be scalar values", path=f"{path}.constants") from exc
         values["depth"] = int(values["depth"])
         values["steps"] = int(values["steps"])
         values["restarts"] = int(values["restarts"])
@@ -128,10 +137,16 @@ class OptimizerBudget:
             raise BenchmarkValidationError("invalid_budget", "warm_depth must be 0 or positive", path=f"{path}.warm_depth")
         if self.lr <= 0:
             raise BenchmarkValidationError("invalid_budget", "lr must be positive", path=f"{path}.lr")
+        if not self.constants:
+            raise BenchmarkValidationError("invalid_budget", "constants must not be empty", path=f"{path}.constants")
+        for index, value in enumerate(self.constants):
+            if not (np.isfinite(value.real) and np.isfinite(value.imag)):
+                raise BenchmarkValidationError("invalid_budget", "constants must be finite", path=f"{path}.constants[{index}]")
 
     def as_dict(self) -> dict[str, Any]:
         return {
             "depth": self.depth,
+            "constants": [format_constant_value(value) for value in self.constants],
             "steps": self.steps,
             "restarts": self.restarts,
             "lr": self.lr,
@@ -189,7 +204,7 @@ class BenchmarkCase:
             seeds=seeds,
             perturbation_noise=noises,
             dataset=DatasetConfig.from_mapping(payload.get("dataset")),
-            optimizer=OptimizerBudget.from_mapping(payload.get("optimizer")),
+            optimizer=OptimizerBudget.from_mapping(payload.get("optimizer"), path=f"{path}.optimizer"),
             tags=tags,
             expect_recovery=bool(payload.get("expect_recovery", False)),
             claim_id=_optional_str(payload.get("claim_id")),
@@ -255,9 +270,28 @@ class BenchmarkCase:
                 path=f"{path}.training_mode",
             )
         try:
-            validate_claim_reference(self.claim_id, self.threshold_policy_id, path=path)
+            claim = validate_claim_reference(self.claim_id, self.threshold_policy_id, path=path)
         except ProofContractError as exc:
             raise _benchmark_proof_error(exc, path) from exc
+        if claim.id == "paper-shallow-blind-recovery":
+            if self.start_mode != "blind":
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-shallow-blind-recovery cases must use blind start_mode",
+                    path=f"{path}.start_mode",
+                )
+            if self.training_mode != TRAINING_MODES["blind_training"]:
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-shallow-blind-recovery cases must use blind_training mode",
+                    path=f"{path}.training_mode",
+                )
+            if self.threshold_policy_id != "bounded_100_percent":
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-shallow-blind-recovery cases must use bounded_100_percent threshold",
+                    path=f"{path}.threshold_policy_id",
+                )
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -570,6 +604,7 @@ def _case(
     warm_steps: int = 8,
     restarts: int = 1,
     depth: int = 2,
+    constants: Iterable[complex] = (1.0,),
     warm_restarts: int = 1,
     tags: Iterable[str] = (),
     expect_recovery: bool = False,
@@ -584,7 +619,14 @@ def _case(
         seeds=tuple(seeds),
         perturbation_noise=tuple(perturbation_noise),
         dataset=DatasetConfig(points=points),
-        optimizer=OptimizerBudget(depth=depth, steps=steps, restarts=restarts, warm_steps=warm_steps, warm_restarts=warm_restarts),
+        optimizer=OptimizerBudget(
+            depth=depth,
+            constants=tuple(constants),
+            steps=steps,
+            restarts=restarts,
+            warm_steps=warm_steps,
+            warm_restarts=warm_restarts,
+        ),
         tags=tuple(tags),
         expect_recovery=expect_recovery,
         claim_id=claim_id,
@@ -727,12 +769,14 @@ def builtin_suite(name: str) -> BenchmarkSuite:
         }
         return BenchmarkSuite(
             id="v1.5-shallow-proof",
-            description="Bounded v1.5 shallow blind proof contract suite for existing demo formulas.",
+            description="Bounded v1.5 shallow blind proof contract suite with fixed proof constants and evidenced scaled-exponential depth.",
             cases=(
                 _case("shallow-exp-blind", "exp", "blind", depth=1, **proof_kwargs),
                 _case("shallow-log-blind", "log", "blind", depth=3, **proof_kwargs),
-                _case("shallow-radioactive-decay-blind", "radioactive_decay", "blind", depth=4, **proof_kwargs),
-                _case("shallow-beer-lambert-blind", "beer_lambert", "blind", depth=4, **proof_kwargs),
+                _case("shallow-radioactive-decay-blind", "radioactive_decay", "blind", depth=9, constants=(-0.4,), **proof_kwargs),
+                _case("shallow-beer-lambert-blind", "beer_lambert", "blind", depth=9, constants=(-0.8,), **proof_kwargs),
+                _case("shallow-scaled-exp-growth-blind", "scaled_exp_growth", "blind", depth=9, constants=(0.4,), **proof_kwargs),
+                _case("shallow-scaled-exp-fast-decay-blind", "scaled_exp_fast_decay", "blind", depth=9, constants=(-1.2,), **proof_kwargs),
             ),
         )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
@@ -849,6 +893,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         config = TrainingConfig(
             depth=run.optimizer.depth,
             variables=(spec.variable,),
+            constants=run.optimizer.constants,
             steps=run.optimizer.steps,
             restarts=run.optimizer.restarts,
             seed=run.seed,
@@ -901,6 +946,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         config = TrainingConfig(
             depth=warm_depth,
             variables=(spec.variable,),
+            constants=run.optimizer.constants,
             steps=run.optimizer.warm_steps,
             restarts=run.optimizer.warm_restarts,
             seed=run.seed,
