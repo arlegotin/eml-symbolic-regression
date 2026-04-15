@@ -16,6 +16,16 @@ The project now includes a compiler-driven warm-start pipeline. Supported SymPy 
 
 v1.1 shipped Beer-Lambert as a verified compiler warm-start recovery. Michaelis-Menten and normalized Planck remain honest catalog/stretch reports under the default depth gates.
 
+## Current Milestone: v1.2 Training Benchmark and Recovery Evidence
+
+**Goal:** Turn anecdotal training runs into a repeatable benchmark harness that measures when EML recovery works, when it fails, and how strong the evidence is.
+
+**Target features:**
+- Reproducible benchmark suite definitions for blind starts, compiler warm starts, perturbation sweeps, and demo/stretch diagnostics.
+- Per-run JSON artifacts and aggregate reports covering loss, snap outcome, verifier status, recovery rate, active slot changes, runtime, and failures.
+- Formula coverage for shallow blind baselines, Beer-Lambert perturbation levels, Michaelis-Menten and Planck depth diagnostics, and selected `sources/FOR_DEMO.md` showcase formulas.
+- Documentation and tests that separate promising infrastructure from actual measured recovery performance.
+
 ## Requirements
 
 ### Validated
@@ -34,9 +44,11 @@ v1.1 shipped Beer-Lambert as a verified compiler warm-start recovery. Michaelis-
 
 ### Active
 
-- [ ] Decide the next milestone scope.
-- [ ] Consider reducing compiled arithmetic tree depth so Michaelis-Menten can promote under practical warm-start gates.
-- [ ] Consider pure `{1, eml}` synthesis or coefficient fitting for literal constants in a later milestone.
+- [ ] Define benchmark suites and deterministic run schemas for real training evidence.
+- [ ] Run blind-start, warm-start, and perturbation-sweep experiments across multiple seeds.
+- [ ] Aggregate recovery rates, losses, snap outcomes, verifier statuses, and failures without cherry-picking.
+- [ ] Preserve honest unsupported/stretch reporting for formulas that exceed current depth or compiler gates.
+- [ ] Document whether the current system is promising based on measured recovery evidence, not individual success cases.
 
 ### Out of Scope
 
@@ -74,6 +86,7 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 | v1.1 focuses on compiler-driven warm starts | This is the shortest path from verified catalog demos to actual trained EML recovery without overpromising blind deep search. | ✓ Good |
 | Literal constants are explicit provenance | v1.1 demos need fixed coefficients, but those are not pure `{1, eml}` synthesis claims. | ✓ Good |
 | Planck remains stretch reporting | The compiled Planck tree exceeds default warm-start gates; false promotion would weaken the recovery contract. | ✓ Good |
+| v1.2 focuses on evidence before algorithm expansion | The last training check showed shallow and same-basin successes but strong perturbation failure, so the next step is measurement before new optimizer claims. | - Pending |
 
 ## Evolution
 
@@ -93,4 +106,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after shipping milestone v1.1*
+*Last updated: 2026-04-15 after starting milestone v1.2*

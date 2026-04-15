@@ -1,18 +1,18 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: milestone
-current_phase: Complete
-status: completed
-stopped_at: v1.1 archived and phase directories cleaned up
-last_updated: "2026-04-15T10:30:39.461Z"
+milestone: v1.2
+milestone_name: Training Benchmark and Recovery Evidence
+current_phase: Not started
+status: defining_requirements
+stopped_at: defining v1.2 requirements and roadmap
+last_updated: "2026-04-15T10:42:56Z"
 last_activity: 2026-04-15
 progress:
-  total_phases: 6
-  completed_phases: 6
-  total_plans: 6
-  completed_plans: 6
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Milestone v1.1 - EML Compiler and Warm Starts
+**Current focus:** Milestone v1.2 - Training Benchmark and Recovery Evidence
 
 ## Current Position
 
-Phase: 13 of 13 (Regression Tests and Documentation Lockdown)
-Plan: Complete
-Status: Milestone complete
+Phase: Not started (defining requirements)
+Plan: -
+Status: Defining requirements
 Last activity: 2026-04-15
-Progress: [##########] 100% by completed phases (v1.1: 6/6)
+Progress: [----------] 0% by completed phases
 
 ## Performance Metrics
 
@@ -54,23 +54,22 @@ Progress: [##########] 100% by completed phases (v1.1: 6/6)
 |----------|------|--------|
 | Project context | `.planning/PROJECT.md` | Complete |
 | Workflow config | `.planning/config.json` | Complete |
-| Research summary | `.planning/research/SUMMARY.md` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Complete |
-| Roadmap | `.planning/ROADMAP.md` | Complete |
+| Research summary | `.planning/research/SUMMARY.md` | Skipped for v1.2; local evidence milestone |
+| Requirements | `.planning/REQUIREMENTS.md` | In progress |
+| Roadmap | `.planning/ROADMAP.md` | Pending |
 
 ## Current Milestone
 
-**v1.1: EML Compiler and Warm Starts**
+**v1.2: Training Benchmark and Recovery Evidence**
 
-Goal: Turn verified reference demos into actual EML-tree recovery workflows by compiling ordinary formulas into exact EML ASTs and using those trees as warm starts for training.
+Goal: Turn anecdotal training runs into a repeatable benchmark harness that measures when EML recovery works, when it fails, and how strong the evidence is.
 
 Target features:
 
-- Ordinary-expression-to-EML compiler subset.
-- Warm-start embedding into soft master trees.
-- Perturbed warm-start recovery tests.
-- Trained EML recovery demos for Beer-Lambert and Michaelis-Menten.
-- Normalized Planck stretch reporting.
+- Benchmark suite definitions for blind starts, compiler warm starts, perturbation sweeps, and demo/stretch diagnostics.
+- Per-run JSON artifacts and aggregate reports for loss, snap outcome, verifier status, recovery rate, active slot changes, runtime, and failures.
+- Coverage for shallow blind baselines, Beer-Lambert perturbation levels, Michaelis-Menten and Planck diagnostics, and selected `sources/FOR_DEMO.md` formulas.
+- Documentation that separates promising infrastructure from actual measured recovery performance.
 
 ## Phase Status
 
@@ -89,6 +88,7 @@ Target features:
 | 11 | Perturbed Warm-Start Training | Complete | WARM-01, WARM-02, WARM-03, WARM-04 |
 | 12 | Demo Promotion and Claim Reporting | Complete | DEMO-05, DEMO-06, DEMO-07, DEMO-08 |
 | 13 | Regression Tests and Documentation Lockdown | Complete | TEST-03, TEST-04 |
+| 14 | TBD | Pending | TBD |
 
 ## Accumulated Context
 
@@ -99,6 +99,7 @@ Target features:
 - `recovered` remains verifier-owned and post-snap; compiler output and training loss cannot promote a candidate alone.
 - Literal constants are explicit warm-start/demo provenance, not pure `{1, eml}` recovery claims.
 - Normalized Planck is stretch reporting only, not a trained-recovery milestone guarantee.
+- The immediate evidence gap is robustness: strong Beer-Lambert perturbation failed once active slots changed, so v1.2 must measure recovery rates instead of relying on single success cases.
 
 ### Pending Todos
 
@@ -111,8 +112,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: v1.1 archived and phase directories cleaned up
+Stopped at: v1.2 milestone initialized
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after completing milestone v1.1 phases*
+*Last updated: 2026-04-15 after starting milestone v1.2*
