@@ -72,7 +72,8 @@ def test_unknown_formula_fails_closed():
     assert exc.value.path == "cases[0].formula"
 
 
-def test_non_warm_start_perturbation_fails_closed():
+@pytest.mark.parametrize("start_mode", ["catalog", "compile", "blind"])
+def test_non_perturbable_start_modes_reject_perturbation_noise(start_mode):
     suite = BenchmarkSuite.from_mapping(
         {
             "schema": "eml.benchmark_suite.v1",
@@ -81,7 +82,7 @@ def test_non_warm_start_perturbation_fails_closed():
                 {
                     "id": "bad-case",
                     "formula": "exp",
-                    "start_mode": "blind",
+                    "start_mode": start_mode,
                     "perturbation_noise": [1.0],
                 }
             ],
@@ -92,6 +93,25 @@ def test_non_warm_start_perturbation_fails_closed():
         suite.validate()
 
     assert exc.value.reason == "invalid_perturbation"
+
+
+def test_perturbed_tree_defaults_to_perturbed_true_tree_training_and_keeps_noise_grid():
+    case = BenchmarkCase.from_mapping(
+        {
+            "id": "basin-depth1-perturbed",
+            "formula": "basin_depth1_exp",
+            "start_mode": "perturbed_tree",
+            "perturbation_noise": [0.05, 0.25],
+        },
+        path="cases[0]",
+    )
+    suite = BenchmarkSuite("proof-perturbed-basin", "perturbed tree contract", (case,))
+
+    runs = suite.expanded_runs()
+
+    assert {run.start_mode for run in runs} == {"perturbed_tree"}
+    assert {run.training_mode for run in runs} == {"perturbed_true_tree_training"}
+    assert [run.perturbation_noise for run in runs] == [0.05, 0.25]
 
 
 def test_custom_suite_loads_from_json(tmp_path):

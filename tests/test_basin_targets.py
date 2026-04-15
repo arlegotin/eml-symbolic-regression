@@ -1,9 +1,12 @@
 import pytest
 
 from eml_symbolic_regression.basin import basin_target_spec, basin_target_specs
+from eml_symbolic_regression.basin import fit_perturbed_true_tree
 from eml_symbolic_regression.datasets import get_demo, proof_dataset_manifest
 from eml_symbolic_regression.expression import Eml, Expr
+from eml_symbolic_regression.optimize import TrainingConfig
 from eml_symbolic_regression.verify import verify_candidate
+from eml_symbolic_regression.warm_start import PerturbationConfig
 
 
 EXPECTED_SYNTHETIC_TARGETS = {
@@ -122,3 +125,32 @@ def test_basin_dataset_manifest_is_deterministic_and_formula_owned() -> None:
 def test_basin_module_does_not_depend_on_demo_spec() -> None:
     # A circular import here would make target inventory unusable before datasets are loaded.
     assert all(isinstance(spec.expression, Expr) for spec in basin_target_specs())
+
+
+def test_fit_perturbed_true_tree_records_same_ast_return_as_raw_recovery() -> None:
+    spec = basin_target_spec("basin_depth1_exp")
+    demo = get_demo(spec.id)
+    splits = demo.make_splits(points=12, seed=0)
+
+    result = fit_perturbed_true_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(depth=spec.expression.depth(), variables=(spec.variable,), steps=1, restarts=1, seed=0),
+        spec.expression,
+        perturbation_config=PerturbationConfig(seed=0, noise_scale=0.05),
+        verification_splits=splits,
+        tolerance=1e-8,
+        target_metadata={"formula_id": spec.id},
+    )
+
+    assert result.status == "recovered"
+    assert result.return_kind == "same_ast_return"
+    assert result.verification is not None
+    assert result.verification.status == "recovered"
+    assert result.manifest["schema"] == "eml.perturbed_true_tree_manifest.v1"
+    assert result.manifest["status"] == "recovered"
+    assert result.manifest["raw_status"] == "recovered"
+    assert result.manifest["return_kind"] == "same_ast_return"
+    assert result.manifest["target_metadata"]["formula_id"] == spec.id
+    assert result.manifest["optimizer"]["best_restart"]["initialization"]["kind"] == "perturbed_true_tree"
+    assert result.manifest["perturbation_config"] == {"seed": 0, "noise_scale": 0.05}

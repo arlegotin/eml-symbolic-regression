@@ -194,6 +194,64 @@ def test_evidence_class_for_payload_is_derived_and_covers_reserved_repair():
         )
         == "same_ast"
     )
+    assert (
+        evidence_class_for_payload(
+            {
+                "status": "recovered",
+                "claim_status": "recovered",
+                "return_kind": "same_ast_return",
+                "raw_status": "recovered",
+                "training_mode": "perturbed_true_tree_training",
+                "run": {"start_mode": "perturbed_tree", "perturbation_noise": 0.05},
+            }
+        )
+        == "perturbed_true_tree_recovered"
+    )
+    assert (
+        evidence_class_for_payload(
+            {
+                "status": "recovered",
+                "claim_status": "recovered",
+                "return_kind": "same_ast_return",
+                "training_mode": "perturbed_true_tree_training",
+                "run": {"start_mode": "warm_start", "perturbation_noise": 0.05},
+            }
+        )
+        != "perturbed_true_tree_recovered"
+    )
+
+
+def test_perturbed_tree_runner_records_return_kind_and_raw_status(tmp_path):
+    case = BenchmarkCase.from_mapping(
+        {
+            "id": "basin-depth1-perturbed",
+            "formula": "basin_depth1_exp",
+            "start_mode": "perturbed_tree",
+            "seeds": [0],
+            "perturbation_noise": [0.05],
+            "dataset": {"points": 12},
+            "optimizer": {"depth": 1, "warm_steps": 1, "warm_restarts": 1},
+            "training_mode": "perturbed_true_tree_training",
+        },
+        path="cases[0]",
+    )
+    suite = BenchmarkSuite("proof-perturbed-basin", "cheap perturbed-tree smoke", (case,), tmp_path / "artifacts")
+
+    result = run_benchmark_suite(suite)
+    artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
+
+    assert result.results[0].status == "recovered"
+    assert artifact["status"] == "recovered"
+    assert artifact["run"]["start_mode"] == "perturbed_tree"
+    assert artifact["training_mode"] == "perturbed_true_tree_training"
+    assert artifact["return_kind"] == "same_ast_return"
+    assert artifact["raw_status"] == "recovered"
+    assert artifact["claim_status"] == "recovered"
+    assert artifact["evidence_class"] == "perturbed_true_tree_recovered"
+    assert artifact["stage_statuses"]["perturbed_true_tree_attempt"] == "recovered"
+    assert artifact["perturbed_true_tree"]["schema"] == "eml.perturbed_true_tree_manifest.v1"
+    assert artifact["perturbed_true_tree"]["optimizer"]["best_restart"]["initialization"]["kind"] == "perturbed_true_tree"
+    assert artifact["metrics"]["verifier_status"] == "recovered"
 
 
 def test_cli_benchmark_writes_suite_result(tmp_path):
