@@ -40,7 +40,7 @@ The milestone target is deliberately bounded and measurable. It must achieve 100
 - Decimal phases can be inserted later for urgent gap closure.
 
 - [x] **Phase 29: Paper Claim Contract and Proof Dataset Harness** - Convert paper statements into executable claim suites, datasets, and pass/fail thresholds. (requirements: CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04) (completed 2026-04-15)
-- [ ] **Phase 30: Bounded Shallow Blind Training Recovery** - Repair blind training so the declared shallow proof suite reaches 100% verifier-owned recovery. (requirements: SHAL-01, SHAL-02, SHAL-03, SHAL-04)
+- [x] **Phase 30: Bounded Shallow Blind Training Recovery** - Repair blind training so the declared shallow proof suite reaches 100% verifier-owned recovery. (requirements: SHAL-01, SHAL-02, SHAL-03, SHAL-04) (completed 2026-04-15)
 - [ ] **Phase 31: Perturbed Basin Training and Local Repair** - Prove perturbed true-tree recovery over declared bounds and repair Beer-Lambert high-noise failures where feasible. (requirements: BASN-01, BASN-02, BASN-03, BASN-04, BASN-05)
 - [ ] **Phase 32: Paper Depth-Curve Training Evidence** - Reproduce the paper's qualitative blind-vs-perturbed depth behavior with real training runs and metrics. (requirements: CURV-01, CURV-02, CURV-03, CURV-04)
 - [ ] **Phase 33: Proof Campaign Report and Evidence Lockdown** - Generate the v1.5 proof campaign, report claims honestly, and lock the workflow with tests. (requirements: EVID-01, EVID-02, EVID-03, EVID-04, EVID-05)
@@ -75,7 +75,7 @@ Plans:
 Plans:
 - [x] 30-01-PLAN.md - Scaled-exponential shape evidence and shallow proof suite contract.
 - [x] 30-02-PLAN.md - Blind scaled-exponential scaffold recovery and proof diagnostics.
-- [ ] 30-03-PLAN.md - Full shallow proof regression gate and aggregate guardrails.
+- [x] 30-03-PLAN.md - Full shallow proof regression gate and aggregate guardrails.
 
 ### Phase 31: Perturbed Basin Training and Local Repair
 **Goal**: Users can prove the implementation returns to perturbed true EML solutions inside declared bounds and can inspect/repair near-miss snaps.
@@ -162,7 +162,7 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 19-23. v1.3 Benchmark Campaign and Evidence Report | Complete | Complete | 2026-04-15 |
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
 | 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete    | 2026-04-15 |
-| 30. Bounded Shallow Blind Training Recovery | 2/3 | In Progress|  |
+| 30. Bounded Shallow Blind Training Recovery | 3/3 | Complete   | 2026-04-15 |
 | 31. Perturbed Basin Training and Local Repair | 0/1 | Pending | - |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
 | 33. Proof Campaign Report and Evidence Lockdown | 0/1 | Pending | - |
