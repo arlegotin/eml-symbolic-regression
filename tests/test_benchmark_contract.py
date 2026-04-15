@@ -6,6 +6,7 @@ from eml_symbolic_regression.benchmark import (
     BenchmarkCase,
     BenchmarkSuite,
     BenchmarkValidationError,
+    OptimizerBudget,
     builtin_suite,
     list_builtin_suites,
     load_suite,
@@ -186,6 +187,19 @@ def test_case_accepts_and_serializes_proof_metadata():
     ).run_id
 
 
+def test_optimizer_budget_parses_and_serializes_constants():
+    budget = OptimizerBudget.from_mapping({"depth": 9, "constants": ["-0.8", {"real": "0.4", "imag": "0"}]})
+
+    assert budget.constants == (complex(-0.8), complex(0.4))
+    assert budget.as_dict()["constants"] == ["-0.8", "0.4"]
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"constants": ["nan"]}).validate("optimizer")
+
+    assert exc.value.reason == "invalid_budget"
+    assert exc.value.path == "optimizer.constants[0]"
+
+
 @pytest.mark.parametrize(
     ("suite_id", "case_id", "path_suffix"),
     [
@@ -257,14 +271,17 @@ def test_shallow_blind_claim_declares_signed_scaled_case_inventory():
 def test_v15_shallow_proof_suite_expands_fixed_proof_contract_runs():
     suite = load_suite("v1.5-shallow-proof")
     runs = suite.expanded_runs()
+    cases_by_id = {case.id: case for case in suite.cases}
 
     assert [case.id for case in suite.cases] == [
         "shallow-exp-blind",
         "shallow-log-blind",
         "shallow-radioactive-decay-blind",
         "shallow-beer-lambert-blind",
+        "shallow-scaled-exp-growth-blind",
+        "shallow-scaled-exp-fast-decay-blind",
     ]
-    assert len(runs) == 12
+    assert len(runs) == 18
     assert {run.seed for run in runs} == {0, 1, 2}
     assert {run.claim_id for run in runs} == {"paper-shallow-blind-recovery"}
     assert {run.threshold_policy_id for run in runs} == {"bounded_100_percent"}
@@ -272,3 +289,46 @@ def test_v15_shallow_proof_suite_expands_fixed_proof_contract_runs():
     assert {run.start_mode for run in runs} == {"blind"}
     assert all({"v1.5", "proof", "bounded", "blind"} <= set(run.tags) for run in runs)
     assert all(run.optimizer.steps > 0 and run.optimizer.restarts > 0 for run in runs)
+    assert all(run.optimizer.as_dict()["constants"] for run in runs)
+    assert all(run.threshold_policy_id == paper_claim(run.claim_id).threshold_policy_id for run in runs)
+    assert cases_by_id["shallow-exp-blind"].optimizer.depth == 1
+    assert cases_by_id["shallow-log-blind"].optimizer.depth == 3
+
+    coefficient_cases = {
+        "shallow-radioactive-decay-blind": -0.4,
+        "shallow-beer-lambert-blind": -0.8,
+        "shallow-scaled-exp-growth-blind": 0.4,
+        "shallow-scaled-exp-fast-decay-blind": -1.2,
+    }
+    for case_id, coefficient in coefficient_cases.items():
+        case = cases_by_id[case_id]
+        assert case.optimizer.depth == 9
+        assert case.optimizer.constants == (complex(coefficient),)
+        assert case.optimizer.as_dict()["constants"] == [repr(float(coefficient))]
+
+
+@pytest.mark.parametrize(
+    "override",
+    [
+        {"start_mode": "catalog", "training_mode": "catalog_verification"},
+        {"start_mode": "compile", "training_mode": "compile_only_verification"},
+        {"start_mode": "warm_start", "training_mode": "compiler_warm_start_training"},
+        {"threshold_policy_id": "measured_depth_curve"},
+    ],
+)
+def test_shallow_proof_suite_rejects_non_blind_or_unbounded_case_metadata(override):
+    payload = {
+        "id": "shallow-exp-blind",
+        "formula": "exp",
+        "start_mode": "blind",
+        "claim_id": "paper-shallow-blind-recovery",
+        "threshold_policy_id": "bounded_100_percent",
+        "training_mode": "blind_training",
+        **override,
+    }
+    suite = BenchmarkSuite.from_mapping({"id": "v1.5-shallow-proof", "cases": [payload]})
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        suite.validate()
+
+    assert exc.value.reason == "invalid_proof_contract"
