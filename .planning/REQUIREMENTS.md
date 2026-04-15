@@ -42,9 +42,9 @@ Requirements for this milestone only. Completed v1, v1.1, and v1.2 requirements 
 
 ### Tests and Documentation
 
-- [ ] **TEST-11**: User can run focused tests for campaign preset expansion, output folder creation, overwrite protection, CSV export, and headline metrics.
-- [ ] **TEST-12**: User can run focused tests for plot file generation and report assembly using CI-scale benchmark fixtures.
-- [ ] **TEST-13**: User can read documentation describing campaign commands, output structure, CSV schemas, plot meanings, and how to present results honestly.
+- [x] **TEST-11**: User can run focused tests for campaign preset expansion, output folder creation, overwrite protection, CSV export, and headline metrics.
+- [x] **TEST-12**: User can run focused tests for plot file generation and report assembly using CI-scale benchmark fixtures.
+- [x] **TEST-13**: User can read documentation describing campaign commands, output structure, CSV schemas, plot meanings, and how to present results honestly.
 
 ## Future Requirements
 
@@ -93,9 +93,9 @@ Deferred to later milestones.
 | REPT-03 | Phase 22 | Complete |
 | REPT-04 | Phase 22 | Complete |
 | REPT-05 | Phase 22 | Complete |
-| TEST-11 | Phase 23 | Pending |
-| TEST-12 | Phase 23 | Pending |
-| TEST-13 | Phase 23 | Pending |
+| TEST-11 | Phase 23 | Complete |
+| TEST-12 | Phase 23 | Complete |
+| TEST-13 | Phase 23 | Complete |
 
 **Coverage:**
 - v1.3 requirements: 23 total

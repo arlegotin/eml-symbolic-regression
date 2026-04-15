@@ -23,8 +23,9 @@ The paper shows that EML plus the constant `1` can generate the scientific-calcu
 - Constant-catalog soft master trees plus exact AST embedding with embed-to-snap round-trip checks.
 - Compiler-driven warm-start training reports that perturb, train, snap, and verify through the existing optimizer/verifier boundary.
 - Repeatable benchmark suites with per-run artifacts, aggregate JSON/Markdown reports, recovery-rate grouping, and explicit failure/unsupported taxonomy.
+- Benchmark campaign presets that generate raw artifacts, aggregate evidence, tidy CSV tables, static SVG figures, and a self-contained `report.md`.
 - Demo specs from `sources/FOR_DEMO.md`.
-- CLI commands for paper checks, demo reports, and benchmark evidence runs.
+- CLI commands for paper checks, demo reports, benchmark evidence runs, and campaign reports.
 - Pytest coverage for the MVP pipeline.
 
 The implementation is intentionally honest about scope: exact EML recovery is demonstrated for paper-grounded shallow formulas and for Beer-Lambert via a compiler-generated warm start. Harder showcase demos remain verified catalog candidates or explicit unsupported/depth reports unless a trained exact EML candidate passes the verifier.
@@ -79,6 +80,24 @@ Run a filtered evidence subset:
 PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.2-evidence --case beer-perturbation-sweep --seed 0 --output-dir artifacts/benchmarks
 ```
 
+List campaign presets:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli list-campaigns
+```
+
+Generate a full campaign folder with CSVs, figures, and `report.md`:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli campaign smoke --output-root artifacts/campaigns
+```
+
+Reproduce the committed v1.3 smoke report:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli campaign smoke --output-root artifacts/campaigns --label v1.3-smoke --overwrite
+```
+
 Try soft EML training on a shallow demo:
 
 ```bash
@@ -118,6 +137,25 @@ Interpretation rules:
 - `verified_equivalent_ast` means a warm-started run snapped to a different exact AST that still verified.
 - `unsupported` and failed cases are kept in the denominator; they are part of the evidence.
 - `verifier_recovery_rate` is computed from verifier-owned recovery, not from training loss.
+
+## Campaign Reports
+
+Campaigns are the presentation layer over benchmark suites. The built-in presets are:
+
+- `smoke`: CI-scale run with one blind baseline, one warm-start recovery path, and one unsupported diagnostic.
+- `standard`: default showcase matrix with shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten diagnostics, Planck diagnostics, and selected FOR_DEMO cases.
+- `showcase`: expanded seeds and perturbation levels for presentation-grade evidence.
+
+Each campaign folder contains:
+
+- `campaign-manifest.json`: preset, suite, filters, command, code version, and output paths.
+- `suite-result.json`, `aggregate.json`, `aggregate.md`: raw suite and aggregate evidence.
+- `runs/<suite>/`: per-run JSON artifacts.
+- `tables/`: `runs.csv`, grouped recovery CSVs, `headline-metrics.json/.csv`, and `failures.csv`.
+- `figures/`: deterministic SVG charts for recovery, losses, Beer-Lambert perturbations, runtime/budget, and failure taxonomy.
+- `report.md`: self-contained evidence report with numbers, charts, limitations, next experiments, and the exact reproduction command.
+
+The committed smoke report is at `artifacts/campaigns/v1.3-smoke/report.md`. Current smoke metrics are intentionally modest: 3 runs total, 1 verifier recovery via same-AST warm start, 1 blind snapped-but-failed run, and 1 unsupported Planck depth gate.
 
 ## Limits
 

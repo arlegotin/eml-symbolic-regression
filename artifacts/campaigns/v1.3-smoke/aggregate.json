@@ -1,0 +1,384 @@
+{
+  "counts": {
+    "execution_error": 0,
+    "failed": 1,
+    "same_ast_return": 1,
+    "total": 3,
+    "unsupported": 1,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 1,
+    "verifier_recovery_rate": 0.3333333333333333
+  },
+  "environment": {
+    "code_version": "454fb63",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-15T11:34:50.020499+00:00",
+  "groups": {
+    "depth": [
+      {
+        "execution_error": 0,
+        "failed": 1,
+        "key": "1",
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "2",
+        "same_ast_return": 1,
+        "total": 2,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 0.5
+      }
+    ],
+    "formula": [
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "beer_lambert",
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 1,
+        "key": "exp",
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "planck",
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "execution_error": 0,
+        "failed": 1,
+        "key": "0.0",
+        "same_ast_return": 1,
+        "total": 3,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 0.3333333333333333
+      }
+    ],
+    "seed_group": [
+      {
+        "execution_error": 0,
+        "failed": 1,
+        "key": "all",
+        "same_ast_return": 1,
+        "total": 3,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 0.3333333333333333
+      }
+    ],
+    "start_mode": [
+      {
+        "execution_error": 0,
+        "failed": 1,
+        "key": "blind",
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "compile",
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "warm_start",
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-smoke/runs/smoke/smoke-exp-blind-44cae09389c3.json",
+      "case_id": "exp-blind",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "exp",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": 6.593563826826581,
+        "changed_slot_count": null,
+        "high_precision_max_error": 3.626994328701647,
+        "post_snap_loss": 6.65026006217893,
+        "snap_active_node_count": 3,
+        "snap_min_margin": 0.06683857944817112,
+        "verifier_status": "failed"
+      },
+      "optimizer": {
+        "depth": 1,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 6,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "mpmath_failed",
+      "run_id": "smoke-exp-blind-44cae09389c3",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "smoke"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-smoke/runs/smoke/smoke-beer-warm-35bbd89a434a.json",
+      "case_id": "beer-warm",
+      "claim_status": "recovered",
+      "classification": "same_ast_warm_start_return",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "best_loss": 3.723143583092301e-33,
+        "changed_slot_count": 0,
+        "high_precision_max_error": 4.787995130595557e-81,
+        "post_snap_loss": 4.496499888230497e-32,
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered"
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 1
+      },
+      "perturbation_noise": 0.0,
+      "reason": "verified",
+      "run_id": "smoke-beer-warm-35bbd89a434a",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "trained_exact_recovery": "recovered",
+        "warm_start_attempt": "same_ast_return"
+      },
+      "start_mode": "warm_start",
+      "status": "same_ast_return",
+      "suite_id": "smoke"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-smoke/runs/smoke/smoke-planck-diagnostic-aaf175aaa0f7.json",
+      "case_id": "planck-diagnostic",
+      "claim_status": "unsupported",
+      "classification": "unsupported",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "planck",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": null,
+        "changed_slot_count": null,
+        "high_precision_max_error": null,
+        "post_snap_loss": null,
+        "snap_active_node_count": null,
+        "snap_min_margin": null,
+        "verifier_status": null
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "depth_exceeded",
+      "run_id": "smoke-planck-diagnostic-aaf175aaa0f7",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "unsupported"
+      },
+      "start_mode": "compile",
+      "status": "unsupported",
+      "suite_id": "smoke"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/campaigns/v1.3-smoke/runs",
+    "cases": [
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "exp",
+        "id": "exp-blind",
+        "optimizer": {
+          "depth": 1,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 6,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "smoke",
+          "blind"
+        ]
+      },
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "beer_lambert",
+        "id": "beer-warm",
+        "optimizer": {
+          "depth": 2,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 1
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "warm_start",
+        "tags": [
+          "smoke",
+          "warm_start"
+        ]
+      },
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "planck",
+        "id": "planck-diagnostic",
+        "optimizer": {
+          "depth": 2,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "compile",
+        "tags": [
+          "smoke",
+          "stretch"
+        ]
+      }
+    ],
+    "description": "Fast CI-scale benchmark contract smoke suite.",
+    "id": "smoke",
+    "schema": "eml.benchmark_suite.v1"
+  }
+}

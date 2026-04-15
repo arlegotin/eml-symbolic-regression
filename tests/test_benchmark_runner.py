@@ -66,6 +66,35 @@ def test_cli_benchmark_writes_suite_result(tmp_path):
     assert payload["results"][0]["status"] == "unsupported"
 
 
+def test_cli_campaign_writes_report(tmp_path):
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "campaign",
+            "smoke",
+            "--case",
+            "planck-diagnostic",
+            "--output-root",
+            str(tmp_path),
+            "--label",
+            "cli-smoke",
+        ],
+        check=True,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+
+    assert "report ->" in result.stdout
+    report = tmp_path / "cli-smoke" / "report.md"
+    manifest = tmp_path / "cli-smoke" / "campaign-manifest.json"
+    assert report.exists()
+    assert manifest.exists()
+    assert "## Headline Metrics" in report.read_text(encoding="utf-8")
+
+
 def test_for_demo_diagnostic_subset_preserves_unsupported_formula(tmp_path):
     base = builtin_suite("for-demo-diagnostics")
     suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")

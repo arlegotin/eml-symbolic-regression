@@ -18,7 +18,7 @@ v1.3 turns the benchmark harness into a polished showcase: run a real campaign, 
 - **v1.0 MVP** - Phases 1-7 complete (completed 2026-04-15)
 - **v1.1 EML Compiler and Warm Starts** - Phases 8-13 complete (completed 2026-04-15)
 - **v1.2 Training Benchmark and Recovery Evidence** - Phases 14-18 complete (completed 2026-04-15)
-- **v1.3 Benchmark Campaign and Evidence Report** - Phases 19-23 in progress
+- **v1.3 Benchmark Campaign and Evidence Report** - Phases 19-23 complete (completed 2026-04-15)
 
 ## Completed Milestone Context
 
@@ -54,7 +54,7 @@ v1.3 turns the benchmark harness into a polished showcase: run a real campaign, 
 - [x] **Phase 20: Tidy CSV Export and Derived Metrics** - Export run-level and grouped CSV tables plus headline metrics for analysis and plotting. (requirements: DATA-01, DATA-02, DATA-03, DATA-04)
 - [x] **Phase 21: Static Plot Generation** - Generate deterministic static figures for recovery, losses, perturbation sensitivity, runtime/depth, and failure taxonomy. (requirements: PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06)
 - [x] **Phase 22: Evidence Report Assembly** - Assemble a self-contained campaign report with figures, tables, commands, narrative, limitations, and next experiments. (requirements: REPT-01, REPT-02, REPT-03, REPT-04, REPT-05)
-- [ ] **Phase 23: Campaign Smoke, Docs, and Report Lockdown** - Lock campaign presets, CSV export, plots, report assembly, and documentation with CI-scale tests. (requirements: TEST-11, TEST-12, TEST-13)
+- [x] **Phase 23: Campaign Smoke, Docs, and Report Lockdown** - Lock campaign presets, CSV export, plots, report assembly, and documentation with CI-scale tests. (requirements: TEST-11, TEST-12, TEST-13)
 
 ## Phase Details
 
@@ -119,7 +119,8 @@ v1.3 turns the benchmark harness into a polished showcase: run a real campaign, 
   2. Focused tests cover plot file generation and report assembly using CI-scale fixtures.
   3. Documentation describes campaign commands, output structure, CSV schemas, plot meanings, and honest presentation rules.
   4. Full pytest passes after report workflow integration.
-**Plans**: TBD
+**Plans**: `.planning/phases/23-campaign-smoke-docs-and-report-lockdown/23-PLAN.md`
+**Completed:** 2026-04-15
 
 ## Dependency Order
 
@@ -153,9 +154,9 @@ The order is intentionally linear. Campaign presets define where evidence lives;
 | REPT-03 | Phase 22 | Complete |
 | REPT-04 | Phase 22 | Complete |
 | REPT-05 | Phase 22 | Complete |
-| TEST-11 | Phase 23 | Pending |
-| TEST-12 | Phase 23 | Pending |
-| TEST-13 | Phase 23 | Pending |
+| TEST-11 | Phase 23 | Complete |
+| TEST-12 | Phase 23 | Complete |
+| TEST-13 | Phase 23 | Complete |
 
 **Coverage:** 23/23 v1.3 requirements mapped. No orphaned requirements. No duplicate phase assignments.
 
@@ -187,7 +188,7 @@ The order is intentionally linear. Campaign presets define where evidence lives;
 | 20. Tidy CSV Export and Derived Metrics | 1/1 | Complete | 2026-04-15 |
 | 21. Static Plot Generation | 1/1 | Complete | 2026-04-15 |
 | 22. Evidence Report Assembly | 1/1 | Complete | 2026-04-15 |
-| 23. Campaign Smoke, Docs, and Report Lockdown | 0/1 | Pending | - |
+| 23. Campaign Smoke, Docs, and Report Lockdown | 1/1 | Complete | 2026-04-15 |
 
 ---
 *Roadmap updated: 2026-04-15 for milestone v1.3*

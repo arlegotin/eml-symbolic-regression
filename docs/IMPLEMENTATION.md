@@ -14,7 +14,8 @@ The package follows the roadmap in `.planning/ROADMAP.md`:
 8. `master_tree.py` also supports literal-constant terminal banks and AST-to-logit embedding.
 9. `warm_start.py` embeds compiled ASTs, records deterministic perturbation metadata, trains through `fit_eml_tree()`, and classifies the post-snap outcome.
 10. `benchmark.py` defines repeatable benchmark suites, run execution, per-run artifacts, aggregate evidence reports, and recovery/failure taxonomy.
-11. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
+11. `campaign.py` defines campaign presets, guarded output folders, CSV exports, SVG figures, and `report.md` assembly.
+12. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
 
 ## Recovery Contract
 
@@ -66,6 +67,8 @@ Built-in suites:
 - `smoke`: one blind run, one warm-start run, and one unsupported/stretch diagnostic for CI-scale coverage.
 - `v1.2-evidence`: shallow blind baselines, Beer-Lambert perturbation sweep, Michaelis-Menten warm-start diagnostics, and Planck stretch diagnostics.
 - `for-demo-diagnostics`: selected `sources/FOR_DEMO.md` formulas, including unsupported/stretch formulas as evidence rather than hidden failures.
+- `v1.3-standard`: the default campaign matrix with shallow blind baselines, Beer-Lambert perturbations, Michaelis-Menten, Planck, and selected FOR_DEMO diagnostics.
+- `v1.3-showcase`: an expanded campaign matrix with more seeds, more Beer-Lambert perturbation levels, and full FOR_DEMO diagnostics.
 
 Each run writes schema `eml.benchmark_run.v1` with:
 
@@ -90,6 +93,28 @@ The taxonomy intentionally separates:
 - `execution_failure`
 
 This prevents a same-AST return or low training loss from being read as blind symbolic discovery.
+
+## Campaign Report Contract
+
+Campaign presets are the showcase layer over benchmark suites:
+
+- `smoke` maps to the smoke suite and is intended for CI and quick sanity checks.
+- `standard` maps to `v1.3-standard` and is the default reportable campaign.
+- `showcase` maps to `v1.3-showcase` and makes the larger budget explicit.
+
+Campaign output is rooted at `artifacts/campaigns/<label-or-timestamp>/`. Stable labels are guarded: if a folder already exists, the command fails unless `--overwrite` is passed. A successful campaign writes:
+
+- `campaign-manifest.json` with preset metadata, filters, command, code version, environment, and output paths.
+- `suite-result.json`, `aggregate.json`, and `aggregate.md`.
+- `runs/<suite-id>/*.json` raw artifacts.
+- `tables/runs.csv` with formula, start mode, seed, depth, steps, perturbation noise, losses, verifier status, recovery class, runtime, changed slots, reason, and artifact path.
+- grouped CSVs by formula, start mode, perturbation noise, depth, and failure class.
+- `tables/headline-metrics.json` and `.csv`.
+- `tables/failures.csv` with reason codes and artifact links.
+- deterministic SVG figures for recovery rates, loss comparison, Beer-Lambert perturbation behavior, runtime/depth/budget, and failure taxonomy.
+- `report.md` with headline metrics, figure/table links, raw artifact links, exact reproduction command, strengths, limitations, failed/unsupported cases, and next experiments.
+
+The report deliberately separates blind recovery from same-AST warm-start return, verified-equivalent warm-start recovery, unsupported gates, and failed fits. It is a reproducible evidence bundle, not a claim that arbitrary deep formulas are solved.
 
 ## Paper-Grounded Fixtures
 
