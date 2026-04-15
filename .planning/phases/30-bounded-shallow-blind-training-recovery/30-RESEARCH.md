@@ -274,22 +274,25 @@ This mirrors the existing bounded-threshold tests while tightening the expected 
 | A2 | A depth-9 exact `exp(k*x)` scaffold may still be acceptable as a bounded shallow proof target if the contract explicitly declares that bound. | Summary / Architecture Patterns | If "shallow" is fixed to depth <=4, current verified shapes cannot satisfy Beer-Lambert or radioactive decay without finding a shorter identity. |
 | A3 | Adding literal constants to blind proof budgets can preserve blind semantics when constants are declared in the suite contract and provenance says they are supplied constants. | Architecture Patterns / Pitfalls | If supplied constants are considered compiler/catalog leakage, Phase 30 needs pure-`1` constant synthesis or a different proof target. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **What is the maximum paper-realistic shallow depth for Phase 30 scaled exponentials?**
    - What we know: current proof suite uses depth `4` for Beer-Lambert and `radioactive_decay`. [VERIFIED: benchmark.py:731-735]
    - What's unclear: existing verified compiler lowering needs depth `9`, and this research did not prove a shorter direct-search identity. [VERIFIED: manual PYTHONPATH=src compiler probe]
    - Recommendation: plan a first task that either proves a shorter exact shape or updates the suite contract to the smallest verified depth with committed evidence. [ASSUMED]
+   - RESOLVED: Phase 30 may update the shallow scaled-exponential bound to the smallest verified exact depth, but only after a planned evidence task records the depth, node count, constants, verifier status, and reason the bound remains paper-realistic. If a shorter exact shape is found, prefer the shorter bound.
 
 2. **Are amplitude-signed variants in scope for SHAL-01?**
    - What we know: SHAL-01 says signed/scaled exponential variants, while Beer-Lambert and radioactive decay are coefficient-scaled exponentials inside `exp(k*x)`. [VERIFIED: .planning/REQUIREMENTS.md:20] [VERIFIED: datasets.py:100-124]
    - What's unclear: amplitude variants like `-exp(k*x)` or `2*exp(k*x)` require additional negation/multiplication identities. [VERIFIED: compiler.py:135-163]
    - Recommendation: include exponent-coefficient sign/scale variants first; include amplitude variants only after a shape/depth evidence task. [ASSUMED]
+   - RESOLVED: Interpret Phase 30 signed/scaled variants as exponent-coefficient sign/scale variants first, such as `exp(-a*x)` and `exp(+a*x)`. Amplitude-signed variants are deferred unless the evidence task proves they fit the declared shallow bound without weakening the training-proof contract.
 
 3. **Should signed/scaled variants live in `datasets.py` or proof-only helpers?**
    - What we know: Phase context allows either, provided formula provenance is retained. [VERIFIED: 30-CONTEXT.md:34-37]
    - What's unclear: permanent demo catalog entries may imply product/showcase support beyond this proof suite. [ASSUMED]
    - Recommendation: use `DemoSpec` entries only for variants likely to remain user-facing; otherwise add a proof-suite target helper that emits the same provenance fields as `DemoSpec.formula_provenance()`. [VERIFIED: datasets.py:52-63] [ASSUMED]
+   - RESOLVED: Any target counted by the declared proof suite should be represented as a permanent importable target with full `DemoSpec`-compatible provenance. It may be named as a proof target rather than a showcase demo, but it must not be an anonymous ad hoc helper.
 
 ## Environment Availability
 
@@ -363,4 +366,3 @@ This mirrors the existing bounded-threshold tests while tightening the expected 
 
 **Research date:** 2026-04-15
 **Valid until:** 2026-05-15 for local code patterns; revisit sooner if Phase 30 changes suite depth, literal constant policy, or evidence taxonomy. [ASSUMED]
-
