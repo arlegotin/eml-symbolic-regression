@@ -1,492 +1,481 @@
-# Domain Pitfalls
+# Domain Pitfalls: v1.1 EML Compiler and Warm Starts
 
-**Domain:** EML symbolic-regression engine over complete depth-bounded trees  
+**Domain:** Ordinary-expression-to-EML compilation, soft-tree embedding, and warm-start recovery demos  
 **Project:** EML Symbolic Regression  
 **Researched:** 2026-04-15  
-**Overall confidence:** HIGH for EML-specific risks grounded in the paper and north-star document; MEDIUM for tool-version risks verified against current official docs.
+**Overall confidence:** HIGH for risks grounded in the current code, `sources/paper.pdf`, `sources/NORTH_STAR.md`, and `sources/FOR_DEMO.md`; MEDIUM where recommendations infer implementation sequencing for features not yet present.
+
+## Research Basis
+
+The existing MVP already has exact EML AST nodes, deterministic AST JSON, canonical NumPy/mpmath evaluation, stabilized PyTorch training evaluation, complete soft EML master trees, snapping, a verifier-owned `recovered` status, catalog showcase candidates, and CLI demo reports. The current code does **not** yet have a compiler, an AST-to-master-tree embedding layer, warm-start logits, perturbation experiments, or demo promotion rules for compiler-assisted recovery.
+
+The v1.1 risk profile is therefore not "can EML work at all?" The main risk is contract drift while connecting a new compiler and warm-start path to an existing verifier-owned MVP.
 
 ## Roadmap Phase Map
 
-Use these phase labels when turning pitfalls into the implementation roadmap.
+Use these phase labels when turning this research into roadmap controls.
 
 | Phase | Name | Scope |
 |-------|------|-------|
-| Phase 0 | Semantics and references | Canonical EML evaluator, complex branch policy, paper examples, high-precision oracle, fixture datasets. |
-| Phase 1 | Master tree and shallow recovery | Complete univariate depth-2/depth-3 trees, paper reproduction, deterministic tree serialization, initial tests. |
-| Phase 2 | Search and hardening | Restarts, temperature schedules, entropy/size regularization, anomaly logging, snapping margins. |
-| Phase 3 | Symbolic export and cleanup | Exact EML AST, JSON export, SymPy translation, targeted rewrites, local discrete cleanup. |
-| Phase 4 | Verification and demos | Held-out, extrapolation, high-precision, cross-backend verification, demo suite from `sources/FOR_DEMO.md`. |
-| Phase 5 | Scaling | Multivariate support, coefficient fitting, Rust acceleration, GPU profiling, larger benchmarks. |
+| Phase 1 | Compiler Contract and Rule Corpus | Define supported SymPy subset, constant policy, domain assumptions, compiler metadata, and rule-level identity tests. |
+| Phase 2 | AST Embedding and Warm Starts | Embed compiled exact EML ASTs into compatible `SoftEMLTree` slot paths and initialize logits with explicit margins. |
+| Phase 3 | Perturbed Warm-Start Recovery | Add controlled perturbation experiments, seed batches, return-to-solution metrics, and manifests. |
+| Phase 4 | Demo Promotion and Reporting | Promote Beer-Lambert and Michaelis-Menten only when compile, train, snap, and verification all pass; keep Planck as stretch. |
+| Phase 5 | Regression Tests and Documentation | Lock claim taxonomy, negative tests, reproducibility metadata, and user-facing wording. |
 
 ## Critical Pitfalls
 
-### Pitfall 1: Semantics Drift Between Training and Verification
+### Pitfall 1: Treating Compiler Output as Correct Without Independent Verification
 
-**What goes wrong:** The training evaluator silently differs from the exact EML semantics. Common causes are hidden epsilons in `log`, training clamps leaking into verification, inconsistent complex branch behavior, or treating a nearly real complex result as real without checking the imaginary residue.
+**What goes wrong:** The compiler emits an exact EML AST that is not equivalent to the ordinary source expression, but later training or cleanup hides the mismatch.
 
-**Why it happens:** EML depends on `eml(x, y) = exp(x) - ln(y)` and requires complex arithmetic internally. The paper explicitly relies on the principal branch when computing values such as `ln(-1)` to generate `i` and `pi`. The north-star document also requires separate training and verification evaluators.
+**Why it happens:** The paper's EML identities are constructive but branch-sensitive. EML is non-commutative, uses complex logarithms, and some compiler identities may rely on extended-real behavior such as `log(0) = -inf` and `exp(-inf) = 0`. The existing code only has two hand-coded identities, `exp(x)` and `log(x)`, and does not yet have a compiler rule corpus.
 
-**Consequences:** A formula can pass training loss and still fail as a symbolic expression. Recovered expressions may disagree across PyTorch, mpmath, SymPy, or a future Rust backend.
-
-**Warning signs:**
-- The same snapped tree has different outputs in PyTorch and mpmath.
-- Verification only passes when the verifier uses the same clamps as training.
-- Outputs expected to be real have persistent imaginary parts above tolerance.
-- Branch-cut tests near negative real inputs are absent or flaky.
-
-**Prevention:**
-- Build a canonical semantics module in Phase 0 before training code.
-- Define the exact branch policy for complex `log`, signed zero, infinities, and non-finite values.
-- Keep two explicit modes: stabilized training mode and faithful verification mode.
-- Ban hidden epsilons and clamps from verification. If a guard is needed, it must be visible in diagnostics.
-- Add cross-backend golden tests for `exp(x)`, `ln(x)`, `x - y`, `x * y`, `x / y`, and at least one branch-sensitive identity.
-
-**Detection:** Run every snapped candidate through PyTorch exact mode, mpmath high precision, and SymPy-rendered expression evaluation on random points, extrapolation points, and branch-adjacent points.
-
-**Phase mapping:** Phase 0 blocker; Phase 4 must enforce it for every demo and release artifact.
-
-**Confidence:** HIGH. Sources: paper pp. 5, 10-16; `sources/NORTH_STAR.md`; PyTorch complex docs; mpmath docs.
-
-### Pitfall 2: Calling Soft Fit "Symbolic Recovery"
-
-**What goes wrong:** The model fits data with soft categorical mixtures but never becomes an exact EML tree. The output is a neural surrogate, not a recovered formula.
-
-**Why it happens:** The paper's trainable master tree uses logits or simplex weights as a continuous relaxation of discrete choices. Recovery requires hardening and snapping to exact choices.
-
-**Consequences:** Roadmap and demos overstate the result. A low training MSE can hide non-discrete gates, bloated structures, or unstable extrapolation.
+**Consequences:** A demo can pass because the target was generated from the same buggy compiled tree, not because the EML identity is valid. Later verification against independent targets will fail, and recovery claims become untrustworthy.
 
 **Warning signs:**
-- Reports emphasize training loss but omit gate entropy, snap margins, and post-snap loss.
-- Many gates have top-1 probability below 0.95 late in training.
-- Snapping causes a large loss jump.
-- The CLI prints a formula before exact AST snapping succeeds.
+- Compiler tests compare compiled output only to its own SymPy rendering.
+- Rule tests use only positive real grids and avoid branch-adjacent points.
+- New rules lack source-expression metadata and rule names.
+- A broad `simplify()` result is accepted as proof of equivalence.
+- The same compiled AST fails against mpmath or NumPy values from the ordinary source expression.
 
 **Prevention:**
-- Define "recovered" as post-snap, discrete, verified, and simpler-than-nearby-alternatives where feasible.
-- Track fit loss, gate entropy, top-1 margin, expected tree size, post-snap loss, and verification pass/fail separately.
-- Refuse to export a recovered formula if any active gate is below a configured confidence margin, unless a top-k snap search resolves it.
-- Keep "soft fit" and "recovered formula" as separate result statuses in the API and CLI.
+- Define a narrow supported subset first: variables, `exp`, `log`, unary negation, subtraction, addition, multiplication, division, and a documented constant subset.
+- Every compiler rule must have an identity test against an independent ordinary-expression evaluator, not against EML output.
+- Store compiler metadata in AST documents: source expression, normalized source, rule sequence, domain assumptions, constant policy, and compiler version.
+- Verify compiled ASTs with NumPy and mpmath before they are allowed into warm-start training.
+- Start with identities that do not require infinities or signed-zero tricks unless the semantics layer explicitly supports them.
 
-**Detection:** Regression tests should include cases where soft loss is low but snapping fails, and should assert that the result is not labeled recovered.
+**Detection:** Add a compiler corpus test that compiles each supported operator form, evaluates the ordinary expression and compiled EML AST on train, held-out, extrapolation, and edge-case points, and fails on any max error above tolerance.
 
-**Phase mapping:** Phase 2 defines hardening metrics; Phase 3 enforces exact export; Phase 4 validates recovery claims.
+**Phase mapping:** Phase 1 blocker; Phase 4 must rerun this for demo formulas.
 
-**Confidence:** HIGH. Sources: paper pp. 13-15; `sources/NORTH_STAR.md`.
+**Confidence:** HIGH. Sources: `sources/paper.pdf` pp. 10-15, `sources/NORTH_STAR.md`, current `expression.py`, current `verify.py`.
 
-### Pitfall 3: Blind Depth Escalation
+### Pitfall 2: Smuggling Arbitrary Constants Into an EML-Only AST
 
-**What goes wrong:** The implementation assumes complete depth-bounded search means practical recovery at arbitrary depth from random initialization.
+**What goes wrong:** The compiler handles formulas such as `exp(-0.8*x)` or `2*x/(0.5+x)` by inserting arbitrary `Const(0.8)`, `Const(2)`, or `Const(0.5)` nodes while still labeling the artifact as an exact EML tree over the paper's `{1, eml}` basis.
 
-**Why it happens:** "Complete by design" is a representation claim, not an optimization guarantee. The paper reports blind recovery from random initialization at 100% for depth 2, about 25% for depths 3-4, below 1% for depth 5, and 0 successes in 448 attempts at depth 6. Warm starts from perturbed correct trees succeed much more reliably.
+**Why it happens:** The current `Const` class can store any complex value, but its AST metadata says the constant basis is `["1"]`. The v1.1 target demos contain numeric coefficients. The paper's EML basis can generate constants from `1`, but compiled forms for arithmetic and rationals may be very deep.
 
-**Consequences:** The roadmap burns time on deep blind recovery before proving shallow correctness. Demos become unreliable and seed-sensitive.
+**Consequences:** The exported tree is not honest about its grammar. A warm-start demo may be solving an easier "EML plus arbitrary constants" problem while being reported as pure EML recovery.
 
 **Warning signs:**
-- Phase plans promise blind recovery of depth-5 or depth-6 formulas in v1.
-- More restarts are added without curriculum, warm starts, or diagnostics.
-- CI includes a deep recovery test that passes only for one lucky seed.
-- Search cost grows exponentially while exact recovery rate is not measured.
+- AST documents include `const` values other than `1` but still say `constant_basis: ["1"]`.
+- Demo success depends on float constants that are not compiled or marked as externally supplied.
+- The compiler accepts all SymPy `Float` values silently.
+- `candidate_kind` remains `exact_eml` without a coefficient or constant provenance field.
 
 **Prevention:**
-- Start with depth 2 and depth 3 paper-like targets.
-- Add depth curriculum: solve shallow, embed into deeper scaffolds, then unfreeze new gates.
-- Make warm starts and priors first-class features rather than ad hoc demo hacks.
-- Report recovery distributions across seeds, not single best runs.
-- Put arbitrary blind depth-6 recovery explicitly out of scope for v1.
+- Choose and document one constant policy before demo work:
+  - **Pure EML:** compile supported constants from `1`, accepting depth growth.
+  - **Supplied constants:** allow externally supplied constants, but label the artifact as EML with supplied constants, not pure `{1, eml}`.
+  - **Rational subset:** support only small exact rationals with verified EML expansions.
+- Do not allow arbitrary `Float` constants to enter exact recovery silently.
+- Extend artifact metadata to distinguish `constant_basis`, `compiled_constants`, `supplied_constants`, and `approximate_coefficients`.
+- For Beer-Lambert and Michaelis-Menten, decide whether `0.8`, `2`, and `0.5` are fixed supplied constants, exact rationals, or part of a later coefficient-fitting layer.
 
-**Detection:** Maintain benchmark tables by depth, target, seed count, recovery rate, median restarts, and wall time.
+**Detection:** Add a schema test that rejects non-`1` constants unless the document explicitly declares the constant policy and provenance.
 
-**Phase mapping:** Phase 1 must reproduce shallow behavior; Phase 2 adds curriculum and restarts; Phase 5 investigates deeper scaling only after shallow reliability is routine.
+**Phase mapping:** Phase 1 blocker; Phase 4 demo promotion blocker.
 
-**Confidence:** HIGH. Sources: paper p. 15; `sources/PROJECT.md`; `sources/NORTH_STAR.md`.
+**Confidence:** HIGH. Sources: `.planning/PROJECT.md`, `sources/FOR_DEMO.md`, current `expression.py`, current `datasets.py`.
 
-### Pitfall 4: Numerical Explosion From Nested `exp` and Complex `log`
+### Pitfall 3: Generating Trees Too Deep for Warm-Start Recovery
 
-**What goes wrong:** Training produces NaN, Inf, overflow, unstable gradients, or meaningless finite values after extreme intermediate computations.
+**What goes wrong:** The compiler produces exact but bloated EML trees that exceed the practical master-tree depth budget, making embedding and training unusable.
 
-**Why it happens:** EML composes exponentials and logarithms deeply. The paper reports overflow from multiply composed exponentials and NaNs from complex arithmetic implementation details. PyTorch's numerical accuracy docs also warn that large intermediate values can overflow even when final mathematical results are representable.
+**Why it happens:** The paper warns that the prototype compiler is not shortest-form. Table 4 shows very large compiler expressions for ordinary arithmetic: multiplication, division, addition, and average can be much larger than direct search forms. v1.1 target demos use multiplication, division, and numeric constants.
 
-**Consequences:** Optimizer results become seed- and device-dependent. Snapping decisions may be based on corrupted gradients. Recovery statistics become misleading.
+**Consequences:** The roadmap spends time compiling formulas that cannot fit into the configured `SoftEMLTree` or that require depths where blind optimization is known to degrade. Warm-starts become too expensive for tests and demos.
 
 **Warning signs:**
-- NaN/Inf appears in losses or gate gradients.
-- Clamp counts rise sharply before convergence.
-- A small input-range change makes the same target unrecoverable.
-- CPU and GPU runs diverge before snapping.
+- Compiler output depth is not reported.
+- A formula compiles but cannot be embedded into the requested master-tree depth.
+- The master tree is enlarged until tests become slow or flaky.
+- Michaelis-Menten or Planck compiled trees use most of a full deep tree before any training begins.
 
 **Prevention:**
-- Default to `torch.complex128` for training.
-- Clamp the real part entering `exp` only in training mode, and log every clamp.
-- Track per-node max magnitude, NaN count, Inf count, clamp count, and imaginary residue.
-- Normalize and nondimensionalize demo inputs before training.
-- Fail fast when anomaly rates exceed thresholds instead of continuing silently.
-- Re-run the snapped candidate with unclamped faithful semantics before accepting it.
+- Treat compiler output depth as a first-class acceptance criterion.
+- Add `compile_depth`, `node_count`, and `required_master_depth` to compiler artifacts.
+- Implement shortest known identities for the v1.1 subset rather than naive recursive expansion everywhere.
+- Put a depth cap on v1.1 demo promotion. If the compiled AST exceeds the cap, classify the demo as "compiled showcase only" or "unsupported at current depth".
+- Prefer Beer-Lambert before Michaelis-Menten, and keep normalized Planck as stretch unless its compiled tree remains within an explicit budget.
 
-**Detection:** Add anomaly snapshots to each run artifact and assert zero non-finite values in verification mode.
+**Detection:** Add tests that compile demo source expressions and assert expected depth/node-count ceilings. Failing the ceiling should not be a correctness failure; it should classify the target as not suitable for trained recovery yet.
 
-**Phase mapping:** Phase 0 defines numeric policy; Phase 1 adds instrumentation; Phase 2 uses anomaly logs to steer search; Phase 4 rejects unstable candidates.
+**Phase mapping:** Phase 1 compiler; Phase 2 embedding; Phase 4 demo selection.
 
-**Confidence:** HIGH. Sources: paper p. 15; `sources/NORTH_STAR.md`; PyTorch numerical accuracy docs.
+**Confidence:** HIGH. Sources: `sources/paper.pdf` Table 4 and p. 15, `sources/FOR_DEMO.md`, `.planning/PROJECT.md`.
 
-### Pitfall 5: Incorrect Master-Tree Construction
+### Pitfall 4: AST-to-Master-Tree Embedding Mismatch
 
-**What goes wrong:** The tree builder is not actually complete for the intended depth, so true formulas are unreachable even though the system claims a complete EML tree.
+**What goes wrong:** A compiled exact AST is valid, but the warm-start initializer cannot map it into the current `SoftEMLTree` slot structure without changing its meaning.
 
-**Why it happens:** The univariate construction has a precise slot structure: each non-leaf input can choose among `1`, `x`, and a previous subtree output, while leaf slots choose only `1` or `x`. The paper gives the univariate parameter count `P(n) = 5 * 2^n - 6`. It is easy to get indexing, previous-subtree availability, or depth conventions wrong.
+**Why it happens:** The current soft tree has path-specific left and right child subtrees. A slot can choose `const:1`, a variable, or that side's child. Embedding an arbitrary AST requires exact path assignment, depth compatibility, and dead-branch handling. Existing code only has manual `force_exp` and `force_log` helpers.
 
-**Consequences:** Early failures are misdiagnosed as optimizer weakness. Paper examples such as `ln(x)` may fail even at the depth where they should be representable.
+**Consequences:** Warm starts initialize a tree that snaps to a different expression than the compiled AST. Training then appears to "recover" from an invalid starting point or fails for the wrong reason.
 
 **Warning signs:**
-- Level-2 parameter count is not 14 in the univariate case.
-- `exp(x)` and constant `e` are not reachable by direct gate assignment.
-- `ln(x)` cannot be constructed from the known paper formula.
-- Dead branches are included in active gate counts, or active subtrees are pruned too early.
+- Warm-start code compares only post-training loss, not the pre-training snapped AST.
+- Embedding a compiled AST and immediately snapping does not round-trip to the same AST.
+- Unused branches retain random logits and affect reported entropy/size metrics.
+- Active paths are inferred from string prefixes without tests for left/right chirality.
 
 **Prevention:**
-- Implement paper formulas as exact construction fixtures before any optimizer.
-- Add structural tests for node counts, slot candidate sets, parameter counts, and depth naming.
-- Keep a human-readable exact EML AST alongside the differentiable module graph.
-- Start univariate; add multivariate gates only after univariate completeness tests pass.
+- Implement `embed_ast(tree, expr, strength)` as a single tested abstraction.
+- Require `tree.depth >= expr.depth()` before embedding.
+- After embedding and before perturbation, immediately snap and assert structural/evaluation equivalence to the compiled AST.
+- Initialize inactive branches deterministically and mark them as inactive in metadata.
+- Store an embedding manifest: requested depth, expression depth, active slot assignments, inactive paths, strength, and pre-perturb snap margin.
 
-**Detection:** Property tests should enumerate small-depth hard gate assignments and confirm evaluator consistency with the exact AST.
+**Detection:** Golden tests should compile `exp(x)`, `log(x)`, a subtraction identity, and a small rational expression, embed each into a compatible tree, snap immediately, and compare both AST structure and numeric behavior.
 
-**Phase mapping:** Phase 1 blocker; Phase 5 must repeat the completeness audit for multivariate extensions.
+**Phase mapping:** Phase 2 blocker; Phase 3 perturbation depends on it.
 
-**Confidence:** HIGH. Sources: paper pp. 12-14; `sources/NORTH_STAR.md`.
+**Confidence:** HIGH. Sources: current `master_tree.py`, current `tests/test_master_tree.py`, `sources/NORTH_STAR.md`.
 
-### Pitfall 6: Snapping Is Underspecified
+### Pitfall 5: Warm-Start Logits Are Either Frozen or Too Weak
 
-**What goes wrong:** The hardening stage converts soft gates to one-hot choices using arbitrary thresholds, tie-breaking, or raw parameter values. A candidate that looks near-discrete becomes a different formula after snapping.
+**What goes wrong:** The warm-start initializer sets logits so strongly that training cannot recover from perturbations, or so weakly that the correct tree is lost immediately.
 
-**Why it happens:** The relaxation uses logits or simplex weights, but exact EML trees require categorical choices. Near-ties and inactive branches make naive `argmax` brittle.
+**Why it happens:** Current manual helpers use a fixed `strength` value. v1.1 will need controlled initialization and perturbation around exact structures. The paper's warm-start claim is about perturbed correct solutions converging back, not about arbitrary hand-set logits.
 
-**Consequences:** Post-snap loss jumps, exact formulas are nondeterministic, and reproducibility collapses across seeds or hardware.
+**Consequences:** Perturbation demos become artifacts of one magic strength/noise combination. Results do not generalize across depth, formula, or seed.
 
 **Warning signs:**
-- Different devices snap the same checkpoint differently.
-- A small temperature change changes the exported formula.
-- Active gate margins are not reported.
-- Snapping ignores whether a branch is semantically dead.
+- Only one warm-start strength and one perturbation scale are reported.
+- Stronger logits always pass without meaningful training movement.
+- Weak perturbations preserve the same argmax in every slot, so the task is trivial.
+- Larger perturbations flip active gates and never recover, but the report still says warm starts work.
 
 **Prevention:**
-- Implement snapping behind one explicit abstraction that consumes normalized categorical probabilities.
-- Require a minimum top-1 margin for active gates.
-- For ambiguous gates, evaluate top-k discrete alternatives after pruning dead branches.
-- Store snap decisions, margins, and before/after losses in the run artifact.
-- Do not depend directly on long-term availability of `torch.nn.functional.gumbel_softmax`; wrap any helper behind a project API because current PyTorch docs mark it as legacy.
+- Define a grid of warm-start strengths and perturbation scales.
+- Report pre-perturb margin, post-perturb margin, percentage of active gates flipped, and post-training recovered status.
+- Include both "return without gate flips" and "return after gate flips" categories.
+- Keep optimizer config fixed across comparable perturbation sweeps.
+- Make a failed perturbation run a valid outcome, not a reason to hide the seed.
 
-**Detection:** Golden snapshots should reproduce the same snapped AST across repeated runs from the same checkpoint.
+**Detection:** A perturbation benchmark should include multiple seeds per formula and produce recovery-rate tables by strength, noise scale, depth, and active-gate flip count.
 
-**Phase mapping:** Phase 2 defines snap readiness; Phase 3 owns exact AST export; Phase 4 rejects ambiguous formula claims.
+**Phase mapping:** Phase 3 primary risk; Phase 4 reporting must expose the parameters.
 
-**Confidence:** HIGH for snapping need from paper; MEDIUM for API-stability risk from PyTorch docs.
+**Confidence:** HIGH. Sources: `sources/paper.pdf` p. 15, `.planning/PROJECT.md`, current `master_tree.py`.
 
-### Pitfall 7: False Positives From Weak Verification Data
+### Pitfall 6: Measuring Perturbation Success With Training Loss Instead of Exact Return
 
-**What goes wrong:** A wrong formula matches the training points and passes a shallow holdout but fails on extrapolation, singular neighborhoods, or high-precision evaluation.
+**What goes wrong:** A perturbed warm-start run is counted as successful because it fits the target, even though it snaps to a different exact tree or fails held-out/high-precision verification.
 
-**Why it happens:** Symbolic regression is prone to coincidental agreement on small datasets. The paper's search methodology treats numerical matches as candidates requiring independent verification, not proofs.
+**Why it happens:** Existing `fit_eml_tree` is explicitly a candidate generator and verification is separate. Warm-start experiments can easily reuse best training loss as their success metric.
 
-**Consequences:** The demo can show a plausible but incorrect law. Future cleanup may optimize toward the wrong expression.
+**Consequences:** The project overstates the paper's "returns to correct solution" behavior. A run may be a soft fit, an alternative equivalent tree, a wrong tree that interpolates, or a verified recovery, and these are different claims.
 
 **Warning signs:**
-- Training and test points come from the same grid or same backend only.
-- Verification does not include extrapolation.
-- A simpler baseline fits as well as the discovered formula.
-- High-precision residuals grow outside the training range.
+- Perturbation reports contain `best_loss` but not post-snap verification.
+- The result is not compared to the compiled seed AST.
+- Equivalent-but-different trees are not distinguished from exact AST return.
+- Failure reason codes are absent.
 
 **Prevention:**
-- Use independent train, held-out, extrapolation, and high-precision point sets.
-- Generate some verification points with mpmath, not the training backend.
-- Include adversarial points near domain boundaries and singularities for each target.
-- Compare against smaller-depth candidates and simple baselines before declaring exact recovery.
-- Record verification tolerances per target and per numeric backend.
+- Track separate statuses:
+  - `returned_same_ast`
+  - `verified_equivalent_ast`
+  - `snapped_candidate_not_verified`
+  - `soft_fit_only`
+  - `failed`
+- Require post-snap train, held-out, extrapolation, and mpmath checks before any recovery label.
+- Compare the final AST to the warm-start AST structurally and numerically.
+- Report alternative verified trees honestly as verified equivalents, not necessarily return-to-same-tree.
 
-**Detection:** Every "recovered" result must include a verification report with pass/fail status by split and backend.
+**Detection:** Add a test where a soft fit has low training loss but snaps incorrectly, and assert it is not counted as warm-start recovery.
 
-**Phase mapping:** Phase 4 blocker; Phase 1 and Phase 2 can use lighter checks but must not call results final.
+**Phase mapping:** Phase 3 success metrics; Phase 4 demo claims; Phase 5 docs.
 
-**Confidence:** HIGH. Sources: paper pp. 7, 14-15; `sources/NORTH_STAR.md`; mpmath docs.
+**Confidence:** HIGH. Sources: current `optimize.py`, current `verify.py`, `sources/NORTH_STAR.md`.
 
-### Pitfall 8: Symbolic Simplification Becomes an Unchecked Oracle
+### Pitfall 7: Breaking the Verifier-Owned Recovery Contract
 
-**What goes wrong:** The implementation relies on generic `simplify()` or branch-invalid identities to transform formulas, accidentally changing the mathematical function.
+**What goes wrong:** The compiler or CLI promotes a catalog formula to `recovered` before an exact compiled EML AST has been trained, snapped, and verified.
 
-**Why it happens:** EML uses complex principal-branch semantics. Identities such as `log(exp(x)) = x` are not globally valid over the complex plane. SymPy's own docs state that simplification is not a well-defined stable algorithmic contract and recommend specific simplification functions for algorithmic use.
+**Why it happens:** The current demo harness stores catalog formulas as `SympyCandidate` and verifies them as `verified_showcase`, while exact EML ASTs can be `recovered`. v1.1 wants to promote Beer-Lambert and Michaelis-Menten, so it is tempting to reuse catalog verification as recovery evidence.
 
-**Consequences:** Cleanup may produce a prettier but wrong expression. Verification failures appear after the expression has already been presented to users.
+**Consequences:** The strongest existing contract in the MVP is weakened. Users cannot tell whether a result was catalog verification, compiler output, warm-start training, or post-snap recovery.
 
 **Warning signs:**
-- Cleanup calls broad `simplify()` as the main correctness step.
-- Rewrites lack assumptions and domain checks.
-- A simplified formula passes on positive real samples but fails on complex or negative-adjacent samples.
-- The displayed formula is not linked to the exact EML AST that was verified.
+- `claim_status` is copied from catalog verification while a trained candidate is nested elsewhere in the report.
+- CLI output says "recovered" for a `candidate_kind` of `catalog_sympy`.
+- A demo report lacks separate fields for catalog candidate, compiled seed, trained snapped candidate, and final verification.
+- Planck is labeled as recovered after direct catalog verification.
 
 **Prevention:**
-- Treat SymPy as a renderer and targeted rewrite engine, not as the source of truth.
-- Maintain exact EML AST as the canonical artifact.
-- Use explicit passes such as `cancel`, `together`, `powsimp`, or targeted trig rewrites only when assumptions are recorded.
-- Verify after each cleanup pass; if a rewrite changes behavior, keep the previous expression.
-- Report both the exact EML tree and the simplified human expression.
+- Keep verifier-owned `recovered` restricted to exact EML candidates unless `recovered_requires_exact_eml=False` is intentionally used for internal checks.
+- Add explicit demo stages: `catalog_showcase`, `compiled_seed_verified`, `warm_start_attempted`, `trained_exact_recovered`.
+- Reports should have separate statuses for the source formula, compiled seed, trained candidate, and public claim.
+- Promote Beer-Lambert and Michaelis-Menten only when the final trained snapped AST passes the verifier.
+- Keep normalized Planck as `stretch_showcase`, `compiled_only`, or `failed_warm_start` unless it passes the same contract.
 
-**Detection:** Cleanup tests should include branch-sensitive counterexamples and assert that every rewrite preserves high-precision sampled behavior.
+**Detection:** Preserve and expand the existing test that ensures Planck is `verified_showcase`, not exact recovery. Add the same guard for every catalog-only demo.
 
-**Phase mapping:** Phase 3 owns targeted cleanup; Phase 4 verifies cleaned formulas.
+**Phase mapping:** Phase 4 blocker; Phase 5 documentation and CLI tests.
 
-**Confidence:** HIGH. Sources: `sources/NORTH_STAR.md`; SymPy simplify docs; paper pp. 10-16.
+**Confidence:** HIGH. Sources: current `verify.py`, current `datasets.py`, current `cli.py`, current `tests/test_verifier_demos_cli.py`, `.planning/PROJECT.md`.
 
-### Pitfall 9: Demo Overreach and Raw Physical Units
+### Pitfall 8: Domain and Branch Assumptions Are Lost During Compilation
 
-**What goes wrong:** The first public demos choose famous but numerically hostile laws, raw SI constants, high-depth expressions, unconstrained phases, or singular domains.
+**What goes wrong:** A compiled EML identity is valid only on a restricted domain, but the verifier samples outside that domain or the docs imply global equality.
 
-**Why it happens:** Famous laws are attractive, but the paper's optimization results make depth and initialization major constraints. `sources/FOR_DEMO.md` explicitly recommends normalized, dimensionless, visually distinctive targets and warns against raw full Planck law, special functions, piecewise laws, chaotic systems, and high-depth blind recovery.
+**Why it happens:** The paper notes complex principal-branch issues and special behavior around negative real axes, zero, and endpoints. The current demos use safe positive domains for `log` and Michaelis-Menten, but a compiler can introduce intermediate `log`, reciprocal, or division behavior not obvious from the source expression.
 
-**Consequences:** The implementation may be correct but look unreliable. Roadmap pressure shifts toward ad hoc demo tuning instead of engine fundamentals.
+**Consequences:** Verification becomes flaky near singularities, and a formula that is valid on the demo interval is overstated as globally valid.
 
 **Warning signs:**
-- The first demo is normalized Planck or damped oscillator before Beer-Lambert/logistic/Michaelis-Menten works.
-- Targets include arbitrary physical constants without a coefficient strategy.
-- Demo scripts require hand-picked lucky seeds.
-- Plots look good but post-snap verification fails.
+- Compiler output has no domain assumptions.
+- Division and log rules do not record denominator/nonzero or positive-domain assumptions.
+- Extrapolation ranges cross singularities or branch cuts.
+- Imaginary residues are ignored for real target laws.
 
 **Prevention:**
-- Follow the high-success sequence from `sources/FOR_DEMO.md`: Beer-Lambert or radioactive decay, Michaelis-Menten, logistic growth, Shockley diode, damped oscillator, normalized Planck.
-- Use dimensionless normalized inputs and outputs.
-- Separate "sanity demo", "reliable demo", and "flagship demo" tiers.
-- Allow warm starts or priors in difficult demos, but label them honestly.
-- Do not include raw SI Planck, chaotic systems, special functions, or piecewise empirical laws in v1.
+- Attach domain assumptions to compiled artifacts and verifier reports.
+- Define demo-specific safe domains and edge probes before running warm starts.
+- For division and log, include explicit singularity exclusions and boundary tests.
+- Keep real-output acceptance tied to imaginary-residue thresholds.
+- Avoid compiler identities requiring `log(0)` or signed infinities until those semantics are first-class in all evaluators.
 
-**Detection:** Each demo must run from a clean config with published seeds and produce a verification report, not just a plot.
+**Detection:** Add edge-case tests for zero, near-zero, negative real values where applicable, and denominator-near-zero points for rational demos.
 
-**Phase mapping:** Phase 4; demo feasibility should influence Phase 1 and Phase 2 benchmarks.
+**Phase mapping:** Phase 1 compiler contract; Phase 4 verification.
 
-**Confidence:** HIGH. Sources: `sources/FOR_DEMO.md`; paper p. 15.
+**Confidence:** HIGH. Sources: `sources/paper.pdf` pp. 10-16, current `semantics.py`, current `verify.py`.
 
-### Pitfall 10: Misrepresenting EML Completeness
+### Pitfall 9: Using Compiler Seeds as Evidence of Blind Discovery
 
-**What goes wrong:** The product claims to recover arbitrary equations or all mathematical functions because EML generates the paper's elementary basis.
+**What goes wrong:** Warm-start demos are presented as if the system discovered the formula from data without prior structural information.
 
-**Why it happens:** The phrase "all elementary functions" is easy to overread. The paper uses a concrete scientific-calculator basis and finite expressions built from it, with complex intermediates and a distinguished constant `1`. It does not cover arbitrary non-elementary, piecewise, stochastic, discrete-event, or high-noise laws.
+**Why it happens:** A compiler-assisted warm start begins from an ordinary source formula or near-correct EML tree. That is valuable, but it is not the same claim as random-initialized symbolic discovery.
 
-**Consequences:** Roadmap chooses impossible benchmarks, users submit invalid tasks, and failure cases look like bugs.
+**Consequences:** Demo messaging overclaims the system. The paper itself warns that blind recovery degrades sharply with depth; v1.1 should exploit warm starts honestly, not erase the distinction.
 
 **Warning signs:**
-- Requirements include Bessel, Airy, erf, elliptic functions, integrals, ODE solvers, chaotic systems, or arbitrary data mining in v1.
-- Dataset loaders accept unsupported targets without scope warnings.
-- Documentation says "universal symbolic regression" without qualifiers.
+- Reports omit whether the run used random initialization, compiled initialization, or perturbed compiled initialization.
+- Public copy says "recovered from data" without "warm-started from compiled formula" when applicable.
+- Blind and warm-start recovery rates are mixed in one table.
 
 **Prevention:**
-- State the supported class as compact elementary expressions in the paper's calculator basis, within a depth budget.
-- Add explicit unsupported-target diagnostics.
-- Include negative demos or tests that show graceful "not recovered" behavior.
-- Keep "fits arbitrary data" separate from "recovers exact elementary law".
+- Add a `recovery_mode` field to all run manifests: `blind`, `compiled_seed`, `perturbed_compiled_seed`, `catalog_verification`, or `compiled_only`.
+- Report blind and warm-start results separately.
+- For warm-start demos, state the prior explicitly: the system verified return-to-solution from a compiler-generated EML seed.
+- Keep "catalog showcase" separate from "trained recovery" and "warm-start recovery".
 
-**Detection:** Review docs, CLI messages, and result schemas for overclaiming before every release.
+**Detection:** CI should inspect demo JSON and fail if public `claim_status` lacks mode/provenance fields.
 
-**Phase mapping:** Phase 0 docs and result taxonomy; Phase 4 demo copy; Phase 5 benchmark selection.
+**Phase mapping:** Phase 3 manifests; Phase 4 demo reporting; Phase 5 documentation.
 
-**Confidence:** HIGH. Sources: paper pp. 1-2, 5, 12-16; `sources/PROJECT.md`; `sources/FOR_DEMO.md`.
+**Confidence:** HIGH. Sources: `sources/paper.pdf` p. 15, `sources/FOR_DEMO.md`, `.planning/PROJECT.md`.
+
+### Pitfall 10: Expanding Compiler Scope Faster Than Tests
+
+**What goes wrong:** The compiler accepts broad SymPy expressions, nested functions, floats, powers, trig, or special functions before the v1.1 subset is verified.
+
+**Why it happens:** SymPy makes it easy to traverse arbitrary expression trees. `sources/FOR_DEMO.md` includes attractive stretch formulas such as damped oscillator and Planck, which can pressure the compiler beyond the active v1.1 subset.
+
+**Consequences:** Unsupported expressions produce wrong or huge EML trees. Users see crashes or false confidence instead of clear unsupported-target diagnostics.
+
+**Warning signs:**
+- `compile_expr` has a generic fallback that tries to stringify or lambdify unsupported nodes.
+- `Pow`, trig, piecewise, special functions, or arbitrary floats are accepted without specific rules.
+- Unsupported Planck or damped oscillator cases fail deep in training rather than at compile time.
+
+**Prevention:**
+- Implement a whitelist compiler: unsupported SymPy node types must fail early with actionable reason codes.
+- Add explicit `unsupported_operator`, `unsupported_constant`, `domain_required`, and `depth_limit_exceeded` statuses.
+- Use normalized Planck as a stretch target only after the required subrules are present and depth-bounded.
+- Do not add trig or arbitrary powers opportunistically to satisfy one demo.
+
+**Detection:** Negative compiler tests should feed unsupported expressions and assert stable failure messages.
+
+**Phase mapping:** Phase 1 compiler; Phase 4 demo classification; Phase 5 docs.
+
+**Confidence:** HIGH. Sources: `.planning/PROJECT.md`, `sources/FOR_DEMO.md`, current `datasets.py`.
 
 ## Moderate Pitfalls
 
-### Pitfall 11: Reproducibility Erodes Under Randomness and Hardware Variation
+### Pitfall 11: Cleanup Masks Compiler Bugs
 
-**What goes wrong:** The same config has different recovery outcomes across runs, devices, or PyTorch versions.
-
-**Warning signs:**
-- CI intermittently fails recovery tests.
-- A checkpoint snaps differently on CPU and GPU.
-- Benchmark tables omit seed counts.
-
-**Prevention:**
-- Persist seeds, package versions, dtype, device, backend flags, git commit, dataset hash, and snap settings in every run artifact.
-- Use deterministic algorithms where practical, but do not promise bitwise reproducibility across all platforms.
-- Test recovery rates statistically across seed batches.
-- Run final verification on CPU high precision even if training used GPU.
-
-**Phase mapping:** Phase 1 run artifacts; Phase 2 benchmark harness; Phase 4 release verification.
-
-**Confidence:** HIGH. Sources: PyTorch reproducibility docs; PyTorch numerical accuracy docs.
-
-### Pitfall 12: Real-Valued Targets Hide Complex Failure
-
-**What goes wrong:** The loss only monitors real residuals, so the model produces formulas with non-negligible imaginary components that are discarded or rounded away.
+**What goes wrong:** A compiled EML AST is simplified into a readable expression that matches the source, but the original exact tree was wrong or was never independently verified.
 
 **Warning signs:**
-- The evaluator calls `.real` before computing loss without tracking imaginary magnitude.
-- Demos only plot the real part.
-- High-precision verification reports imaginary residue.
+- Reports show only the cleaned SymPy expression.
+- Cleanup runs before compiler identity verification.
+- A cleanup pass changes behavior but the original compiled tree is discarded.
 
-**Prevention:**
-- Compute and log both real residual and imaginary residue.
-- Add an imaginary penalty or acceptance threshold for real-valued target tasks.
-- Keep complex-valued internals explicit in result diagnostics.
-- Refuse to render a real formula if imaginary residue exceeds tolerance.
+**Prevention:** Keep the exact compiled AST canonical. Verify the compiled AST before cleanup, verify after cleanup, and record both tree sizes and both verification reports.
 
-**Phase mapping:** Phase 0 evaluator contract; Phase 1 tests; Phase 4 verification reports.
+**Phase mapping:** Phase 1 and Phase 4.
 
-**Confidence:** HIGH. Sources: paper pp. 5, 15-16; `sources/NORTH_STAR.md`.
+**Confidence:** HIGH. Sources: current `cleanup.py`, `sources/NORTH_STAR.md`.
 
-### Pitfall 13: Coefficients Are Smuggled Into the Grammar
+### Pitfall 12: Source Traceability Is Too Thin for Debugging
 
-**What goes wrong:** To fit demos with parameters such as `Vmax`, `Km`, `A`, `gamma`, `omega`, or `Is`, the implementation adds arbitrary continuous coefficients without defining how they snap, verify, or relate to the EML-only grammar.
+**What goes wrong:** When a compiled warm-start fails, the artifact lacks enough metadata to tell whether the problem is parsing, a compiler rule, embedding, perturbation, optimization, snapping, or verification.
 
 **Warning signs:**
-- Demo success depends on learned real constants not present in the exported AST.
-- Exact recovery is claimed while fitted coefficients are approximate floats.
-- Parameter fitting and structural discovery are mixed in one opaque loss.
+- Run JSON contains only final formula and loss.
+- Compiler rule sequence and embedding slot assignments are absent.
+- Seed, dtype, depth, perturbation scale, and warm-start strength are not recorded.
 
-**Prevention:**
-- For v1, prefer normalized or dimensionless demo forms with small known constants.
-- If coefficients are needed, make them a separate optional layer after symbolic scaffold discovery.
-- Report coefficient status explicitly: fixed, fitted approximate, snapped exact, or externally supplied.
-- Verify formulas with coefficients at higher precision and include coefficient uncertainty.
+**Prevention:** Use layered manifests: compiler manifest, embedding manifest, perturbation manifest, training manifest, snap manifest, verification report, and public claim summary.
 
-**Phase mapping:** Phase 4 demo design; Phase 5 semi-parametric extension.
+**Phase mapping:** Phase 1 through Phase 4; Phase 5 tests schema completeness.
 
-**Confidence:** MEDIUM-HIGH. Sources: `sources/FOR_DEMO.md`; `sources/NORTH_STAR.md`.
+**Confidence:** HIGH. Sources: current `optimize.py` manifest pattern, `.planning/PROJECT.md`.
 
-### Pitfall 14: Complete Trees Produce Bloated Correct Formulas
+### Pitfall 13: Demo Data Reuses the Candidate as the High-Precision Target
 
-**What goes wrong:** The engine recovers a functionally correct but unnecessarily large EML tree, and users see unreadable output.
+**What goes wrong:** A demo target and verifier oracle come from the same candidate object, so compiler errors can pass if both sides share the same bug.
 
 **Warning signs:**
-- Post-snap tree size is close to the full master tree size.
-- Many subtrees evaluate to constants or identities.
-- The simplified expression is much shorter than the verified EML AST, but the transformation path is not recorded.
+- `target_mpmath` is derived from the compiled candidate being evaluated.
+- The ordinary source formula is not evaluated independently after compilation.
+- Dataset generation changes when the candidate changes.
 
-**Prevention:**
-- Track active node count and expected tree size during training.
-- Add size regularization after semantics are stable.
-- Prune dead branches before top-k snap search.
-- Run bounded local cleanup and compare against smaller-depth candidates.
-- Report both pre-cleanup and post-cleanup sizes.
+**Prevention:** For compiler demos, keep the ordinary source expression as the independent oracle and compare compiled/trained exact EML candidates against it. Do not replace the target oracle with the compiled tree.
 
-**Phase mapping:** Phase 2 size pressure; Phase 3 cleanup; Phase 4 final reporting.
+**Phase mapping:** Phase 1 compiler tests; Phase 4 demo reports.
 
-**Confidence:** HIGH. Sources: paper Table 4 and pp. 12-15; `sources/NORTH_STAR.md`.
+**Confidence:** HIGH. Sources: current `datasets.py`, current `verify.py`.
 
-### Pitfall 15: Acceleration Arrives Before Correctness
+### Pitfall 14: Reproducibility Regresses Under Warm Starts
 
-**What goes wrong:** Rust or custom CUDA work begins before the Python reference semantics, snapping, and verification are locked down.
+**What goes wrong:** Warm-start runs look deterministic in demos but cannot be reproduced because the perturbation source, seed, or embedding parameters are omitted.
 
 **Warning signs:**
-- There are two evaluators with no shared golden tests.
-- Performance tasks block paper reproduction.
-- Optimized kernels implement training clamps but not verification semantics.
+- Perturbation noise uses global RNG state.
+- Seed fields cover optimizer restarts but not perturbation.
+- The same JSON config cannot reproduce the same pre-training snap.
 
-**Prevention:**
-- Build a slow, clear Python reference first.
-- Treat any Rust or CUDA evaluator as a derived backend that must pass the exact same golden corpus.
-- Add acceleration only after profiling identifies a specific bottleneck.
-- Prioritize Rust for local discrete cleanup and verification before custom CUDA training kernels.
+**Prevention:** Separate seeds for dataset sampling, embedding perturbation, optimizer restarts, and any top-k snap search. Store package versions, dtype, device, tree depth, compiler version, and source expression.
 
-**Phase mapping:** Phase 5 only, except small profiling hooks. Phase 0-4 should not depend on acceleration.
+**Phase mapping:** Phase 3 and Phase 4.
 
-**Confidence:** HIGH. Sources: `sources/PROJECT.md`; `sources/NORTH_STAR.md`.
+**Confidence:** HIGH. Sources: current `optimize.py`, current CLI seed handling.
 
-### Pitfall 16: Data Generation Leaks the Answer
+### Pitfall 15: CLI Output Hides the Trained Candidate Status
 
-**What goes wrong:** Synthetic targets are generated using the same EML evaluator or same snapped tree representation being tested, so tests validate shared bugs rather than recovery.
+**What goes wrong:** The CLI prints the catalog candidate status while the trained EML candidate is nested in JSON, causing users to misread the result.
 
 **Warning signs:**
-- Target data and candidate evaluation call the same code path.
-- No closed-form ordinary-expression generator exists for demos.
-- Bugs in EML semantics do not break any benchmark.
+- `eml-sr demo michaelis_menten --train-eml` prints only the catalog `claim_status`.
+- A trained verification failure is present in JSON but absent from stdout.
+- The output path report does not summarize recovery mode.
 
-**Prevention:**
-- Generate benchmark targets from independent ordinary formulas where possible.
-- For paper-specific EML fixtures, also include independently evaluated mpmath or SymPy expected values.
-- Store dataset provenance and generator expression with each fixture.
+**Prevention:** For v1.1 demo commands, print a compact stage summary: catalog status, compiled seed status, warm-start training status, final verifier status, and public claim.
 
-**Phase mapping:** Phase 1 paper reproduction; Phase 4 demos.
+**Phase mapping:** Phase 4; Phase 5 CLI tests.
 
-**Confidence:** MEDIUM-HIGH. Sources: paper verification methodology pp. 7, 14-15; `sources/NORTH_STAR.md`.
+**Confidence:** HIGH. Sources: current `cli.py`.
+
+### Pitfall 16: Performance Problems Are Misdiagnosed as Optimization Failure
+
+**What goes wrong:** Deep compiled warm starts are slow or memory-heavy, and the result is interpreted as a learning failure rather than a tree-size problem.
+
+**Warning signs:**
+- Runtime scales sharply with compiled depth.
+- Most time is spent evaluating inactive or bloated branches.
+- A smaller equivalent identity would fit within the same training budget.
+
+**Prevention:** Report compile depth and node count before training; reject or defer oversized trees; profile only after correctness gates pass; do not add Rust/CUDA just to support an unbounded compiler expansion.
+
+**Phase mapping:** Phase 1 depth gate; Phase 2 embedding; later scaling only if needed.
+
+**Confidence:** MEDIUM-HIGH. Sources: `sources/paper.pdf` Table 4, `sources/NORTH_STAR.md`.
 
 ## Minor Pitfalls
 
-### Pitfall 17: Result Files Are Not Diffable or Deterministic
+### Pitfall 17: AST Schema Versioning Does Not Distinguish Compiled Trees
 
-**What goes wrong:** JSON exports change key ordering, omit dtype/backend metadata, or serialize floats inconsistently.
+**What goes wrong:** Hand-authored exact ASTs, compiler outputs, and trained snapped ASTs all serialize identically, losing provenance.
 
-**Prevention:** Define a deterministic AST schema with stable node IDs, sorted keys, explicit dtype/backend metadata, and separate fields for exact symbols versus approximate numeric diagnostics.
+**Prevention:** Keep one AST node schema if desired, but add provenance metadata: `source: hand_identity | compiler | trained_snap`, compiler version, source expression, rule sequence, and recovery mode.
 
-**Phase mapping:** Phase 3.
+**Phase mapping:** Phase 1 and Phase 4.
 
-**Confidence:** MEDIUM. Source: `sources/PROJECT.md` requirement for deterministic JSON.
+**Confidence:** MEDIUM. Sources: current `expression.py`.
 
-### Pitfall 18: CLI Exit Codes Do Not Distinguish Failure Modes
+### Pitfall 18: Equality Checks Depend on String Forms
 
-**What goes wrong:** Optimization failure, snap ambiguity, verification failure, unsupported target, and internal numeric error all look like generic failure.
+**What goes wrong:** Tests compare `str(sympy_expr)` or JSON text rather than structural ASTs and numeric equivalence.
 
-**Prevention:** Define result statuses early: `soft_fit_only`, `snap_failed`, `verification_failed`, `recovered`, `unsupported_target`, `numeric_error`.
+**Prevention:** Use structural AST comparison for embedding round-trips and numeric verification for mathematical equivalence. Reserve string checks for display smoke tests only.
 
-**Phase mapping:** Phase 1 initial statuses; Phase 4 user-facing stability.
+**Phase mapping:** Phase 2 and Phase 5.
 
-**Confidence:** MEDIUM. Source: roadmap implications from `sources/PROJECT.md` and `sources/NORTH_STAR.md`.
+**Confidence:** MEDIUM-HIGH. Sources: current tests and `cleanup.py`.
 
-### Pitfall 19: Test Suite Only Checks Happy Paths
+### Pitfall 19: Planck Stretch Work Pulls Scope Away From Beer-Lambert and Michaelis-Menten
 
-**What goes wrong:** The engine passes simple recovery tests but lacks tests for branch cuts, NaNs, snap ties, failed verification, and unsupported targets.
+**What goes wrong:** Normalized Planck becomes the focus before simpler promoted demos are reliable.
 
-**Prevention:** Add negative tests from the start: invalid domains, high-depth impossible demo, ambiguous gates, numerical explosion, simplifier-invalid rewrite, and "not recovered" reporting.
+**Prevention:** Phase 4 should require Beer-Lambert and Michaelis-Menten promotion gates first. Planck can report `compiled_depth_exceeded`, `warm_start_failed`, or `verified_showcase` honestly.
 
-**Phase mapping:** All phases; especially Phase 0 and Phase 4.
+**Phase mapping:** Phase 4.
 
-**Confidence:** HIGH. Sources: paper p. 15; `sources/NORTH_STAR.md`.
+**Confidence:** HIGH. Sources: `.planning/PROJECT.md`, `sources/FOR_DEMO.md`.
 
-### Pitfall 20: Benchmark Metrics Optimize the Wrong Thing
+### Pitfall 20: Tests Only Cover Successful Compilation
 
-**What goes wrong:** The project optimizes only MSE or wall time and loses sight of exact symbolic recovery.
+**What goes wrong:** Unsupported expressions, branch-sensitive failures, depth overflow, snap ambiguity, and demo overclaiming are untested.
 
-**Prevention:** Track exact recovery rate, post-snap verification pass rate, tree size, cleanup delta, seed sensitivity, anomaly counts, extrapolation error, and search cost.
+**Prevention:** Add negative tests for unsupported SymPy nodes, arbitrary floats under pure-EML policy, depth-limit exceeded, invalid embedding depth, perturbed snap failure, and catalog-only demos.
 
-**Phase mapping:** Phase 2 benchmark harness; Phase 4 demo reports; Phase 5 scaling.
+**Phase mapping:** Phase 5, but negative tests should appear alongside each feature.
 
-**Confidence:** HIGH. Sources: `sources/NORTH_STAR.md`; paper pp. 14-15.
+**Confidence:** HIGH. Sources: current test suite shape and v1.1 requirements.
 
 ## Phase-Specific Warnings
 
-| Phase | Likely pitfall | Mitigation |
-|-------|----------------|------------|
-| Phase 0 | Semantics drift gets baked into every later component. | Build canonical exact and training evaluators first; add branch and high-precision tests before optimizer work. |
-| Phase 1 | Master tree is incomplete or depth conventions are wrong. | Reproduce paper formulas and parameter counts with direct hard gate assignments before training. |
-| Phase 2 | Search work becomes restart brute force. | Require recovery-rate dashboards, curriculum, warm starts, anomaly logs, and snap-readiness metrics. |
-| Phase 3 | Cleanup changes formula semantics. | Keep exact EML AST canonical; use targeted rewrites only; verify after every cleanup pass. |
-| Phase 4 | Demos overclaim exact recovery. | Use normalized demo sequence; require post-snap, held-out, extrapolation, and mpmath verification reports. |
-| Phase 5 | Scaling creates a second incompatible engine. | Treat Rust/GPU/multivariate paths as derived implementations validated against Phase 0-4 golden corpora. |
+| Phase topic | Likely pitfall | Mitigation |
+|-------------|----------------|------------|
+| Compiler subset | Accepting more SymPy than the project can verify. | Whitelist nodes; fail unsupported forms early with reason codes. |
+| Constants | Treating arbitrary floats as exact EML constants. | Choose pure, supplied, or rational constant policy and encode it in artifacts. |
+| Rule corpus | Verifying rules against shared implementation bugs. | Compare compiled ASTs to independent ordinary-expression NumPy/mpmath evaluation. |
+| Depth budget | Producing exact but unusable trees. | Report depth/node count and gate demo promotion on explicit ceilings. |
+| Embedding | Warm-start path changes the compiled AST. | Immediate embed->snap round-trip tests before perturbation or training. |
+| Perturbation | Calling low loss a return-to-solution. | Require post-snap verifier pass and same/equivalent AST classification. |
+| Demo reporting | Catalog verification gets promoted to recovery. | Separate catalog, compiled seed, warm-start, trained snap, and public claim statuses. |
+| Documentation | Warm starts look like blind discovery. | Add `recovery_mode` to manifests and public wording. |
 
 ## Implementation Gates
 
-The roadmap should not advance past these gates without explicit evidence.
-
 | Gate | Required evidence | Blocks |
 |------|-------------------|--------|
-| Semantics gate | Exact EML evaluator matches mpmath/SymPy fixtures on branch-sensitive tests. | Any training milestone. |
-| Completeness gate | Depth-2 and depth-3 univariate master trees reach known paper formulas by direct assignment. | Optimization claims. |
-| Recovery gate | A result can be labeled `recovered` only after snapping, exact AST export, and verification pass. | Demos and release notes. |
-| Demo gate | Demo has clean config, published seed batch, verification report, and no hidden manual constants. | Public showcase. |
-| Scaling gate | Accelerated or multivariate backend passes the golden corpus from the reference implementation. | Rust/CUDA/multivariate roadmap. |
+| Compiler identity gate | Supported subset rules pass independent NumPy/mpmath checks with recorded assumptions. | Warm-start embedding. |
+| Constant policy gate | Non-`1` constants are either compiled, supplied, or rejected with explicit metadata. | Beer-Lambert and Michaelis-Menten promotion. |
+| Depth gate | Compiled demo trees fit configured depth and node-count ceilings. | Training demos. |
+| Embedding gate | Compiled AST embeds into `SoftEMLTree` and immediate snap returns the same/equivalent AST. | Perturbation experiments. |
+| Perturbation gate | Recovery rates are reported across seed batches, strengths, and noise scales using post-snap verification. | Warm-start claims. |
+| Demo claim gate | Public report distinguishes catalog showcase, compiled seed, warm-start recovery, trained exact recovery, and failure. | Release notes and public demos. |
 
 ## Highest-Risk Roadmap Choices to Avoid
 
 | Bad choice | Why it is dangerous | Better choice |
 |------------|---------------------|---------------|
-| Start with deep blind recovery. | Paper reports rapid collapse beyond shallow depths from random initialization. | Start with shallow paper reproduction and curriculum. |
-| Merge training and verification evaluators. | Stabilizers can change the mathematical function. | Keep training clamps visible and absent from exact verification. |
-| Use generic simplification as proof. | Complex branch identities are not globally safe, and SymPy warns generic simplification is heuristic. | Use targeted rewrites plus high-precision verification. |
-| Ship demos before snap/export/verify. | Low MSE is not symbolic recovery. | Require exact AST and verification report for every showcase result. |
-| Add arbitrary coefficients ad hoc. | It changes the grammar and weakens exact-recovery claims. | Normalize demos first; add a documented coefficient layer later. |
+| Compile arbitrary SymPy expressions immediately. | Unsupported nodes and branch assumptions will fail late and ambiguously. | Start with a narrow whitelist and negative tests. |
+| Insert float constants into exact EML ASTs silently. | It misrepresents the grammar and weakens recovery claims. | Declare pure/supplied/rational constant policy. |
+| Promote catalog demos based on direct verification. | It bypasses the existing verifier-owned exact recovery contract. | Promote only after compile, embed/warm-start, train, snap, and verify. |
+| Treat perturbation success as low training loss. | It does not prove exact return-to-solution. | Require post-snap verification and AST/equivalence classification. |
+| Chase Planck before simpler demos pass. | The stretch target can consume roadmap time without validating the core v1.1 pipeline. | Gate Planck behind Beer-Lambert and Michaelis-Menten success. |
 
 ## Sources
 
-- Local: `sources/paper.pdf`, Andrzej Odrzywolek, "All elementary functions from a single operator", arXiv:2603.21852v2, 2026.
-- Local: `sources/NORTH_STAR.md`, "Hybrid Symbolic Regression over Complete EML Trees".
-- Local: `sources/FOR_DEMO.md`, demo selection and sequencing guidance.
-- Local: `.planning/PROJECT.md`, project scope and constraints.
-- PyTorch complex numbers docs: https://docs.pytorch.org/docs/stable/complex_numbers.html
-- PyTorch reproducibility docs: https://docs.pytorch.org/docs/stable/notes/randomness.html
-- PyTorch numerical accuracy docs: https://docs.pytorch.org/docs/stable/notes/numerical_accuracy.html
-- PyTorch `gumbel_softmax` docs: https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.gumbel_softmax.html
-- SymPy simplify docs: https://docs.sympy.org/latest/modules/simplify/simplify.html
-- mpmath docs: https://mpmath.org/doc/current/
+- Local: `.planning/PROJECT.md` - v1.1 goal, active requirements, scope constraints, demo promotion targets.
+- Local: `.planning/STATE.md` - current milestone state and completed v1 contract.
+- Local: `src/eml_symbolic_regression/expression.py` - exact AST, `Const`, `Eml`, `SympyCandidate`, JSON metadata, candidate kinds.
+- Local: `src/eml_symbolic_regression/master_tree.py` - current complete soft tree, slot choices, manual `force_exp` / `force_log`, snapping decisions.
+- Local: `src/eml_symbolic_regression/optimize.py` - candidate generator, training manifest, post-snap loss but verifier separation.
+- Local: `src/eml_symbolic_regression/verify.py` - verifier-owned statuses and exact-EML recovery contract.
+- Local: `src/eml_symbolic_regression/datasets.py` and `src/eml_symbolic_regression/cli.py` - current catalog demos and CLI report shape.
+- Local: `tests/*.py` - current tests for semantics, master tree, optimizer, cleanup, verifier, demos, and Planck showcase guard.
+- Local: `sources/paper.pdf` - EML semantics, compiler caveats, depth/complexity table, warm-start behavior, depth limits.
+- Local: `sources/NORTH_STAR.md` - hybrid pipeline, exact recovery definition, verifier requirement, numerical and symbolic pitfalls.
+- Local: `sources/FOR_DEMO.md` - demo sequencing, normalized/dimensionless target guidance, Planck caution.

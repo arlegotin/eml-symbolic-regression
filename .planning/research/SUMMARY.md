@@ -1,268 +1,289 @@
 # Project Research Summary
 
 **Project:** EML Symbolic Regression
-**Domain:** Hybrid symbolic-regression engine over complete depth-bounded EML trees
+**Domain:** Compiler-driven warm starts for a hybrid EML symbolic-regression engine
 **Researched:** 2026-04-15
-**Confidence:** HIGH for Python/PyTorch MVP direction; MEDIUM for later scaling and acceleration details
+**Confidence:** HIGH for stack and architecture direction; MEDIUM for arithmetic compiler depth and Planck recovery feasibility
 
 ## Executive Summary
 
-EML Symbolic Regression is a research-grade Python package and CLI for recovering human-readable elementary formulas from synthetic scientific data using the paper's single-operator representation: `eml(x, y) = exp(x) - ln(y)`. Experts should build this as a staged hybrid search system, not a generic symbolic-regression operator menu and not a pure neural curve fitter. The core loop is: generate normalized data, build a complete depth-bounded EML master tree, optimize soft categorical choices in PyTorch `complex128`, snap the result to an exact EML AST, clean it locally, export readable expressions, and verify with held-out, extrapolation, and high-precision checks.
+v1.1 should turn the completed v1 verifier, exact AST, soft master tree, optimizer, cleanup, and demo harness into a compiler-driven warm-start workflow. The product is still a research-grade Python package and CLI, but the new value is narrower and more precise: given a supported ordinary SymPy expression, compile it into an exact EML AST, embed that tree into a compatible trainable `SoftEMLTree`, perturb the logits, train back toward a snapped exact tree, and let the existing verifier decide whether the formula is recovered.
 
-The recommended v1 is deliberately narrow: univariate shallow-to-moderate depth recovery, deterministic artifacts, verifier-gated demos, and a reproducible CLI. Python, PyTorch, NumPy, SymPy, mpmath, pytest, standard-library JSON/logging, and `argparse` are enough. Rust, custom CUDA, GUI work, arbitrary coefficients, multivariate physics, and noisy real-world discovery should wait until the reference semantics, snapping, cleanup, and verification contract are stable.
+The recommended approach is incremental and verifier-gated. Add a project-owned compiler for a small SymPy subset, a finite literal constant catalog for demos that need numeric constants, an AST-to-logit embedding layer, deterministic perturbation metadata, and explicit CLI/report modes for compile-only and warm-start recovery. Do not add a parser generator, PySR, JAX, Rust, CUDA, theorem proving, learned coefficients, or broad SymPy coverage in v1.1.
 
-The biggest risks are semantic drift between training and verification, mistaking soft fit for symbolic recovery, blind escalation to deep search, numerical explosion from nested `exp`/complex `log`, and demo overreach. The roadmap should mitigate these by building canonical semantics before training, forcing every claim through exact AST export and verification, reporting seed sensitivity and anomaly counts, using curriculum/warm starts for harder targets, and following the demo ladder from simple laws to normalized Planck only after lower rungs are reliable.
+The main risk is contract drift: compiler output, catalog formulas, or warm-start seeds can look like recovery without proving trained exact return-to-solution. Mitigate that by keeping `expression.Expr` as the only exact tree type, preserving `verify.py` as the sole owner of `recovered`, validating compiled ASTs against independent ordinary-expression evaluations before training, requiring embed->snap round trips, and separating catalog, compiled, warm-start, blind, failed, and stretch claims in reports.
 
 ## Key Findings
 
 ### Recommended Stack
 
-Use a Python-first implementation with PyTorch `complex128` for differentiable complete EML trees, NumPy for deterministic data/reference arrays, SymPy for exact expression rendering and targeted rewrites, mpmath for high-precision verification, and pytest for regression coverage. Keep the MVP package and CLI simple: `pyproject.toml`, `argparse`, standard `logging`, deterministic JSON/JSONL artifacts, and no new runtime dependencies beyond the existing scientific stack unless implementation evidence demands them.
+No new runtime dependencies are needed. The current Python/PyTorch/SymPy/NumPy/mpmath/pytest stack already covers v1.1: SymPy supplies the ordinary-expression front end, the existing `expression.py` AST remains the exact EML target, PyTorch initializes and perturbs logits, and the existing verifier decides acceptance.
 
-Do not start with JAX, Julia/PySR, Mathematica, Rust, custom CUDA, theorem proving, or a web UI. Those either conflict with the project source documents or add surface area before the EML semantics and recovery contract are proven.
+The v1.1 additions should be modules and configuration objects, not new platforms: `compiler.py`, compiler report schemas, warm-start embedding helpers, logit perturbation config, optimizer initialization hooks or a wrapper, and demo recovery metadata.
 
-**Core technologies:**
-- Python 3.11: package, CLI, orchestration, and fast research iteration.
-- PyTorch 2.10 with `torch.complex128`: trainable complete master tree, categorical logits, Adam/AdamW optimization, restarts, annealing, and diagnostics.
-- NumPy 1.26: deterministic synthetic data generation, sampling, and CPU reference checks.
-- SymPy 1.14: exact AST export to human-readable formulas and targeted cleanup passes.
-- mpmath 1.3: high-precision real/complex verification for snapped formulas.
-- pytest 7.4: semantics, tree, snapping, verifier, cleanup, and demo regression tests.
-- Standard-library `dataclasses`, `enum`, `json`, `argparse`, and `logging`: exact ASTs, deterministic artifacts, CLI, and reproducible run records.
+**Core technologies and additions:**
+- Python 3.11: package, CLI, dataclasses, deterministic JSON, and report manifests.
+- SymPy 1.14: accepted input type for supported ordinary expressions; traverse `Expr.func` and `Expr.args`, not printed strings.
+- PyTorch 2.10 with `complex128`: existing `SoftEMLTree`, logits, warm-start biasing, seeded perturbation, and normal training loop.
+- NumPy and mpmath: independent compile-time validation and verifier checks against the ordinary source expression.
+- pytest: compiler rule tests, negative tests, embedding round trips, perturbation determinism, and demo promotion gates.
+- Standard library `argparse`, `logging`, `json`, and dataclasses: CLI modes and layered manifests without extra dependencies.
 
-**Version and stack constraints:**
-- Declare `requires-python = ">=3.11,<3.13"` when packaging begins.
-- Default to `torch.complex128`; treat `complex64` as a later optional speed mode.
-- Use PyTorch eager mode first because anomaly inspection and branch-sensitive debugging matter more than compilation speed.
-- Use standard PyTorch CUDA only if available; custom CUDA and Rust/PyO3 belong after profiling and golden corpus stabilization.
+**Stack additions, not dependencies:**
+- `compiler.py`: deterministic SymPy-subset compiler with rule traces and unsupported-node diagnostics.
+- `CompileResult` / `CompilerConfig`: source expression, normalized form, enabled rules, depth, node count, constants, domain assumptions, and warnings.
+- Constant catalog support in `SoftEMLTree`: default stays `(1.0,)`; warm-start demos can include source literals such as `0.8`, `2.0`, and `0.5`.
+- `embed_expr_into_tree()` or equivalent helper: maps exact AST paths to slot logits using `set_slot()` semantics.
+- `PerturbationConfig` and embedding metadata: seed, noise scale, strength, active slot changes, snap margins, and pre/post perturbation snaps.
+- Demo recovery plans: separate catalog showcase, compile-only, warm-start, blind baseline, and stretch modes.
 
-### Expected Features
+### Feature Scope
 
-The MVP must prove the complete EML recovery loop, not just produce attractive plots. The credible v1 surface is a package and CLI that can train, snap, export, clean, verify, and report recovery attempts on normalized synthetic demos.
+v1.1 should promise warm-started recovery from a compiler-generated scaffold, not blind discovery of arbitrary deep formulas. The user-facing workflow is: select a supported demo or SymPy expression, compile it, validate the compiled AST, embed it, perturb logits, train, snap, clean up, verify, and report the public claim.
 
 **Must have (table stakes):**
-- Canonical EML semantics: explicit `eml(x, y) = exp(x) - log(y)`, complex principal-branch policy, branch/Inf/NaN behavior, and separate training versus verification modes.
-- Complete depth-bounded master trees: univariate depth-2 and depth-3 first, with legal categorical slot choices and tests proving paper formulas are reachable by hard assignment.
-- Differentiable categorical gates: logits and softmax probabilities during training, exact one-hot choices after hardening.
-- Complex128 PyTorch training path: Adam/AdamW, multiple restarts, temperature or entropy scheduling, size/stability penalties, and deterministic seeds.
-- Stabilized training evaluator: training-only clamps and anomaly counters for NaN, Inf, overflow, branch issues, clamp counts, magnitude, and imaginary residue.
-- Hardening and exact snapping: argmax/top-k snap logic, margin reporting, dead-branch pruning, post-snap loss checks, and exact EML AST output.
-- Deterministic serialization: exact EML JSON, run manifests, verification reports, and reproducibility metadata.
-- SymPy export: readable ordinary-expression rendering with targeted rewrites, not generic simplification as proof.
-- Local cleanup: bounded pruning and subtree rewrites, always verifier-gated.
-- Verification contract: no candidate is `recovered` until it passes post-snap train, held-out, extrapolation, and high-precision mpmath checks.
-- Synthetic dataset utilities: normalized/domain-aware sampling, train/held-out/extrapolation splits, low-noise options, and singularity avoidance.
-- Reproducible CLI and demo suite: canned examples from `sources/FOR_DEMO.md`, report artifacts, and tests.
+- Defined compiler subset with fail-closed unsupported reasons for unsupported functions, arbitrary powers, trig, piecewise, and special functions.
+- Explicit constant policy for numeric literals used by demos.
+- Compilation trace with rule names, constants, variables, domain assumptions, depth, node count, and validation error.
+- Compile-time validation against independent ordinary-expression evaluation before warm-start training.
+- Compatible terminal bank and depth diagnostics before embedding.
+- AST-to-logit embedding with immediate high-strength embed->snap round-trip validation.
+- Configurable warm-start strength and deterministic perturbation.
+- Warm-start training mode that reuses the existing optimizer but records initialization provenance.
+- Verifier-owned promotion: no demo becomes `recovered` from compile-only success or training loss.
+- CLI-visible compile-only and warm-start modes with JSON reports.
+- Regression tests for accepted rules, negative cases, depth failures, constant-bank failures, embedding, perturbation, and claim taxonomy.
 
-**Should have (differentiators):**
-- Hybrid continuous-to-discrete pipeline with clear status taxonomy: `soft_fit_only`, `snap_failed`, `verification_failed`, `recovered`, `unsupported_target`, `numeric_error`.
-- Warm-start and curriculum workflows: embed verified shallow ASTs into deeper trees and unfreeze capacity gradually.
-- Recovery diagnostics report: training loss, post-snap loss, gate entropy, snap margins, active tree size, cleanup delta, extrapolation error, anomaly counts, seed sensitivity, and verifier status.
-- Formula progression demos: simple exact laws, mechanistic rational laws, exponential device law, oscillator, and normalized Planck as a later flagship.
-- Small multivariate support and coefficient-fitting layer only after univariate recovery is routine.
+**Differentiators:**
+- Compiler-to-trainer bridge that demonstrates return-to-solution from near-correct EML trees.
+- Evidence-rich warm-start reports with slot changes, margins, anomalies, losses, cleanup, and verifier results.
+- Fixed-literal constant bank that makes Beer-Lambert and Michaelis-Menten practical while staying honest about provenance.
+- Demo promotion by evidence rather than catalog verification.
 
-**Defer (v2+):**
-- Full blind recovery of arbitrary depth-6 formulas.
-- High-noise real-world datasets without priors.
-- Raw SI Planck law, singular multivariate laws, chaotic systems, special functions, piecewise laws, and stiff ODE closed forms.
-- GUI/web frontend, distributed search, custom CUDA kernels, Rust core, theorem-prover equivalence, and generic operator-menu symbolic regression.
-- Ad hoc arbitrary learned coefficients inside the EML grammar.
+**Defer:**
+- Full SymPy-to-EML compiler.
+- Pure `{1}` synthesis of arbitrary numeric constants.
+- Learned coefficients or parameter fitting.
+- General multivariate compiler UX.
+- Trig/oscillator trained recovery.
+- Guaranteed normalized Planck recovery.
+- Shortest EML superoptimization, Rust, CUDA, GUI work, theorem proving, and generic symbolic-regression engines.
+
+### Constant Policy
+
+v1.1 should use a fixed literal constant policy for promoted scientific demos. Beer-Lambert needs `0.8`; Michaelis-Menten needs `2.0` and `0.5`. The exact AST already supports arbitrary `Const(value)`, but the soft master tree currently exposes only `const:1`, so warm-start compatibility requires a finite constant catalog.
+
+Recommended policy:
+- Keep default master-tree constants as `(1.0,)` so v1 behavior and paper parameter-count checks remain stable.
+- Let compiler-driven demo runs include a deterministic literal catalog derived from the source expression, for example `(1.0, -1.0, 0.5, 0.8, 2.0)`.
+- Serialize constant provenance explicitly, with fields such as `constant_policy: "literal_constants"`, `constant_basis: ["1", "literal_catalog"]`, `compiled_constants`, and `supplied_constants`.
+- Do not claim literal-constant demos are pure `{1, eml}` basis recovery.
+- Do not add learned coefficients in v1.1.
+- Defer pure `1`-basis constant synthesis or rational-expansion research until a later milestone.
+
+### Demo Promotion Criteria
+
+Catalog verification, compiler success, and warm-start recovery are different claims. Reports must make that distinction visible.
+
+A demo may be promoted to trained warm-start EML recovery only when all of these pass:
+1. Source expression belongs to the supported compiler subset.
+2. Compiler emits an exact `Expr` with trace metadata and acceptable depth/node count.
+3. Compiled AST validates numerically against the independent ordinary source expression.
+4. The soft tree has compatible variables, depth, and constant catalog.
+5. High-strength embedding snaps immediately back to the compiled AST before perturbation.
+6. Seeded perturbation and training run through the normal optimizer.
+7. Final snap produces an exact AST.
+8. Final exact AST passes train, held-out, extrapolation, and mpmath verification.
+9. The public report derives `claim_status` from the final trained exact verification, not from the catalog or compiled seed.
+
+Promotion targets:
+- `exp` and `log`: keep as paper smoke tests and embedding fixtures.
+- `beer_lambert`: first v1.1 promotion target; expected HIGH confidence with literal constants plus negation/multiplication/exp rules.
+- `michaelis_menten`: second promotion target; expected MEDIUM confidence because addition, multiplication, division, positive-domain handling, and depth gates are required.
+- `planck`: stretch reporting only; compile/attempt/failure evidence is useful, but do not gate v1.1 on trained recovery.
+- `damped_oscillator`, trig-heavy, and special-function demos: defer.
 
 ### Architecture Approach
 
-Build a one-way staged pipeline with explicit boundaries: demo/config -> sampler/normalizer -> master-tree spec -> differentiable PyTorch model -> optimizer/restarts -> hardener/snapper -> exact EML AST -> local cleanup/SymPy export -> verifier -> formula artifacts and CLI reports. The central architectural rule is that training may use stabilized numerical semantics, but verification must use canonical EML semantics with no hidden clamps or epsilons.
+Extend the existing one-way pipeline rather than creating a parallel recovery path. The new compiler should produce ordinary `expression.Expr` trees, and warm-start training should feed the same optimizer, snapper, cleanup, and verifier contracts already established in v1.
 
 **Major components:**
-1. EML semantics kernel: canonical and training-mode evaluators, complex branch policy, non-finite handling, and anomaly counters.
-2. Exact EML AST: immutable `Const(1)`, `Var(name)`, and `Eml(left, right)` tree representation with deterministic JSON.
-3. Dataset and sampler layer: normalized synthetic train, held-out, extrapolation, and edge-case point sets.
-4. Master-tree spec: complete depth-bounded scaffold and legal slot choices independent of PyTorch tensors.
-5. Differentiable EML model: PyTorch logits, softmax/temperature behavior, batched `complex128` forward pass, and node diagnostics.
-6. Optimization engine: restarts, schedules, fit/entropy/size/stability losses, early stopping, checkpoints, and run manifests.
-7. Hardener/snapper: normalized categorical probabilities to deterministic exact AST, including dead-branch pruning and margin reporting.
-8. Serialization layer: separate schemas for ASTs, checkpoints, run manifests, and verification reports.
-9. Local cleanup and symbolic export: bounded AST rewrites, targeted SymPy rendering, and size reduction under verifier control.
-10. Verifier: train, held-out, extrapolation, edge, backend, and high-precision checks; only this component can label `recovered`.
-11. CLI/demo orchestration: reproducible commands, configs, reports, plots, and demo artifacts.
+1. `compiler.py` - compiles a whitelisted SymPy subset into exact `Expr` trees and emits structured `CompileResult` metadata.
+2. Compiler rule library - verified identities for constants, variables, `exp`, `log`, and arithmetic rules as they are proven.
+3. Constant catalog extension - lets `SoftEMLTree` expose finite source literals while preserving the default `const:1` behavior.
+4. AST embedding helper - maps compiled AST structure to `SoftEMLTree` slot paths and validates embed->snap equivalence.
+5. Warm-start wrapper or initializer - initializes logits from compiled ASTs, applies deterministic perturbation, and runs existing training.
+6. Demo recovery plan - declares catalog, compile, warm-start, blind baseline, and stretch modes per demo.
+7. CLI/report integration - separates reference verification, compiled seed verification, warm-start training manifest, final verification, and public claim.
+8. Test suite expansion - locks compiler rules, negative cases, constants, depth gates, embedding, perturbation, and demo promotion semantics.
+
+**Recommended build order:**
+1. Compiler scaffolding, direct rules, metadata, and compile-time validation.
+2. Constant catalog and AST embedding with snap round-trip tests.
+3. Arithmetic compiler subset and depth/node-count gates.
+4. Perturbed warm-start training wrapper and manifests.
+5. Demo promotion/reporting for Beer-Lambert, then Michaelis-Menten.
+6. Planck stretch report and documentation of unsupported/failure modes.
 
 ### Critical Pitfalls
 
-1. **Semantics drift between training and verification** — build canonical semantics first, make evaluator mode explicit, ban hidden verification clamps, and cross-check snapped ASTs with mpmath and other backends.
-2. **Calling soft fit symbolic recovery** — keep soft fit, snap readiness, post-snap loss, and verified recovery as separate statuses; never print a recovered formula before exact AST verification.
-3. **Blind depth escalation** — start with depth-2/depth-3 paper-like targets, measure recovery distributions across seeds, and use curriculum/warm starts before deeper searches.
-4. **Numerical explosion from nested `exp` and complex `log`** — default to `complex128`, normalize data, clamp only in training mode, log per-node anomalies, and fail fast on non-finite verification.
-5. **Incorrect master-tree construction** — validate parameter counts, depth conventions, legal slot choices, and known paper formulas by direct hard gate assignment before optimization.
-6. **Underspecified snapping** — centralize hardening, require active-gate margins, handle ties deterministically, store snap decisions, and evaluate top-k alternatives when ambiguous.
-7. **Weak verification data and false positives** — use independent train/held-out/extrapolation/high-precision points, include boundary probes, compare against smaller candidates, and require verifier reports for every `recovered` result.
-8. **Unchecked symbolic simplification** — keep exact EML AST as source of truth, use targeted SymPy rewrites only, and re-run verification after every cleanup candidate.
-9. **Demo overreach** — follow the feasibility ladder and avoid raw physical units, hidden constants, special functions, and high-depth flagship demos before the pipeline is reliable.
-10. **Acceleration before correctness** — defer Rust/CUDA until the Python reference and golden corpus are locked down and profiling identifies bottlenecks.
+1. **Treating compiler output as correct without independent verification** - validate compiled ASTs against ordinary SymPy/NumPy/mpmath evaluation before warm starts.
+2. **Smuggling arbitrary constants into a pure EML claim** - use explicit `literal_constants` metadata and avoid saying `{1, eml}` recovery when source literals are supplied.
+3. **Generating trees too deep for warm-start recovery** - make depth and node count first-class gates before embedding or training.
+4. **AST-to-master-tree embedding mismatch** - require immediate embed->snap equivalence and store mapped slots, inactive branches, margins, constants, and depth.
+5. **Warm-start logits that are either trivial or unrecoverable** - sweep/report strength, noise, seed, gate flips, and margins instead of relying on one magic setting.
+6. **Measuring perturbation success with training loss** - require post-snap exact verification and classify same-AST return, verified equivalent, soft fit only, and failure separately.
+7. **Breaking verifier-owned recovery** - keep `recovered` restricted to exact trained/snapped candidates that pass `verify.py`.
+8. **Losing domain and branch assumptions** - attach assumptions to compiler artifacts and keep verification ranges away from singularities unless explicitly tested.
+9. **Using compiler seeds as evidence of blind discovery** - every artifact needs a `recovery_mode` or equivalent provenance field.
+10. **Expanding compiler scope faster than tests** - implement a whitelist compiler with negative tests and stable reason codes.
 
-### Demo Strategy
+## Requirements Implications
 
-The demo suite is part of the product, not a cosmetic extra. It should be staged to prove increasingly difficult capabilities while making seed sensitivity and failures visible.
+Downstream requirements should be phrased as observable behavior and acceptance gates, not implementation hopes.
 
-**Recommended progression:**
-1. Paper-like `exp(x)` and `ln(x)` recoveries: first correctness and snapping proof.
-2. Beer-Lambert or radioactive decay: first user-visible sanity demo.
-3. Michaelis-Menten: reliable mechanistic scientific law and likely first serious headline.
-4. Logistic growth: nonlinear saturating law that exercises rational/exponential structure.
-5. Shockley diode: engineering example aligned with EML's exponential-minus-log bias.
-6. Damped harmonic oscillator: visually strong stretch demo after trig/phase handling stabilizes.
-7. Normalized Planck spectrum `x^3 / (exp(x) - 1)`: flagship only after curriculum, warm starts, cleanup, and verifier reporting are mature.
-
-**Demo rules:**
-- Use normalized, dimensionless domains and avoid raw SI constants in v1.
-- Store clean configs, seed batches, optimizer budgets, run manifests, snapped ASTs, SymPy exports, plots, and verification reports.
-- Report both successes and failed restart counts; do not hide seed sensitivity.
-- Treat Michaelis-Menten as the dependable public demo if Planck or oscillator remains too brittle.
+- Given `exp(-0.8*x)`, the CLI can compile the formula to exact EML with literal constant metadata, validate the compiled tree, embed it, perturb logits with a seed, train, snap, verify, and report whether Beer-Lambert was recovered.
+- Given `2*x/(0.5+x)`, the CLI can run the same workflow on a safe positive domain and promote Michaelis-Menten only if the final trained exact AST passes the verifier.
+- Given an unsupported expression, the compiler returns a machine-readable unsupported reason and does not silently fall back to a catalog formula.
+- Given a too-shallow tree, missing constant, unknown variable, or excessive compiled depth, embedding fails before training with actionable diagnostics.
+- Every warm-start report includes source expression, normalized expression, compiler trace, constant policy, domain assumptions, compiled depth/node count, terminal bank, embedding assignments, warm-start strength, perturbation config, optimizer config, snap decisions, cleanup output, final verifier result, and public claim status.
+- `--train-eml` or equivalent blind-training mode should remain distinct from a new compile/warm-start mode; blind and warm-start success rates must not be merged.
+- Public documentation must state that v1.1 demonstrates verifier-gated return-to-solution from compiled warm starts, not unrestricted blind symbolic discovery.
 
 ## Implications for Roadmap
 
 Based on research, suggested phase structure:
 
-### Phase 1: Semantics, AST, and Deterministic Artifacts
+### Phase 1: Compiler Contract and Direct Rules
 
-**Rationale:** Every later component depends on exact EML meaning. If branch policy, `complex128` behavior, verification mode, or JSON artifacts drift later, optimizer and demo results become untrustworthy.
+**Rationale:** The compiler becomes a trust boundary. It must fail closed, record metadata, and validate its output before any warm-start path can depend on it.
 
-**Delivers:** canonical EML evaluator, explicit training/canonical modes, high-precision reference checks, exact AST types, deterministic AST JSON, and tests for paper identities such as `exp(x)` and `ln(x)`.
+**Delivers:** `compiler.py`, `CompilerConfig`, `CompileResult`, rule trace schema, unsupported reason codes, domain assumptions, source-expression metadata, direct rules for variables, literal constants, `exp`, and `log`, and compile-time numeric validation.
 
-**Addresses:** canonical EML semantics, deterministic tree serialization, basic verification foundations, and test coverage.
+**Addresses:** defined compiler subset, traceability, compile-only artifacts, unsupported-expression behavior, and source-to-EML validation.
 
-**Avoids:** semantics drift, hidden epsilons in verification, real-valued targets hiding complex residue, and nondiffable result artifacts.
+**Avoids:** wrong compiler identities, shared-oracle bugs, broad SymPy overreach, and cleanup masking compiler errors.
 
-### Phase 2: Complete Master Trees and Soft Evaluation
+### Phase 2: Constant Catalog and AST Embedding
 
-**Rationale:** The complete scaffold must be proven independently before any optimizer failure is interpreted. Hand-set one-hot gates should reproduce known formulas at depth 2/3.
+**Rationale:** Warm-start demos cannot represent Beer-Lambert or Michaelis-Menten constants until the soft tree terminal bank can match compiler literals. Embedding must be mechanically correct before perturbation.
 
-**Delivers:** univariate depth-bounded master-tree specs, legal slot catalogs, PyTorch `complex128` differentiable model, softmax categorical gates, batched forward pass, shape/property tests, and node-level diagnostics.
+**Delivers:** finite constant catalogs in `SoftEMLTree` with default `(1.0,)`, canonical constant labels, missing-terminal diagnostics, `embed_expr_into_tree()`, `EmbeddingConfig`, `EmbeddingResult`, active slot manifests, inactive branch handling, and high-strength embed->snap tests.
 
-**Uses:** Python, PyTorch eager mode, NumPy reference fixtures, exact AST conversion hooks.
+**Addresses:** numeric constant policy, compatible terminal banks, required depth checks, AST-to-logit embedding, and round-trip safety.
 
-**Implements:** master-tree spec and differentiable EML model boundaries.
+**Avoids:** silent literal constants, parameter-count regressions, embedding chirality bugs, and warm starts that snap to the wrong AST.
 
-**Avoids:** incorrect master-tree construction, unreachable formulas, depth convention errors, and data-generation/evaluator shared-bug traps.
+### Phase 3: Arithmetic Rule Corpus and Depth Gates
 
-### Phase 3: Optimizer, Restarts, Hardening, and Recovery Statuses
+**Rationale:** Beer-Lambert requires negation/multiplication/exp, and Michaelis-Menten requires addition, multiplication, division, constants, and domain handling. These identities are the highest-uncertainty part of v1.1.
 
-**Rationale:** Search should become a candidate generator only after semantics and completeness are tested. This phase creates the transition from soft tensors to exact candidates, while refusing to call low loss recovery.
+**Delivers:** tested compiler rules for unary negation, subtraction, addition, multiplication, reciprocal/division, and optionally small integer powers behind depth caps; independent NumPy/mpmath equivalence tests; rule-level assumptions; depth/node-count budgets for demo formulas.
 
-**Delivers:** Adam/AdamW training loop, restarts, deterministic seeds, temperature/entropy scheduling, size/stability penalties, anomaly logging, run manifests, hardening/snapper, snap margins, top-k ambiguity handling, post-snap loss checks, and result statuses.
+**Addresses:** practical demo coverage, compiler correctness, branch/domain assumptions, and promotion feasibility.
 
-**Addresses:** complex128 training, optimization engine, depth curriculum foundation, exact snapping, reproducible CLI internals.
+**Avoids:** bloated unembeddable EML trees, Planck scope pull, arithmetic identities accepted without proof, and arbitrary SymPy fallback.
 
-**Avoids:** calling soft fit recovery, underspecified snapping, numerical explosion, restart brute force without diagnostics, and CI tests dependent on lucky seeds.
+### Phase 4: Perturbed Warm-Start Training
 
-### Phase 4: Verifier and Acceptance Contract
+**Rationale:** The milestone is not just compile-only representability; it must show return-to-solution behavior from perturbed compiled trees using the normal optimizer and verifier.
 
-**Rationale:** Verification must exist before demo polish so public claims cannot be based on training curves or plausible formulas.
+**Delivers:** warm-start training wrapper or initializer, deterministic perturbation config, independent perturbation seed, active/inactive noise controls, pre/post perturb snaps, changed-slot metrics, initial/post-training losses, anomaly stats, and candidate-generation manifests.
 
-**Delivers:** held-out/interpolation checks, extrapolation checks, mpmath high-precision checks, backend differential checks, branch/singularity probes, acceptance schemas, failure reason codes, and CLI-visible verifier reports.
+**Addresses:** warm-start strength, perturbation, optimizer integration, reproducibility, and recovery metrics.
 
-**Uses:** mpmath, NumPy, exact AST evaluator, serialized datasets, run manifests, and deterministic artifact hashes.
+**Avoids:** magic logit settings, training-loss-only success, optimizer-owned recovery labels, and irreproducible demo runs.
 
-**Implements:** verifier as the sole authority for `recovered`.
+### Phase 5: Demo Promotion and Claim Reporting
 
-**Avoids:** weak verification false positives, training-only formulas, hidden clamps, overclaiming, and demos that pass by plotting only the real part.
+**Rationale:** Public claims need a stage-aware report so users can distinguish catalog showcase, compiled seed, warm-start attempt, trained exact recovery, blind baseline, and stretch status.
 
-### Phase 5: Local Cleanup, SymPy Export, and Human-Readable Reports
+**Delivers:** `DemoRecoveryPlan`, CLI compile-only and warm-start modes, stage-separated JSON reports, concise stdout summaries, Beer-Lambert promotion gate, Michaelis-Menten promotion gate, Planck stretch reporting, and public documentation wording.
 
-**Rationale:** Users need readable formulas, but cleanup and simplification must be verifier-gated so presentation never becomes the source of truth.
+**Addresses:** demo taxonomy, verifier-owned promotion, CLI-visible workflow, and honest showcase criteria.
 
-**Delivers:** dead-branch pruning, duplicate/redundant subtree cleanup, bounded local neighborhood search, targeted SymPy exporter, selected rewrite passes, before/after tree-size metrics, and report artifacts linking exact AST to rendered formula.
+**Avoids:** catalog formulas being labeled recovered, Planck overpromising, hidden warm-start provenance, and blind/warm-start claim mixing.
 
-**Addresses:** local discrete cleanup, symbolic expression export, formula readability, and diagnostics report.
+### Phase 6: Regression Tests and Documentation Lockdown
 
-**Avoids:** SymPy as an unchecked oracle, branch-invalid rewrites, bloated correct formulas, and untracked simplification drift.
+**Rationale:** v1.1 touches claim semantics and numerical correctness. Negative tests and docs should be added alongside features, with a final phase to lock the public contract.
 
-### Phase 6: Demo Harness and Public Showcase
+**Delivers:** negative compiler tests, constant-policy schema tests, depth and terminal-bank failures, embedding round-trip golden tests, perturbation determinism, verifier-owned claim tests, CLI report tests, and documentation explaining constants, recovery modes, and demo statuses.
 
-**Rationale:** Demos should exercise a verified pipeline rather than drive ad hoc engine behavior. This phase turns the core into repeatable showcase runs.
+**Addresses:** long-term maintainability and user-facing trust.
 
-**Delivers:** demo spec/config format, dataset generators, normalized sampling, canned demos in the recommended sequence, CLI commands, plots, JSON artifacts, snapped formulas, verification reports, seed/runtime summaries, and demo smoke/regression tests.
-
-**Addresses:** synthetic dataset utilities, reproducible CLI, demo suite from `FOR_DEMO.md`, and public report generation.
-
-**Avoids:** flagship demo first, raw unit-heavy laws, hidden constants, lucky seed demos, high-noise real-world overreach, and unsupported-target confusion.
-
-### Phase 7: Multivariate, Coefficients, and Scaling
-
-**Rationale:** Multivariate support, coefficient fitting, Rust, GPU profiling, and larger benchmarks are valuable only after the reference univariate engine has a stable golden corpus.
-
-**Delivers:** multivariate slot catalogs, small multivariate demos, optional semi-parametric coefficient layer, profiling hooks, Rust/PyO3 or standard PyTorch GPU acceleration only for measured bottlenecks, and expanded benchmark dashboards.
-
-**Addresses:** later differentiators, scaling, performance, and broader scientific use cases.
-
-**Avoids:** acceleration before correctness, incompatible second evaluators, arbitrary coefficients smuggled into the grammar, and unrealistic blind deep recovery claims.
+**Avoids:** untested unsupported cases, schema drift, accidental claim regression, and future contributors broadening compiler scope silently.
 
 ### Phase Ordering Rationale
 
-- Semantics and exact artifacts come first because they define what every recovered expression means.
-- Master-tree construction comes before optimization because completeness can and should be tested with direct gate assignments.
-- Optimization and snapping come before verification only as candidate generation; the roadmap must still treat verifier implementation as a blocker for demos.
-- Cleanup follows verification because smaller formulas are useful only if every rewrite preserves accepted behavior.
-- Demos follow the recovery contract because plot-first development hides false positives and seed sensitivity.
-- Multivariate and acceleration come last because v1 already has hard numerical, branch, depth, and snapping problems in the univariate case.
+- Compiler contract comes first because every later phase depends on an auditable exact AST and rule trace.
+- Constant catalogs and embedding come before perturbation because warm starts must be representable and snap-correct before noise is meaningful.
+- Arithmetic rule expansion gets its own phase because it has medium confidence and controls whether Michaelis-Menten is promotable.
+- Perturbation training follows embedding and arithmetic because it should test a correct scaffold, not debug compiler structure.
+- Demo reporting comes after the engine path because claim taxonomy must reflect real artifacts from compile, embed, train, snap, and verify.
+- Planck remains a stretch report because it combines power, exponential, subtraction, division, depth growth, and optimizer sensitivity.
 
 ### Research Flags
 
 Phases likely needing deeper research during planning:
-- **Phase 3:** Optimization schedules, entropy/size/stability penalties, top-k snapping, and curriculum policies need empirical tuning against paper-like fixtures.
-- **Phase 4:** Verification thresholds, branch-sensitive point selection, and cross-backend agreement need careful domain-specific design.
-- **Phase 5:** Safe targeted rewrite sets and cleanup neighborhoods need validation against complex principal-branch semantics.
-- **Phase 6:** Planck, oscillator, and Shockley demo budgets may need phase-specific research once lower demos produce empirical recovery data.
-- **Phase 7:** Multivariate slot scaling, coefficient handling, Rust/PyO3, and GPU acceleration should be researched only with profiles and golden corpus evidence.
+- **Phase 3:** Exact EML identities for addition, subtraction, multiplication, division, reciprocal, and small powers; depth blow-up and branch assumptions need rule-level proof.
+- **Phase 4:** Perturbation budgets, strength/noise grids, gate-flip thresholds, and deterministic recovery-rate reporting need empirical tuning.
+- **Phase 5:** Planck feasibility, practical depth limits, and public status wording need careful validation if attempted.
 
 Phases with standard patterns or enough local guidance to skip standalone research:
-- **Phase 1:** Exact ASTs, deterministic JSON, mpmath references, and unit tests are well-scoped by source docs.
-- **Phase 2:** PyTorch module boundaries, logits/softmax gates, and property tests are straightforward once the master-tree spec is defined.
-- **Early Phase 6 smoke demos:** `exp(x)`, `ln(x)`, Beer-Lambert, and radioactive decay are sufficiently documented for direct implementation.
+- **Phase 1:** Compiler scaffolding, direct `exp`/`log` rules, metadata schemas, and fail-closed traversal are well documented by local code and SymPy patterns.
+- **Phase 2:** Constant catalogs and AST embedding are straightforward extensions of current `Const`, `Var`, `Eml`, `SoftEMLTree`, and `set_slot()` behavior.
+- **Phase 6:** Test and documentation mechanics follow existing pytest, CLI report, and artifact patterns.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Research aligns with local environment and project docs: Python 3.11, PyTorch 2.10, NumPy, SymPy, mpmath, and pytest are already present and match the paper/NORTH_STAR direction. Later Rust/CUDA timing is MEDIUM because bottlenecks are not measured yet. |
-| Features | HIGH | Table stakes are directly grounded in `.planning/PROJECT.md`, `sources/NORTH_STAR.md`, `sources/FOR_DEMO.md`, and the paper: semantics, complete trees, complex128 training, snapping, cleanup, verification, CLI, demos, and tests. |
-| Architecture | HIGH | Component boundaries and build order are strongly supported by the paper's master-tree/training behavior and NORTH_STAR's hybrid pipeline. Scaling beyond shallow demos remains MEDIUM. |
-| Pitfalls | HIGH | Critical risks are repeatedly supported across paper results, project constraints, NORTH_STAR warnings, demo guidance, and official numerical/symbolic tooling docs. |
+| Stack | HIGH | All research agrees no new dependencies are needed; current `pyproject.toml` stack and v1 modules support the workflow. |
+| Features | HIGH/MEDIUM | Workflow, reporting, constants, and promotion gates are clear. Exact breadth of arithmetic compiler coverage remains MEDIUM until rules and depth budgets are proven. |
+| Architecture | HIGH | Reusing `expression.Expr`, `SoftEMLTree`, optimizer, cleanup, and verifier preserves v1 boundaries. Arithmetic rule corpus and Planck stretch stay MEDIUM/LOW. |
+| Pitfalls | HIGH | Risks are strongly grounded in current code, project constraints, paper limitations, NORTH_STAR, and FOR_DEMO guidance. |
 
-**Overall confidence:** HIGH for the v1 roadmap structure; MEDIUM for exact optimizer budgets, deep-demo success rates, and post-v1 acceleration strategy.
+**Overall confidence:** HIGH for v1.1 structure and Beer-Lambert path; MEDIUM for Michaelis-Menten promotion timing; LOW/MEDIUM for Planck trained recovery.
 
 ### Gaps to Address
 
-- **Optimizer budget and schedules:** Determine restart counts, temperature schedules, entropy/size weights, and early stopping empirically during Phase 3.
-- **Verification thresholds:** Define tolerances per demo/domain and how imaginary residue is handled for real-valued targets during Phase 4.
-- **Safe cleanup rewrites:** Validate each SymPy/AST rewrite against branch-sensitive high-precision samples before making it part of the default cleanup path.
-- **Coefficient strategy:** Keep v1 normalized where possible; if coefficients are needed, design a separate explicit layer with status metadata and verification.
-- **Demo feasibility:** Treat damped oscillator and normalized Planck as stretch/flagship demos gated by successful lower-rung recovery metrics.
-- **Performance plan:** Do not select Rust/CUDA work until profiling identifies concrete bottlenecks and the reference Python golden corpus is stable.
+- **Arithmetic identities:** Prove each EML arithmetic rule independently and keep unsupported forms fail-closed until tests pass.
+- **Depth ceilings:** Establish practical depth/node-count budgets for Beer-Lambert, Michaelis-Menten, and any Planck attempt.
+- **Constant representation:** Decide exact serialization/canonicalization for floats, rationals, and complex literals before demo promotion.
+- **Domain assumptions:** Attach positive-domain, nonzero-denominator, branch-cut, and singularity exclusions to compiled artifacts and verifier reports.
+- **Perturbation metrics:** Define what counts as meaningful movement from the compiled seed: unchanged snap, active gate flips, verified equivalent AST, or same-AST return.
+- **Public wording:** Keep warm-start recovery clearly separate from blind symbolic discovery in CLI output, JSON reports, README text, and release notes.
 
 ## Sources
 
 ### Primary (HIGH confidence)
 
-- `.planning/PROJECT.md` — project scope, active requirements, constraints, out-of-scope decisions, and demo expectations.
-- `.planning/research/STACK.md` — Python/PyTorch-first stack recommendation, version policy, module stack mapping, and deferred acceleration path.
-- `.planning/research/FEATURES.md` — v1 table stakes, differentiators, anti-features, demo features, and requirements implications.
-- `.planning/research/ARCHITECTURE.md` — pipeline architecture, component boundaries, data flow, serialization formats, verification boundaries, and build order.
-- `.planning/research/PITFALLS.md` — critical/moderate/minor pitfalls, phase warnings, gates, and roadmap choices to avoid.
-- `sources/paper.pdf` — EML definition, grammar, master-tree construction, PyTorch `complex128` proof of concept, snapping behavior, recovery rates by depth, and Rust verification note.
-- `sources/NORTH_STAR.md` — implementation blueprint for hybrid search, hardening, cleanup, verification, risks, and strong MVP definition.
-- `sources/FOR_DEMO.md` — demo sequence, recommended flagship examples, normalization guidance, and examples to avoid.
-- `AGENTS.md` — repository instruction that implementation is grounded in the paper, NORTH_STAR, and demo sources.
+- `.planning/PROJECT.md` - v1.1 goal, active requirements, constraints, target demos, and out-of-scope boundaries.
+- `.planning/STATE.md` - confirms v1 is complete and v1.1 is defining requirements.
+- `.planning/research/STACK.md` - no-new-dependencies recommendation, stack additions, constant catalog guidance, optimizer and demo integration.
+- `.planning/research/FEATURES.md` - table stakes, differentiators, anti-features, workflow, requirements implications, and demo promotion expectations.
+- `.planning/research/ARCHITECTURE.md` - module boundaries, compiler architecture, warm-start embedding, CLI modes, build order, and testing strategy.
+- `.planning/research/PITFALLS.md` - critical pitfalls, phase warnings, gates, and high-risk roadmap choices to avoid.
+- `sources/NORTH_STAR.md` - hybrid pipeline, complex128 training, warm-start rationale, hardening/snap, cleanup, and verifier discipline.
+- `sources/FOR_DEMO.md` - demo ranking, Beer-Lambert and Michaelis-Menten guidance, normalization cautions, and Planck stretch positioning.
+- `sources/paper.pdf` - EML semantics, complete-tree grammar, compiler caveats, depth limits, warm-start behavior, and complex arithmetic concerns.
 
-### Official/current references cited by research files
+### Local implementation sources cited by research
 
-- PyTorch complex numbers docs — complex tensor support and caveats.
-- PyTorch reproducibility and numerical accuracy docs — nondeterminism, overflow, and backend differences.
-- PyTorch `gumbel_softmax` docs — legacy warning supporting local abstraction around hardening helpers.
-- SymPy simplification and rewriting docs — targeted simplification guidance and limits of generic simplification.
-- mpmath docs — arbitrary-precision verification backend.
-- pytest parametrization docs — regression and matrix test structure.
-- Python packaging `pyproject.toml` metadata specs — package metadata and dependency declaration.
-- uv docs — optional repeatable dev workflow.
-- NVIDIA CUDA C++ Programming Guide — later acceleration context, not an MVP dependency.
+- `src/eml_symbolic_regression/expression.py` - exact `Const`, `Var`, `Eml`, JSON artifacts, SymPy candidate support, and paper identities.
+- `src/eml_symbolic_regression/master_tree.py` - soft tree labels, logits, `set_slot`, snapping, `force_exp`, `force_log`, and current `const:1` limitation.
+- `src/eml_symbolic_regression/optimize.py` - current Adam training config, restarts, annealing, manifests, and candidate-generator boundary.
+- `src/eml_symbolic_regression/verify.py` - verifier-owned recovery status and train/held-out/extrapolation/mpmath checks.
+- `src/eml_symbolic_regression/datasets.py` and `src/eml_symbolic_regression/cli.py` - current demo specs, catalog reports, CLI flow, and promotion integration points.
+- `tests/*.py` - existing semantics, master-tree, optimizer, cleanup, verifier, demo, and Planck guard coverage.
+
+### Official/current references cited by research
+
+- SymPy parsing and expression manipulation docs - input safety, tree traversal, and avoiding printed-form parsing.
+- PyTorch complex numbers and `gumbel_softmax` docs - complex tensor support and avoiding legacy functional Gumbel-softmax as a core API.
+- Python dataclasses docs - structured config/report objects.
+- mpmath and pytest docs - high-precision verification and parametrized regression testing.
 
 ---
 *Research completed: 2026-04-15*

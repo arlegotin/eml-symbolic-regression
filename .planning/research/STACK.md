@@ -1,196 +1,254 @@
-# Technology Stack
+# Technology Stack: v1.1 Compiler-Driven Warm Starts
 
 **Project:** EML Symbolic Regression
-**Research dimension:** Stack
+**Research dimension:** Stack additions for v1.1 EML Compiler and Warm Starts
 **Researched:** 2026-04-15
-**Overall confidence:** HIGH for Python/PyTorch MVP; MEDIUM for later Rust/CUDA acceleration timing
+**Overall confidence:** HIGH for dependency recommendation; MEDIUM for pure-`1` constant compilation depth feasibility
 
 ## Recommendation
 
-Use a Python-first research package and CLI built around PyTorch `complex128`, with NumPy for data/reference arrays, SymPy for exact expression representation and targeted rewrites, mpmath for high-precision verification, and pytest for regression tests.
+No new third-party runtime dependencies are needed for v1.1. The existing Python/PyTorch/SymPy/NumPy/mpmath/pytest stack is sufficient for compiler-driven warm starts.
 
-Do not start with Rust, CUDA kernels, JAX, Julia, PySR, Mathematica, or a web UI. They are either misaligned with the local source documents or add implementation surface before the core EML semantics, snapping, cleanup, and verification loop is proven.
+The work should add project-owned modules and integration points, not a new CAS, parser generator, symbolic-regression engine, GPU layer, Rust backend, or theorem prover. SymPy already provides the ordinary expression tree, PyTorch already owns trainable logits and perturbations, and the existing exact AST / verifier stack already defines what counts as recovered.
 
-The practical MVP stack is:
+Recommended v1.1 stack shape:
 
 ```text
-Python package + CLI
-  -> PyTorch complete EML master tree
-  -> hardening / snapping into exact EML AST
-  -> SymPy export and targeted cleanup
-  -> mpmath high-precision verifier
-  -> pytest demo and regression harness
+SymPy ordinary expression
+  -> local compiler subset / rule registry
+  -> exact EML Expr AST with compiler metadata
+  -> warm-start embedding into SoftEMLTree logits
+  -> optional deterministic logit perturbation
+  -> existing PyTorch optimizer / snap
+  -> existing verifier and cleanup reports
 ```
 
-This matches the paper and `sources/NORTH_STAR.md`: the hard part is not a missing framework, but getting canonical EML semantics, stable complex optimization, exact snapping, local cleanup, and verification correct.
+The main implementation choice is to keep the compiler deterministic, explicit, and verifier-gated. It should compile only the supported subset and return structured unsupported-rule errors for everything else.
 
 ## Local Baseline
 
-Observed in the current repo environment on 2026-04-15:
+Observed locally on 2026-04-15:
 
-| Tool | Local Version | Use in MVP | Confidence |
-|------|---------------|------------|------------|
-| Python | 3.11.5 | Package, CLI, orchestration | HIGH |
-| PyTorch | 2.10.0 | Differentiable EML tree, complex autograd, Adam | HIGH |
-| NumPy | 1.26.4 | Dataset generation, CPU baselines, reference checks | HIGH |
-| SymPy | 1.14.0 | Symbolic AST export, targeted rewrites, pretty formulas | HIGH |
-| mpmath | 1.3.0 | Arbitrary-precision complex verification | HIGH |
-| pytest | 7.4.0 | Unit, regression, demo, and verifier tests | HIGH |
-| CUDA | unavailable locally | Not an MVP dependency | HIGH |
+| Tool | Local / Project Version | Keep for v1.1? | Why |
+|------|-------------------------|----------------|-----|
+| Python | 3.11.5, `>=3.11,<3.13` in `pyproject.toml` | Yes | Existing package, dataclasses, argparse, JSON artifacts, deterministic compiler metadata. |
+| PyTorch | 2.10.0 local, `torch>=2.10` | Yes | Existing `SoftEMLTree`, logits, Adam loop, `complex128` evaluation, perturbation via seeded tensors. |
+| SymPy | 1.14.0 local, `sympy>=1.14` | Yes | Existing catalog candidates and cleanup already use SymPy; compiler should walk SymPy `Expr.func` / `Expr.args`. |
+| NumPy | 1.26.4 local, `numpy>=1.26` | Yes | Existing deterministic datasets and post-snap numeric checks. |
+| mpmath | 1.3.0 local, `mpmath>=1.3` | Yes | Existing high-precision verifier; compiler output must pass this before being called recovered. |
+| pytest | 7.4.0 local, dev extra | Yes | Add compiler, embedding, perturbation, and demo regression tests. |
 
-No `pyproject.toml`, lockfile, or package skeleton exists yet. The first implementation phase should add normal Python packaging, but it should not require new runtime dependencies beyond the packages already present unless profiling or usability demands them.
+## Stack Additions
 
-## Recommended Stack
+These are code-level additions inside the current stack, not package dependencies.
 
-### Core Runtime
+| Addition | Likely Module | Primary Stack | Purpose |
+|----------|---------------|---------------|---------|
+| SymPy subset compiler | `src/eml_symbolic_regression/compiler.py` | SymPy, existing `expression.py` AST | Compile a defined ordinary-expression subset into exact `Expr` trees. |
+| Compiler report schema | `compiler.py` / CLI report payloads | dataclasses, JSON | Record source expression, normalized SymPy form, rules used, unsupported nodes, output depth/node count. |
+| Warm-start embedding | `src/eml_symbolic_regression/warm_start.py` or `master_tree.py` helper | PyTorch, existing `SoftEMLTree.set_slot` | Map exact EML AST paths onto compatible soft-tree slot logits. |
+| Logit perturbation | `warm_start.py` / `optimize.py` | PyTorch `Generator`, `torch.no_grad` | Test return-to-solution behavior from near-correct trees. |
+| Warm-start training config | `optimize.py` | dataclasses | Add optional initialization source, strength, noise, and seed fields without changing the optimizer dependency. |
+| Demo promotion metadata | `datasets.py`, `cli.py` | existing DemoSpec, JSON reports | Distinguish `catalog`, `compiled_exact`, `warm_start_recovered`, `warm_start_failed`, and `stretch` claims. |
 
-| Technology | Version Policy | Purpose | Why |
-|------------|----------------|---------|-----|
-| Python | Use current 3.11.5 locally; declare `>=3.11,<3.13` initially | Main implementation language, CLI, experiment orchestration | The repo is greenfield, the local environment is already ready, and Python is the fastest path for numerical research iteration. |
-| PyTorch | Start with local 2.10.0; pin a lower bound around the observed version once `pyproject.toml` exists | Differentiable complete EML master tree, logits, softmax gates, Adam optimization, batched evaluation | The paper's ML experiments explicitly use PyTorch with `torch.complex128`; `sources/NORTH_STAR.md` requires complex128 training, restarts, annealing, entropy regularization, hardening, and anomaly logging. |
-| `torch.complex128` | Default dtype | Complex-valued EML semantics during training and verification | The paper says EML requires complex intermediates and reports PyTorch experiments using `DTYPE = torch.complex128`. Symbolic recovery is branch-sensitive, so `complex64` should be only an optional speed mode. |
-| PyTorch eager mode | Default execution mode | First implementation of training and evaluation | Eager mode keeps anomaly inspection, per-node logging, and numerical debugging simple. Use graph compilation only after semantics stabilize. |
+## Compiler Implementation Choices
 
-**Implementation rule:** keep the EML model as a static `torch.nn.Module` for a chosen depth and arity. Store gate logits as `nn.Parameter`, convert to probabilities with `torch.softmax`, and snap by `argmax` into an exact AST.
+### Use SymPy Exprs as the Front End
 
-### Numerics and Verification
+Use SymPy expressions as the compiler input. The current demo catalog already stores Beer-Lambert, Michaelis-Menten, logistic, Shockley, damped oscillator, and Planck as `SympyCandidate`, so v1.1 can compile those in-process without adding a string parser.
 
-| Technology | Version Policy | Purpose | Why |
-|------------|----------------|---------|-----|
-| NumPy | Local 1.26.4 is enough | Synthetic datasets, deterministic sampling, non-gradient reference evaluation | The paper notes EML works in NumPy and uses NumPy as one verification backend. It is the right lightweight CPU reference layer. |
-| mpmath | Local 1.3.0 is enough | High-precision real/complex verification of snapped formulas | The project requirements say candidates must pass high-precision checks, not just training loss. mpmath gives this without a proprietary dependency. |
-| Python `decimal` | Standard library only, optional | Decimal sanity checks for real-only simple demos | Useful for a small subset of real smoke tests, but not a replacement for mpmath complex evaluation. |
-| Explicit anomaly logging | Project code, not a dependency | Count NaN, Inf, overflow clamps, branch-cut hits, and post-snap mismatch | The paper reports overflow and NaN issues from composed exponentials and complex arithmetic. Logging these is core product functionality. |
+If a CLI string input is added, keep it secondary and trusted. SymPy official docs warn that `parse_expr` uses `eval` and should not be used on unsanitized input. For v1.1, prefer named built-in demo specs or a whitelisted parser wrapper with restricted `local_dict`, restricted `global_dict`, and supported function names only.
 
-**Implementation rule:** maintain two evaluator modes:
+Implementation rule:
 
-1. `training`: guarded PyTorch complex evaluator with controlled clamps on dangerous intermediates.
-2. `verification`: faithful canonical evaluator with no hidden epsilons, checked against mpmath and held-out/extrapolation points.
+```text
+Public compiler API accepts sp.Expr first.
+CLI string parsing, if present, is a thin trusted convenience layer.
+```
 
-This split matters because training stabilizers are search aids, not proof of recovered formulas.
+### Walk SymPy Trees Directly
 
-### Symbolic Layer
+Use `expr.func` and `expr.args` rather than parsing printed strings. SymPy documents these as the core way to recurse through expression trees, while also warning that printed form and internal representation may differ.
 
-| Technology | Version Policy | Purpose | Why |
-|------------|----------------|---------|-----|
-| SymPy | Local 1.14.0 is enough | Exact EML AST translation, ordinary-expression export, targeted rewrites | The MVP needs human-readable formulas. SymPy is available locally and avoids requiring Mathematica. |
-| Python `dataclasses` / `enum` / `json` | Standard library | Exact snapped EML tree representation and deterministic JSON export | The tree format is simple: terminals, variables, and binary `eml` nodes. A standard-library AST is easier to audit than a heavy schema library. |
-| Targeted rewrite passes | Project code using SymPy | Cleanup after snapping | SymPy's generic `simplify()` is useful interactively but too broad as a core algorithm. Use explicit passes such as `expand`, `factor`, `cancel`, `powsimp`, and project-specific EML identities. |
+Practical implications:
 
-**Implementation rule:** SymPy is a representation and rewrite backend, not the verifier of record. Numeric high-precision and cross-backend checks must decide whether a snapped formula is accepted.
+- Match `sp.Symbol`, `sp.Integer`, `sp.Rational`, `sp.Float`, `sp.Add`, `sp.Mul`, `sp.Pow`, `sp.exp`, and `sp.log` explicitly.
+- Normalize supported syntactic sugar into the subset before compilation: subtraction as `Add`, division as `Mul(..., Pow(denominator, -1))`, unary negation as multiplication by `-1`.
+- Treat unsupported functions (`sin`, `cos`, arbitrary `Pow`, special functions, piecewise) as structured compiler failures, not best-effort guesses.
+- Keep rule ordering deterministic and record every rule in compiler metadata.
 
-### CLI, Packaging, and Developer Tools
+### Constant Handling Is the Key Design Choice
 
-| Technology | Version Policy | Purpose | Why |
-|------------|----------------|---------|-----|
-| `pyproject.toml` | Add in first implementation phase | Package metadata, dependencies, console script | The repo is greenfield; standard Python packaging is enough. |
-| `argparse` | Standard library | MVP CLI | Avoid adding Typer/Click until the command surface is large enough to justify another dependency. |
-| `logging` + JSONL artifacts | Standard library | Reproducible experiment records | Training diagnostics, snap decisions, and verification reports should be machine-readable from day one. |
-| pytest | Local 7.4.0 is enough | Unit tests and demo regression tests | The project requires tests for semantics, tree construction, snapping, verification, and demos. pytest parametrization fits these cases directly. |
-| uv | Optional dev workflow | Dependency locking and repeatable environments once `pyproject.toml` exists | Useful for a new Python project, but do not block MVP execution on adopting it. The current conda environment already has the required scientific stack. |
-| Ruff | Optional dev dependency | Formatting and linting once code exists | Good default for a Python package, but secondary to mathematical correctness and verifier coverage. |
+Existing `expression.Const` can serialize and evaluate arbitrary complex constants, but existing `SoftEMLTree` only offers `const:1` as a terminal choice. Beer-Lambert (`exp(-0.8*x)`) and Michaelis-Menten (`2*x/(0.5+x)`) need numeric constants.
 
-**Implementation rule:** start with `argparse`, `logging`, deterministic JSON outputs, and pytest. Add richer UX only after the algorithmic loop is proven.
+Recommended v1.1 choice:
 
-## Module-Level Stack Mapping
+1. Add a constant catalog to `SoftEMLTree`, defaulting to `(1.0,)` to preserve v1 behavior.
+2. Let compiler-driven demos pass the exact constants discovered in the source SymPy expression, for example `(1.0, -1.0, 0.5, 0.8, 2.0)`.
+3. Encode catalog entries as deterministic labels such as `const:1`, `const:-1`, `const:0.5`.
+4. Record `constant_basis` in artifacts as `["1", "literal_catalog"]` when non-`1` constants are used.
 
-The stack should map to source modules like this:
+This is the practical path for v1.1 demos. It should be reported honestly as constant-catalog warm-start recovery, not blind pure-paper-basis recovery. A pure `1`-only compiler for numeric constants can be researched later, but making every rational/scaled coefficient out of `1` through EML identities is likely to produce deeper, brittle trees and would distract from validating compiler warm starts.
 
-| Module | Primary Stack | Responsibility |
-|--------|---------------|----------------|
-| `eml.semantics` | PyTorch, NumPy, mpmath | Canonical `eml(x, y) = exp(x) - ln(y)`, branch handling, training vs verification evaluators |
-| `eml.tree` | dataclasses, enum, json | Exact EML AST, terminals, variables, node serialization |
-| `eml.master_tree` | PyTorch | Complete depth-bounded trainable tree with categorical logits |
-| `eml.optimize` | PyTorch | Adam/AdamW, restarts, temperature annealing, entropy and size penalties |
-| `eml.snap` | PyTorch, AST layer | Argmax hardening, dead-branch pruning, exact one-hot tree export |
-| `eml.simplify` | SymPy, project rewrite rules | Targeted symbolic cleanup and ordinary-expression export |
-| `eml.verify` | NumPy, mpmath, PyTorch | Held-out, extrapolation, backend consistency, high-precision checks |
-| `eml.datasets` | NumPy, PyTorch | Demo data from `sources/FOR_DEMO.md` with normalization and seeds |
-| `eml.cli` | argparse, logging, json | Reproducible commands for train, snap, verify, and demo |
-| `tests` | pytest | Paper-grounded semantics, tree construction, snapping, verification, demos |
+Confidence: HIGH that a literal constant catalog integrates cleanly with current code; MEDIUM that pure-`1` constant compilation is feasible at useful depths for v1.1 demos.
 
-This module split keeps PyTorch where gradients are needed and keeps exact AST, simplification, and verification logic independent of training tensors.
+### Compiler Rule Scope
 
-## Categorical Gates
+Recommended initial subset:
 
-Use `torch.softmax(logits / temperature, dim=-1)` as the normal soft gate. For hardening:
+| Ordinary Form | Compile Policy | Notes |
+|---------------|----------------|-------|
+| `1`, allowed numeric constants | Direct `Const(value)` | Requires matching master-tree constant catalog for warm start. |
+| variables | Direct `Var(name)` | Existing AST already supports named variables. |
+| `exp(x)` | Use existing paper identity `Eml(x, Const(1))` | Already present as `exp_expr`. |
+| `log(x)` | Use existing paper identity from `log_expr`, generalized to subexpressions | Verify branch behavior on positive/safe domains. |
+| `a - b`, `-a` | Compile only through explicit rule templates | Avoid algebraic guessing; record rule names. |
+| `a + b` | Compile through explicit EML arithmetic template where implemented | Keep unsupported if the template would exceed depth budget. |
+| `a * b` | Compile through explicit EML arithmetic template where implemented | Needed for Beer-Lambert and Michaelis-Menten. |
+| `a / b` | Compile as multiplication by reciprocal only if reciprocal template is implemented | Needed for Michaelis-Menten and Planck. |
+| `x**n` | Support small nonnegative integer powers by repeated multiplication | Planck needs `x**3`; keep this behind a max-power/depth guard. |
 
-1. select `argmax` categories,
-2. construct an exact one-hot tree,
-3. re-evaluate the snapped tree outside the differentiable model,
-4. optionally use a project-owned straight-through estimator during late training.
+The compiler should expose estimated output depth before training. If the compiled AST exceeds the requested master-tree depth, fail early with `requires_depth=N` rather than producing an unembeddable warm start.
 
-Do not build the core API around `torch.nn.functional.gumbel_softmax`. Official PyTorch docs keep it available but label it legacy and warn it may be removed from `nn.functional` in the future. If needed, wrap it behind a small local abstraction so the rest of the engine depends only on project-owned gate semantics.
+## Warm-Start Integration
 
-## Data and Demo Stack
+### Embedding Into `SoftEMLTree`
 
-Use NumPy for deterministic data generation and PyTorch tensors only when entering training. Start with the `sources/FOR_DEMO.md` progression:
+Current `SoftEMLTree` already has the important primitive: `set_slot(node_path, side, choice, strength)`. v1.1 should generalize the existing `force_exp` and `force_log` style into a recursive embedder:
 
-1. Beer-Lambert or radioactive decay
-2. Michaelis-Menten
-3. Logistic growth
-4. Shockley diode
-5. Damped oscillator
-6. Normalized Planck spectrum
+```text
+embed_expr(model, expr, path="root", strength=30.0)
+```
 
-The stack should support normalization and dimensionless variables as first-class dataset metadata. Raw SI constants and unit-heavy formulas should stay out of the MVP path because they make optimization harder without testing the core EML idea.
+Embedding rules:
 
-## What Not To Use First
+- If a slot expression is `Const(value)`, set that slot to the matching constant-catalog label.
+- If a slot expression is `Var(name)`, set that slot to `var:name`.
+- If a slot expression is `Eml(left, right)`, set that slot to `child` and recurse into `path.L` or `path.R`.
+- If the expression depth exceeds the remaining master depth, return a structured error.
+- If the compiler emits a leaf as the whole formula, require a wrapper identity or reject it because the current master root is an EML node.
 
-| Alternative | Recommendation | Why Not MVP |
-|-------------|----------------|-------------|
-| JAX | Do not use | Viable generally, but the paper, local environment, and project requirements are PyTorch-centered. Switching would spend early effort on backend behavior rather than EML recovery. |
-| Julia / SymbolicRegression.jl / PySR | Use later as comparator only | Excellent symbolic-regression ecosystem, but its normal strength is heterogeneous operator search. This repo's point is complete EML-tree search, snapping, and EML-specific verification. |
-| Mathematica | Optional oracle only | The paper uses it, but a practical open MVP should not depend on proprietary software. |
-| Lean / theorem proving | Out of scope for MVP | Formal equivalence is explicitly out of scope in `.planning/PROJECT.md`; numeric, high-precision, and targeted symbolic checks are enough for v1. |
-| Pydantic | Do not add initially | The AST is small and deterministic JSON is enough. Add schema validation only when external artifact compatibility becomes a real concern. |
-| Typer / Click / Rich / tqdm | Defer | Nice CLI ergonomics, but not needed to validate semantics and recovery. |
-| Custom CUDA kernels | Defer | Current local CUDA is unavailable, and `.planning/PROJECT.md` explicitly says to use normal PyTorch first and profile before adding kernels. |
-| Rust core implementation | Defer | Rust is justified later for exhaustive search and fast verification, but early iteration needs Python/PyTorch. |
+The embedder should verify round-trip compatibility immediately:
 
-## Later Acceleration Path
+```text
+compiled Expr -> embed logits -> snap -> exact Expr
+```
 
-Rust and CUDA are justified only after the Python MVP has stable semantics and profiles identify bottlenecks.
+The snapped AST should match the compiled AST structurally before any perturbation or training is attempted.
 
-### Rust
+### Strength and Probability
 
-Use Rust later for:
+Keep logit initialization project-owned. Do not add a categorical-relaxation package.
 
-- bounded exhaustive/local neighborhood search,
-- deduplication of snapped candidates,
-- batch evaluation of many exact EML trees,
-- fast verifier kernels,
-- shortest-form search helpers.
+Use either:
 
-Rationale: the paper reports a Rust reimplementation of `VerifyBaseSet` running roughly three orders of magnitude faster than the original Mathematica workflow. That supports Rust for discrete search and verification, not for the first differentiable training runtime.
+- existing `strength` convention: active choice `+strength`, inactive choices `-strength`; or
+- probability-derived gap: `gap = log(p * (k - 1) / (1 - p))` for a target active probability `p`.
 
-Interoperability choice when needed:
+The existing `strength=30.0` is effectively one-hot. For perturbation experiments, use a smaller default such as `strength=8.0` to allow gradients to move while still starting near the compiled tree.
 
-- PyO3 + maturin for Python extension modules,
-- `serde`/JSON-compatible structs for exact tree exchange.
+### Perturbation
 
-Confidence: MEDIUM. The paper strongly motivates Rust for verification speed, but this repo has no Rust code yet and the MVP bottlenecks are not measured.
+Use PyTorch only:
 
-### CUDA
+```text
+with torch.no_grad():
+    logits.add_(noise_std * torch.randn_like(logits, generator=generator))
+```
 
-Use standard PyTorch GPU support first if a CUDA machine is available. Add custom CUDA only for measured hotspots such as batched candidate evaluation or neighborhood scoring.
+Record:
 
-Do not custom-kernel:
+- warm-start source hash / expression string,
+- logit strength,
+- perturbation distribution and seed,
+- initial snap before perturbation,
+- snap after perturbation,
+- final snap after training,
+- distance from compiled path as number of changed slot choices.
 
-- symbolic snapping,
-- tree serialization,
-- SymPy cleanup,
-- verifier decision logic.
+This directly supports the v1.1 goal of demonstrating recovery from near-correct EML trees.
 
-Confidence: MEDIUM. CUDA is a plausible later target and NVIDIA's current CUDA programming guide is active, but the local machine currently reports `torch.cuda.is_available() == False`.
+## Optimizer Choices
 
-## Version and Dependency Policy
+Keep the existing Adam loop. Add initialization hooks, not a new optimizer.
 
-Recommended initial `pyproject.toml` policy once packaging starts:
+Recommended `TrainingConfig` additions:
+
+| Field | Purpose |
+|-------|---------|
+| `initial_expr: Expr | None` | Optional exact AST to embed before training. |
+| `warm_start_strength: float` | Logit preference for compiled choices. |
+| `perturbation_std: float` | Gaussian logit noise after embedding. |
+| `warm_start_seed: int | None` | Deterministic perturbation independent of restart seed. |
+| `verify_initial_snap: bool` | Fail fast if embed/snap does not round-trip. |
+
+Restarts should support mixed initialization:
+
+- one unperturbed compiled initialization,
+- several perturbed compiled initializations,
+- optional random restarts as a baseline.
+
+Do not use `torch.nn.functional.gumbel_softmax` as a core dependency. Current PyTorch docs keep it available but say it is present for legacy reasons and may be removed from `nn.functional`; the existing softmax-plus-snap design is enough.
+
+## Demo Integration
+
+### Beer-Lambert
+
+Use as the first v1.1 trained warm-start demo.
+
+Recommended path:
+
+1. Compile `exp(-0.8*x)` from the existing SymPy catalog candidate.
+2. Include constants required by the expression in the master-tree constant catalog.
+3. Embed the compiled AST into a compatible depth.
+4. Perturb logits and train.
+5. Snap and verify with existing train/held-out/extrapolation/mpmath checks.
+
+Expected confidence: HIGH for constant-catalog warm-start recovery; lower for pure `1`-basis recovery.
+
+### Michaelis-Menten
+
+Use as the second trained warm-start demo if arithmetic templates and depth budget are acceptable.
+
+Recommended path:
+
+1. Compile `2*x/(0.5+x)` from the existing SymPy catalog candidate.
+2. Require compiler support for addition, multiplication, reciprocal/division, and numeric constants.
+3. Report compiler output depth and node count before training.
+4. Treat failure to fit within a practical depth as an honest v1.1 limitation, not a reason to add PySR or another search engine.
+
+Expected confidence: MEDIUM because rational templates can grow quickly and may require careful depth limits.
+
+### Normalized Planck
+
+Keep as stretch reporting.
+
+Planck requires `x**3`, `exp(x) - 1`, and division. It is an excellent compiler stress test and reporting target, but it should not gate v1.1 success. Use compiler output depth/node count and warm-start recovery status to report exactly where it succeeds or fails.
+
+Expected confidence: LOW to MEDIUM for practical warm-start recovery in v1.1, depending on compiled depth and optimization stability.
+
+## What Not To Add
+
+| Candidate Addition | Recommendation | Why |
+|-------------------|----------------|-----|
+| Lark / ANTLR parser | Do not add | SymPy expressions are already available; string parsing is not the hard part. |
+| Pydantic | Do not add | Existing dataclasses + deterministic JSON are enough for compiler and warm-start reports. |
+| PySR / SymbolicRegression.jl | Do not add | Would change the project from EML-tree recovery to heterogeneous symbolic regression. |
+| JAX | Do not add | Existing implementation and paper blueprint are PyTorch-centered. |
+| Rust / PyO3 | Defer | Useful later for exhaustive local search, but v1.1 needs compiler semantics and logit embedding first. |
+| Custom CUDA kernels | Defer | Local CUDA is unavailable and v1.1 does not need kernel work. |
+| Mathematica | Optional oracle only | Do not make v1.1 depend on proprietary tooling. |
+| Lean / theorem prover | Do not add | Current recovery contract is numeric/high-precision/verifier-gated. |
+| Units libraries such as Pint | Do not add | Demo guidance favors normalized dimensionless laws; units would distract from compiler warm starts. |
+| `torch.nn.functional.gumbel_softmax` as public API | Do not add | Current PyTorch docs flag it as legacy; local softmax/snap is enough. |
+
+## Installation
+
+No installation changes are required for v1.1.
+
+Current `pyproject.toml` already declares the needed runtime stack:
 
 ```toml
-[project]
-requires-python = ">=3.11,<3.13"
 dependencies = [
   "torch>=2.10",
   "numpy>=1.26",
@@ -201,61 +259,60 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=7.4",
-  "ruff",
 ]
 ```
 
-Keep exact locks in the dev environment, but keep library lower bounds conservative until CI exists. Do not pin to CUDA-specific PyTorch wheels in project metadata; document GPU installation separately if needed.
+Do not expand runtime dependencies unless implementation uncovers a concrete blocker.
 
-## Installation
+## Integration Checklist for Roadmap
 
-For the current local repo, no new installs are required for the MVP research stack. The environment already imports the required runtime packages.
+Recommended phase ordering for v1.1:
 
-Suggested commands after the first package skeleton exists:
+1. **Compiler AST subset and reports** - Add deterministic SymPy-to-EML compilation with unsupported-node errors and metadata.
+2. **Constant catalog and embedding** - Extend `SoftEMLTree` labels to include compiler constants; implement embed/snap round-trip tests.
+3. **Perturbed warm-start training** - Add `TrainingConfig` initialization hooks and logit perturbation reports.
+4. **Demo promotion** - Promote Beer-Lambert first, then Michaelis-Menten if compiled depth and verification pass.
+5. **Stretch reporting** - Add Planck compiler/warm-start report without requiring recovery.
 
-```bash
-# Run tests in the current environment
-python -m pytest
+Phase dependencies:
 
-# Optional once pyproject.toml exists
-uv sync
-uv run pytest
-uv run ruff check .
+```text
+compiler subset -> constant catalog -> embedding -> perturbation training -> trained demos
 ```
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Python-first MVP | HIGH | Required packages are already installed locally; source docs explicitly call for a Python/PyTorch-first implementation. |
-| PyTorch `complex128` training | HIGH | Directly grounded in the paper and `.planning/PROJECT.md`; official docs support complex tensors, while warning they remain beta. |
-| Eager-first execution | HIGH | The paper reports numerical pathologies that need transparent debugging before compilation. |
-| SymPy + mpmath verification layer | HIGH | Matches project requirement for symbolic cleanup plus high-precision checks using local packages. |
-| Avoiding PySR/JAX as core | HIGH | The project is specifically about complete EML trees, not generic heterogeneous symbolic regression. |
-| Deferring Rust | MEDIUM | Paper strongly supports Rust speedups for verification, but implementation should measure bottlenecks before adding language complexity. |
-| Deferring custom CUDA | HIGH | Explicitly out of scope for v1 in `.planning/PROJECT.md`; current local environment has no CUDA available. |
-| uv/Ruff developer workflow | MEDIUM | Current official docs and Python practice support them, but they are not algorithmically necessary. |
+| No new dependencies | HIGH | Existing `pyproject.toml`, source modules, and official docs cover the needed compiler/warm-start functions. |
+| SymPy as compiler front end | HIGH | SymPy `Expr.func` / `Expr.args` are designed for expression-tree traversal; existing demos already use SymPy candidates. |
+| PyTorch for warm-start logits | HIGH | Current `SoftEMLTree` already exposes slot logits and `set_slot`; perturbation is simple tensor initialization. |
+| Literal constant catalog | HIGH | Existing `Const(value)` supports arbitrary constants; master-tree labels need a small extension. |
+| Pure `1`-basis constant compilation for demos | MEDIUM/LOW | Paper-fidelitous but likely deep and brittle for `0.8`, `0.5`, and `2.0`; defer unless v1.1 explicitly wants that research. |
+| Beer-Lambert warm-start recovery | HIGH | Formula is structurally simple once constants are available. |
+| Michaelis-Menten warm-start recovery | MEDIUM | Rational arithmetic can inflate EML depth; needs depth/node-count guardrails. |
+| Planck warm-start recovery | LOW/MEDIUM | Best treated as stretch due to power + exponential + subtraction + division depth. |
 
 ## Sources
 
 Local project sources:
 
-- `.planning/PROJECT.md` - active requirements: Python/PyTorch first, complex128 training, snapping, JSON/SymPy export, mpmath verification, demos, tests; custom CUDA and web UI out of scope.
-- `sources/NORTH_STAR.md` - hybrid pipeline, train/evaluate split, complete master tree, optimizer requirements, hardening/snap, local cleanup, verifier, 2026 technology guidance.
-- `sources/paper.pdf` - EML definition, complex-domain requirement, complete tree grammar, master formula, PyTorch `complex128` experiments, Adam/hardening/clamping, success-rate limits by depth, Rust verification speed note.
-- `sources/FOR_DEMO.md` - demo ordering, normalization guidance, and warnings against high-depth/unit-heavy/special-function demos.
-- `AGENTS.md` - repo source-of-truth pointers.
+- `.planning/PROJECT.md` - v1.1 goal: ordinary-expression compiler subset, warm-start embedding, perturbation recovery, Beer-Lambert/Michaelis-Menten trained demos, Planck stretch reporting.
+- `.planning/STATE.md` - confirms v1 is complete and v1.1 is defining requirements.
+- `.planning/REQUIREMENTS.md` and `.planning/ROADMAP.md` - v1 validated capabilities and verifier-owned recovery contract.
+- `src/eml_symbolic_regression/expression.py` - exact `Const`, `Var`, `Eml`, JSON artifacts, SymPy candidate support, paper identities.
+- `src/eml_symbolic_regression/master_tree.py` - current soft tree labels, logits, `set_slot`, snap, `force_exp`, `force_log`.
+- `src/eml_symbolic_regression/optimize.py` - current Adam training config and manifest shape.
+- `src/eml_symbolic_regression/datasets.py` - current demo catalog expressions for Beer-Lambert, Michaelis-Menten, and Planck.
+- `src/eml_symbolic_regression/verify.py`, `cleanup.py`, `cli.py` - existing verifier, cleanup, and demo report integration points.
+- `sources/NORTH_STAR.md` - warm-start/recovery rationale, hybrid pipeline, complex128 training, hardening/snap, verification.
+- `sources/FOR_DEMO.md` - demo ordering and cautions about depth, units, and Planck as a hard showcase.
 
 Official/current external sources checked:
 
+- SymPy parsing docs: https://docs.sympy.org/latest/modules/parsing.html
+- SymPy expression manipulation docs: https://docs.sympy.org/latest/tutorials/intro-tutorial/manipulation.html
 - PyTorch complex numbers docs: https://docs.pytorch.org/docs/stable/complex_numbers.html
-- PyTorch `torch.compile` docs: https://docs.pytorch.org/docs/stable/generated/torch.compile.html
-- PyTorch `torch.export` docs: https://docs.pytorch.org/docs/stable/user_guide/torch_compiler/export.html
 - PyTorch `gumbel_softmax` docs: https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.gumbel_softmax.html
-- SymPy simplification tutorial: https://docs.sympy.org/latest/tutorials/intro-tutorial/simplification.html
-- SymPy term rewriting docs: https://docs.sympy.org/latest/modules/rewriting.html
-- mpmath docs: https://mpmath.org/doc/current/
-- pytest parametrization docs: https://docs.pytest.org/en/stable/how-to/parametrize.html
-- Python packaging `pyproject.toml` metadata specs: https://packaging.python.org/en/latest/specifications/section-distribution-metadata/
-- uv docs: https://docs.astral.sh/uv/
-- NVIDIA CUDA C++ Programming Guide 13.2: https://docs.nvidia.com/cuda/archive/13.2.0/cuda-c-programming-guide/contents.html
+- Python dataclasses docs: https://docs.python.org/3/library/dataclasses.html
+
