@@ -1047,6 +1047,7 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
 
     active_slot_changes = None
     changed_slots = None
+    initialization: Mapping[str, Any] = {}
     if isinstance(candidate, Mapping):
         initialization = candidate.get("best_restart", {}).get("initialization") or {}
         perturbation = initialization.get("perturbation") or {}
@@ -1060,6 +1061,9 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "post_snap_loss": candidate.get("post_snap_loss") if isinstance(candidate, Mapping) else None,
         "snap_min_margin": candidate.get("snap", {}).get("min_margin") if isinstance(candidate, Mapping) else None,
         "snap_active_node_count": candidate.get("snap", {}).get("active_node_count") if isinstance(candidate, Mapping) else None,
+        "scaffold_source": initialization.get("kind") if isinstance(initialization, Mapping) else None,
+        "scaffold_strategy": initialization.get("strategy") if isinstance(initialization, Mapping) else None,
+        "scaffold_coefficient": initialization.get("coefficient") if isinstance(initialization, Mapping) else None,
         "active_slot_count": active_slot_changes,
         "changed_slot_count": changed_slots,
         "verifier_status": verification.get("status") if isinstance(verification, Mapping) else None,
