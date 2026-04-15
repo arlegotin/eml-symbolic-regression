@@ -38,11 +38,11 @@ Requirements for this milestone only. Completed v1, v1.1, v1.2, and v1.3 require
 
 ### Before/After Campaign Evaluation
 
-- [ ] **EVAL-01**: User can rerun `standard` and `showcase` campaigns after optimizer/compiler changes under v1.4-labeled output folders.
-- [ ] **EVAL-02**: User receives a before/after comparison report that computes deltas against v1.3 `standard` and `showcase` baselines for recovery, unsupported rate, failure rate, losses, and runtime.
-- [ ] **EVAL-03**: User can see whether v1.4 improved, regressed, or left unchanged each target category: blind recovery, Beer-Lambert perturbation robustness, and compiler coverage.
-- [ ] **EVAL-04**: User can reproduce the comparison with one documented command from a clean checkout.
-- [ ] **EVAL-05**: User can run tests that lock the diagnostic, optimizer/comparison, compiler, and campaign comparison behavior.
+- [x] **EVAL-01**: User can rerun `standard` and `showcase` campaigns after optimizer/compiler changes under v1.4-labeled output folders.
+- [x] **EVAL-02**: User receives a before/after comparison report that computes deltas against v1.3 `standard` and `showcase` baselines for recovery, unsupported rate, failure rate, losses, and runtime.
+- [x] **EVAL-03**: User can see whether v1.4 improved, regressed, or left unchanged each target category: blind recovery, Beer-Lambert perturbation robustness, and compiler coverage.
+- [x] **EVAL-04**: User can reproduce the comparison with one documented command from a clean checkout.
+- [x] **EVAL-05**: User can run tests that lock the diagnostic, optimizer/comparison, compiler, and campaign comparison behavior.
 
 ## Future Requirements
 
@@ -86,11 +86,11 @@ Deferred to later milestones.
 | COV-02 | Phase 27 | Complete |
 | COV-03 | Phase 27 | Complete |
 | COV-04 | Phase 27 | Complete |
-| EVAL-01 | Phase 28 | Pending |
-| EVAL-02 | Phase 28 | Pending |
-| EVAL-03 | Phase 28 | Pending |
-| EVAL-04 | Phase 28 | Pending |
-| EVAL-05 | Phase 28 | Pending |
+| EVAL-01 | Phase 28 | Complete |
+| EVAL-02 | Phase 28 | Complete |
+| EVAL-03 | Phase 28 | Complete |
+| EVAL-04 | Phase 28 | Complete |
+| EVAL-05 | Phase 28 | Complete |
 
 **Coverage:**
 - v1.4 requirements: 21 total
@@ -99,4 +99,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after completing Phase 27 compiler coverage improvements*
+*Last updated: 2026-04-15 after completing Phase 28 before/after campaign evaluation*

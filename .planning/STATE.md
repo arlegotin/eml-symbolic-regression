@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Recovery Performance Improvements
 current_phase: 28
-status: ready_for_phase_planning
-stopped_at: Phase 27 complete; ready for Phase 28 planning
-last_updated: "2026-04-15T16:25:00Z"
+status: ready_for_milestone_audit
+stopped_at: Phase 28 complete; v1.4 ready for milestone audit
+last_updated: "2026-04-15T16:55:00Z"
 last_activity: 2026-04-15
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 4
-  completed_plans: 4
-  percent: 80
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
@@ -30,17 +30,17 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: Not started
-Status: Phase 27 complete; ready to plan phase 28
-Last activity: 2026-04-15 - Phase 27 compiler coverage completed
-Progress: [########--] 80% by completed phases (v1.4: 4/5 planned)
+Phase: Phase 28 complete
+Plan: 28-01 complete
+Status: v1.4 ready for milestone audit
+Last activity: 2026-04-15 - Phase 28 before/after campaign evaluation completed
+Progress: [##########] 100% by completed phases (v1.4: 5/5 planned)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1, v1.1, v1.2, and v1.3 phases complete; v1.4 has 4/5 phases complete
+- Total plans completed: Historical v1, v1.1, v1.2, and v1.3 phases complete; v1.4 has 5/5 phases complete
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
@@ -103,7 +103,7 @@ Target features:
 | 25 | Blind Optimizer Recovery Improvements | Complete | BLIND-01, BLIND-02, BLIND-03, BLIND-04 |
 | 26 | Warm-Start Perturbation Robustness | Complete | PERT-01, PERT-02, PERT-03, PERT-04 |
 | 27 | Compiler Coverage and Depth Reduction | Complete | COV-01, COV-02, COV-03, COV-04 |
-| 28 | Before/After Campaign Evaluation | Pending | EVAL-01, EVAL-02, EVAL-03, EVAL-04, EVAL-05 |
+| 28 | Before/After Campaign Evaluation | Complete | EVAL-01, EVAL-02, EVAL-03, EVAL-04, EVAL-05 |
 
 ## Accumulated Context
 
@@ -126,6 +126,7 @@ Target features:
 - v1.4 should change the measured performance, not the definition of `recovered`.
 - v1.4 should use the committed v1.3 `standard` and `showcase` campaigns as before/after baselines.
 - v1.4 maps 21 requirements across phases 24-28.
+- Phase 28 comparison shows overall v1.4 recovery improved from 18/45 to 27/45 across standard and showcase campaigns.
 
 ### Pending Todos
 
@@ -138,8 +139,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: v1.4 roadmap created; ready for Phase 24 planning
+Stopped at: Phase 28 complete; v1.4 ready for milestone audit
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after creating milestone v1.4 roadmap*
+*Last updated: 2026-04-15 after completing Phase 28 before/after campaign evaluation*

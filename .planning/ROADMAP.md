@@ -19,7 +19,7 @@ v1.4 improves the system against those committed baselines. The milestone should
 - **v1.1 EML Compiler and Warm Starts** - Phases 8-13 complete (completed 2026-04-15)
 - **v1.2 Training Benchmark and Recovery Evidence** - Phases 14-18 complete (completed 2026-04-15)
 - **v1.3 Benchmark Campaign and Evidence Report** - Phases 19-23 complete (completed 2026-04-15)
-- **v1.4 Recovery Performance Improvements** - Phases 24-28 planned
+- **v1.4 Recovery Performance Improvements** - Phases 24-28 complete (completed 2026-04-15)
 
 ## Completed Milestone Context
 
@@ -41,7 +41,7 @@ v1.4 improves the system against those committed baselines. The milestone should
 - [x] **Phase 25: Blind Optimizer Recovery Improvements** - Improve blind optimizer behavior for shallow formulas and preserve verifier-owned recovery semantics. (requirements: BLIND-01, BLIND-02, BLIND-03, BLIND-04) (completed 2026-04-15)
 - [x] **Phase 26: Warm-Start Perturbation Robustness** - Improve or precisely diagnose Beer-Lambert warm-start failures at stronger perturbations. (requirements: PERT-01, PERT-02, PERT-03, PERT-04) (completed 2026-04-15)
 - [x] **Phase 27: Compiler Coverage and Depth Reduction** - Reduce unsupported/depth-gated FOR_DEMO cases while keeping compiler behavior fail-closed. (requirements: COV-01, COV-02, COV-03, COV-04) (completed 2026-04-15)
-- [ ] **Phase 28: Before/After Campaign Evaluation** - Rerun standard/showcase campaigns and report deltas against v1.3 baselines. (requirements: EVAL-01, EVAL-02, EVAL-03, EVAL-04, EVAL-05)
+- [x] **Phase 28: Before/After Campaign Evaluation** - Rerun standard/showcase campaigns and report deltas against v1.3 baselines. (requirements: EVAL-01, EVAL-02, EVAL-03, EVAL-04, EVAL-05) (completed 2026-04-15)
 
 ## Phase Details
 
@@ -115,10 +115,10 @@ Phase 24 creates a shared diagnostic baseline. Phases 25-27 can be executed inde
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DIAG-01 | Phase 24 | Pending |
-| DIAG-02 | Phase 24 | Pending |
-| DIAG-03 | Phase 24 | Pending |
-| DIAG-04 | Phase 24 | Pending |
+| DIAG-01 | Phase 24 | Complete |
+| DIAG-02 | Phase 24 | Complete |
+| DIAG-03 | Phase 24 | Complete |
+| DIAG-04 | Phase 24 | Complete |
 | BLIND-01 | Phase 25 | Complete |
 | BLIND-02 | Phase 25 | Complete |
 | BLIND-03 | Phase 25 | Complete |
@@ -131,11 +131,11 @@ Phase 24 creates a shared diagnostic baseline. Phases 25-27 can be executed inde
 | COV-02 | Phase 27 | Complete |
 | COV-03 | Phase 27 | Complete |
 | COV-04 | Phase 27 | Complete |
-| EVAL-01 | Phase 28 | Pending |
-| EVAL-02 | Phase 28 | Pending |
-| EVAL-03 | Phase 28 | Pending |
-| EVAL-04 | Phase 28 | Pending |
-| EVAL-05 | Phase 28 | Pending |
+| EVAL-01 | Phase 28 | Complete |
+| EVAL-02 | Phase 28 | Complete |
+| EVAL-03 | Phase 28 | Complete |
+| EVAL-04 | Phase 28 | Complete |
+| EVAL-05 | Phase 28 | Complete |
 
 **Coverage:** 21/21 v1.4 requirements mapped. No orphaned requirements. No duplicate phase assignments.
 
@@ -153,7 +153,7 @@ Phase 24 creates a shared diagnostic baseline. Phases 25-27 can be executed inde
 | 25. Blind Optimizer Recovery Improvements | 1/1 | Complete    | 2026-04-15 |
 | 26. Warm-Start Perturbation Robustness | 1/1 | Complete    | 2026-04-15 |
 | 27. Compiler Coverage and Depth Reduction | 1/1 | Complete    | 2026-04-15 |
-| 28. Before/After Campaign Evaluation | 0/1 | Pending | - |
+| 28. Before/After Campaign Evaluation | 1/1 | Complete | 2026-04-15 |
 
 ---
-*Roadmap updated: 2026-04-15 for milestone v1.4*
+*Roadmap updated: 2026-04-15 after completing milestone v1.4*
