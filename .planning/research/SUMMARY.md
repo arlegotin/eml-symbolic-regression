@@ -1,50 +1,46 @@
-# Research Summary: v1.2 Training Benchmark and Recovery Evidence
+# Research Summary: v1.3 Benchmark Campaign and Evidence Report
 
 **Project:** EML Symbolic Regression
-**Domain:** Repeatable training benchmarks and recovery evidence for the EML symbolic-regression engine
+**Domain:** Benchmark campaign reporting, CSV export, and static visualization for EML recovery evidence
 **Recorded:** 2026-04-15
-**Research decision:** External research skipped; this is an internal evidence milestone grounded in current code, v1.1 artifacts, `sources/NORTH_STAR.md`, and `sources/FOR_DEMO.md`.
+**Research decision:** External research skipped. This milestone is a local evidence/reporting milestone based on the current benchmark harness, existing artifacts, `sources/paper.pdf`, `sources/NORTH_STAR.md`, and `sources/FOR_DEMO.md`.
 
 ## Executive Summary
 
-v1.2 should turn the current anecdotal training results into a reproducible benchmark harness. The important question is no longer whether the compiler and warm-start infrastructure can represent formulas; v1.1 proved that. The important question is how often training recovers exact verified formulas under blind starts, same-basin warm starts, perturbation sweeps, and current depth gates.
+v1.3 should convert the v1.2 benchmark harness from "can measure" into "can showcase." The milestone should run a real campaign, export tidy data, generate static figures, and assemble a report that answers the user's real question: how do the original paper's EML ideas perform in practice?
 
-The milestone should preserve the existing verifier-owned recovery contract. A run is recovered only when the snapped exact candidate passes verification. Training loss, compiler success, catalog equality, and same-AST warm-start return are useful evidence stages, but none of them should become a recovery claim by themselves.
-
-## Current Evidence Baseline
-
-- Blind `exp` training recovered after snapping in the existing artifact: `best_loss ~= 3.6e-6`, `post_snap_loss = 0`, verifier passed.
-- Beer-Lambert warm starts recover perfectly from no perturbation or mild perturbation: losses are near zero and high-precision verification passes.
-- A stronger Beer-Lambert perturbation that changed active discrete slots failed in the tested run: `best_loss ~= 0.213`, verifier failed.
-- Michaelis-Menten and normalized Planck remain unsupported/stretch under the current compiler and depth gates.
+The report must preserve the existing honesty contract. A polished graph should never merge blind recovery with same-AST warm-start return, and unsupported/depth-gated formulas should remain visible rather than hidden.
 
 ## Stack Additions
 
-No new mandatory runtime dependencies are required. Prefer standard library JSON, CSV, Markdown, and existing PyTorch/SymPy/mpmath/pytest facilities. Add plotting or dataframe dependencies only if a later phase proves they materially improve reporting.
+- Keep JSON and Markdown as first-class report artifacts.
+- Add standard-library CSV export for tabular analysis.
+- Add a lightweight static plotting dependency during implementation, likely `matplotlib`, unless a no-dependency SVG approach proves sufficient during planning.
+- Avoid notebook-only workflows; the CLI should generate reproducible artifacts directly.
 
 ## Feature Table Stakes
 
-- Deterministic benchmark suite files define formulas, datasets, start modes, seeds, perturbation levels, optimizer budgets, verifier settings, and artifact locations.
-- CLI support runs a full suite or a filtered subset and writes per-run JSON artifacts plus aggregate summaries.
-- Aggregation reports recovery rate, verifier pass/fail, best loss, post-snap loss, snap outcome, active slot changes, runtime, unsupported reasons, and failure classes.
-- Formula coverage includes shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten diagnostics, normalized Planck stretch diagnostics, and selected `sources/FOR_DEMO.md` formulas where current gates allow honest runs.
-- Documentation answers whether the system is promising from aggregate evidence rather than cherry-picked examples.
+- Campaign presets for `smoke`, `standard`, and `showcase` budget levels.
+- Versioned output folders containing raw run artifacts, aggregate JSON, CSV exports, figures, and `report.md`.
+- CSV tables for run-level metrics, grouped recovery rates, loss summaries, perturbation sweeps, runtime/depth, and failure taxonomy.
+- Static plots for recovery rate by formula/mode, best loss versus post-snap loss, Beer-Lambert perturbation sensitivity, runtime/depth, and unsupported/failure breakdown.
+- A concise narrative report explaining what works, what is promising, what fails, and what should be improved next.
 
 ## Watch Out For
 
-- Do not hide failed or unsupported runs.
-- Do not call same-AST warm-start return "discovery".
-- Do not promote formulas based on loss alone; `verify.py` remains the owner of `recovered`.
-- Keep CI smoke suites small enough to run quickly, with larger benchmark suites available as explicit commands.
-- Treat Planck as a stretch diagnostic unless depth and training evidence improve.
+- Do not let graph polish obscure weak results.
+- Do not count same-AST warm-start returns as blind discovery.
+- Do not require a long campaign in ordinary tests; use smoke fixtures and synthetic mini data for CI.
+- Do not tune the optimizer inside this milestone; use the campaign to create the scoreboard first.
+- Keep output deterministic enough that future optimizer milestones can compare "before vs after" cleanly.
 
 ## Recommended Phase Shape
 
-1. Benchmark contract and suite registry.
-2. Benchmark runner and per-run artifacts.
-3. Training matrix coverage for blind starts, warm starts, perturbation sweeps, and unsupported/stretch cases.
-4. Aggregation and evidence reports.
-5. Regression tests and documentation.
+1. Campaign presets and run manifests.
+2. CSV export and derived metrics.
+3. Plot generation.
+4. Report assembly.
+5. Campaign smoke/full-run documentation and lockdown.
 
 ---
 *Research decision recorded: 2026-04-15*

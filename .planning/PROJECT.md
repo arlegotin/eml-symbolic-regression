@@ -26,6 +26,16 @@ v1.2 added deterministic benchmark suites, CLI suite execution, per-run artifact
 - Formula coverage for shallow blind baselines, Beer-Lambert perturbation levels, Michaelis-Menten and Planck depth diagnostics, and selected `sources/FOR_DEMO.md` showcase formulas.
 - Documentation and tests that separate promising infrastructure from actual measured recovery performance.
 
+## Current Milestone: v1.3 Benchmark Campaign and Evidence Report
+
+**Goal:** Showcase how the paper's EML symbolic-regression idea performs in practice by running a real benchmark campaign and producing crisp numbers, tables, graphs, and a polished evidence report.
+
+**Target features:**
+- Campaign presets that run the v1.2 benchmark matrix at smoke, standard, and showcase budgets with reproducible output folders.
+- CSV exports for run-level metrics, grouped recovery rates, losses, timing, perturbation sensitivity, and failure taxonomy.
+- Static publication-style plots for recovery rate, loss before/after snapping, Beer-Lambert perturbation behavior, runtime/depth, and unsupported/failure breakdowns.
+- A self-contained report folder with `report.md`, figures, CSV/JSON data, exact commands, and an honest narrative about what works, what fails, and what remains hard.
+
 ## Requirements
 
 ### Validated
@@ -49,10 +59,11 @@ v1.2 added deterministic benchmark suites, CLI suite execution, per-run artifact
 
 ### Active
 
-- [ ] Decide the next milestone scope.
-- [ ] Use v1.2 benchmark evidence to guide optimizer robustness improvements for slot-changing perturbations.
-- [ ] Consider reducing compiled arithmetic tree depth so Michaelis-Menten can promote under practical warm-start gates.
-- [ ] Consider pure `{1, eml}` synthesis or coefficient fitting for literal constants in a later milestone.
+- [ ] Run a standard benchmark campaign that is large enough to produce meaningful showcase evidence.
+- [ ] Export tidy CSV tables suitable for graphs and external analysis.
+- [ ] Generate static plots that make recovery rates, losses, perturbation sensitivity, runtime, and failure classes easy to understand.
+- [ ] Produce a polished benchmark evidence report that explains how the original paper's idea performs in this implementation.
+- [ ] Keep blind recovery, same-AST warm-start return, unsupported cases, and failures visually and numerically distinct.
 
 ### Out of Scope
 
@@ -92,6 +103,7 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 | Planck remains stretch reporting | The compiled Planck tree exceeds default warm-start gates; false promotion would weaken the recovery contract. | ✓ Good |
 | v1.2 focuses on evidence before algorithm expansion | The last training check showed shallow and same-basin successes but strong perturbation failure, so measurement had to precede optimizer claims. | ✓ Good |
 | Same-AST warm-start return is not blind discovery | Benchmark reports count same-AST return separately from verifier-owned recovery rate and unsupported cases. | ✓ Good |
+| v1.3 prioritizes showcase evidence over optimizer changes | The user wants crisp numbers, graphs, and a real-life performance narrative before tuning the algorithm. | - Pending |
 
 ## Evolution
 
@@ -111,4 +123,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after shipping milestone v1.2*
+*Last updated: 2026-04-15 after starting milestone v1.3*
