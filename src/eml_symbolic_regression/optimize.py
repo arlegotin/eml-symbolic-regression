@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 
 import numpy as np
 import torch
 
 from .master_tree import SnapResult, SoftEMLTree
+from .expression import format_constant_value
 from .semantics import AnomalyStats, as_complex_tensor, mse_complex_numpy
 
 
@@ -16,6 +17,7 @@ from .semantics import AnomalyStats, as_complex_tensor, mse_complex_numpy
 class TrainingConfig:
     depth: int = 2
     variables: tuple[str, ...] = ("x",)
+    constants: tuple[complex, ...] = (1.0,)
     steps: int = 300
     restarts: int = 3
     lr: float = 0.05
@@ -46,6 +48,7 @@ def fit_eml_tree(
     inputs: Mapping[str, Any],
     target: Any,
     config: TrainingConfig,
+    initializer: Callable[[SoftEMLTree, int, int], dict[str, Any]] | None = None,
 ) -> FitResult:
     """Fit a soft EML tree and return the best snapped candidate.
 
@@ -61,8 +64,9 @@ def fit_eml_tree(
     for restart in range(config.restarts):
         seed = config.seed + restart
         torch.manual_seed(seed)
-        model = SoftEMLTree(config.depth, config.variables)
+        model = SoftEMLTree(config.depth, config.variables, config.constants)
         model.reset_parameters(seed=seed, scale=0.25)
+        initialization_log = initializer(model, restart, seed) if initializer is not None else None
         optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
         losses: list[float] = []
         final_stats = AnomalyStats()
@@ -90,6 +94,7 @@ def fit_eml_tree(
             "steps_completed": len(losses),
             "best_fit_loss": best_loss,
             "final_anomalies": final_stats.as_dict(),
+            "initialization": initialization_log,
         }
         restart_logs.append(log)
         if best is None or best_loss < best[0]:
@@ -105,7 +110,7 @@ def fit_eml_tree(
     status = "snapped_candidate" if np.isfinite(post_snap_loss) else "failed"
     manifest = {
         "schema": "eml.run_manifest.v1",
-        "config": config.__dict__,
+        "config": {**config.__dict__, "constants": [format_constant_value(value) for value in config.constants]},
         "best_restart": best_log,
         "restarts": restart_logs,
         "snap": snap.as_dict(),

@@ -15,6 +15,22 @@ from .semantics import eml_numpy, eml_torch
 AST_SCHEMA = "eml.ast.v1"
 
 
+def format_constant_value(value: complex) -> str | dict[str, str]:
+    """Return a stable JSON representation for a scalar constant."""
+
+    value = complex(value)
+    if abs(value.imag) < 1e-15:
+        real = float(value.real)
+        return str(int(real)) if real.is_integer() else repr(real)
+    return {"real": repr(float(value.real)), "imag": repr(float(value.imag))}
+
+
+def parse_constant_value(value: str | float | int | Mapping[str, Any]) -> complex:
+    if isinstance(value, Mapping):
+        return complex(float(value["real"]), float(value["imag"]))
+    return complex(float(value))
+
+
 class Candidate(Protocol):
     candidate_kind: str
 
@@ -55,12 +71,13 @@ class Expr:
         raise NotImplementedError
 
     def to_document(self, variables: list[str] | None = None, **metadata: Any) -> dict[str, Any]:
+        constants = sorted(self.constants(), key=lambda value: (value.real, value.imag))
         return {
             "schema": AST_SCHEMA,
             "semantics": {
                 "operator": "exp(x)-log(y)",
                 "log_branch": "principal",
-                "constant_basis": ["1"],
+                "constant_basis": [format_constant_value(value) for value in constants],
                 "verification_mode": "canonical",
             },
             "variables": variables or sorted(self.variables()),
@@ -74,6 +91,9 @@ class Expr:
         }
 
     def variables(self) -> set[str]:
+        raise NotImplementedError
+
+    def constants(self) -> set[complex]:
         raise NotImplementedError
 
 
@@ -110,11 +130,7 @@ class Const(Expr):
         return sp.Float(self.value.real) + sp.I * sp.Float(self.value.imag)
 
     def to_node(self) -> dict[str, Any]:
-        if abs(self.value.imag) < 1e-15:
-            value = str(int(self.value.real)) if self.value.real.is_integer() else repr(float(self.value.real))
-        else:
-            value = {"real": repr(float(self.value.real)), "imag": repr(float(self.value.imag))}
-        return {"kind": "const", "value": value}
+        return {"kind": "const", "value": format_constant_value(self.value)}
 
     def node_count(self) -> int:
         return 1
@@ -124,6 +140,9 @@ class Const(Expr):
 
     def variables(self) -> set[str]:
         return set()
+
+    def constants(self) -> set[complex]:
+        return {complex(self.value)}
 
 
 @dataclass(frozen=True)
@@ -153,6 +172,9 @@ class Var(Expr):
 
     def variables(self) -> set[str]:
         return {self.name}
+
+    def constants(self) -> set[complex]:
+        return set()
 
 
 @dataclass(frozen=True)
@@ -188,14 +210,15 @@ class Eml(Expr):
     def variables(self) -> set[str]:
         return self.left.variables() | self.right.variables()
 
+    def constants(self) -> set[complex]:
+        return self.left.constants() | self.right.constants()
+
 
 def expr_from_node(node: Mapping[str, Any]) -> Expr:
     kind = node["kind"]
     if kind == "const":
         value = node.get("value", "1")
-        if isinstance(value, Mapping):
-            return Const(complex(float(value["real"]), float(value["imag"])))
-        return Const(complex(float(value)))
+        return Const(parse_constant_value(value))
     if kind == "var":
         return Var(str(node["name"]))
     if kind == "eml":
@@ -219,6 +242,18 @@ def log_expr(variable: str = "x") -> Expr:
     """Paper identity: ln(x) = eml(1, eml(eml(1, x), 1))."""
 
     return Eml(Const(1.0), Eml(Eml(Const(1.0), Var(variable)), Const(1.0)))
+
+
+def exp_of(expr: Expr) -> Expr:
+    """Generalized paper identity: exp(a) = eml(a, 1)."""
+
+    return Eml(expr, Const(1.0))
+
+
+def log_of(expr: Expr) -> Expr:
+    """Generalized paper identity for principal-branch log(a)."""
+
+    return Eml(Const(1.0), Eml(Eml(Const(1.0), expr), Const(1.0)))
 
 
 @dataclass(frozen=True)

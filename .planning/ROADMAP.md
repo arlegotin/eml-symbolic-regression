@@ -35,12 +35,12 @@ v1.0 established the exact EML semantics, soft master trees, optimizer, verifier
 - Decimal phases (8.1, 8.2): Urgent insertions, if needed later
 - v1.1 continues from completed Phase 7 and starts at Phase 8
 
-- [ ] **Phase 8: Compiler Contract and Direct Rules** - Establish a fail-closed compiler contract that emits exact EML ASTs, metadata, and validation evidence.
-- [ ] **Phase 9: Constant Catalog and AST Embedding** - Make compiled literal constants representable in soft trees and prove compiled ASTs can embed and snap back safely.
-- [ ] **Phase 10: Arithmetic Rule Corpus and Depth Gates** - Add the arithmetic rule subset needed for Beer-Lambert and Michaelis-Menten under explicit budgets and assumptions.
-- [ ] **Phase 11: Perturbed Warm-Start Training** - Perturb compiled embeddings, train through the existing optimizer, and classify post-snap outcomes honestly.
-- [ ] **Phase 12: Demo Promotion and Claim Reporting** - Promote Beer-Lambert and conditionally Michaelis-Menten through verifier-gated reports while keeping Planck as stretch evidence.
-- [ ] **Phase 13: Regression Tests and Documentation Lockdown** - Lock the compiler, warm-start, demo-claim, and documentation contracts with tests and public wording.
+- [x] **Phase 8: Compiler Contract and Direct Rules** - Establish a fail-closed compiler contract that emits exact EML ASTs, metadata, and validation evidence. (completed 2026-04-15)
+- [x] **Phase 9: Constant Catalog and AST Embedding** - Make compiled literal constants representable in soft trees and prove compiled ASTs can embed and snap back safely. (completed 2026-04-15)
+- [x] **Phase 10: Arithmetic Rule Corpus and Depth Gates** - Add the arithmetic rule subset needed for Beer-Lambert and Michaelis-Menten under explicit budgets and assumptions. (completed 2026-04-15)
+- [x] **Phase 11: Perturbed Warm-Start Training** - Perturb compiled embeddings, train through the existing optimizer, and classify post-snap outcomes honestly. (completed 2026-04-15)
+- [x] **Phase 12: Demo Promotion and Claim Reporting** - Promote Beer-Lambert and conditionally Michaelis-Menten through verifier-gated reports while keeping Planck as stretch evidence. (completed 2026-04-15)
+- [x] **Phase 13: Regression Tests and Documentation Lockdown** - Lock the compiler, warm-start, demo-claim, and documentation contracts with tests and public wording. (completed 2026-04-15)
 
 ## Phase Details
 
@@ -161,12 +161,12 @@ The order is intentionally linear. The compiler contract is the trust boundary; 
 | 5. Local Cleanup, SymPy Export, and Reports | Complete | Complete | 2026-04-15 |
 | 6. Demo Harness and Public Showcase | Complete | Complete | 2026-04-15 |
 | 7. Tests and Documentation | Complete | Complete | 2026-04-15 |
-| 8. Compiler Contract and Direct Rules | 0/TBD | Not started | - |
-| 9. Constant Catalog and AST Embedding | 0/TBD | Not started | - |
-| 10. Arithmetic Rule Corpus and Depth Gates | 0/TBD | Not started | - |
-| 11. Perturbed Warm-Start Training | 0/TBD | Not started | - |
-| 12. Demo Promotion and Claim Reporting | 0/TBD | Not started | - |
-| 13. Regression Tests and Documentation Lockdown | 0/TBD | Not started | - |
+| 8. Compiler Contract and Direct Rules | 1/1 | Complete    | 2026-04-15 |
+| 9. Constant Catalog and AST Embedding | 1/1 | Complete    | 2026-04-15 |
+| 10. Arithmetic Rule Corpus and Depth Gates | 1/1 | Complete    | 2026-04-15 |
+| 11. Perturbed Warm-Start Training | 1/1 | Complete    | 2026-04-15 |
+| 12. Demo Promotion and Claim Reporting | 1/1 | Complete    | 2026-04-15 |
+| 13. Regression Tests and Documentation Lockdown | 1/1 | Complete    | 2026-04-15 |
 
 ---
 *Roadmap updated: 2026-04-15 for milestone v1.1*

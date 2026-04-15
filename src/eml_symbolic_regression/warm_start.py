@@ -1,0 +1,173 @@
+"""Compiler-driven warm-start helpers for soft EML training."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, replace
+from typing import Any
+
+import numpy as np
+import torch
+
+from .expression import Expr, format_constant_value
+from .master_tree import (
+    EmbeddingConfig,
+    EmbeddingResult,
+    SoftEMLTree,
+    embed_expr_into_tree,
+    expressions_equal,
+)
+from .optimize import FitResult, TrainingConfig, fit_eml_tree
+from .verify import DataSplit, VerificationReport, verify_candidate
+
+
+@dataclass(frozen=True)
+class PerturbationConfig:
+    seed: int = 0
+    noise_scale: float = 0.0
+
+
+@dataclass(frozen=True)
+class PerturbationReport:
+    config: PerturbationConfig
+    active_slot_changes: tuple[dict[str, Any], ...]
+    pre_snap: dict[str, Any]
+    post_snap: dict[str, Any]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "config": self.config.__dict__,
+            "active_slot_changes": list(self.active_slot_changes),
+            "pre_snap": self.pre_snap,
+            "post_snap": self.post_snap,
+        }
+
+
+@dataclass(frozen=True)
+class WarmStartResult:
+    status: str
+    fit: FitResult
+    embedding: EmbeddingResult
+    verification: VerificationReport | None
+    manifest: dict[str, Any]
+
+
+def _slot_choice(tree: SoftEMLTree, slot: str) -> str:
+    node_path, side = slot.rsplit(".", 1)
+    node = tree.root
+    if node_path != "root":
+        for part in node_path.split(".")[1:]:
+            node = node.left_child if part == "L" else node.right_child
+            if node is None:
+                raise ValueError(f"Unknown slot path: {slot}")
+    logits = node.left_logits if side == "left" else node.right_logits
+    return node.labels[int(torch.argmax(logits.detach()).item())]
+
+
+def perturb_tree_logits(
+    tree: SoftEMLTree,
+    config: PerturbationConfig,
+    embedding: EmbeddingResult,
+) -> PerturbationReport:
+    pre_snap = tree.snap().as_dict()
+    before = {assignment.slot: _slot_choice(tree, assignment.slot) for assignment in embedding.assignments}
+
+    generator = torch.Generator()
+    generator.manual_seed(config.seed)
+    with torch.no_grad():
+        for parameter in tree.parameters():
+            if config.noise_scale:
+                noise = torch.randn(
+                    parameter.shape,
+                    generator=generator,
+                    dtype=parameter.dtype,
+                    device=parameter.device,
+                )
+                parameter.add_(noise * config.noise_scale)
+
+    post_snap = tree.snap().as_dict()
+    changes = []
+    for assignment in embedding.assignments:
+        after = _slot_choice(tree, assignment.slot)
+        changes.append(
+            {
+                "slot": assignment.slot,
+                "embedded_choice": assignment.choice,
+                "pre_choice": before[assignment.slot],
+                "post_choice": after,
+                "changed": before[assignment.slot] != after,
+            }
+        )
+    return PerturbationReport(config, tuple(changes), pre_snap, post_snap)
+
+
+def _sorted_constants(expression: Expr) -> tuple[complex, ...]:
+    return tuple(sorted(expression.constants(), key=lambda value: (value.real, value.imag)))
+
+
+def fit_warm_started_eml_tree(
+    inputs: dict[str, Any],
+    target: Any,
+    config: TrainingConfig,
+    compiled_expr: Expr,
+    *,
+    embedding_config: EmbeddingConfig | None = None,
+    perturbation_config: PerturbationConfig | None = None,
+    verification_splits: list[DataSplit] | None = None,
+    tolerance: float = 1e-8,
+    compiler_metadata: dict[str, Any] | None = None,
+) -> WarmStartResult:
+    embedding_config = embedding_config or EmbeddingConfig()
+    perturbation_config = perturbation_config or PerturbationConfig(seed=config.seed)
+    constants = _sorted_constants(compiled_expr)
+    if config.depth < compiled_expr.depth():
+        raise ValueError(f"training depth {config.depth} is smaller than compiled depth {compiled_expr.depth()}")
+    config = replace(config, variables=tuple(sorted(compiled_expr.variables())), constants=constants)
+
+    probe_tree = SoftEMLTree(config.depth, config.variables, config.constants)
+    embedding = embed_expr_into_tree(probe_tree, compiled_expr, config=embedding_config)
+    if not embedding.success:
+        raise ValueError(f"embedding failed: {embedding.diagnostics}")
+
+    def initializer(model: SoftEMLTree, restart: int, seed: int) -> dict[str, Any]:
+        embedded = embed_expr_into_tree(model, compiled_expr, config=embedding_config)
+        perturb = perturb_tree_logits(
+            model,
+            replace(perturbation_config, seed=perturbation_config.seed + restart),
+            embedded,
+        )
+        return {
+            "kind": "compiled_warm_start",
+            "restart": restart,
+            "seed": seed,
+            "embedding": embedded.as_dict(),
+            "perturbation": perturb.as_dict(),
+        }
+
+    fit = fit_eml_tree(inputs, target, config, initializer=initializer)
+    verification = verify_candidate(fit.snap.expression, verification_splits, tolerance=tolerance) if verification_splits else None
+
+    if expressions_equal(fit.snap.expression, compiled_expr):
+        status = "same_ast_return"
+    elif verification is not None and verification.status == "recovered":
+        status = "verified_equivalent_ast"
+    elif fit.status == "snapped_candidate":
+        status = "snapped_but_failed"
+    elif np.isfinite(fit.best_loss):
+        status = "soft_fit_only"
+    else:
+        status = "failed"
+
+    manifest = {
+        "schema": "eml.warm_start_manifest.v1",
+        "status": status,
+        "compiler_metadata": compiler_metadata,
+        "terminal_bank": {
+            "variables": list(config.variables),
+            "constants": [format_constant_value(value) for value in config.constants],
+        },
+        "embedding": embedding.as_dict(),
+        "perturbation_config": perturbation_config.__dict__,
+        "optimizer": fit.manifest,
+        "verification": verification.as_dict() if verification else None,
+    }
+    return WarmStartResult(status, fit, embedding, verification, manifest)

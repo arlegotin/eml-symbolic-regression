@@ -19,11 +19,14 @@ The paper shows that EML plus the constant `1` can generate the scientific-calcu
 - Adam-based candidate generation with restarts, annealing, entropy/size penalties, snapping, and manifests.
 - Verifier-owned recovery status over train, held-out, extrapolation, and mpmath point checks.
 - SymPy export and targeted cleanup/report helpers.
+- A fail-closed SymPy subset compiler that emits exact EML ASTs with metadata, rule traces, assumptions, literal-constant provenance, and independent validation against ordinary SymPy evaluation.
+- Constant-catalog soft master trees plus exact AST embedding with embed-to-snap round-trip checks.
+- Compiler-driven warm-start training reports that perturb, train, snap, and verify through the existing optimizer/verifier boundary.
 - Demo specs from `sources/FOR_DEMO.md`.
 - CLI commands for paper checks and demo reports.
 - Pytest coverage for the MVP pipeline.
 
-The implementation is intentionally honest about scope: exact EML recovery is demonstrated for paper-grounded shallow formulas, while harder showcase demos are verified catalog candidates unless a trained EML candidate is explicitly requested.
+The implementation is intentionally honest about scope: exact EML recovery is demonstrated for paper-grounded shallow formulas and for Beer-Lambert via a compiler-generated warm start. Harder showcase demos remain verified catalog candidates or explicit unsupported/depth reports unless a trained exact EML candidate passes the verifier.
 
 ## Quick Commands
 
@@ -45,6 +48,18 @@ Write a demo report:
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo planck --output artifacts/planck-report.json
 ```
 
+Compile a supported demo formula into EML and validate it:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --compile-eml --output artifacts/beer-compile-report.json
+```
+
+Run the compiler warm-start recovery path:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --warm-start-eml --output artifacts/beer-lambert-warm-report.json
+```
+
 Try soft EML training on a shallow demo:
 
 ```bash
@@ -62,7 +77,13 @@ python -m pytest
 - `recovered`: an exact EML AST passed verifier checks.
 - `verified_showcase`: a non-EML catalog formula from the demo spec passed verifier checks. This is useful for testing data, verification, cleanup, and reports, but it is not presented as EML discovery.
 - `failed`: verifier checks failed; the report includes a reason code.
+- `compiled_seed`: the source formula compiled to an exact EML AST and that AST verified numerically. This is a seed/provenance stage, not a trained recovery claim by itself.
+- `warm_start_attempt`: the compiler seed was embedded into a compatible soft tree, optionally perturbed, trained through the existing optimizer, snapped, and classified.
+- `trained_exact_recovery`: the post-training snapped exact EML AST passed the verifier. Demo reports promote top-level `claim_status` to `recovered` only at this stage.
+- `unsupported`: the compiler or warm-start gate failed closed, usually because an operator, constant policy, depth, node budget, or warm-start depth limit was exceeded.
 
 ## Limits
 
-This MVP does not promise blind recovery of arbitrary deep formulas. The paper reports that blind recovery degrades sharply with depth and that depth-6 blind recovery was not observed in the reported attempts. Harder demos should use curriculum, warm starts, or explicit priors before being presented as recovered EML formulas.
+This repo does not promise blind recovery of arbitrary deep formulas. The paper reports that blind recovery degrades sharply with depth and that depth-6 blind recovery was not observed in the reported attempts. Warm-start success is a different claim: it shows return-to-solution from a compiler-provided scaffold, with fixed literal constants when the source formula contains coefficients.
+
+The default compiler/warm-start gates intentionally keep Michaelis-Menten and Planck honest: their catalog formulas verify, but their compiled EML trees currently exceed the default depth budget for warm-start promotion.

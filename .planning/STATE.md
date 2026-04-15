@@ -1,7 +1,24 @@
+---
+gsd_state_version: 1.0
+milestone: v1.1
+milestone_name: milestone
+current_phase: 13
+status: planning
+stopped_at: v1.1 roadmap creation; next action is `/gsd-plan-phase 8`
+last_updated: "2026-04-15T10:19:23.784Z"
+last_activity: 2026-04-15
+progress:
+  total_phases: 6
+  completed_phases: 6
+  total_plans: 6
+  completed_plans: 6
+  percent: 100
+---
+
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 8 - Compiler Contract and Direct Rules
+**Current phase:** 13
 **Mode:** YOLO
 
 ## Project Reference
@@ -14,19 +31,21 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 ## Current Position
 
 Phase: 8 of 13 (Compiler Contract and Direct Rules)
-Plan: -
+Plan: Not started
 Status: Ready to plan
-Last activity: 2026-04-15 - v1.1 roadmap created with 22/22 requirements mapped
+Last activity: 2026-04-15
 Progress: [#####-----] 54% by completed phases (v1.1: 0/6)
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: Historical v1 phases complete; plan counts were not tracked in this v1.1 roadmap
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
 **Recent Trend:**
+
 - Trend: Unknown
 
 ## Artifacts
@@ -46,6 +65,7 @@ Progress: [#####-----] 54% by completed phases (v1.1: 0/6)
 Goal: Turn verified reference demos into actual EML-tree recovery workflows by compiling ordinary formulas into exact EML ASTs and using those trees as warm starts for training.
 
 Target features:
+
 - Ordinary-expression-to-EML compiler subset.
 - Warm-start embedding into soft master trees.
 - Perturbed warm-start recovery tests.

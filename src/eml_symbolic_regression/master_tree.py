@@ -11,6 +11,49 @@ from .expression import Const, Eml, Expr, Var
 from .semantics import AnomalyStats, as_complex_tensor, eml_torch
 
 
+def _canonical_constant(value: complex) -> complex:
+    value = complex(value)
+    return complex(0.0 if abs(value.real) < 1e-15 else value.real, 0.0 if abs(value.imag) < 1e-15 else value.imag)
+
+
+def normalize_constants(constants: tuple[complex, ...] = (1.0,)) -> tuple[complex, ...]:
+    seen: list[complex] = []
+    for value in (1.0, *constants):
+        canonical = _canonical_constant(value)
+        if not any(abs(canonical - existing) <= 1e-12 for existing in seen):
+            seen.append(canonical)
+    return tuple(sorted(seen, key=lambda item: (item.real, item.imag)))
+
+
+def constant_label(value: complex) -> str:
+    value = _canonical_constant(value)
+    if abs(value.imag) < 1e-15:
+        real = float(value.real)
+        body = str(int(real)) if real.is_integer() else repr(real)
+    else:
+        body = repr(complex(value))
+    return f"const:{body}"
+
+
+def parse_constant_label(label: str) -> complex:
+    if not label.startswith("const:"):
+        raise ValueError(f"Not a constant label: {label}")
+    body = label.split(":", 1)[1]
+    return _canonical_constant(complex(float(body)) if "j" not in body else complex(body))
+
+
+def expressions_equal(left: Expr, right: Expr, *, constant_tolerance: float = 1e-12) -> bool:
+    if isinstance(left, Const) and isinstance(right, Const):
+        return abs(complex(left.value) - complex(right.value)) <= constant_tolerance
+    if isinstance(left, Var) and isinstance(right, Var):
+        return left.name == right.name
+    if isinstance(left, Eml) and isinstance(right, Eml):
+        return expressions_equal(left.left, right.left, constant_tolerance=constant_tolerance) and expressions_equal(
+            left.right, right.right, constant_tolerance=constant_tolerance
+        )
+    return False
+
+
 @dataclass(frozen=True)
 class SnapDecision:
     path: str
@@ -36,23 +79,72 @@ class SnapResult:
         }
 
 
+@dataclass(frozen=True)
+class EmbeddingConfig:
+    strength: float = 30.0
+
+
+@dataclass(frozen=True)
+class EmbeddingAssignment:
+    slot: str
+    choice: str
+
+    def as_dict(self) -> dict[str, str]:
+        return {"slot": self.slot, "choice": self.choice}
+
+
+@dataclass(frozen=True)
+class EmbeddingResult:
+    success: bool
+    assignments: tuple[EmbeddingAssignment, ...]
+    snap: SnapResult
+    round_trip_equal: bool
+    diagnostics: tuple[str, ...]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "success": self.success,
+            "assignments": [assignment.as_dict() for assignment in self.assignments],
+            "snap": self.snap.as_dict(),
+            "round_trip_equal": self.round_trip_equal,
+            "diagnostics": list(self.diagnostics),
+        }
+
+
+class EmbeddingError(ValueError):
+    def __init__(self, reason: str, detail: str) -> None:
+        self.reason = reason
+        self.detail = detail
+        super().__init__(f"{reason}: {detail}")
+
+    def as_dict(self) -> dict[str, str]:
+        return {"reason": self.reason, "detail": self.detail}
+
+
 class _SoftNode(torch.nn.Module):
-    def __init__(self, depth: int, variables: tuple[str, ...], path: str = "root") -> None:
+    def __init__(
+        self,
+        depth: int,
+        variables: tuple[str, ...],
+        constants: tuple[complex, ...],
+        path: str = "root",
+    ) -> None:
         super().__init__()
         if depth < 1:
             raise ValueError("EML master-node depth must be >= 1")
         self.depth = depth
         self.variables = variables
+        self.constants = constants
         self.path = path
-        self.left_child = _SoftNode(depth - 1, variables, f"{path}.L") if depth > 1 else None
-        self.right_child = _SoftNode(depth - 1, variables, f"{path}.R") if depth > 1 else None
+        self.left_child = _SoftNode(depth - 1, variables, constants, f"{path}.L") if depth > 1 else None
+        self.right_child = _SoftNode(depth - 1, variables, constants, f"{path}.R") if depth > 1 else None
         choices = len(self.base_labels) + (1 if depth > 1 else 0)
         self.left_logits = torch.nn.Parameter(torch.zeros(choices, dtype=torch.float64))
         self.right_logits = torch.nn.Parameter(torch.zeros(choices, dtype=torch.float64))
 
     @property
     def base_labels(self) -> list[str]:
-        return ["const:1", *[f"var:{name}" for name in self.variables]]
+        return [*[constant_label(value) for value in self.constants], *[f"var:{name}" for name in self.variables]]
 
     @property
     def labels(self) -> list[str]:
@@ -81,7 +173,7 @@ class _SoftNode(torch.nn.Module):
 
     def _base_tensors(self, context: Mapping[str, torch.Tensor]) -> list[torch.Tensor]:
         first = next(iter(context.values()))
-        values = [torch.zeros_like(first, dtype=torch.complex128) + 1.0]
+        values = [torch.zeros_like(first, dtype=torch.complex128) + value for value in self.constants]
         values.extend(context[name].to(dtype=torch.complex128) for name in self.variables)
         return values
 
@@ -162,8 +254,8 @@ class _SoftNode(torch.nn.Module):
         margin = probability - second
         choice = self.labels[index]
         decisions.append(SnapDecision(self.path, side, choice, probability, margin))
-        if choice == "const:1":
-            return Const(1.0)
+        if choice.startswith("const:"):
+            return Const(parse_constant_label(choice))
         if choice.startswith("var:"):
             return Var(choice.split(":", 1)[1])
         if choice == "child":
@@ -195,11 +287,17 @@ class _SoftNode(torch.nn.Module):
 class SoftEMLTree(torch.nn.Module):
     """A complete depth-bounded EML tree with soft categorical gates."""
 
-    def __init__(self, depth: int, variables: tuple[str, ...] = ("x",)) -> None:
+    def __init__(
+        self,
+        depth: int,
+        variables: tuple[str, ...] = ("x",),
+        constants: tuple[complex, ...] = (1.0,),
+    ) -> None:
         super().__init__()
         self.depth = depth
         self.variables = tuple(variables)
-        self.root = _SoftNode(depth, self.variables)
+        self.constants = normalize_constants(constants)
+        self.root = _SoftNode(depth, self.variables, self.constants)
 
     def reset_parameters(self, seed: int | None = None, scale: float = 0.05) -> None:
         generator = torch.Generator()
@@ -232,6 +330,8 @@ class SoftEMLTree(torch.nn.Module):
     def expected_univariate_parameter_count(self) -> int:
         if len(self.variables) != 1:
             raise ValueError("The paper's 5 * 2^n - 6 count is for univariate trees")
+        if self.constants != (1.0 + 0.0j,):
+            raise ValueError("The paper's 5 * 2^n - 6 count assumes the pure const:1 terminal bank")
         return 5 * (2**self.depth) - 6
 
     def gate_entropy(self, temperature: float = 1.0) -> torch.Tensor:
@@ -256,14 +356,95 @@ class SoftEMLTree(torch.nn.Module):
 
     def force_exp(self, variable: str = "x") -> None:
         self.set_slot("root", "left", f"var:{variable}")
-        self.set_slot("root", "right", "const:1")
+        self.set_slot("root", "right", constant_label(1.0))
 
     def force_log(self, variable: str = "x") -> None:
         if self.depth < 3:
             raise ValueError("The paper log identity requires depth >= 3 in this scaffold")
-        self.set_slot("root", "left", "const:1")
+        self.set_slot("root", "left", constant_label(1.0))
         self.set_slot("root", "right", "child")
         self.set_slot("root.R", "left", "child")
-        self.set_slot("root.R", "right", "const:1")
-        self.set_slot("root.R.L", "left", "const:1")
+        self.set_slot("root.R", "right", constant_label(1.0))
+        self.set_slot("root.R.L", "left", constant_label(1.0))
         self.set_slot("root.R.L", "right", f"var:{variable}")
+
+    def embed_expr(self, expression: Expr, config: EmbeddingConfig | None = None) -> EmbeddingResult:
+        return embed_expr_into_tree(self, expression, config=config)
+
+
+def _leaf_choice(tree: SoftEMLTree, expression: Expr) -> str:
+    if isinstance(expression, Const):
+        label = constant_label(expression.value)
+        if label not in tree.root.base_labels:
+            raise EmbeddingError("missing_constant", f"{label} is not in terminal bank {tree.root.base_labels}")
+        return label
+    if isinstance(expression, Var):
+        label = f"var:{expression.name}"
+        if label not in tree.root.base_labels:
+            raise EmbeddingError("missing_variable", f"{label} is not in terminal bank {tree.root.base_labels}")
+        return label
+    raise EmbeddingError("incompatible_tree", f"expected leaf, got {type(expression).__name__}")
+
+
+def _embed_slot(
+    tree: SoftEMLTree,
+    node: _SoftNode,
+    side: str,
+    expression: Expr,
+    config: EmbeddingConfig,
+    assignments: list[EmbeddingAssignment],
+) -> None:
+    slot = f"{node.path}.{side}"
+    if isinstance(expression, Eml):
+        child = node.left_child if side == "left" else node.right_child
+        if child is None:
+            raise EmbeddingError("depth_too_small", f"{slot} needs a child node for expression depth {expression.depth()}")
+        node.set_slot(node.path, side, "child", strength=config.strength)
+        assignments.append(EmbeddingAssignment(slot, "child"))
+        _embed_node(tree, child, expression, config, assignments)
+        return
+
+    choice = _leaf_choice(tree, expression)
+    node.set_slot(node.path, side, choice, strength=config.strength)
+    assignments.append(EmbeddingAssignment(slot, choice))
+
+
+def _embed_node(
+    tree: SoftEMLTree,
+    node: _SoftNode,
+    expression: Expr,
+    config: EmbeddingConfig,
+    assignments: list[EmbeddingAssignment],
+) -> None:
+    if not isinstance(expression, Eml):
+        raise EmbeddingError("incompatible_tree", "SoftEMLTree root and child nodes represent EML nodes, not leaf roots")
+    _embed_slot(tree, node, "left", expression.left, config, assignments)
+    _embed_slot(tree, node, "right", expression.right, config, assignments)
+
+
+def embed_expr_into_tree(
+    tree: SoftEMLTree,
+    expression: Expr,
+    *,
+    config: EmbeddingConfig | None = None,
+) -> EmbeddingResult:
+    config = config or EmbeddingConfig()
+    if expression.depth() > tree.depth:
+        raise EmbeddingError("depth_too_small", f"expression depth {expression.depth()} exceeds tree depth {tree.depth}")
+    missing_variables = sorted(expression.variables() - set(tree.variables))
+    if missing_variables:
+        raise EmbeddingError("missing_variable", f"missing variables: {missing_variables}")
+    missing_constants = [
+        constant_label(value)
+        for value in expression.constants()
+        if not any(abs(complex(value) - complex(existing)) <= 1e-12 for existing in tree.constants)
+    ]
+    if missing_constants:
+        raise EmbeddingError("missing_constant", f"missing constants: {missing_constants}")
+
+    assignments: list[EmbeddingAssignment] = []
+    _embed_node(tree, tree.root, expression, config, assignments)
+    snap = tree.snap()
+    round_trip = expressions_equal(expression, snap.expression)
+    diagnostics = () if round_trip else ("snap_round_trip_mismatch",)
+    return EmbeddingResult(bool(round_trip), tuple(assignments), snap, bool(round_trip), diagnostics)

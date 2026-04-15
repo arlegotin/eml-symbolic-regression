@@ -10,7 +10,10 @@ The package follows the roadmap in `.planning/ROADMAP.md`:
 4. `optimize.py` turns a soft tree into snapped candidates.
 5. `verify.py` owns recovery status.
 6. `cleanup.py` exports readable SymPy expressions and records cleanup reports.
-7. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
+7. `compiler.py` compiles a whitelisted SymPy subset into the existing exact EML `Expr` AST.
+8. `master_tree.py` also supports literal-constant terminal banks and AST-to-logit embedding.
+9. `warm_start.py` embeds compiled ASTs, records deterministic perturbation metadata, trains through `fit_eml_tree()`, and classifies the post-snap outcome.
+10. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
 
 ## Recovery Contract
 
@@ -22,6 +25,36 @@ Training loss is not enough. A candidate is only `recovered` when:
 - the verifier emits `recovered`.
 
 Non-EML catalog formulas can pass as `verified_showcase`; those reports are useful for demos and verifier coverage, but they are not labeled as EML recovery.
+
+Compiler output is also not enough by itself. A compiled seed can verify as an exact EML AST, but public demo promotion requires the warm-start path to train, snap, and verify the final exact AST. The optimizer manifest remains a candidate-generation artifact and never assigns `recovered`.
+
+## Compiler Contract
+
+The compiler accepts a deliberately narrow SymPy subset:
+
+- variables from an explicit allow-list,
+- finite constants under either `basis_only` or `literal_constants`,
+- `exp` and principal-branch `log`,
+- addition, subtraction, multiplication, division/reciprocal, and small integer powers through tested EML templates.
+
+Unsupported functions, unknown variables, unsafe constants, excessive powers, and depth/node budget excesses raise `UnsupportedExpression` with a machine-readable reason code. Every compiled result includes source expression, normalized expression, variables, constants, assumptions, rule trace, depth, and node count.
+
+`literal_constants` means fixed coefficients such as `-0.8`, `0.5`, and `2` are inserted as terminal constants and reported as such. It is not a pure `{1, eml}` synthesis claim.
+
+## Warm Starts
+
+`SoftEMLTree(depth, variables, constants)` defaults to the original pure terminal bank `(1,)`. When a compiled formula uses literal constants, the same finite constant catalog must be supplied to the soft tree. Embedding maps each exact AST slot to a logit choice and immediately snaps back to prove the seed is representable before perturbation.
+
+`fit_warm_started_eml_tree()` then:
+
+1. embeds the compiled AST,
+2. records the terminal bank and assignments,
+3. applies deterministic logit perturbation,
+4. trains through the existing Adam optimizer,
+5. snaps the final model,
+6. delegates recovery status to `verify_candidate()`.
+
+Warm-start outcomes are separated as `same_ast_return`, `verified_equivalent_ast`, `snapped_but_failed`, `soft_fit_only`, or `failed`.
 
 ## Paper-Grounded Fixtures
 
@@ -52,3 +85,11 @@ The built-in demos mirror `sources/FOR_DEMO.md`:
 - `planck`
 
 `exp` and `log` are exact EML candidates. The remaining demos are catalog showcase formulas with verifier reports, ready for future EML warm-start/curriculum work.
+
+Beer-Lambert now has a compiler-driven warm-start path:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --warm-start-eml
+```
+
+At the default gates, Michaelis-Menten and Planck remain honest stretch reports: their catalog formulas verify, but their compiler/warm-start stages report unsupported depth instead of promotion.

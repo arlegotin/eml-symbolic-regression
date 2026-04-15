@@ -10,43 +10,43 @@ Requirements for this milestone only. Completed v1 requirements are recorded as 
 
 ### Compiler Contract
 
-- [ ] **COMP-01**: User can compile a whitelisted SymPy subset into the existing exact EML `Expr` AST type without introducing a parallel AST.
-- [ ] **COMP-02**: User receives structured compiler metadata including source expression, normalized expression, rule trace, variables, constants, depth, node count, domain assumptions, and unsupported reason codes.
-- [ ] **COMP-03**: User can validate compiled AST output against independent ordinary-expression evaluation before the output is eligible for warm-start training.
-- [ ] **COMP-04**: User receives fail-closed errors for unsupported operators, unsupported powers, unknown variables, unsafe constants, or expressions that exceed configured depth/node budgets.
+- [x] **COMP-01**: User can compile a whitelisted SymPy subset into the existing exact EML `Expr` AST type without introducing a parallel AST.
+- [x] **COMP-02**: User receives structured compiler metadata including source expression, normalized expression, rule trace, variables, constants, depth, node count, domain assumptions, and unsupported reason codes.
+- [x] **COMP-03**: User can validate compiled AST output against independent ordinary-expression evaluation before the output is eligible for warm-start training.
+- [x] **COMP-04**: User receives fail-closed errors for unsupported operators, unsupported powers, unknown variables, unsafe constants, or expressions that exceed configured depth/node budgets.
 
 ### Constants and Embedding
 
-- [ ] **CONST-01**: User can choose an explicit constant policy, with v1.1 supporting `literal_constants` while preserving the default pure `const:1` behavior.
-- [ ] **CONST-02**: User can construct `SoftEMLTree` instances with a finite constant catalog derived from a compiled expression.
-- [ ] **EMBED-01**: User can embed a compiled exact EML AST into a compatible soft master tree by mapping AST nodes to slot logits.
-- [ ] **EMBED-02**: User gets immediate embed-to-snap validation that proves the high-strength warm start snaps back to the compiled AST before perturbation.
-- [ ] **EMBED-03**: User receives actionable diagnostics for depth-too-small, missing-constant, missing-variable, and incompatible-tree failures before training starts.
+- [x] **CONST-01**: User can choose an explicit constant policy, with v1.1 supporting `literal_constants` while preserving the default pure `const:1` behavior.
+- [x] **CONST-02**: User can construct `SoftEMLTree` instances with a finite constant catalog derived from a compiled expression.
+- [x] **EMBED-01**: User can embed a compiled exact EML AST into a compatible soft master tree by mapping AST nodes to slot logits.
+- [x] **EMBED-02**: User gets immediate embed-to-snap validation that proves the high-strength warm start snaps back to the compiled AST before perturbation.
+- [x] **EMBED-03**: User receives actionable diagnostics for depth-too-small, missing-constant, missing-variable, and incompatible-tree failures before training starts.
 
 ### Arithmetic Rules
 
-- [ ] **ARITH-01**: User can compile direct `exp` and `log` rules over arbitrary supported subexpressions.
-- [ ] **ARITH-02**: User can compile unary negation, subtraction, addition, multiplication, reciprocal, and division through tested EML rule templates or receive explicit unsupported/depth failure reasons.
-- [ ] **ARITH-03**: User can compile small integer powers only when implemented behind explicit max-power and depth gates.
+- [x] **ARITH-01**: User can compile direct `exp` and `log` rules over arbitrary supported subexpressions.
+- [x] **ARITH-02**: User can compile unary negation, subtraction, addition, multiplication, reciprocal, and division through tested EML rule templates or receive explicit unsupported/depth failure reasons.
+- [x] **ARITH-03**: User can compile small integer powers only when implemented behind explicit max-power and depth gates.
 
 ### Warm-Start Recovery
 
-- [ ] **WARM-01**: User can run deterministic perturbation of compiled warm-start logits with recorded strength, noise scale, seed, active slot changes, and pre/post perturbation snap summaries.
-- [ ] **WARM-02**: User can train from compiled warm starts through the existing optimizer path without allowing the optimizer to label a result `recovered`.
-- [ ] **WARM-03**: User receives a warm-start manifest containing compiler metadata, terminal bank, embedding assignments, perturbation config, optimizer config, snap decisions, anomaly stats, and verification outcome.
-- [ ] **WARM-04**: User can distinguish same-AST return, verified-equivalent AST, snapped-but-failed candidate, soft-fit-only, and failed warm-start attempts.
+- [x] **WARM-01**: User can run deterministic perturbation of compiled warm-start logits with recorded strength, noise scale, seed, active slot changes, and pre/post perturbation snap summaries.
+- [x] **WARM-02**: User can train from compiled warm starts through the existing optimizer path without allowing the optimizer to label a result `recovered`.
+- [x] **WARM-03**: User receives a warm-start manifest containing compiler metadata, terminal bank, embedding assignments, perturbation config, optimizer config, snap decisions, anomaly stats, and verification outcome.
+- [x] **WARM-04**: User can distinguish same-AST return, verified-equivalent AST, snapped-but-failed candidate, soft-fit-only, and failed warm-start attempts.
 
 ### Demo Promotion and Reporting
 
-- [ ] **DEMO-05**: User can run Beer-Lambert as a compiler-driven warm-start recovery demo and promote it only when the final trained exact EML AST verifies.
-- [ ] **DEMO-06**: User can run Michaelis-Menten as a compiler-driven warm-start recovery demo when arithmetic rules and depth gates pass, and otherwise receive honest unsupported/depth diagnostics.
-- [ ] **DEMO-07**: User can run normalized Planck as a stretch compile/warm-start report without making its trained recovery a milestone guarantee.
-- [ ] **DEMO-08**: User-facing reports separate catalog showcase, compiled seed, warm-start attempt, trained exact recovery, blind baseline, stretch, unsupported, and failed statuses.
+- [x] **DEMO-05**: User can run Beer-Lambert as a compiler-driven warm-start recovery demo and promote it only when the final trained exact EML AST verifies.
+- [x] **DEMO-06**: User can run Michaelis-Menten as a compiler-driven warm-start recovery demo when arithmetic rules and depth gates pass, and otherwise receive honest unsupported/depth diagnostics.
+- [x] **DEMO-07**: User can run normalized Planck as a stretch compile/warm-start report without making its trained recovery a milestone guarantee.
+- [x] **DEMO-08**: User-facing reports separate catalog showcase, compiled seed, warm-start attempt, trained exact recovery, blind baseline, stretch, unsupported, and failed statuses.
 
 ### Tests and Documentation
 
-- [ ] **TEST-03**: User can run pytest coverage for compiler rules, negative compiler cases, constant policy, constant catalog labels, embedding round trips, perturbation determinism, warm-start manifests, and demo promotion gates.
-- [ ] **TEST-04**: User can read documentation explaining fixed literal constants, compile-only versus warm-start recovery, demo claim statuses, depth limits, and why this is not blind symbolic discovery.
+- [x] **TEST-03**: User can run pytest coverage for compiler rules, negative compiler cases, constant policy, constant catalog labels, embedding round trips, perturbation determinism, warm-start manifests, and demo promotion gates.
+- [x] **TEST-04**: User can read documentation explaining fixed literal constants, compile-only versus warm-start recovery, demo claim statuses, depth limits, and why this is not blind symbolic discovery.
 
 ## Future Requirements
 
@@ -75,28 +75,28 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COMP-01 | Phase 8 | Pending |
-| COMP-02 | Phase 8 | Pending |
-| COMP-03 | Phase 8 | Pending |
-| COMP-04 | Phase 8 | Pending |
-| CONST-01 | Phase 9 | Pending |
-| CONST-02 | Phase 9 | Pending |
-| EMBED-01 | Phase 9 | Pending |
-| EMBED-02 | Phase 9 | Pending |
-| EMBED-03 | Phase 9 | Pending |
-| ARITH-01 | Phase 10 | Pending |
-| ARITH-02 | Phase 10 | Pending |
-| ARITH-03 | Phase 10 | Pending |
-| WARM-01 | Phase 11 | Pending |
-| WARM-02 | Phase 11 | Pending |
-| WARM-03 | Phase 11 | Pending |
-| WARM-04 | Phase 11 | Pending |
-| DEMO-05 | Phase 12 | Pending |
-| DEMO-06 | Phase 12 | Pending |
-| DEMO-07 | Phase 12 | Pending |
-| DEMO-08 | Phase 12 | Pending |
-| TEST-03 | Phase 13 | Pending |
-| TEST-04 | Phase 13 | Pending |
+| COMP-01 | Phase 8 | Complete |
+| COMP-02 | Phase 8 | Complete |
+| COMP-03 | Phase 8 | Complete |
+| COMP-04 | Phase 8 | Complete |
+| CONST-01 | Phase 9 | Complete |
+| CONST-02 | Phase 9 | Complete |
+| EMBED-01 | Phase 9 | Complete |
+| EMBED-02 | Phase 9 | Complete |
+| EMBED-03 | Phase 9 | Complete |
+| ARITH-01 | Phase 10 | Complete |
+| ARITH-02 | Phase 10 | Complete |
+| ARITH-03 | Phase 10 | Complete |
+| WARM-01 | Phase 11 | Complete |
+| WARM-02 | Phase 11 | Complete |
+| WARM-03 | Phase 11 | Complete |
+| WARM-04 | Phase 11 | Complete |
+| DEMO-05 | Phase 12 | Complete |
+| DEMO-06 | Phase 12 | Complete |
+| DEMO-07 | Phase 12 | Complete |
+| DEMO-08 | Phase 12 | Complete |
+| TEST-03 | Phase 13 | Complete |
+| TEST-04 | Phase 13 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 22 total
