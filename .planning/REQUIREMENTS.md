@@ -1,107 +1,102 @@
-# Requirements: EML Symbolic Regression Milestone v1.3
+# Requirements: EML Symbolic Regression Milestone v1.4
 
 **Defined:** 2026-04-15
-**Milestone:** v1.3 Benchmark Campaign and Evidence Report
+**Milestone:** v1.4 Recovery Performance Improvements
 **Core Value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Milestone v1.3 Requirements
+## Milestone v1.4 Requirements
 
-Requirements for this milestone only. Completed v1, v1.1, and v1.2 requirements are recorded as validated capabilities in `.planning/PROJECT.md`.
+Requirements for this milestone only. Completed v1, v1.1, v1.2, and v1.3 requirements are recorded as validated capabilities in `.planning/PROJECT.md` and `.planning/milestones/`.
 
-### Campaign Execution
+### Baseline Diagnostics
 
-- [x] **CAMP-01**: User can run named campaign presets (`smoke`, `standard`, `showcase`) that select benchmark suites, budget tiers, seeds, and output folders without hand-writing filters.
-- [x] **CAMP-02**: User can generate a versioned campaign output directory containing raw run artifacts, suite results, aggregate reports, a campaign manifest, and reproducibility metadata.
-- [x] **CAMP-03**: User can run a standard campaign that includes shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten diagnostics, Planck diagnostics, and selected FOR_DEMO cases.
-- [x] **CAMP-04**: User can rerun a campaign without silently overwriting prior evidence, either by creating a new timestamped/versioned folder or explicitly allowing overwrite.
-- [x] **CAMP-05**: User receives clear runtime/budget guardrails so smoke tests stay fast while showcase campaigns can be larger and explicit.
+- [ ] **DIAG-01**: User can inspect a baseline triage summary that compares v1.3 `standard` and `showcase` failures by formula, mode, perturbation level, and recovery class.
+- [ ] **DIAG-02**: User can trace each target failure class back to representative raw run artifacts and optimizer/verifier metrics.
+- [ ] **DIAG-03**: User can run focused diagnostic subsets for blind failures, Beer-Lambert perturbation failures, and compiler/depth gates without rerunning the full campaigns.
+- [ ] **DIAG-04**: User can preserve the committed v1.3 baseline metrics as immutable before/after comparison inputs.
 
-### Data Export
+### Blind Optimizer Robustness
 
-- [x] **DATA-01**: User receives a tidy run-level CSV containing formula, start mode, seed, depth, steps, perturbation noise, best loss, post-snap loss, verifier status, recovery class, runtime, changed slots, and artifact path.
-- [x] **DATA-02**: User receives grouped CSV summaries for recovery rate by formula, start mode, perturbation level, depth, and failure class.
-- [x] **DATA-03**: User receives a headline metrics JSON/CSV table with total runs, verifier recovery rate, unsupported rate, failure rate, same-AST return rate, median losses, and runtime summaries.
-- [x] **DATA-04**: User can export unsupported and failed cases with reason codes and links back to the source run artifacts.
+- [ ] **BLIND-01**: User can run reproducible blind optimizer experiments over `exp`, `log`, and `radioactive_decay` with explicit seeds, budgets, losses, snap metrics, and verifier statuses.
+- [ ] **BLIND-02**: User can compare optimizer variants against the v1.3 blind baseline using the same verifier-owned recovery contract.
+- [ ] **BLIND-03**: User receives an improved default blind optimizer or benchmark budget that increases verifier recovery or materially improves post-snap loss on at least one v1.3 blind failure family without regressing existing recovered cases.
+- [ ] **BLIND-04**: User can read diagnostics explaining remaining blind failures, including whether the issue is soft loss, snap instability, expression depth, or verifier mismatch.
 
-### Plot Generation
+### Warm-Start Perturbation Robustness
 
-- [x] **PLOT-01**: User can generate a recovery-rate chart by formula and start mode.
-- [x] **PLOT-02**: User can generate a loss comparison chart showing best soft loss versus post-snap loss on a log scale where appropriate.
-- [x] **PLOT-03**: User can generate a Beer-Lambert perturbation chart showing recovery class and changed-slot behavior by perturbation noise.
-- [x] **PLOT-04**: User can generate runtime and depth/budget charts that make practical cost visible.
-- [x] **PLOT-05**: User can generate an unsupported/failure taxonomy chart by formula and recovery class.
-- [x] **PLOT-06**: User receives deterministic figure files with stable names suitable for linking from a Markdown report.
+- [ ] **PERT-01**: User can run Beer-Lambert warm-start perturbation diagnostics across the v1.3 noise levels with changed-slot counts, final snap status, and verifier status.
+- [ ] **PERT-02**: User receives a warm-start training or snapping improvement that improves recovery at high perturbation or explicitly narrows the failure mechanism with reproducible evidence.
+- [ ] **PERT-03**: User can distinguish same-AST return, verified-equivalent recovery, snapped-but-failed, and soft-fit-only outcomes in all perturbation diagnostics.
+- [ ] **PERT-04**: User can rerun the Beer-Lambert perturbation sweep without weakening literal-constant provenance or verifier-owned recovery semantics.
 
-### Evidence Report
+### Compiler Coverage and Depth Reduction
 
-- [x] **REPT-01**: User receives a self-contained `report.md` in the campaign folder with headline metrics, tables, figures, commands, and links to raw artifacts.
-- [x] **REPT-02**: User can read a concise narrative explaining what the paper's EML idea demonstrates well in this implementation.
-- [x] **REPT-03**: User can read limitations that separate blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, unsupported depth/compiler gates, and failed fits.
-- [x] **REPT-04**: User receives a short "next experiments" section that turns measured failures into optimizer or compiler improvement priorities.
-- [x] **REPT-05**: User can reproduce the report by rerunning one documented CLI command from a clean checkout.
+- [ ] **COV-01**: User can inspect compiler depth, node count, rule trace, and unsupported reason diagnostics for Michaelis-Menten, logistic, Shockley, damped oscillator, and Planck formulas.
+- [ ] **COV-02**: User receives at least one compiler coverage improvement that moves a v1.3 unsupported/depth-gated FOR_DEMO formula to a verified compiled EML AST or a documented lower-depth candidate.
+- [ ] **COV-03**: User receives clear handling for damped oscillator's unsupported operator path, either through a supported transformation or an explicit deferred reason with tests.
+- [ ] **COV-04**: User can trust that compiler improvements remain fail-closed: unsupported formulas still emit structured reasons rather than silently producing invalid EML trees.
 
-### Tests and Documentation
+### Before/After Campaign Evaluation
 
-- [x] **TEST-11**: User can run focused tests for campaign preset expansion, output folder creation, overwrite protection, CSV export, and headline metrics.
-- [x] **TEST-12**: User can run focused tests for plot file generation and report assembly using CI-scale benchmark fixtures.
-- [x] **TEST-13**: User can read documentation describing campaign commands, output structure, CSV schemas, plot meanings, and how to present results honestly.
+- [ ] **EVAL-01**: User can rerun `standard` and `showcase` campaigns after optimizer/compiler changes under v1.4-labeled output folders.
+- [ ] **EVAL-02**: User receives a before/after comparison report that computes deltas against v1.3 `standard` and `showcase` baselines for recovery, unsupported rate, failure rate, losses, and runtime.
+- [ ] **EVAL-03**: User can see whether v1.4 improved, regressed, or left unchanged each target category: blind recovery, Beer-Lambert perturbation robustness, and compiler coverage.
+- [ ] **EVAL-04**: User can reproduce the comparison with one documented command from a clean checkout.
+- [ ] **EVAL-05**: User can run tests that lock the diagnostic, optimizer/comparison, compiler, and campaign comparison behavior.
 
 ## Future Requirements
 
 Deferred to later milestones.
 
-### Optimization and Showcase Expansion
+### External Evidence and Baselines
 
-- **FUT-11**: User can improve optimizer robustness for slot-changing perturbations using the v1.3 scoreboard as a before/after baseline.
-- **FUT-12**: User can reduce compiled arithmetic tree depth or improve compiler templates to promote Michaelis-Menten beyond diagnostics.
-- **FUT-13**: User can add interactive dashboards after static reports prove the right metrics and plots.
-- **FUT-14**: User can add external real-world datasets after synthetic/source-document campaign reporting is stable.
-- **FUT-15**: User can compare EML recovery against other symbolic-regression baselines.
+- **FUT-16**: User can run external noisy real-world datasets after v1.4 improves synthetic/source-document campaign performance.
+- **FUT-17**: User can compare EML recovery against external symbolic-regression baselines.
+- **FUT-18**: User can use an interactive dashboard after static before/after reports prove the right metrics.
+- **FUT-19**: User can use GPU/profiling acceleration after algorithmic improvements are validated.
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Optimizer redesign | v1.3 should create the scoreboard before changing the algorithm. |
-| Hiding weak results | The milestone exists to show both promise and limitations clearly. |
-| Interactive dashboard | Static CSV, PNG/SVG, and Markdown reports are enough for a crisp showcase. |
-| External noisy datasets | First showcase the paper-derived demos and current synthetic benchmarks reproducibly. |
-| Claiming general real-world symbolic-regression superiority | The report should describe current evidence, not overgeneralize. |
-| Manually edited figures | Plots must be generated from campaign artifacts so future runs are comparable. |
+| Changing verifier tolerance to inflate recovery | v1.4 must improve actual recovery, not redefine success. |
+| External noisy real-world datasets | The current baseline shows core optimizer/compiler gaps on controlled formulas; fix those first. |
+| Claiming general symbolic-regression superiority | The milestone measures targeted improvements against current baselines only. |
+| Interactive dashboards | Static comparison reports are enough for before/after validation. |
+| Large GPU-specific rewrites | The current bottleneck is recovery quality, not proven hardware throughput. |
+| Manual figure/report editing | Evidence must be generated from campaign artifacts. |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAMP-01 | Phase 19 | Complete |
-| CAMP-02 | Phase 19 | Complete |
-| CAMP-03 | Phase 19 | Complete |
-| CAMP-04 | Phase 19 | Complete |
-| CAMP-05 | Phase 19 | Complete |
-| DATA-01 | Phase 20 | Complete |
-| DATA-02 | Phase 20 | Complete |
-| DATA-03 | Phase 20 | Complete |
-| DATA-04 | Phase 20 | Complete |
-| PLOT-01 | Phase 21 | Complete |
-| PLOT-02 | Phase 21 | Complete |
-| PLOT-03 | Phase 21 | Complete |
-| PLOT-04 | Phase 21 | Complete |
-| PLOT-05 | Phase 21 | Complete |
-| PLOT-06 | Phase 21 | Complete |
-| REPT-01 | Phase 22 | Complete |
-| REPT-02 | Phase 22 | Complete |
-| REPT-03 | Phase 22 | Complete |
-| REPT-04 | Phase 22 | Complete |
-| REPT-05 | Phase 22 | Complete |
-| TEST-11 | Phase 23 | Complete |
-| TEST-12 | Phase 23 | Complete |
-| TEST-13 | Phase 23 | Complete |
+| DIAG-01 | Phase 24 | Pending |
+| DIAG-02 | Phase 24 | Pending |
+| DIAG-03 | Phase 24 | Pending |
+| DIAG-04 | Phase 24 | Pending |
+| BLIND-01 | Phase 25 | Pending |
+| BLIND-02 | Phase 25 | Pending |
+| BLIND-03 | Phase 25 | Pending |
+| BLIND-04 | Phase 25 | Pending |
+| PERT-01 | Phase 26 | Pending |
+| PERT-02 | Phase 26 | Pending |
+| PERT-03 | Phase 26 | Pending |
+| PERT-04 | Phase 26 | Pending |
+| COV-01 | Phase 27 | Pending |
+| COV-02 | Phase 27 | Pending |
+| COV-03 | Phase 27 | Pending |
+| COV-04 | Phase 27 | Pending |
+| EVAL-01 | Phase 28 | Pending |
+| EVAL-02 | Phase 28 | Pending |
+| EVAL-03 | Phase 28 | Pending |
+| EVAL-04 | Phase 28 | Pending |
+| EVAL-05 | Phase 28 | Pending |
 
 **Coverage:**
-- v1.3 requirements: 23 total
-- Mapped to phases: 23
+- v1.4 requirements: 21 total
+- Mapped to phases: 21
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after milestone v1.3 roadmap creation*
+*Last updated: 2026-04-15 after defining milestone v1.4 requirements*
