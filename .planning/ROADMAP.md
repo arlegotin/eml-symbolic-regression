@@ -74,7 +74,7 @@ Plans:
 **Plans**: 3 plans
 Plans:
 - [x] 30-01-PLAN.md - Scaled-exponential shape evidence and shallow proof suite contract.
-- [ ] 30-02-PLAN.md - Blind scaled-exponential scaffold recovery and proof diagnostics.
+- [x] 30-02-PLAN.md - Blind scaled-exponential scaffold recovery and proof diagnostics.
 - [ ] 30-03-PLAN.md - Full shallow proof regression gate and aggregate guardrails.
 
 ### Phase 31: Perturbed Basin Training and Local Repair
@@ -162,7 +162,7 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 19-23. v1.3 Benchmark Campaign and Evidence Report | Complete | Complete | 2026-04-15 |
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
 | 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete    | 2026-04-15 |
-| 30. Bounded Shallow Blind Training Recovery | 1/3 | In Progress|  |
+| 30. Bounded Shallow Blind Training Recovery | 2/3 | In Progress|  |
 | 31. Perturbed Basin Training and Local Repair | 0/1 | Pending | - |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
 | 33. Proof Campaign Report and Evidence Lockdown | 0/1 | Pending | - |
