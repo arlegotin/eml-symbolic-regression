@@ -14,9 +14,10 @@ from typing import Any, Iterable, Mapping
 
 import numpy as np
 
+from .basin import fit_perturbed_true_tree
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
 from .datasets import demo_specs, proof_dataset_manifest
-from .expression import format_constant_value, parse_constant_value
+from .expression import Expr, format_constant_value, parse_constant_value
 from .optimize import TrainingConfig, fit_eml_tree
 from .proof import (
     EVIDENCE_CLASSES,
@@ -30,7 +31,7 @@ from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
 
-START_MODES = ("catalog", "compile", "blind", "warm_start")
+START_MODES = ("catalog", "compile", "blind", "warm_start", "perturbed_tree")
 BUILTIN_SUITES = (
     "smoke",
     "v1.2-evidence",
@@ -236,10 +237,10 @@ class BenchmarkCase:
             raise BenchmarkValidationError(
                 "invalid_perturbation", "perturbation noise values must be non-negative", path=f"{path}.perturbation_noise"
             )
-        if self.start_mode != "warm_start" and any(noise != 0.0 for noise in self.perturbation_noise):
+        if self.start_mode not in {"warm_start", "perturbed_tree"} and any(noise != 0.0 for noise in self.perturbation_noise):
             raise BenchmarkValidationError(
                 "invalid_perturbation",
-                "non-warm-start cases must use perturbation noise 0.0",
+                "only warm_start and perturbed_tree cases may use nonzero perturbation noise",
                 path=f"{path}.perturbation_noise",
             )
         self._validate_proof_contract(path)
@@ -488,7 +489,7 @@ class BenchmarkSuite:
         self.validate()
         runs: list[BenchmarkRun] = []
         for case in self.cases:
-            noises = case.perturbation_noise if case.start_mode == "warm_start" else (0.0,)
+            noises = case.perturbation_noise if case.start_mode in {"warm_start", "perturbed_tree"} else (0.0,)
             training_mode = case.training_mode or _default_training_mode(case.start_mode)
             for seed in case.seeds:
                 for noise in noises:
@@ -555,6 +556,7 @@ def _default_training_mode(start_mode: str) -> str:
         "compile": TRAINING_MODES["compile_only_verification"],
         "blind": TRAINING_MODES["blind_training"],
         "warm_start": TRAINING_MODES["compiler_warm_start_training"],
+        "perturbed_tree": TRAINING_MODES["perturbed_true_tree_training"],
     }
     try:
         return modes[start_mode]
@@ -973,6 +975,88 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             "claim_status": warm.verification.status if warm.verification else warm.status,
         }
 
+    if run.start_mode == "perturbed_tree":
+        target_payload: dict[str, Any]
+        target_metadata: dict[str, Any]
+        candidate = spec.candidate
+        if isinstance(candidate, Expr):
+            target_expr = candidate
+            target_payload = {"target_eml": target_expr.to_document(variables=[spec.variable], source="demo_spec_exact_eml")}
+            target_metadata = {"formula_id": run.formula, "source": "demo_spec_exact_eml"}
+        else:
+            compiled_payload = _compile_demo(run, splits)
+            stage_statuses.update(compiled_payload.pop("stage_statuses"))
+            if stage_statuses["compiled_seed"] == "unsupported":
+                return {
+                    "status": "unsupported",
+                    "stage_statuses": {**stage_statuses, "perturbed_true_tree_attempt": "unsupported"},
+                    **compiled_payload,
+                    "perturbed_true_tree": {
+                        "status": "unsupported",
+                        "reason": "compile_failed",
+                        "detail": "perturbed-tree training requires an exact EML target seed",
+                    },
+                    "claim_status": "unsupported",
+                }
+            compiled = compiled_payload.pop("_compiled")
+            target_expr = compiled.expression
+            target_payload = compiled_payload
+            target_metadata = {
+                "formula_id": run.formula,
+                "source": "compiled_demo_candidate",
+                "compiled_metadata": compiled.metadata.as_dict(),
+            }
+
+        if target_expr.depth() > run.optimizer.max_warm_depth:
+            return {
+                "status": "unsupported",
+                "stage_statuses": {**stage_statuses, "perturbed_true_tree_attempt": "unsupported"},
+                **target_payload,
+                "perturbed_true_tree": {
+                    "status": "unsupported",
+                    "reason": "depth_too_large_for_perturbed_tree",
+                    "target_depth": target_expr.depth(),
+                    "max_warm_depth": run.optimizer.max_warm_depth,
+                },
+                "claim_status": "unsupported",
+            }
+
+        train = splits[0]
+        training_depth = run.optimizer.warm_depth or max(run.optimizer.depth, target_expr.depth())
+        config = TrainingConfig(
+            depth=training_depth,
+            variables=(spec.variable,),
+            constants=run.optimizer.constants,
+            steps=run.optimizer.warm_steps,
+            restarts=run.optimizer.warm_restarts,
+            seed=run.seed,
+            lr=run.optimizer.lr,
+        )
+        basin = fit_perturbed_true_tree(
+            train.inputs,
+            train.target,
+            config,
+            target_expr,
+            perturbation_config=PerturbationConfig(seed=run.seed, noise_scale=run.perturbation_noise),
+            verification_splits=splits,
+            tolerance=run.dataset.tolerance,
+            target_metadata=target_metadata,
+        )
+        stage_statuses["perturbed_true_tree_attempt"] = basin.status
+        if basin.verification is not None:
+            stage_statuses["trained_exact_recovery"] = basin.verification.status
+        return {
+            "status": basin.status,
+            "stage_statuses": stage_statuses,
+            **target_payload,
+            "perturbed_true_tree": basin.manifest,
+            "trained_eml_candidate": basin.fit.manifest,
+            "trained_eml_verification": basin.verification.as_dict() if basin.verification else None,
+            "return_kind": basin.return_kind,
+            "raw_status": basin.manifest["raw_status"],
+            "claim_status": basin.verification.status if basin.verification else basin.status,
+        }
+
     raise BenchmarkValidationError("invalid_start_mode", f"unsupported start mode {run.start_mode!r}")
 
 
@@ -1188,6 +1272,9 @@ def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
         "dataset_manifest": payload.get("dataset_manifest"),
         "provenance": payload.get("provenance"),
         "status": result.status,
+        "return_kind": payload.get("return_kind"),
+        "raw_status": payload.get("raw_status"),
+        "repair_status": payload.get("repair_status"),
         "claim_status": payload.get("claim_status"),
         "classification": classify_run(payload),
         "evidence_class": payload.get("evidence_class") or evidence_class_for_payload(payload),
@@ -1237,6 +1324,8 @@ def classify_run(payload: Mapping[str, Any]) -> str:
         if _blind_payload_used_scaffold(payload):
             return "scaffolded_blind_recovery"
         return "blind_recovery"
+    if start_mode == "perturbed_tree" and status == "recovered":
+        return f"perturbed_true_tree_{payload.get('return_kind') or 'recovered'}"
     if status == "same_ast_return":
         return "same_ast_warm_start_return"
     if status == "verified_equivalent_ast":
@@ -1289,9 +1378,21 @@ def evidence_class_for_payload(payload: Mapping[str, Any]) -> str:
             return EVIDENCE_CLASSES["verified_equivalent"]
         if recovered:
             return EVIDENCE_CLASSES["compiler_warm_start_recovered"]
-    if training_mode == TRAINING_MODES["perturbed_true_tree_training"] and recovered:
+    if (
+        start_mode == "perturbed_tree"
+        and training_mode == TRAINING_MODES["perturbed_true_tree_training"]
+        and recovered
+        and _declares_nonzero_perturbation(run)
+    ):
         return EVIDENCE_CLASSES["perturbed_true_tree_recovered"]
     return str(status or "unknown")
+
+
+def _declares_nonzero_perturbation(run: Mapping[str, Any]) -> bool:
+    try:
+        return float(run.get("perturbation_noise", 0.0)) != 0.0
+    except (TypeError, ValueError):
+        return False
 
 
 def _blind_payload_used_scaffold(payload: Mapping[str, Any]) -> bool:
