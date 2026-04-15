@@ -14,19 +14,15 @@ Recover verified, human-readable elementary formulas from data using the paper's
 
 ### Validated
 
-(None yet - ship to validate)
+- ✓ Canonical EML semantics, exact ASTs, and deterministic JSON artifacts — v1 implementation
+- ✓ Complete soft EML master trees with PyTorch `complex128` evaluation and snapping — v1 implementation
+- ✓ Verifier-owned recovery contract with train, held-out, extrapolation, and mpmath checks — v1 implementation
+- ✓ Demo CLI and reports for examples from `sources/FOR_DEMO.md` — v1 implementation
+- ✓ Pytest coverage and documentation for the MVP pipeline — v1 implementation
 
 ### Active
 
-- [ ] Implement canonical EML semantics with separate training and verification evaluators.
-- [ ] Implement complete depth-bounded EML master trees with differentiable categorical gates.
-- [ ] Support complex128 PyTorch optimization with restarts, temperature annealing, entropy regularization, and anomaly logging.
-- [ ] Harden and snap soft gates into exact symbolic EML trees.
-- [ ] Export snapped trees to deterministic JSON and SymPy expressions.
-- [ ] Run local discrete cleanup and targeted symbolic simplification.
-- [ ] Verify final formulas on training, held-out, extrapolation, and high-precision mpmath points.
-- [ ] Provide reproducible demos from `sources/FOR_DEMO.md`, including simple sanity laws and at least one flagship scientific law.
-- [ ] Provide tests that cover paper-grounded semantics, tree construction, snapping, verification, and demos.
+(None currently — v1 MVP implemented and ready for review)
 
 ### Out of Scope
 
@@ -80,4 +76,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after initialization*
+*Last updated: 2026-04-15 after implementation and verification*

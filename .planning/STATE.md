@@ -1,7 +1,7 @@
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 1 - Semantics, AST, and Deterministic Artifacts
+**Current phase:** v1 complete
 **Mode:** YOLO
 
 ## Project Reference
@@ -9,7 +9,7 @@
 See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Implement the complete v1 roadmap from semantics through tests and demos.
+**Current focus:** Review and extend the v1 MVP after implementation.
 
 ## Artifacts
 
@@ -25,13 +25,13 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 1 | Semantics, AST, and Deterministic Artifacts | In Progress | SEM-01, SEM-02, SEM-03, SEM-04 |
-| 2 | Complete Master Trees and Soft Evaluation | Pending | TREE-01, TREE-02, TREE-03, TREE-04 |
-| 3 | Optimizer, Restarts, Hardening, and Recovery Statuses | Pending | OPT-01, OPT-02, OPT-03, OPT-04 |
-| 4 | Verifier and Acceptance Contract | Pending | VER-01, VER-02, VER-03 |
-| 5 | Local Cleanup, SymPy Export, and Reports | Pending | CLEAN-01, CLEAN-02, CLEAN-03 |
-| 6 | Demo Harness and Public Showcase | Pending | DEMO-01, DEMO-02, DEMO-03, DEMO-04 |
-| 7 | Tests and Documentation | Pending | TEST-01, TEST-02 |
+| 1 | Semantics, AST, and Deterministic Artifacts | Complete | SEM-01, SEM-02, SEM-03, SEM-04 |
+| 2 | Complete Master Trees and Soft Evaluation | Complete | TREE-01, TREE-02, TREE-03, TREE-04 |
+| 3 | Optimizer, Restarts, Hardening, and Recovery Statuses | Complete | OPT-01, OPT-02, OPT-03, OPT-04 |
+| 4 | Verifier and Acceptance Contract | Complete | VER-01, VER-02, VER-03 |
+| 5 | Local Cleanup, SymPy Export, and Reports | Complete | CLEAN-01, CLEAN-02, CLEAN-03 |
+| 6 | Demo Harness and Public Showcase | Complete | DEMO-01, DEMO-02, DEMO-03, DEMO-04 |
+| 7 | Tests and Documentation | Complete | TEST-01, TEST-02 |
 
 ## Notes
 
@@ -39,6 +39,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 - The initial implementation should stay Python/PyTorch-first and dependency-light.
 - Recovery claims must be verifier-owned and post-snap.
 - Demos should follow `sources/FOR_DEMO.md` and report feasibility honestly.
+- Verification completed with `python -m pytest` passing 15 tests.
+- Demo reports generated under `artifacts/` for exact EML `exp`, Michaelis-Menten, and normalized Planck.
 
 ---
-*Last updated: 2026-04-15 after roadmap creation*
+*Last updated: 2026-04-15 after implementation and verification*

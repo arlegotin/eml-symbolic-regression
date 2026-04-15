@@ -133,30 +133,30 @@ The order is intentionally linear. Semantics and exact artifacts define what the
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEM-01 | Phase 1 | Pending |
-| SEM-02 | Phase 1 | Pending |
-| SEM-03 | Phase 1 | Pending |
-| SEM-04 | Phase 1 | Pending |
-| TREE-01 | Phase 2 | Pending |
-| TREE-02 | Phase 2 | Pending |
-| TREE-03 | Phase 2 | Pending |
-| TREE-04 | Phase 2 | Pending |
-| OPT-01 | Phase 3 | Pending |
-| OPT-02 | Phase 3 | Pending |
-| OPT-03 | Phase 3 | Pending |
-| OPT-04 | Phase 3 | Pending |
-| VER-01 | Phase 4 | Pending |
-| VER-02 | Phase 4 | Pending |
-| VER-03 | Phase 4 | Pending |
-| CLEAN-01 | Phase 5 | Pending |
-| CLEAN-02 | Phase 5 | Pending |
-| CLEAN-03 | Phase 5 | Pending |
-| DEMO-01 | Phase 6 | Pending |
-| DEMO-02 | Phase 6 | Pending |
-| DEMO-03 | Phase 6 | Pending |
-| DEMO-04 | Phase 6 | Pending |
-| TEST-01 | Phase 7 | Pending |
-| TEST-02 | Phase 7 | Pending |
+| SEM-01 | Phase 1 | Complete |
+| SEM-02 | Phase 1 | Complete |
+| SEM-03 | Phase 1 | Complete |
+| SEM-04 | Phase 1 | Complete |
+| TREE-01 | Phase 2 | Complete |
+| TREE-02 | Phase 2 | Complete |
+| TREE-03 | Phase 2 | Complete |
+| TREE-04 | Phase 2 | Complete |
+| OPT-01 | Phase 3 | Complete |
+| OPT-02 | Phase 3 | Complete |
+| OPT-03 | Phase 3 | Complete |
+| OPT-04 | Phase 3 | Complete |
+| VER-01 | Phase 4 | Complete |
+| VER-02 | Phase 4 | Complete |
+| VER-03 | Phase 4 | Complete |
+| CLEAN-01 | Phase 5 | Complete |
+| CLEAN-02 | Phase 5 | Complete |
+| CLEAN-03 | Phase 5 | Complete |
+| DEMO-01 | Phase 6 | Complete |
+| DEMO-02 | Phase 6 | Complete |
+| DEMO-03 | Phase 6 | Complete |
+| DEMO-04 | Phase 6 | Complete |
+| TEST-01 | Phase 7 | Complete |
+| TEST-02 | Phase 7 | Complete |
 
 **Coverage:** 24/24 v1 requirements mapped.
 
