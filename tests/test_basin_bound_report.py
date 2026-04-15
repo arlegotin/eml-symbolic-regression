@@ -385,9 +385,28 @@ def test_cli_diagnostics_basin_bound_writes_reports(tmp_path):
     assert "proof-perturbed-basin-beer-probes" in (output_dir / "basin-bound.md").read_text(encoding="utf-8")
 
 
+def test_committed_basin_bound_evidence_uses_repo_relative_raw_artifacts():
+    repo_root = Path(__file__).parents[1]
+    evidence_dir = repo_root / "artifacts" / "diagnostics" / "phase31-basin-bound"
+    report = json.loads((evidence_dir / "basin-bound.json").read_text(encoding="utf-8"))
+    markdown = (evidence_dir / "basin-bound.md").read_text(encoding="utf-8")
+
+    assert "/tmp/" not in markdown
+    assert report["missing_seed_noise_rows"] == []
+    assert len(report["expected_seed_noise_rows"]) == 6
+    for row in report["rows"]:
+        artifact_path = Path(row["artifact_path"])
+        assert not artifact_path.is_absolute()
+        assert str(artifact_path).startswith("artifacts/diagnostics/phase31-basin-bound/raw-runs/")
+        assert (repo_root / artifact_path).exists()
+        assert isinstance(row.get("artifact_sha256"), str)
+        assert len(row["artifact_sha256"]) == 64
+
+
 @pytest.mark.integration
 def test_beer_lambert_bound_and_probe_evidence_generates_stable_report():
-    artifact_root = Path("/tmp") / "eml-phase31-basin-bound"
+    output_dir = Path("artifacts") / "diagnostics" / "phase31-basin-bound"
+    artifact_root = output_dir / "raw-runs"
     bounded_suite = load_suite("proof-perturbed-basin")
     bounded_suite = type(bounded_suite)(
         bounded_suite.id,
@@ -416,9 +435,9 @@ def test_beer_lambert_bound_and_probe_evidence_generates_stable_report():
     )
     probe_paths = write_aggregate_reports(probe_result)
 
-    output_dir = Path("artifacts") / "diagnostics" / "phase31-basin-bound"
     report_paths = write_perturbed_basin_bound_report(bounded_paths["json"], probe_paths["json"], output_dir)
     report = json.loads(report_paths["json"].read_text(encoding="utf-8"))
+    markdown = report_paths["markdown"].read_text(encoding="utf-8")
     bounded_aggregate = json.loads(bounded_paths["json"].read_text(encoding="utf-8"))
     probe_aggregate = json.loads(probe_paths["json"].read_text(encoding="utf-8"))
 
@@ -434,6 +453,10 @@ def test_beer_lambert_bound_and_probe_evidence_generates_stable_report():
     assert set(report["bounded_noise_values"]) == {5.0}
     assert set(report["probe_noise_values"]) == {15.0, 35.0}
     assert expected_artifacts <= reported_artifacts
+    assert all(not Path(path).is_absolute() for path in reported_artifacts)
+    assert all(str(path).startswith("artifacts/diagnostics/phase31-basin-bound/raw-runs/") for path in reported_artifacts)
+    assert all(row["artifact_sha256"] for row in report["rows"])
+    assert "/tmp/" not in markdown
     assert {row["perturbation_noise"] for row in report["rows"] if row["row_source"] == "probe"} == {15.0, 35.0}
     assert report["raw_supported_noise_max"] in {None, 5.0, 15.0, 35.0}
     assert report["repaired_supported_noise_max"] in {None, 5.0, 15.0, 35.0}

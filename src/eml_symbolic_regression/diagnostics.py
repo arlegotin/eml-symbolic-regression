@@ -191,8 +191,8 @@ def render_perturbed_basin_bound_markdown(report: Mapping[str, Any]) -> str:
         [
             "## Rows",
             "",
-            "| Source | Suite | Case | Run | Seed | Noise | Status | Claim | Evidence | Return Kind | Raw Status | Repair Status | Changed Slots | Accepted Repair Moves | Reason | Artifact |",
-            "|--------|-------|------|-----|------|-------|--------|-------|----------|-------------|------------|---------------|---------------|-----------------------|--------|----------|",
+            "| Source | Suite | Case | Run | Seed | Noise | Status | Claim | Evidence | Return Kind | Raw Status | Repair Status | Changed Slots | Accepted Repair Moves | Reason | Artifact | Artifact SHA256 |",
+            "|--------|-------|------|-----|------|-------|--------|-------|----------|-------------|------------|---------------|---------------|-----------------------|--------|----------|----------|",
         ]
     )
     for row in report.get("rows", ()):
@@ -201,7 +201,8 @@ def render_perturbed_basin_bound_markdown(report: Mapping[str, Any]) -> str:
             f"{row.get('seed')} | {_fmt(row.get('perturbation_noise'))} | {row.get('status')} | "
             f"{row.get('claim_status')} | {row.get('evidence_class')} | {row.get('return_kind')} | "
             f"{row.get('raw_status')} | {row.get('repair_status')} | {_fmt(row.get('changed_slot_count'))} | "
-            f"{_fmt(row.get('repair_accepted_move_count'))} | {row.get('reason')} | {row.get('artifact_path')} |"
+            f"{_fmt(row.get('repair_accepted_move_count'))} | {row.get('reason')} | {row.get('artifact_path')} | "
+            f"{row.get('artifact_sha256') or ''} |"
         )
     lines.append("")
     return "\n".join(lines)
@@ -526,13 +527,15 @@ def _bound_report_rows(aggregate: Mapping[str, Any], *, row_source: str, formula
         metrics = row.get("metrics") if isinstance(row.get("metrics"), Mapping) else {}
         repair_status = row.get("repair_status") or metrics.get("repair_status")
         evidence_class = _bound_report_evidence_class(row, repair_status=repair_status)
+        artifact_path = row.get("artifact_path")
         rows.append(
             {
                 "row_source": row_source,
                 "suite_id": row.get("suite_id") or suite_id,
                 "case_id": row.get("case_id"),
                 "run_id": row.get("run_id"),
-                "artifact_path": row.get("artifact_path"),
+                "artifact_path": artifact_path,
+                "artifact_sha256": _artifact_sha256(artifact_path),
                 "seed": row.get("seed"),
                 "perturbation_noise": float(row.get("perturbation_noise") or 0.0),
                 "status": row.get("status"),
@@ -796,6 +799,15 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(65536), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _artifact_sha256(path: Any) -> str | None:
+    if path is None:
+        return None
+    artifact_path = Path(str(path))
+    if not artifact_path.exists():
+        return None
+    return _sha256(artifact_path)
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:

@@ -1,0 +1,673 @@
+{
+  "counts": {
+    "evidence_classes": {
+      "perturbed_true_tree_recovered": 2
+    },
+    "execution_error": 0,
+    "failed": 0,
+    "repaired_candidate": 0,
+    "same_ast_return": 2,
+    "total": 2,
+    "unsupported": 0,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 2,
+    "verifier_recovery_rate": 1.0
+  },
+  "environment": {
+    "code_version": "77f0504",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-15T19:36:56.789178+00:00",
+  "groups": {
+    "depth": [
+      {
+        "evidence_classes": {
+          "perturbed_true_tree_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "2",
+        "repaired_candidate": 0,
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "evidence_class": [
+      {
+        "evidence_classes": {
+          "perturbed_true_tree_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "perturbed_true_tree_recovered",
+        "repaired_candidate": 0,
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "formula": [
+      {
+        "evidence_classes": {
+          "perturbed_true_tree_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "beer_lambert",
+        "repaired_candidate": 0,
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "evidence_classes": {
+          "perturbed_true_tree_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "5.0",
+        "repaired_candidate": 0,
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "raw_status": [
+      {
+        "evidence_classes": {
+          "perturbed_true_tree_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "recovered",
+        "repaired_candidate": 0,
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "repair_status": [
+      {
+        "evidence_classes": {
+          "perturbed_true_tree_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "not_attempted",
+        "repaired_candidate": 0,
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "return_kind": [
+      {
+        "evidence_classes": {
+          "perturbed_true_tree_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "same_ast_return",
+        "repaired_candidate": 0,
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "seed_group": [
+      {
+        "evidence_classes": {
+          "perturbed_true_tree_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "all",
+        "repaired_candidate": 0,
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "start_mode": [
+      {
+        "evidence_classes": {
+          "perturbed_true_tree_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "perturbed_tree",
+        "repaired_candidate": 0,
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/diagnostics/phase31-basin-bound/raw-runs/bounded/proof-perturbed-basin/proof-perturbed-basin-basin-beer-lambert-bound-f716bb6f9e3e.json",
+      "case_id": "basin-beer-lambert-bound",
+      "claim_class": "bounded_training_proof",
+      "claim_id": "paper-perturbed-true-tree-basin",
+      "claim_status": "recovered",
+      "classification": "same_ast_return",
+      "dataset": {
+        "points": 12,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "beer_lambert",
+        "manifest_sha256": "c7643c6f17782e5c73c73c4e938c105fe2b525632d352a315b5e2f88a077011e",
+        "points": 12,
+        "provenance": {
+          "candidate_name": "beer_lambert_catalog",
+          "description": "High-probability exponential-decay showcase.",
+          "formula_id": "beer_lambert",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+          "symbolic_expression": "exp(-0.8*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 12,
+            "domain": [
+              0.0,
+              3.0
+            ],
+            "input_sha256": "71a6f4a9672de5cee7ab1af284a9a99287314f208dd762315c55ed2b888351d1",
+            "name": "train",
+            "target_sha256": "37710602d509f49c2f6c40d761d34453cda2a1755e5ef2e11b71b0f203df0fa8"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              2.7
+            ],
+            "input_sha256": "a3e958443fc3d49cb563c0f2db6941caadfdcfcc4e837963eee3bac818f61696",
+            "name": "heldout",
+            "target_sha256": "542fa61d4c40699774e13c37d775b912f58b3b9b88fe40d5ce8813d5179cc799"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.5
+            ],
+            "input_sha256": "63eb0b6be80587da99a68d94190d543d7e74d722152c55f3f2c1a8bbc53b6607",
+            "name": "extrapolation",
+            "target_sha256": "3b008f2ec7e0e6c20c57b530895e2145a99400c80beda678be2316fb3dc2157c"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "perturbed_true_tree_recovered",
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "best_loss": 4.402476533950082e-33,
+        "changed_slot_count": 0,
+        "high_precision_max_error": 4.982182403505673e-81,
+        "post_snap_loss": 4.914382424793936e-32,
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_source": "perturbed_true_tree",
+        "scaffold_strategy": null,
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 40
+      },
+      "perturbation_noise": 5.0,
+      "provenance": {
+        "candidate_name": "beer_lambert_catalog",
+        "description": "High-probability exponential-decay showcase.",
+        "formula_id": "beer_lambert",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+        "symbolic_expression": "exp(-0.8*x)",
+        "variable": "x"
+      },
+      "raw_status": "recovered",
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": "same_ast_return",
+      "run_id": "proof-perturbed-basin-basin-beer-lambert-bound-f716bb6f9e3e",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "perturbed_true_tree_attempt": "recovered",
+        "trained_exact_recovery": "recovered"
+      },
+      "start_mode": "perturbed_tree",
+      "status": "recovered",
+      "suite_id": "proof-perturbed-basin",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent"
+        ],
+        "description": "Declared bounded proof suites pass only at 100% verifier-owned training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "bounded_100_percent",
+      "training_mode": "perturbed_true_tree_training"
+    },
+    {
+      "artifact_path": "artifacts/diagnostics/phase31-basin-bound/raw-runs/bounded/proof-perturbed-basin/proof-perturbed-basin-basin-beer-lambert-bound-88212187883e.json",
+      "case_id": "basin-beer-lambert-bound",
+      "claim_class": "bounded_training_proof",
+      "claim_id": "paper-perturbed-true-tree-basin",
+      "claim_status": "recovered",
+      "classification": "same_ast_return",
+      "dataset": {
+        "points": 12,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "beer_lambert",
+        "manifest_sha256": "45f5bc8ac5b922db7efb81ff59975c46ffd206590818b9ffef6e320394bab09d",
+        "points": 12,
+        "provenance": {
+          "candidate_name": "beer_lambert_catalog",
+          "description": "High-probability exponential-decay showcase.",
+          "formula_id": "beer_lambert",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+          "symbolic_expression": "exp(-0.8*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 12,
+            "domain": [
+              0.0,
+              3.0
+            ],
+            "input_sha256": "4df65b4bc31216ee00adddacbb4b08416bf5b1f6076baa91284896df3c63144d",
+            "name": "train",
+            "target_sha256": "87ef684cdece342d93c0b77a2a4515e49bc71f18db11092202252274669325fe"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              2.7
+            ],
+            "input_sha256": "fddb2caed16171991dbe5d00e0366fbae5f465d4949dcf55b5d3e21bc2c6ee16",
+            "name": "heldout",
+            "target_sha256": "4337fbc43ba2584ba22ef458b19605ef9430a876805ee4693bf1ab28f838bed9"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.5
+            ],
+            "input_sha256": "1ec12acea5def106dfeb9ff23a20ab6f601464622fd7a8dfb1874923fe07c0aa",
+            "name": "extrapolation",
+            "target_sha256": "a145c0a50cafe10e4764d6c7dc4e16fea4c652370cb5a5836343fe29b876f5b2"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "perturbed_true_tree_recovered",
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "best_loss": 1.7829289018647374e-33,
+        "changed_slot_count": 0,
+        "high_precision_max_error": 4.910608987332962e-81,
+        "post_snap_loss": 4.198805726558872e-32,
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_source": "perturbed_true_tree",
+        "scaffold_strategy": null,
+        "snap_active_node_count": 19,
+        "snap_min_margin": 0.9999999999999986,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 40
+      },
+      "perturbation_noise": 5.0,
+      "provenance": {
+        "candidate_name": "beer_lambert_catalog",
+        "description": "High-probability exponential-decay showcase.",
+        "formula_id": "beer_lambert",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+        "symbolic_expression": "exp(-0.8*x)",
+        "variable": "x"
+      },
+      "raw_status": "recovered",
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": "same_ast_return",
+      "run_id": "proof-perturbed-basin-basin-beer-lambert-bound-88212187883e",
+      "seed": 1,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "perturbed_true_tree_attempt": "recovered",
+        "trained_exact_recovery": "recovered"
+      },
+      "start_mode": "perturbed_tree",
+      "status": "recovered",
+      "suite_id": "proof-perturbed-basin",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent"
+        ],
+        "description": "Declared bounded proof suites pass only at 100% verifier-owned training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "bounded_100_percent",
+      "training_mode": "perturbed_true_tree_training"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/diagnostics/phase31-basin-bound/raw-runs/bounded",
+    "cases": [
+      {
+        "claim_id": "paper-perturbed-true-tree-basin",
+        "dataset": {
+          "points": 12,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "basin_depth1_exp",
+        "id": "basin-depth1-perturbed",
+        "optimizer": {
+          "constants": [
+            "1"
+          ],
+          "depth": 1,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 12
+        },
+        "perturbation_noise": [
+          0.05,
+          0.25
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "perturbed_tree",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "perturbed_tree"
+        ],
+        "threshold_policy_id": "bounded_100_percent",
+        "training_mode": "perturbed_true_tree_training"
+      },
+      {
+        "claim_id": "paper-perturbed-true-tree-basin",
+        "dataset": {
+          "points": 12,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "basin_depth2_exp_exp",
+        "id": "basin-depth2-perturbed",
+        "optimizer": {
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 16
+        },
+        "perturbation_noise": [
+          0.05,
+          0.1
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "perturbed_tree",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "perturbed_tree"
+        ],
+        "threshold_policy_id": "bounded_100_percent",
+        "training_mode": "perturbed_true_tree_training"
+      },
+      {
+        "claim_id": "paper-perturbed-true-tree-basin",
+        "dataset": {
+          "points": 12,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "basin_depth3_exp_exp_exp",
+        "id": "basin-depth3-perturbed",
+        "optimizer": {
+          "constants": [
+            "1"
+          ],
+          "depth": 3,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 20
+        },
+        "perturbation_noise": [
+          0.05
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "perturbed_tree",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "perturbed_tree"
+        ],
+        "threshold_policy_id": "bounded_100_percent",
+        "training_mode": "perturbed_true_tree_training"
+      },
+      {
+        "claim_id": "paper-perturbed-true-tree-basin",
+        "dataset": {
+          "points": 12,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "beer_lambert",
+        "id": "basin-beer-lambert-bound",
+        "optimizer": {
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 40
+        },
+        "perturbation_noise": [
+          5.0
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "perturbed_tree",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "perturbed_tree"
+        ],
+        "threshold_policy_id": "bounded_100_percent",
+        "training_mode": "perturbed_true_tree_training"
+      }
+    ],
+    "description": "Bounded v1.5 perturbed true-tree basin proof suite with declared nonzero perturbation envelopes.",
+    "id": "proof-perturbed-basin",
+    "schema": "eml.benchmark_suite.v1"
+  },
+  "thresholds": [
+    {
+      "claim_class": "bounded_training_proof",
+      "claim_id": "paper-perturbed-true-tree-basin",
+      "eligible": 2,
+      "evidence_classes": {
+        "perturbed_true_tree_recovered": 2
+      },
+      "failed": 0,
+      "passed": 2,
+      "rate": 1.0,
+      "required_rate": 1.0,
+      "status": "passed",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent"
+        ],
+        "description": "Declared bounded proof suites pass only at 100% verifier-owned training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "bounded_100_percent"
+    }
+  ]
+}

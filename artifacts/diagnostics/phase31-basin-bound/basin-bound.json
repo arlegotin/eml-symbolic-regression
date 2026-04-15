@@ -9,7 +9,59 @@
     15.0,
     35.0
   ],
+  "expected_seed_noise_rows": [
+    {
+      "case_id": "basin-beer-lambert-bound",
+      "formula": "beer_lambert",
+      "perturbation_noise": 5.0,
+      "row_source": "bounded",
+      "seed": 0,
+      "suite_id": "proof-perturbed-basin"
+    },
+    {
+      "case_id": "basin-beer-lambert-bound",
+      "formula": "beer_lambert",
+      "perturbation_noise": 5.0,
+      "row_source": "bounded",
+      "seed": 1,
+      "suite_id": "proof-perturbed-basin"
+    },
+    {
+      "case_id": "basin-beer-lambert-bound-probes",
+      "formula": "beer_lambert",
+      "perturbation_noise": 15.0,
+      "row_source": "probe",
+      "seed": 0,
+      "suite_id": "proof-perturbed-basin-beer-probes"
+    },
+    {
+      "case_id": "basin-beer-lambert-bound-probes",
+      "formula": "beer_lambert",
+      "perturbation_noise": 15.0,
+      "row_source": "probe",
+      "seed": 1,
+      "suite_id": "proof-perturbed-basin-beer-probes"
+    },
+    {
+      "case_id": "basin-beer-lambert-bound-probes",
+      "formula": "beer_lambert",
+      "perturbation_noise": 35.0,
+      "row_source": "probe",
+      "seed": 0,
+      "suite_id": "proof-perturbed-basin-beer-probes"
+    },
+    {
+      "case_id": "basin-beer-lambert-bound-probes",
+      "formula": "beer_lambert",
+      "perturbation_noise": 35.0,
+      "row_source": "probe",
+      "seed": 1,
+      "suite_id": "proof-perturbed-basin-beer-probes"
+    }
+  ],
   "formula": "beer_lambert",
+  "incomplete_noise_values": [],
+  "missing_seed_noise_rows": [],
   "probe_noise_values": [
     15.0,
     35.0
@@ -18,7 +70,8 @@
   "repaired_supported_noise_max": 35.0,
   "rows": [
     {
-      "artifact_path": "/tmp/eml-phase31-basin-bound/bounded/proof-perturbed-basin/proof-perturbed-basin-basin-beer-lambert-bound-f716bb6f9e3e.json",
+      "artifact_path": "artifacts/diagnostics/phase31-basin-bound/raw-runs/bounded/proof-perturbed-basin/proof-perturbed-basin-basin-beer-lambert-bound-f716bb6f9e3e.json",
+      "artifact_sha256": "5189e632e6a147f743c40d709574a512285ce1bfa69792e2d5d6ab11f84bd1fe",
       "case_id": "basin-beer-lambert-bound",
       "changed_slot_count": 0,
       "claim_status": "recovered",
@@ -36,7 +89,8 @@
       "suite_id": "proof-perturbed-basin"
     },
     {
-      "artifact_path": "/tmp/eml-phase31-basin-bound/bounded/proof-perturbed-basin/proof-perturbed-basin-basin-beer-lambert-bound-88212187883e.json",
+      "artifact_path": "artifacts/diagnostics/phase31-basin-bound/raw-runs/bounded/proof-perturbed-basin/proof-perturbed-basin-basin-beer-lambert-bound-88212187883e.json",
+      "artifact_sha256": "d9d2523d0a034586c9d9e4cd1ea33043e019818957dbd766c815ae5bbe969ba7",
       "case_id": "basin-beer-lambert-bound",
       "changed_slot_count": 0,
       "claim_status": "recovered",
@@ -54,7 +108,8 @@
       "suite_id": "proof-perturbed-basin"
     },
     {
-      "artifact_path": "/tmp/eml-phase31-basin-bound/probe/proof-perturbed-basin-beer-probes/proof-perturbed-basin-beer-probes-basin-beer-lambert-bound-probes-18d83e2efbce.json",
+      "artifact_path": "artifacts/diagnostics/phase31-basin-bound/raw-runs/probe/proof-perturbed-basin-beer-probes/proof-perturbed-basin-beer-probes-basin-beer-lambert-bound-probes-18d83e2efbce.json",
+      "artifact_sha256": "da2cb74808f97e32f101f927626b3637784c12d9b0a94d081b22af9be83ef54d",
       "case_id": "basin-beer-lambert-bound-probes",
       "changed_slot_count": 0,
       "claim_status": "recovered",
@@ -72,7 +127,8 @@
       "suite_id": "proof-perturbed-basin-beer-probes"
     },
     {
-      "artifact_path": "/tmp/eml-phase31-basin-bound/probe/proof-perturbed-basin-beer-probes/proof-perturbed-basin-beer-probes-basin-beer-lambert-bound-probes-015438da428c.json",
+      "artifact_path": "artifacts/diagnostics/phase31-basin-bound/raw-runs/probe/proof-perturbed-basin-beer-probes/proof-perturbed-basin-beer-probes-basin-beer-lambert-bound-probes-015438da428c.json",
+      "artifact_sha256": "51c417bf97b474eaf382fbcb3eeadd02eb3fdf8adbeb7c5b0255e82421e27c8c",
       "case_id": "basin-beer-lambert-bound-probes",
       "changed_slot_count": 1,
       "claim_status": "recovered",
@@ -90,7 +146,8 @@
       "suite_id": "proof-perturbed-basin-beer-probes"
     },
     {
-      "artifact_path": "/tmp/eml-phase31-basin-bound/probe/proof-perturbed-basin-beer-probes/proof-perturbed-basin-beer-probes-basin-beer-lambert-bound-probes-8d0fd251f11f.json",
+      "artifact_path": "artifacts/diagnostics/phase31-basin-bound/raw-runs/probe/proof-perturbed-basin-beer-probes/proof-perturbed-basin-beer-probes-basin-beer-lambert-bound-probes-8d0fd251f11f.json",
+      "artifact_sha256": "678176db50237c647c7156a39cb96eff5dc24f4a4eef64ce175c77f9ff3d8bf0",
       "case_id": "basin-beer-lambert-bound-probes",
       "changed_slot_count": 5,
       "claim_status": "recovered",
@@ -108,7 +165,8 @@
       "suite_id": "proof-perturbed-basin-beer-probes"
     },
     {
-      "artifact_path": "/tmp/eml-phase31-basin-bound/probe/proof-perturbed-basin-beer-probes/proof-perturbed-basin-beer-probes-basin-beer-lambert-bound-probes-2535ff9f4d39.json",
+      "artifact_path": "artifacts/diagnostics/phase31-basin-bound/raw-runs/probe/proof-perturbed-basin-beer-probes/proof-perturbed-basin-beer-probes-basin-beer-lambert-bound-probes-2535ff9f4d39.json",
+      "artifact_sha256": "59c665008c0fcf6f2f5ced0c0134829714cc83bed40158b1e38090736b0dda47",
       "case_id": "basin-beer-lambert-bound-probes",
       "changed_slot_count": 3,
       "claim_status": "recovered",
