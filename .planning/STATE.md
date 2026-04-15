@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: Training Proof and Recovery Guarantees
 current_phase: 29
-status: defining_requirements
-stopped_at: Milestone v1.5 started; defining requirements and roadmap
-last_updated: "2026-04-15T17:30:00Z"
+status: ready_for_phase_planning
+stopped_at: Milestone v1.5 roadmap created; ready for Phase 29 planning
+last_updated: "2026-04-15T17:45:00Z"
 last_activity: 2026-04-15
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
-  total_plans: 0
+  total_plans: 5
   completed_plans: 0
   percent: 0
 ---
@@ -32,9 +32,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 Phase: Not started (defining requirements)
 Plan: Not started
-Status: Defining requirements and roadmap for v1.5
-Last activity: 2026-04-15 - Milestone v1.5 started from user goal: 100% bounded training proof with real metrics and data
-Progress: [----------] 0% by completed phases (v1.5: roadmap pending)
+Status: v1.5 roadmap created; ready to plan Phase 29
+Last activity: 2026-04-15 - Milestone v1.5 requirements and roadmap created
+Progress: [----------] 0% by completed phases (v1.5: 0/5 planned)
 
 ## Performance Metrics
 
@@ -58,8 +58,8 @@ Progress: [----------] 0% by completed phases (v1.5: roadmap pending)
 | Workflow config | `.planning/config.json` | Complete |
 | Milestone log | `.planning/MILESTONES.md` | Complete |
 | v1.4 comparison report | `artifacts/campaigns/v1.4-comparison/comparison.md` | Complete |
-| v1.5 requirements | `.planning/REQUIREMENTS.md` | Pending |
-| v1.5 roadmap | `.planning/ROADMAP.md` | Pending |
+| v1.5 requirements | `.planning/REQUIREMENTS.md` | Complete |
+| v1.5 roadmap | `.planning/ROADMAP.md` | Complete |
 
 ## Current Milestone
 
@@ -78,7 +78,13 @@ Target features:
 
 ## Phase Status
 
-Roadmap pending.
+| Phase | Name | Status | Requirements |
+|-------|------|--------|--------------|
+| 29 | Paper Claim Contract and Proof Dataset Harness | Pending | CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04 |
+| 30 | Bounded Shallow Blind Training Recovery | Pending | SHAL-01, SHAL-02, SHAL-03, SHAL-04 |
+| 31 | Perturbed Basin Training and Local Repair | Pending | BASN-01, BASN-02, BASN-03, BASN-04, BASN-05 |
+| 32 | Paper Depth-Curve Training Evidence | Pending | CURV-01, CURV-02, CURV-03, CURV-04 |
+| 33 | Proof Campaign Report and Evidence Lockdown | Pending | EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
 
 ## Accumulated Context
 
@@ -103,8 +109,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Milestone v1.5 started; requirements and roadmap in progress
+Stopped at: Milestone v1.5 roadmap created; ready for Phase 29 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after starting milestone v1.5*
+*Last updated: 2026-04-15 after creating milestone v1.5 roadmap*
