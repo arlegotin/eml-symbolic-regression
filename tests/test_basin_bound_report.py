@@ -1,5 +1,8 @@
 import json
+import os
 from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -224,3 +227,63 @@ def test_write_bound_report_outputs_json_and_markdown(tmp_path):
     assert payload["probe_noise_values"] == [15.0]
     assert "proof-perturbed-basin-beer-probes" in markdown
     assert "repaired_candidate" in markdown
+
+
+def test_cli_diagnostics_basin_bound_writes_reports(tmp_path):
+    bounded_path = tmp_path / "bounded.json"
+    probe_path = tmp_path / "probe.json"
+    output_dir = tmp_path / "diagnostics"
+    bounded_path.write_text(
+        json.dumps(_aggregate("proof-perturbed-basin", [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered")])),
+        encoding="utf-8",
+    )
+    probe_path.write_text(
+        json.dumps(
+            _aggregate(
+                "proof-perturbed-basin-beer-probes",
+                [
+                    _row(
+                        noise=35.0,
+                        evidence_class="snapped_but_failed",
+                        suite_id="proof-perturbed-basin-beer-probes",
+                        case_id="basin-beer-lambert-bound-probes",
+                        status="snapped_but_failed",
+                        claim_status="failed",
+                        return_kind="snapped_but_failed",
+                        raw_status="snapped_but_failed",
+                        repair_status="not_repaired",
+                    )
+                ],
+            )
+        ),
+        encoding="utf-8",
+    )
+    env = os.environ.copy()
+    env["PYTHONPATH"] = "src"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "diagnostics",
+            "basin-bound",
+            "--bounded-aggregate",
+            str(bounded_path),
+            "--probe-aggregate",
+            str(probe_path),
+            "--output-dir",
+            str(output_dir),
+        ],
+        cwd=Path(__file__).parents[1],
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "basin-bound.json" in result.stdout
+    assert "basin-bound.md" in result.stdout
+    assert json.loads((output_dir / "basin-bound.json").read_text(encoding="utf-8"))["unsupported_noise_values"] == [35.0]
+    assert "proof-perturbed-basin-beer-probes" in (output_dir / "basin-bound.md").read_text(encoding="utf-8")

@@ -11,11 +11,65 @@ from eml_symbolic_regression.campaign import (
     campaign_preset,
     list_campaign_presets,
     run_campaign,
+    write_campaign_report,
+    write_campaign_tables,
 )
 
 
+def _proof_basin_run(
+    *,
+    run_id: str = "basin-beer-lambert-bound-seed0-noise5",
+    suite_id: str = "proof-perturbed-basin",
+    case_id: str = "basin-beer-lambert-bound",
+    evidence_class: str = "perturbed_true_tree_recovered",
+    classification: str = "same_ast_return",
+    status: str = "recovered",
+    claim_status: str = "recovered",
+    return_kind: str = "same_ast_return",
+    raw_status: str = "recovered",
+    repair_status: str = "not_attempted",
+    perturbation_noise: float = 5.0,
+) -> dict:
+    return {
+        "run_id": run_id,
+        "artifact_path": f"artifacts/benchmarks/{suite_id}/{run_id}.json",
+        "suite_id": suite_id,
+        "case_id": case_id,
+        "formula": "beer_lambert",
+        "start_mode": "perturbed_tree",
+        "seed": 0,
+        "perturbation_noise": perturbation_noise,
+        "optimizer": {"depth": 9, "steps": 20, "warm_depth": 9, "warm_steps": 40, "restarts": 1, "warm_restarts": 1},
+        "dataset": {"points": 12},
+        "claim_id": "paper-perturbed-true-tree-basin" if suite_id == "proof-perturbed-basin" else None,
+        "claim_class": "bounded_training_proof" if suite_id == "proof-perturbed-basin" else None,
+        "training_mode": "perturbed_true_tree_training",
+        "threshold_policy_id": "bounded_100_percent" if suite_id == "proof-perturbed-basin" else None,
+        "threshold": {"id": "bounded_100_percent"} if suite_id == "proof-perturbed-basin" else None,
+        "status": status,
+        "claim_status": claim_status,
+        "classification": classification,
+        "evidence_class": evidence_class,
+        "return_kind": return_kind,
+        "raw_status": raw_status,
+        "repair_status": repair_status,
+        "reason": "verified" if claim_status == "recovered" else "verifier_mismatch",
+        "metrics": {
+            "best_loss": 0.01,
+            "post_snap_loss": 0.02,
+            "snap_min_margin": 0.7,
+            "verifier_status": "recovered" if claim_status == "recovered" else "failed",
+            "changed_slot_count": 2,
+            "repair_status": repair_status,
+            "repair_verifier_status": "recovered" if repair_status == "repaired" else None,
+            "repair_accepted_move_count": 1 if repair_status == "repaired" else 0,
+        },
+        "stage_statuses": {"perturbed_true_tree_attempt": raw_status},
+    }
+
+
 def test_campaign_presets_map_to_budgeted_suites():
-    assert list_campaign_presets() == ("smoke", "standard", "showcase", "proof-shallow")
+    assert list_campaign_presets() == ("smoke", "standard", "showcase", "proof-shallow", "proof-basin")
 
     standard = campaign_preset("standard")
     suite = load_suite(standard.suite)
@@ -31,6 +85,11 @@ def test_campaign_presets_map_to_budgeted_suites():
     proof = campaign_preset("proof-shallow")
     assert proof.suite == "v1.5-shallow-proof"
     assert any(run.claim_id == "paper-shallow-blind-recovery" for run in load_suite(proof.suite).expanded_runs())
+
+    proof_basin = campaign_preset("proof-basin")
+    assert proof_basin.benchmark_suite == "proof-perturbed-basin"
+    assert proof_basin.budget_guardrail == "CI-scale perturbed basin proof suite; high-noise probes are reported separately"
+    assert any(run.case_id == "basin-beer-lambert-bound" for run in load_suite(proof_basin.suite).expanded_runs())
 
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
@@ -189,6 +248,51 @@ def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
     assert failures[0]["reason"]
 
 
+def test_campaign_tables_preserve_perturbed_repair_status_columns(tmp_path):
+    aggregate = {
+        "runs": [
+            _proof_basin_run(),
+            _proof_basin_run(
+                run_id="basin-beer-lambert-bound-probe-repaired",
+                suite_id="proof-perturbed-basin-beer-probes",
+                case_id="basin-beer-lambert-bound-probes",
+                evidence_class="repaired_candidate",
+                classification="repaired_candidate",
+                status="repaired_candidate",
+                return_kind="snapped_but_failed",
+                raw_status="snapped_but_failed",
+                repair_status="repaired",
+                perturbation_noise=15.0,
+            ),
+        ],
+        "counts": {"total": 2, "verifier_recovered": 1, "evidence_classes": {}},
+        "thresholds": [],
+    }
+
+    paths = write_campaign_tables(aggregate, tmp_path / "tables")
+
+    run_rows = list(csv.DictReader(paths["runs_csv"].open(encoding="utf-8")))
+    assert {
+        "return_kind",
+        "raw_status",
+        "repair_status",
+        "repair_verifier_status",
+        "repair_accepted_move_count",
+    } <= set(run_rows[0])
+    repaired = next(row for row in run_rows if row["evidence_class"] == "repaired_candidate")
+    assert repaired["return_kind"] == "snapped_but_failed"
+    assert repaired["raw_status"] == "snapped_but_failed"
+    assert repaired["repair_status"] == "repaired"
+    assert repaired["repair_verifier_status"] == "recovered"
+    assert repaired["repair_accepted_move_count"] == "1"
+
+    failures = list(csv.DictReader(paths["failures_csv"].open(encoding="utf-8")))
+    assert len(failures) == 1
+    assert failures[0]["classification"] == "repaired_candidate"
+    assert failures[0]["raw_status"] == "snapped_but_failed"
+    assert failures[0]["repair_status"] == "repaired"
+
+
 def test_proof_campaign_tables_and_manifest_preserve_claim_metadata(tmp_path):
     result = run_campaign(
         "proof-shallow",
@@ -228,6 +332,59 @@ def test_proof_campaign_tables_and_manifest_preserve_claim_metadata(tmp_path):
     assert manifest["output"]["tables"]["group_evidence_class_csv"].endswith("group-evidence-class.csv")
     assert manifest["output"]["tables"]["group_claim_csv"].endswith("group-claim.csv")
     assert manifest["output"]["tables"]["group_threshold_policy_csv"].endswith("group-threshold-policy.csv")
+
+
+def test_proof_basin_report_names_probe_suite_and_status_taxonomy(tmp_path):
+    campaign_dir = tmp_path / "proof-basin-report"
+    (campaign_dir / "tables").mkdir(parents=True)
+    aggregate = {
+        "runs": [
+            _proof_basin_run(),
+            _proof_basin_run(
+                run_id="basin-beer-lambert-bound-probes-seed0-noise35",
+                suite_id="proof-perturbed-basin-beer-probes",
+                case_id="basin-beer-lambert-bound-probes",
+                evidence_class="snapped_but_failed",
+                classification="snapped_but_failed",
+                status="snapped_but_failed",
+                claim_status="failed",
+                return_kind="snapped_but_failed",
+                raw_status="snapped_but_failed",
+                repair_status="not_repaired",
+                perturbation_noise=35.0,
+            ),
+        ],
+        "counts": {"total": 2, "verifier_recovered": 1, "same_ast_return": 1, "verified_equivalent_ast": 0, "evidence_classes": {}},
+        "thresholds": [
+            {
+                "claim_id": "paper-perturbed-true-tree-basin",
+                "threshold_policy_id": "bounded_100_percent",
+                "status": "passed",
+                "passed": 1,
+                "eligible": 1,
+                "rate": 1.0,
+            }
+        ],
+    }
+    manifest = {
+        "preset": campaign_preset("proof-basin").as_dict(),
+        "suite": {"id": "proof-perturbed-basin"},
+        "output": {"raw_run_root": str(campaign_dir / "runs")},
+        "reproducibility": {"command": "PYTHONPATH=src python -m eml_symbolic_regression.cli campaign proof-basin"},
+    }
+    table_paths = {"runs_csv": campaign_dir / "tables" / "runs.csv"}
+
+    report_path = write_campaign_report(campaign_dir, manifest, aggregate, table_paths, {})
+    report = report_path.read_text(encoding="utf-8")
+    proof_section = report.split("## Proof Contract", 1)[1].split("## Figures", 1)[0]
+
+    assert "proof-perturbed-basin-beer-probes" in report
+    assert "| Field | Meaning |" in report
+    assert "`return_kind`" in report
+    assert "`raw_status`" in report
+    assert "`repair_status`" in report
+    assert "paper-perturbed-true-tree-basin" in proof_section
+    assert "basin-beer-lambert-bound-probes" not in proof_section
 
 
 def test_campaign_writes_stable_svg_figures(tmp_path):
