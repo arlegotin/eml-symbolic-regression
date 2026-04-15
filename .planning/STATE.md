@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Benchmark Campaign and Evidence Report
-current_phase: Not started
-status: defining_requirements
-stopped_at: defining v1.3 requirements and roadmap
+current_phase: 19
+status: ready_for_phase_planning
+stopped_at: roadmap created for v1.3
 last_updated: "2026-04-15T11:15:22Z"
 last_activity: 2026-04-15
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -18,7 +18,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Not started
+**Current phase:** 19
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,11 +30,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: -
-Status: Defining requirements
+Phase: 19 of 23 (Campaign Presets and Run Manifests)
+Plan: Not started
+Status: Ready to plan phase 19
 Last activity: 2026-04-15
-Progress: [----------] 0% by completed phases
+Progress: [----------] 0% by completed phases (v1.3: 0/5)
 
 ## Performance Metrics
 
@@ -54,9 +54,9 @@ Progress: [----------] 0% by completed phases
 |----------|------|--------|
 | Project context | `.planning/PROJECT.md` | Complete |
 | Workflow config | `.planning/config.json` | Complete |
-| Research summary | `.planning/research/SUMMARY.md` | Local research decision recorded |
-| Requirements | `.planning/REQUIREMENTS.md` | In progress |
-| Roadmap | `.planning/ROADMAP.md` | Pending |
+| Research summary | `.planning/research/SUMMARY.md` | Complete |
+| Requirements | `.planning/REQUIREMENTS.md` | Complete |
+| Roadmap | `.planning/ROADMAP.md` | Complete |
 
 ## Current Milestone
 
@@ -73,7 +73,31 @@ Target features:
 
 ## Phase Status
 
-Pending roadmap creation.
+| Phase | Name | Status | Requirements |
+|-------|------|--------|--------------|
+| 1 | Semantics, AST, and Deterministic Artifacts | Complete | SEM-01, SEM-02, SEM-03, SEM-04 |
+| 2 | Complete Master Trees and Soft Evaluation | Complete | TREE-01, TREE-02, TREE-03, TREE-04 |
+| 3 | Optimizer, Restarts, Hardening, and Recovery Statuses | Complete | OPT-01, OPT-02, OPT-03, OPT-04 |
+| 4 | Verifier and Acceptance Contract | Complete | VER-01, VER-02, VER-03 |
+| 5 | Local Cleanup, SymPy Export, and Reports | Complete | CLEAN-01, CLEAN-02, CLEAN-03 |
+| 6 | Demo Harness and Public Showcase | Complete | DEMO-01, DEMO-02, DEMO-03, DEMO-04 |
+| 7 | Tests and Documentation | Complete | TEST-01, TEST-02 |
+| 8 | Compiler Contract and Direct Rules | Complete | COMP-01, COMP-02, COMP-03, COMP-04 |
+| 9 | Constant Catalog and AST Embedding | Complete | CONST-01, CONST-02, EMBED-01, EMBED-02, EMBED-03 |
+| 10 | Arithmetic Rule Corpus and Depth Gates | Complete | ARITH-01, ARITH-02, ARITH-03 |
+| 11 | Perturbed Warm-Start Training | Complete | WARM-01, WARM-02, WARM-03, WARM-04 |
+| 12 | Demo Promotion and Claim Reporting | Complete | DEMO-05, DEMO-06, DEMO-07, DEMO-08 |
+| 13 | Regression Tests and Documentation Lockdown | Complete | TEST-03, TEST-04 |
+| 14 | Benchmark Contract and Suite Registry | Complete | BENC-01, BENC-02, BENC-03, BENC-04 |
+| 15 | Benchmark Runner and Training Modes | Complete | RUN-01, RUN-02, RUN-03, RUN-04 |
+| 16 | Experiment Matrix and Formula Coverage | Complete | MATR-01, MATR-02, MATR-03, MATR-04 |
+| 17 | Evidence Aggregation and Report Contracts | Complete | EVID-01, EVID-02, EVID-03, EVID-04 |
+| 18 | Smoke Tests, Docs, and Evidence Lockdown | Complete | TEST-05, TEST-06, TEST-07 |
+| 19 | Campaign Presets and Run Manifests | Pending | CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05 |
+| 20 | Tidy CSV Export and Derived Metrics | Pending | DATA-01, DATA-02, DATA-03, DATA-04 |
+| 21 | Static Plot Generation | Pending | PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06 |
+| 22 | Evidence Report Assembly | Pending | REPT-01, REPT-02, REPT-03, REPT-04, REPT-05 |
+| 23 | Campaign Smoke, Docs, and Report Lockdown | Pending | TEST-11, TEST-12, TEST-13 |
 
 ## Accumulated Context
 
@@ -87,6 +111,7 @@ Pending roadmap creation.
 - The immediate evidence gap is robustness: strong Beer-Lambert perturbation failed once active slots changed, so v1.2 measured recovery rates instead of relying on single success cases.
 - v1.2 established benchmark contracts, suite execution, formula matrix coverage, aggregate evidence reports, and smoke artifacts.
 - v1.3 should produce showcase-grade evidence before optimizer changes.
+- v1.3 continues phase numbering from v1.2 and maps 23 requirements across phases 19-23.
 
 ### Pending Todos
 
@@ -99,8 +124,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: v1.3 milestone initialized
+Stopped at: v1.3 roadmap created; ready for Phase 19 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after starting milestone v1.3*
+*Last updated: 2026-04-15 after creating milestone v1.3 roadmap*

@@ -71,39 +71,37 @@ Deferred to later milestones.
 
 ## Traceability
 
-Traceability is filled when the v1.3 roadmap is created.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAMP-01 | TBD | Pending |
-| CAMP-02 | TBD | Pending |
-| CAMP-03 | TBD | Pending |
-| CAMP-04 | TBD | Pending |
-| CAMP-05 | TBD | Pending |
-| DATA-01 | TBD | Pending |
-| DATA-02 | TBD | Pending |
-| DATA-03 | TBD | Pending |
-| DATA-04 | TBD | Pending |
-| PLOT-01 | TBD | Pending |
-| PLOT-02 | TBD | Pending |
-| PLOT-03 | TBD | Pending |
-| PLOT-04 | TBD | Pending |
-| PLOT-05 | TBD | Pending |
-| PLOT-06 | TBD | Pending |
-| REPT-01 | TBD | Pending |
-| REPT-02 | TBD | Pending |
-| REPT-03 | TBD | Pending |
-| REPT-04 | TBD | Pending |
-| REPT-05 | TBD | Pending |
-| TEST-11 | TBD | Pending |
-| TEST-12 | TBD | Pending |
-| TEST-13 | TBD | Pending |
+| CAMP-01 | Phase 19 | Pending |
+| CAMP-02 | Phase 19 | Pending |
+| CAMP-03 | Phase 19 | Pending |
+| CAMP-04 | Phase 19 | Pending |
+| CAMP-05 | Phase 19 | Pending |
+| DATA-01 | Phase 20 | Pending |
+| DATA-02 | Phase 20 | Pending |
+| DATA-03 | Phase 20 | Pending |
+| DATA-04 | Phase 20 | Pending |
+| PLOT-01 | Phase 21 | Pending |
+| PLOT-02 | Phase 21 | Pending |
+| PLOT-03 | Phase 21 | Pending |
+| PLOT-04 | Phase 21 | Pending |
+| PLOT-05 | Phase 21 | Pending |
+| PLOT-06 | Phase 21 | Pending |
+| REPT-01 | Phase 22 | Pending |
+| REPT-02 | Phase 22 | Pending |
+| REPT-03 | Phase 22 | Pending |
+| REPT-04 | Phase 22 | Pending |
+| REPT-05 | Phase 22 | Pending |
+| TEST-11 | Phase 23 | Pending |
+| TEST-12 | Phase 23 | Pending |
+| TEST-13 | Phase 23 | Pending |
 
 **Coverage:**
 - v1.3 requirements: 23 total
-- Mapped to phases: 0
-- Unmapped: 23
+- Mapped to phases: 23
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after milestone v1.3 definition*
+*Last updated: 2026-04-15 after milestone v1.3 roadmap creation*
