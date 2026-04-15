@@ -243,11 +243,13 @@ def claim_matrix() -> dict[str, PaperClaim]:
                 "shallow-log-blind",
                 "shallow-radioactive-decay-blind",
                 "shallow-beer-lambert-blind",
+                "shallow-scaled-exp-growth-blind",
+                "shallow-scaled-exp-fast-decay-blind",
             ),
             threshold_policy_id="bounded_100_percent",
             notes=(
                 "The bounded suite target is 100% recovery over declared cases only.",
-                "The current radioactive_decay blind failure remains visible for Phase 30 repair.",
+                "The current radioactive_decay, Beer-Lambert, and signed/scaled exponential blind targets remain visible for Phase 30 repair.",
             ),
         ),
         "paper-perturbed-true-tree-basin": PaperClaim(
