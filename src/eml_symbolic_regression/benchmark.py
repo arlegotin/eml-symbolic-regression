@@ -421,6 +421,20 @@ class BenchmarkSuite:
                 raise BenchmarkValidationError("duplicate_case", f"duplicate case id {case.id!r}", path=f"cases[{index}].id")
             seen_ids.add(case.id)
             case.validate(f"cases[{index}]")
+            if case.claim_id is not None:
+                claim = paper_claim(case.claim_id)
+                if self.id not in claim.suite_ids:
+                    raise BenchmarkValidationError(
+                        "invalid_proof_contract",
+                        "claim does not declare this suite",
+                        path=f"cases[{index}].claim_id",
+                    )
+                if claim.case_ids and case.id not in claim.case_ids:
+                    raise BenchmarkValidationError(
+                        "invalid_proof_contract",
+                        "claim does not declare this case",
+                        path=f"cases[{index}].id",
+                    )
 
     def expanded_runs(self) -> tuple[BenchmarkRun, ...]:
         self.validate()

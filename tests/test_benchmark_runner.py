@@ -62,7 +62,7 @@ def test_runner_filter_executes_subset(tmp_path):
 def test_proof_aware_run_artifact_includes_threshold_dataset_and_provenance(tmp_path):
     case = BenchmarkCase.from_mapping(
         {
-            "id": "proof-exp",
+            "id": "shallow-exp-blind",
             "formula": "exp",
             "start_mode": "blind",
             "seeds": [0],
@@ -74,7 +74,7 @@ def test_proof_aware_run_artifact_includes_threshold_dataset_and_provenance(tmp_
         },
         path="cases[0]",
     )
-    suite = BenchmarkSuite("proof-smoke", "cheap proof-aware runner smoke", (case,), tmp_path / "artifacts")
+    suite = BenchmarkSuite("v1.5-shallow-proof", "cheap proof-aware runner smoke", (case,), tmp_path / "artifacts")
 
     result = run_benchmark_suite(suite)
     artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))

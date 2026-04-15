@@ -237,8 +237,13 @@ def claim_matrix() -> dict[str, PaperClaim]:
             ),
             source_refs=("sources/paper.pdf", "sources/NORTH_STAR.md", ".planning/REQUIREMENTS.md", ".planning/ROADMAP.md"),
             claim_class=CLAIM_CLASSES["bounded_training_proof"],
-            suite_ids=("proof-shallow-blind",),
-            case_ids=("exp", "log", "radioactive_decay", "scaled_exponential_family"),
+            suite_ids=("v1.5-shallow-proof",),
+            case_ids=(
+                "shallow-exp-blind",
+                "shallow-log-blind",
+                "shallow-radioactive-decay-blind",
+                "shallow-beer-lambert-blind",
+            ),
             threshold_policy_id="bounded_100_percent",
             notes=(
                 "The bounded suite target is 100% recovery over declared cases only.",

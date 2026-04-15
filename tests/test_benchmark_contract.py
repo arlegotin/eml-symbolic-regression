@@ -121,7 +121,7 @@ def test_custom_suite_loads_from_json(tmp_path):
 def test_case_accepts_and_serializes_proof_metadata():
     case = BenchmarkCase.from_mapping(
         {
-            "id": "proof-exp",
+            "id": "shallow-exp-blind",
             "formula": "exp",
             "start_mode": "blind",
             "claim_id": "paper-shallow-blind-recovery",
@@ -130,7 +130,7 @@ def test_case_accepts_and_serializes_proof_metadata():
         },
         path="cases[0]",
     )
-    suite = BenchmarkSuite("proof-custom", "proof metadata custom suite", (case,))
+    suite = BenchmarkSuite("v1.5-shallow-proof", "proof metadata custom suite", (case,))
     suite.validate()
     runs = suite.expanded_runs()
 
@@ -155,6 +155,34 @@ def test_case_accepts_and_serializes_proof_metadata():
         threshold_policy_id="bounded_100_percent",
         training_mode="blind_training",
     ).run_id
+
+
+@pytest.mark.parametrize(
+    ("suite_id", "case_id", "path_suffix"),
+    [
+        ("proof-custom", "shallow-exp-blind", "claim_id"),
+        ("v1.5-shallow-proof", "proof-exp", "id"),
+    ],
+)
+def test_proof_contract_validation_enforces_claim_suite_and_case_scope(suite_id, case_id, path_suffix):
+    case = BenchmarkCase.from_mapping(
+        {
+            "id": case_id,
+            "formula": "exp",
+            "start_mode": "blind",
+            "claim_id": "paper-shallow-blind-recovery",
+            "threshold_policy_id": "bounded_100_percent",
+            "training_mode": "blind_training",
+        },
+        path="cases[0]",
+    )
+    suite = BenchmarkSuite(suite_id, "bad proof metadata scope", (case,))
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        suite.validate()
+
+    assert exc.value.reason == "invalid_proof_contract"
+    assert exc.value.path == f"cases[0].{path_suffix}"
 
 
 @pytest.mark.parametrize(

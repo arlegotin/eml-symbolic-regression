@@ -36,6 +36,13 @@ def test_claims_keep_catalog_compile_and_training_classes_distinct():
 
     shallow_claim = paper_claim("paper-shallow-blind-recovery")
     assert shallow_claim.claim_class == CLAIM_CLASSES["bounded_training_proof"]
+    assert shallow_claim.suite_ids == ("v1.5-shallow-proof",)
+    assert shallow_claim.case_ids == (
+        "shallow-exp-blind",
+        "shallow-log-blind",
+        "shallow-radioactive-decay-blind",
+        "shallow-beer-lambert-blind",
+    )
     assert "sources/paper.pdf" in shallow_claim.source_refs
     assert ".planning/REQUIREMENTS.md" in shallow_claim.source_refs
     assert ".planning/ROADMAP.md" in shallow_claim.source_refs
