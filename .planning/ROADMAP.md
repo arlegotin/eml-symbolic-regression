@@ -71,7 +71,11 @@ Plans:
   2. Blind training reaches 100% verifier-owned recovery across declared seeds, budgets, and tolerances, with no catalog or compile-only cases counted.
   3. Optimizer diagnostics explain scaffold source, loss, snap margins, active nodes, and verifier status for every run.
   4. Regression tests fail if any declared shallow blind target drops below the bounded 100% target.
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 30-01-PLAN.md - Scaled-exponential shape evidence and shallow proof suite contract.
+- [ ] 30-02-PLAN.md - Blind scaled-exponential scaffold recovery and proof diagnostics.
+- [ ] 30-03-PLAN.md - Full shallow proof regression gate and aggregate guardrails.
 
 ### Phase 31: Perturbed Basin Training and Local Repair
 **Goal**: Users can prove the implementation returns to perturbed true EML solutions inside declared bounds and can inspect/repair near-miss snaps.
@@ -158,7 +162,7 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 19-23. v1.3 Benchmark Campaign and Evidence Report | Complete | Complete | 2026-04-15 |
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
 | 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete    | 2026-04-15 |
-| 30. Bounded Shallow Blind Training Recovery | 0/1 | Pending | - |
+| 30. Bounded Shallow Blind Training Recovery | 0/3 | Pending | - |
 | 31. Perturbed Basin Training and Local Repair | 0/1 | Pending | - |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
 | 33. Proof Campaign Report and Evidence Lockdown | 0/1 | Pending | - |
