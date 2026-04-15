@@ -17,12 +17,26 @@ import numpy as np
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
 from .datasets import demo_specs
 from .optimize import TrainingConfig, fit_eml_tree
+from .proof import (
+    TRAINING_MODES,
+    ProofContractError,
+    paper_claim,
+    threshold_policy,
+    validate_claim_reference,
+)
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
 
 START_MODES = ("catalog", "compile", "blind", "warm_start")
-BUILTIN_SUITES = ("smoke", "v1.2-evidence", "for-demo-diagnostics", "v1.3-standard", "v1.3-showcase")
+BUILTIN_SUITES = (
+    "smoke",
+    "v1.2-evidence",
+    "for-demo-diagnostics",
+    "v1.3-standard",
+    "v1.3-showcase",
+    "v1.5-shallow-proof",
+)
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 
 
@@ -141,6 +155,9 @@ class BenchmarkCase:
     optimizer: OptimizerBudget = field(default_factory=OptimizerBudget)
     tags: tuple[str, ...] = ()
     expect_recovery: bool = False
+    claim_id: str | None = None
+    threshold_policy_id: str | None = None
+    training_mode: str | None = None
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any], *, path: str) -> "BenchmarkCase":
@@ -150,6 +167,12 @@ class BenchmarkCase:
                 raise BenchmarkValidationError("malformed_case", f"missing required field {key!r}", path=path)
         seeds = tuple(int(seed) for seed in payload.get("seeds", (0,)))
         noises = tuple(float(value) for value in payload.get("perturbation_noise", (0.0,)))
+        if "evidence_class" in payload:
+            raise BenchmarkValidationError(
+                "invalid_proof_contract",
+                "evidence_class is derived from execution results and cannot be supplied by suite JSON",
+                path=f"{path}.evidence_class",
+            )
         return cls(
             id=str(payload["id"]),
             formula=str(payload["formula"]),
@@ -160,6 +183,9 @@ class BenchmarkCase:
             optimizer=OptimizerBudget.from_mapping(payload.get("optimizer")),
             tags=tuple(str(tag) for tag in payload.get("tags", ())),
             expect_recovery=bool(payload.get("expect_recovery", False)),
+            claim_id=_optional_str(payload.get("claim_id")),
+            threshold_policy_id=_optional_str(payload.get("threshold_policy_id")),
+            training_mode=_optional_str(payload.get("training_mode")),
         )
 
     def validate(self, path: str) -> None:
@@ -192,8 +218,31 @@ class BenchmarkCase:
                 "non-warm-start cases must use perturbation noise 0.0",
                 path=f"{path}.perturbation_noise",
             )
+        self._validate_proof_contract(path)
         self.dataset.validate(f"{path}.dataset")
         self.optimizer.validate(f"{path}.optimizer")
+
+    def _validate_proof_contract(self, path: str) -> None:
+        training_mode = self.training_mode or _default_training_mode(self.start_mode)
+        _validate_training_mode_for_start_mode(training_mode, self.start_mode, f"{path}.training_mode")
+        if self.claim_id is None:
+            return
+        if self.threshold_policy_id is None:
+            raise BenchmarkValidationError(
+                "invalid_proof_contract",
+                "claim_id requires threshold_policy_id",
+                path=f"{path}.threshold_policy_id",
+            )
+        if self.training_mode is None:
+            raise BenchmarkValidationError(
+                "invalid_proof_contract",
+                "claim_id requires training_mode",
+                path=f"{path}.training_mode",
+            )
+        try:
+            validate_claim_reference(self.claim_id, self.threshold_policy_id, path=path)
+        except ProofContractError as exc:
+            raise _benchmark_proof_error(exc, path) from exc
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -206,6 +255,9 @@ class BenchmarkCase:
             "optimizer": self.optimizer.as_dict(),
             "tags": list(self.tags),
             "expect_recovery": self.expect_recovery,
+            "claim_id": self.claim_id,
+            "threshold_policy_id": self.threshold_policy_id,
+            "training_mode": self.training_mode,
         }
 
 
@@ -222,6 +274,9 @@ class BenchmarkRun:
     artifact_path: Path
     tags: tuple[str, ...] = ()
     expect_recovery: bool = False
+    claim_id: str | None = None
+    threshold_policy_id: str | None = None
+    training_mode: str | None = None
 
     @property
     def run_id(self) -> str:
@@ -235,6 +290,12 @@ class BenchmarkRun:
             "dataset": self.dataset.as_dict(),
             "optimizer": self.optimizer.as_dict(),
         }
+        if self.claim_id is not None or self.threshold_policy_id is not None:
+            parts["proof"] = {
+                "claim_id": self.claim_id,
+                "threshold_policy_id": self.threshold_policy_id,
+                "training_mode": self.training_mode,
+            }
         digest = hashlib.sha1(json.dumps(parts, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()[:12]
         return f"{_slug(self.suite_id)}-{_slug(self.case_id)}-{digest}"
 
@@ -252,6 +313,9 @@ class BenchmarkRun:
             "artifact_path": str(self.artifact_path),
             "tags": list(self.tags),
             "expect_recovery": self.expect_recovery,
+            "claim_id": self.claim_id,
+            "threshold_policy_id": self.threshold_policy_id,
+            "training_mode": self.training_mode,
         }
 
 
@@ -362,6 +426,7 @@ class BenchmarkSuite:
         runs: list[BenchmarkRun] = []
         for case in self.cases:
             noises = case.perturbation_noise if case.start_mode == "warm_start" else (0.0,)
+            training_mode = case.training_mode or _default_training_mode(case.start_mode)
             for seed in case.seeds:
                 for noise in noises:
                     placeholder = BenchmarkRun(
@@ -376,6 +441,9 @@ class BenchmarkSuite:
                         artifact_path=Path(),
                         tags=case.tags,
                         expect_recovery=case.expect_recovery,
+                        claim_id=case.claim_id,
+                        threshold_policy_id=case.threshold_policy_id,
+                        training_mode=training_mode,
                     )
                     runs.append(
                         BenchmarkRun(
@@ -390,6 +458,9 @@ class BenchmarkSuite:
                             artifact_path=self.artifact_root / self.id / f"{placeholder.run_id}.json",
                             tags=placeholder.tags,
                             expect_recovery=placeholder.expect_recovery,
+                            claim_id=placeholder.claim_id,
+                            threshold_policy_id=placeholder.threshold_policy_id,
+                            training_mode=placeholder.training_mode,
                         )
                     )
         return tuple(runs)
@@ -409,6 +480,55 @@ def _slug(value: str) -> str:
     return "-".join(part for part in slug.split("-") if part)
 
 
+def _optional_str(value: Any) -> str | None:
+    if value is None:
+        return None
+    return str(value)
+
+
+def _default_training_mode(start_mode: str) -> str:
+    modes = {
+        "catalog": TRAINING_MODES["catalog_verification"],
+        "compile": TRAINING_MODES["compile_only_verification"],
+        "blind": TRAINING_MODES["blind_training"],
+        "warm_start": TRAINING_MODES["compiler_warm_start_training"],
+    }
+    try:
+        return modes[start_mode]
+    except KeyError as exc:
+        raise BenchmarkValidationError(
+            "invalid_start_mode",
+            f"{start_mode!r} is not one of: {', '.join(START_MODES)}",
+            path="start_mode",
+        ) from exc
+
+
+def _validate_training_mode_for_start_mode(training_mode: str, start_mode: str, path: str) -> None:
+    if training_mode not in TRAINING_MODES.values():
+        raise BenchmarkValidationError(
+            "invalid_proof_contract",
+            f"{training_mode!r} is not one of: {', '.join(TRAINING_MODES.values())}",
+            path=path,
+        )
+    expected = _default_training_mode(start_mode)
+    if training_mode != expected:
+        raise BenchmarkValidationError(
+            "invalid_proof_contract",
+            f"{start_mode!r} cases require training_mode {expected!r}, got {training_mode!r}",
+            path=path,
+        )
+
+
+def _benchmark_proof_error(exc: ProofContractError, path: str) -> BenchmarkValidationError:
+    exc_path = exc.path or "claim_id"
+    if exc_path.startswith(f"{path}."):
+        final_path = exc_path
+    else:
+        leaf = "threshold_policy_id" if "threshold_policy_id" in exc_path else "claim_id" if "claim_id" in exc_path else exc_path.rsplit(".", 1)[-1]
+        final_path = f"{path}.{leaf}"
+    return BenchmarkValidationError("invalid_proof_contract", exc.detail, path=final_path)
+
+
 def _case(
     id: str,
     formula: str,
@@ -424,6 +544,9 @@ def _case(
     warm_restarts: int = 1,
     tags: Iterable[str] = (),
     expect_recovery: bool = False,
+    claim_id: str | None = None,
+    threshold_policy_id: str | None = None,
+    training_mode: str | None = None,
 ) -> BenchmarkCase:
     return BenchmarkCase(
         id=id,
@@ -435,6 +558,9 @@ def _case(
         optimizer=OptimizerBudget(depth=depth, steps=steps, restarts=restarts, warm_steps=warm_steps, warm_restarts=warm_restarts),
         tags=tuple(tags),
         expect_recovery=expect_recovery,
+        claim_id=claim_id,
+        threshold_policy_id=threshold_policy_id,
+        training_mode=training_mode,
     )
 
 
@@ -556,6 +682,28 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 _case("shockley-compile", "shockley", "compile", tags=("diagnostic", "for_demo")),
                 _case("damped-oscillator-compile", "damped_oscillator", "compile", tags=("stretch", "for_demo")),
                 _case("planck-diagnostic", "planck", "compile", tags=("stretch", "depth_gate", "for_demo")),
+            ),
+        )
+    if name == "v1.5-shallow-proof":
+        proof_kwargs = {
+            "seeds": (0, 1, 2),
+            "steps": 120,
+            "restarts": 2,
+            "points": 32,
+            "tags": ("v1.5", "proof", "bounded", "blind"),
+            "expect_recovery": True,
+            "claim_id": "paper-shallow-blind-recovery",
+            "threshold_policy_id": "bounded_100_percent",
+            "training_mode": "blind_training",
+        }
+        return BenchmarkSuite(
+            id="v1.5-shallow-proof",
+            description="Bounded v1.5 shallow blind proof contract suite for existing demo formulas.",
+            cases=(
+                _case("shallow-exp-blind", "exp", "blind", depth=1, **proof_kwargs),
+                _case("shallow-log-blind", "log", "blind", depth=3, **proof_kwargs),
+                _case("shallow-radioactive-decay-blind", "radioactive_decay", "blind", depth=4, **proof_kwargs),
+                _case("shallow-beer-lambert-blind", "beer_lambert", "blind", depth=4, **proof_kwargs),
             ),
         )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
