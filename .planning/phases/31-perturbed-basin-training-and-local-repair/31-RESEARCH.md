@@ -380,19 +380,19 @@ This shape is not implemented yet; it is recommended so repair remains serializa
 | A4 | Beer-Lambert raw supported bound should start no higher than noise `5.0` until Phase 31 reruns prove a higher bound. | Recommended Plan Structure | If repair or training recovers noise `15.0` or `35.0`, the supported bound can be widened after evidence exists. |
 | A5 | A machine-readable bound report can be implemented in diagnostics/campaign layers without a new external report dependency. | Recommended Plan Structure | If the report belongs only in Phase 33, Phase 31 should still emit raw aggregate fields for Phase 33 to consume. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Should nonzero same-AST return count as `perturbed_true_tree_recovered` with a separate `return_kind`, or remain `same_ast` and fail bounded thresholds?**
+1. **RESOLVED: Nonzero same-AST return counts as `perturbed_true_tree_recovered` only on the new perturbed-tree proof path, with `return_kind` preserved.**
    - What we know: `bounded_100_percent` currently excludes `same_ast`, and Phase 31 requires same-AST outcomes to remain distinct. [VERIFIED: proof.py:149-164] [VERIFIED: .planning/REQUIREMENTS.md:31]
    - What's unclear: Whether a nonzero perturbation that trains back to the same AST should be counted as raw perturbed recovery or only as same-AST evidence. [ASSUMED]
    - Recommendation: Store both fields and test the threshold rule explicitly before running the proof suite. [ASSUMED]
 
-2. **Should high-noise Beer-Lambert probes live in the bounded suite or a separate bound-probe suite?**
+2. **RESOLVED: High-noise Beer-Lambert probes live outside bounded proof rows until evidence supports them.**
    - What we know: Phase 31 requires high-noise failures to stay visible and not silently dropped. [VERIFIED: 31-CONTEXT.md:30-32]
    - What's unclear: The cleanest artifact layout for rows outside the supported bound. [ASSUMED]
    - Recommendation: Keep bounded rows in `proof-perturbed-basin` and write separate bound-probe rows/report for `15.0` and `35.0` until repair proves them. [ASSUMED]
 
-3. **How target-blind should local repair be?**
+3. **RESOLVED: Local repair may use target-neighborhood moves, but accepted repairs remain `repaired_candidate`.**
    - What we know: Phase 31 D-08 allows exact target-neighborhood moves if serialized. [VERIFIED: 31-CONTEXT.md:36]
    - What's unclear: Whether the final proof narrative should separate target-neighborhood repair from generic local repair. [ASSUMED]
    - Recommendation: Add a `source` field on every repair move, such as `embedded_target_slot` or `slot_catalog_neighbor`, and group reports by source. [ASSUMED]
