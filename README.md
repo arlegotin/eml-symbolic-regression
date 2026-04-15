@@ -22,8 +22,9 @@ The paper shows that EML plus the constant `1` can generate the scientific-calcu
 - A fail-closed SymPy subset compiler that emits exact EML ASTs with metadata, rule traces, assumptions, literal-constant provenance, and independent validation against ordinary SymPy evaluation.
 - Constant-catalog soft master trees plus exact AST embedding with embed-to-snap round-trip checks.
 - Compiler-driven warm-start training reports that perturb, train, snap, and verify through the existing optimizer/verifier boundary.
+- Repeatable benchmark suites with per-run artifacts, aggregate JSON/Markdown reports, recovery-rate grouping, and explicit failure/unsupported taxonomy.
 - Demo specs from `sources/FOR_DEMO.md`.
-- CLI commands for paper checks and demo reports.
+- CLI commands for paper checks, demo reports, and benchmark evidence runs.
 - Pytest coverage for the MVP pipeline.
 
 The implementation is intentionally honest about scope: exact EML recovery is demonstrated for paper-grounded shallow formulas and for Beer-Lambert via a compiler-generated warm start. Harder showcase demos remain verified catalog candidates or explicit unsupported/depth reports unless a trained exact EML candidate passes the verifier.
@@ -60,6 +61,24 @@ Run the compiler warm-start recovery path:
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --warm-start-eml --output artifacts/beer-lambert-warm-report.json
 ```
 
+List benchmark suites:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli list-benchmarks
+```
+
+Run the CI-scale benchmark smoke suite:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark smoke --output-dir artifacts/benchmarks
+```
+
+Run a filtered evidence subset:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.2-evidence --case beer-perturbation-sweep --seed 0 --output-dir artifacts/benchmarks
+```
+
 Try soft EML training on a shallow demo:
 
 ```bash
@@ -81,6 +100,24 @@ python -m pytest
 - `warm_start_attempt`: the compiler seed was embedded into a compatible soft tree, optionally perturbed, trained through the existing optimizer, snapped, and classified.
 - `trained_exact_recovery`: the post-training snapped exact EML AST passed the verifier. Demo reports promote top-level `claim_status` to `recovered` only at this stage.
 - `unsupported`: the compiler or warm-start gate failed closed, usually because an operator, constant policy, depth, node budget, or warm-start depth limit was exceeded.
+
+## Benchmark Evidence
+
+Benchmark runs use the built-in suites `smoke`, `v1.2-evidence`, and `for-demo-diagnostics`, or a custom JSON suite with schema `eml.benchmark_suite.v1`. Each expanded run writes a JSON artifact containing the suite/run identity, formula, start mode, seed, perturbation, optimizer config, stage statuses, normalized losses/snap metrics when training ran, verifier status, timing, and errors.
+
+The CLI also writes:
+
+- `suite-result.json`: all run payloads for the command.
+- `aggregate.json`: grouped recovery/failure counts.
+- `aggregate.md`: a compact human-readable report.
+
+Interpretation rules:
+
+- `verifier_recovered` means the snapped exact candidate passed the verifier.
+- `same_ast_return` means a warm-started run snapped back to the compiled seed; this is useful basin-stability evidence, not blind discovery.
+- `verified_equivalent_ast` means a warm-started run snapped to a different exact AST that still verified.
+- `unsupported` and failed cases are kept in the denominator; they are part of the evidence.
+- `verifier_recovery_rate` is computed from verifier-owned recovery, not from training loss.
 
 ## Limits
 

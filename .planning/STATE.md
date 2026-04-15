@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Training Benchmark and Recovery Evidence
-current_phase: 18
-status: ready_for_phase_planning
-stopped_at: phase 17 complete; ready for phase 18
+current_phase: Complete
+status: completed
+stopped_at: v1.2 phases complete; lifecycle pending
 last_updated: "2026-04-15T10:42:56Z"
 last_activity: 2026-04-15
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 4
-  completed_plans: 4
-  percent: 80
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 18
+**Current phase:** Complete
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,16 +31,16 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 ## Current Position
 
 Phase: 18 of 18 (Smoke Tests, Docs, and Evidence Lockdown)
-Plan: Not started
-Status: Ready to plan phase 18
+Plan: Complete
+Status: Milestone phases complete
 Last activity: 2026-04-15
-Progress: [########--] 80% by completed phases (v1.2: 4/5)
+Progress: [##########] 100% by completed phases (v1.2: 5/5)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1 and v1.1 phases complete; v1.2 phases 14-17 complete
+- Total plans completed: Historical v1 and v1.1 phases complete; v1.2 phases 14-18 complete
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
@@ -92,7 +92,7 @@ Target features:
 | 15 | Benchmark Runner and Training Modes | Complete | RUN-01, RUN-02, RUN-03, RUN-04 |
 | 16 | Experiment Matrix and Formula Coverage | Complete | MATR-01, MATR-02, MATR-03, MATR-04 |
 | 17 | Evidence Aggregation and Report Contracts | Complete | EVID-01, EVID-02, EVID-03, EVID-04 |
-| 18 | Smoke Tests, Docs, and Evidence Lockdown | Pending | TEST-05, TEST-06, TEST-07 |
+| 18 | Smoke Tests, Docs, and Evidence Lockdown | Complete | TEST-05, TEST-06, TEST-07 |
 
 ## Accumulated Context
 
@@ -109,6 +109,7 @@ Target features:
 - Phase 15 added benchmark suite execution, CLI commands, filtered runs, and structured unsupported/failure artifacts.
 - Phase 16 added radioactive decay and expanded benchmark matrix coverage for shallow blind baselines, Beer-Lambert perturbation, Michaelis-Menten/Planck gates, and FOR_DEMO diagnostics.
 - Phase 17 added normalized run metrics, aggregate JSON/Markdown reports, code/environment provenance, and recovery/failure taxonomy.
+- Phase 18 locked benchmark behavior with smoke tests, docs, full pytest, and generated smoke benchmark artifacts.
 
 ### Pending Todos
 
@@ -121,8 +122,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Phase 17 complete; ready for Phase 18 planning
+Stopped at: v1.2 phases complete; lifecycle pending
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after completing phase 17*
+*Last updated: 2026-04-15 after completing phase 18*

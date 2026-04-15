@@ -48,7 +48,7 @@ v1.2 turns the current training evidence into a repeatable benchmark system. The
 - [x] **Phase 15: Benchmark Runner and Training Modes** - Run suites and filtered subsets through existing blind-start and compiler warm-start paths while preserving failures. (completed 2026-04-15)
 - [x] **Phase 16: Experiment Matrix and Formula Coverage** - Add the actual v1.2 formula/start/seed/perturbation matrix for shallow baselines, Beer-Lambert, Michaelis-Menten, Planck, and selected demo diagnostics. (completed 2026-04-15)
 - [x] **Phase 17: Evidence Aggregation and Report Contracts** - Aggregate run artifacts into JSON and Markdown reports with recovery rates, failure classes, and provenance. (completed 2026-04-15)
-- [ ] **Phase 18: Smoke Tests, Docs, and Evidence Lockdown** - Lock benchmark parsing, smoke execution, aggregation math, claim taxonomy, and user-facing interpretation docs. (requirements: TEST-05, TEST-06, TEST-07)
+- [x] **Phase 18: Smoke Tests, Docs, and Evidence Lockdown** - Lock benchmark parsing, smoke execution, aggregation math, claim taxonomy, and user-facing interpretation docs. (completed 2026-04-15)
 
 ## Phase Details
 
@@ -135,9 +135,9 @@ The order is intentionally linear. Suite contracts and run identity must exist b
 | EVID-02 | Phase 17 | Complete |
 | EVID-03 | Phase 17 | Complete |
 | EVID-04 | Phase 17 | Complete |
-| TEST-05 | Phase 18 | Pending |
-| TEST-06 | Phase 18 | Pending |
-| TEST-07 | Phase 18 | Pending |
+| TEST-05 | Phase 18 | Complete |
+| TEST-06 | Phase 18 | Complete |
+| TEST-07 | Phase 18 | Complete |
 
 **Coverage:** 19/19 v1.2 requirements mapped. No orphaned requirements. No duplicate phase assignments.
 
@@ -164,7 +164,7 @@ The order is intentionally linear. Suite contracts and run identity must exist b
 | 15. Benchmark Runner and Training Modes | 1/1 | Complete | 2026-04-15 |
 | 16. Experiment Matrix and Formula Coverage | 1/1 | Complete | 2026-04-15 |
 | 17. Evidence Aggregation and Report Contracts | 1/1 | Complete | 2026-04-15 |
-| 18. Smoke Tests, Docs, and Evidence Lockdown | 0/1 | Pending | - |
+| 18. Smoke Tests, Docs, and Evidence Lockdown | 1/1 | Complete | 2026-04-15 |
 
 ---
 *Roadmap updated: 2026-04-15 for milestone v1.2*

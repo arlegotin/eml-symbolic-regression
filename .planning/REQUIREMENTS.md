@@ -38,9 +38,9 @@ Requirements for this milestone only. Completed v1 and v1.1 requirements are rec
 
 ### Tests and Documentation
 
-- [ ] **TEST-05**: User can run focused pytest coverage for suite parsing, validation, run ID stability, aggregation math, and claim taxonomy.
-- [ ] **TEST-06**: User can run a small benchmark smoke test in CI-scale time that exercises at least one blind-start run, one warm-start run, one unsupported/stretch diagnostic, and one aggregate report.
-- [ ] **TEST-07**: User can read documentation that explains how to run benchmark suites, how to interpret recovery evidence, and why failures or same-AST returns are not hidden.
+- [x] **TEST-05**: User can run focused pytest coverage for suite parsing, validation, run ID stability, aggregation math, and claim taxonomy.
+- [x] **TEST-06**: User can run a small benchmark smoke test in CI-scale time that exercises at least one blind-start run, one warm-start run, one unsupported/stretch diagnostic, and one aggregate report.
+- [x] **TEST-07**: User can read documentation that explains how to run benchmark suites, how to interpret recovery evidence, and why failures or same-AST returns are not hidden.
 
 ## Future Requirements
 
@@ -85,9 +85,9 @@ Deferred to later milestones.
 | EVID-02 | Phase 17 | Complete |
 | EVID-03 | Phase 17 | Complete |
 | EVID-04 | Phase 17 | Complete |
-| TEST-05 | Phase 18 | Pending |
-| TEST-06 | Phase 18 | Pending |
-| TEST-07 | Phase 18 | Pending |
+| TEST-05 | Phase 18 | Complete |
+| TEST-06 | Phase 18 | Complete |
+| TEST-07 | Phase 18 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 19 total

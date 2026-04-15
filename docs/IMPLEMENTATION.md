@@ -13,7 +13,8 @@ The package follows the roadmap in `.planning/ROADMAP.md`:
 7. `compiler.py` compiles a whitelisted SymPy subset into the existing exact EML `Expr` AST.
 8. `master_tree.py` also supports literal-constant terminal banks and AST-to-logit embedding.
 9. `warm_start.py` embeds compiled ASTs, records deterministic perturbation metadata, trains through `fit_eml_tree()`, and classifies the post-snap outcome.
-10. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
+10. `benchmark.py` defines repeatable benchmark suites, run execution, per-run artifacts, aggregate evidence reports, and recovery/failure taxonomy.
+11. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
 
 ## Recovery Contract
 
@@ -56,6 +57,40 @@ Unsupported functions, unknown variables, unsafe constants, excessive powers, an
 
 Warm-start outcomes are separated as `same_ast_return`, `verified_equivalent_ast`, `snapped_but_failed`, `soft_fit_only`, or `failed`.
 
+## Benchmark Evidence Contract
+
+Benchmark suites use schema `eml.benchmark_suite.v1`. A suite expands cases into deterministic runs using formula ID, start mode, seed, perturbation noise, dataset config, optimizer budget, and artifact root. Run IDs are hash-stabilized from that canonical identity, so repeated expansion produces the same artifact paths.
+
+Built-in suites:
+
+- `smoke`: one blind run, one warm-start run, and one unsupported/stretch diagnostic for CI-scale coverage.
+- `v1.2-evidence`: shallow blind baselines, Beer-Lambert perturbation sweep, Michaelis-Menten warm-start diagnostics, and Planck stretch diagnostics.
+- `for-demo-diagnostics`: selected `sources/FOR_DEMO.md` formulas, including unsupported/stretch formulas as evidence rather than hidden failures.
+
+Each run writes schema `eml.benchmark_run.v1` with:
+
+- run identity and artifact path,
+- dataset and optimizer configuration,
+- start mode, seed, perturbation noise, and tags,
+- stage statuses,
+- normalized metrics such as best loss, post-snap loss, snap margin, active slot changes, verifier status, and high-precision error when available,
+- timing and environment provenance,
+- structured errors for unsupported or failed execution paths.
+
+Aggregate reports use schema `eml.benchmark_aggregate.v1` and are written as both JSON and Markdown. Recovery rates are grouped by formula, start mode, perturbation level, depth, and seed group. `claim_status == "recovered"` is the only source of verifier-owned recovery counts.
+
+The taxonomy intentionally separates:
+
+- `blind_recovery`
+- `same_ast_warm_start_return`
+- `verified_equivalent_warm_start_recovery`
+- `snapped_but_failed`
+- `soft_fit_only`
+- `unsupported`
+- `execution_failure`
+
+This prevents a same-AST return or low training loss from being read as blind symbolic discovery.
+
 ## Paper-Grounded Fixtures
 
 The test suite includes the two identities most important for the MVP:
@@ -78,6 +113,7 @@ The built-in demos mirror `sources/FOR_DEMO.md`:
 - `exp`
 - `log`
 - `beer_lambert`
+- `radioactive_decay`
 - `michaelis_menten`
 - `logistic`
 - `shockley`

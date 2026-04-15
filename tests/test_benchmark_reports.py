@@ -46,3 +46,20 @@ def test_markdown_report_contains_run_artifact_paths(tmp_path):
 
     assert "planck-diagnostic" in markdown
     assert ".json" in markdown
+
+
+def test_smoke_benchmark_exercises_required_paths_and_aggregate(tmp_path):
+    base = builtin_suite("smoke")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(suite)
+    paths = write_aggregate_reports(result)
+    aggregate = aggregate_evidence(result)
+
+    assert {run.start_mode for run in (item.run for item in result.results)} == {"blind", "warm_start", "compile"}
+    assert {"recovered", "snapped_candidate", "same_ast_return", "unsupported"} >= {item.status for item in result.results}
+    assert aggregate["counts"]["total"] == 3
+    assert aggregate["counts"]["unsupported"] == 1
+    assert aggregate["counts"]["same_ast_return"] == 1
+    assert paths["json"].exists()
+    assert paths["markdown"].exists()
