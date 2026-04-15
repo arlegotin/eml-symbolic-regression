@@ -24,10 +24,10 @@ Requirements for this milestone only. Completed v1 and v1.1 requirements are rec
 
 ### Experiment Matrix
 
-- [ ] **MATR-01**: User can run blind-start baselines for shallow formulas such as `exp`, `log`, radioactive decay, and other low-depth formulas supported by current gates.
-- [ ] **MATR-02**: User can run Beer-Lambert perturbation sweeps that include same-basin, mild perturbation, and stronger slot-changing perturbation settings.
-- [ ] **MATR-03**: User can run Michaelis-Menten diagnostics that record compiler depth, embedding eligibility, unsupported reasons, and training attempts only when current gates allow them.
-- [ ] **MATR-04**: User can run normalized Planck and selected `sources/FOR_DEMO.md` formulas as honest stretch or diagnostic cases without requiring recovery.
+- [x] **MATR-01**: User can run blind-start baselines for shallow formulas such as `exp`, `log`, radioactive decay, and other low-depth formulas supported by current gates.
+- [x] **MATR-02**: User can run Beer-Lambert perturbation sweeps that include same-basin, mild perturbation, and stronger slot-changing perturbation settings.
+- [x] **MATR-03**: User can run Michaelis-Menten diagnostics that record compiler depth, embedding eligibility, unsupported reasons, and training attempts only when current gates allow them.
+- [x] **MATR-04**: User can run normalized Planck and selected `sources/FOR_DEMO.md` formulas as honest stretch or diagnostic cases without requiring recovery.
 
 ### Evidence Reporting
 
@@ -77,10 +77,10 @@ Deferred to later milestones.
 | RUN-02 | Phase 15 | Complete |
 | RUN-03 | Phase 15 | Complete |
 | RUN-04 | Phase 15 | Complete |
-| MATR-01 | Phase 16 | Pending |
-| MATR-02 | Phase 16 | Pending |
-| MATR-03 | Phase 16 | Pending |
-| MATR-04 | Phase 16 | Pending |
+| MATR-01 | Phase 16 | Complete |
+| MATR-02 | Phase 16 | Complete |
+| MATR-03 | Phase 16 | Complete |
+| MATR-04 | Phase 16 | Complete |
 | EVID-01 | Phase 17 | Pending |
 | EVID-02 | Phase 17 | Pending |
 | EVID-03 | Phase 17 | Pending |

@@ -29,6 +29,25 @@ def test_v12_evidence_suite_contains_perturbation_matrix():
     assert len(beer_runs) == 9
     assert {run.perturbation_noise for run in beer_runs} == {0.0, 5.0, 35.0}
     assert {run.seed for run in beer_runs} == {0, 1, 2}
+    blind_formulas = {run.formula for run in runs if run.start_mode == "blind"}
+    assert {"exp", "log", "radioactive_decay"} <= blind_formulas
+    assert any(run.case_id == "michaelis-warm-diagnostic" and run.start_mode == "warm_start" for run in runs)
+    assert any(run.formula == "planck" and "stretch" in run.tags for run in runs)
+
+
+def test_for_demo_diagnostics_cover_selected_showcase_formulas():
+    suite = load_suite("for-demo-diagnostics")
+    formulas = {run.formula for run in suite.expanded_runs()}
+
+    assert {
+        "beer_lambert",
+        "radioactive_decay",
+        "michaelis_menten",
+        "logistic",
+        "shockley",
+        "damped_oscillator",
+        "planck",
+    } <= formulas
 
 
 def test_unknown_formula_fails_closed():

@@ -64,3 +64,14 @@ def test_cli_benchmark_writes_suite_result(tmp_path):
     payload = json.loads(suite_result.read_text())
     assert payload["counts"]["total"] == 1
     assert payload["results"][0]["status"] == "unsupported"
+
+
+def test_for_demo_diagnostic_subset_preserves_unsupported_formula(tmp_path):
+    base = builtin_suite("for-demo-diagnostics")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(suite, run_filter=RunFilter(case_ids=("damped-oscillator-compile",)))
+
+    assert len(result.results) == 1
+    assert result.results[0].status == "unsupported"
+    assert result.results[0].payload["compiled_eml"]["reason"] == "unsupported_operator"

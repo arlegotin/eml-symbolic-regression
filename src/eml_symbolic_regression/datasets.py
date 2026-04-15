@@ -83,6 +83,16 @@ def demo_specs() -> dict[str, DemoSpec]:
             heldout_domain=(0.15, 2.7),
             extrap_domain=(3.1, 4.5),
         ),
+        "radioactive_decay": DemoSpec(
+            name="radioactive_decay",
+            variable="t",
+            description="FOR_DEMO-style one-term exponential decay baseline.",
+            target=lambda a: np.exp(-0.4 * a).astype(np.complex128),
+            candidate=_sympy_candidate(sp.exp(-sp.Float("0.4") * t), "t", "radioactive_decay_catalog"),
+            train_domain=(0.0, 5.0),
+            heldout_domain=(0.15, 4.7),
+            extrap_domain=(5.1, 7.0),
+        ),
         "michaelis_menten": DemoSpec(
             name="michaelis_menten",
             variable="x",

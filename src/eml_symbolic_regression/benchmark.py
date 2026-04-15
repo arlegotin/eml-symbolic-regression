@@ -453,6 +453,15 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 _case("exp-blind", "exp", "blind", seeds=(0, 1, 2), depth=1, steps=80, tags=("blind", "shallow")),
                 _case("log-blind", "log", "blind", seeds=(0, 1, 2), depth=3, steps=80, tags=("blind", "shallow")),
                 _case(
+                    "radioactive-decay-blind",
+                    "radioactive_decay",
+                    "blind",
+                    seeds=(0, 1, 2),
+                    depth=4,
+                    steps=80,
+                    tags=("blind", "shallow", "for_demo"),
+                ),
+                _case(
                     "beer-perturbation-sweep",
                     "beer_lambert",
                     "warm_start",
@@ -462,7 +471,7 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                     tags=("warm_start", "perturbation"),
                     expect_recovery=True,
                 ),
-                _case("michaelis-diagnostic", "michaelis_menten", "compile", tags=("diagnostic", "depth_gate")),
+                _case("michaelis-warm-diagnostic", "michaelis_menten", "warm_start", tags=("diagnostic", "depth_gate")),
                 _case("planck-diagnostic", "planck", "compile", tags=("stretch", "depth_gate")),
             ),
         )
@@ -472,9 +481,11 @@ def builtin_suite(name: str) -> BenchmarkSuite:
             description="FOR_DEMO formula diagnostics without recovery guarantees.",
             cases=(
                 _case("beer-warm", "beer_lambert", "warm_start", perturbation_noise=(0.0, 5.0), warm_steps=40, tags=("for_demo",)),
+                _case("radioactive-decay-blind", "radioactive_decay", "blind", depth=4, steps=60, tags=("for_demo", "blind")),
                 _case("michaelis-compile", "michaelis_menten", "compile", tags=("for_demo", "diagnostic")),
                 _case("logistic-compile", "logistic", "compile", tags=("for_demo", "diagnostic")),
                 _case("shockley-compile", "shockley", "compile", tags=("for_demo", "diagnostic")),
+                _case("damped-oscillator-compile", "damped_oscillator", "compile", tags=("for_demo", "stretch")),
                 _case("planck-compile", "planck", "compile", tags=("for_demo", "stretch")),
             ),
         )
