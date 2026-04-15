@@ -95,6 +95,13 @@ _PRESETS = {
         description="Expanded campaign for presentation-grade evidence with more seeds and perturbation levels.",
         budget_guardrail="29 runs; larger blind and perturbation matrix plus full FOR_DEMO diagnostics.",
     ),
+    "proof-shallow": CampaignPreset(
+        name="proof-shallow",
+        suite="v1.5-shallow-proof",
+        tier="proof-contract",
+        description="Bounded v1.5 shallow proof campaign for claim-aware blind training evidence.",
+        budget_guardrail="12 runs; declared shallow blind proof suite with bounded threshold metadata.",
+    ),
 }
 
 
@@ -181,6 +188,9 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
         "group_perturbation_noise_csv": output_dir / "group-perturbation-noise.csv",
         "group_depth_csv": output_dir / "group-depth.csv",
         "group_failure_class_csv": output_dir / "group-failure-class.csv",
+        "group_evidence_class_csv": output_dir / "group-evidence-class.csv",
+        "group_claim_csv": output_dir / "group-claim.csv",
+        "group_threshold_policy_csv": output_dir / "group-threshold-policy.csv",
         "headline_json": output_dir / "headline-metrics.json",
         "headline_csv": output_dir / "headline-metrics.csv",
         "failures_csv": output_dir / "failures.csv",
@@ -194,6 +204,9 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
     _write_csv(paths["group_perturbation_noise_csv"], _group_rows(runs, "perturbation_noise"), _GROUP_COLUMNS)
     _write_csv(paths["group_depth_csv"], _group_rows(runs, lambda run: run.get("optimizer", {}).get("depth")), _GROUP_COLUMNS)
     _write_csv(paths["group_failure_class_csv"], _group_rows(runs, "classification"), _GROUP_COLUMNS)
+    _write_csv(paths["group_evidence_class_csv"], _group_rows(runs, "evidence_class"), _GROUP_COLUMNS)
+    _write_csv(paths["group_claim_csv"], _group_rows(runs, "claim_id"), _GROUP_COLUMNS)
+    _write_csv(paths["group_threshold_policy_csv"], _group_rows(runs, lambda run: (run.get("threshold") or {}).get("id")), _GROUP_COLUMNS)
 
     headline = _headline_metrics(runs)
     _write_json(paths["headline_json"], headline)
@@ -375,6 +388,7 @@ def _manifest_payload(
         "suite": suite.as_dict(),
         "run_filter": filter_payload,
         "counts": aggregate["counts"],
+        "thresholds": aggregate.get("thresholds", []),
         "output": {
             "campaign_dir": str(campaign_dir),
             "raw_run_root": str(suite.artifact_root / suite.id),
@@ -464,6 +478,14 @@ _RUN_COLUMNS = [
     "recovery_class",
     "status",
     "claim_status",
+    "claim_id",
+    "claim_class",
+    "training_mode",
+    "evidence_class",
+    "threshold_policy",
+    "dataset_manifest_sha256",
+    "provenance_source",
+    "provenance_expression",
     "runtime_seconds",
     "active_slot_count",
     "changed_slot_count",
@@ -492,6 +514,9 @@ _FAILURE_COLUMNS = ["run_id", "formula", "start_mode", "classification", "status
 def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
     optimizer = run.get("optimizer", {})
     metrics = run.get("metrics", {})
+    threshold = run.get("threshold") if isinstance(run.get("threshold"), Mapping) else {}
+    dataset_manifest = run.get("dataset_manifest") if isinstance(run.get("dataset_manifest"), Mapping) else {}
+    provenance = run.get("provenance") if isinstance(run.get("provenance"), Mapping) else {}
     return {
         "run_id": run.get("run_id"),
         "suite_id": run.get("suite_id"),
@@ -513,6 +538,14 @@ def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
         "recovery_class": run.get("classification"),
         "status": run.get("status"),
         "claim_status": run.get("claim_status"),
+        "claim_id": run.get("claim_id"),
+        "claim_class": run.get("claim_class"),
+        "training_mode": run.get("training_mode"),
+        "evidence_class": run.get("evidence_class"),
+        "threshold_policy": threshold.get("id"),
+        "dataset_manifest_sha256": dataset_manifest.get("manifest_sha256"),
+        "provenance_source": provenance.get("source_document"),
+        "provenance_expression": provenance.get("symbolic_expression"),
         "runtime_seconds": _runtime_seconds(run),
         "active_slot_count": metrics.get("active_slot_count"),
         "changed_slot_count": metrics.get("changed_slot_count"),
@@ -533,11 +566,12 @@ def _group_rows(runs: list[Mapping[str, Any]], key: str | Any) -> list[dict[str,
 def _count_summary(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
     total = len(runs)
     verifier_recovered = sum(1 for run in runs if run.get("claim_status") == "recovered")
-    same_ast = sum(1 for run in runs if run.get("classification") == "same_ast_warm_start_return")
-    verified_equivalent = sum(1 for run in runs if run.get("classification") == "verified_equivalent_warm_start_recovery")
-    unsupported = sum(1 for run in runs if run.get("classification") == "unsupported")
-    failed = sum(1 for run in runs if run.get("classification") in {"failed", "snapped_but_failed", "soft_fit_only"})
-    execution_error = sum(1 for run in runs if run.get("classification") == "execution_failure")
+    classes = [_summary_class(run) for run in runs]
+    same_ast = sum(1 for value in classes if value in {"same_ast", "same_ast_warm_start_return"})
+    verified_equivalent = sum(1 for value in classes if value in {"verified_equivalent", "verified_equivalent_warm_start_recovery"})
+    unsupported = sum(1 for value in classes if value == "unsupported")
+    failed = sum(1 for value in classes if value in {"failed", "snapped_but_failed", "soft_fit_only"})
+    execution_error = sum(1 for value in classes if value == "execution_failure")
     return {
         "total": total,
         "verifier_recovered": verifier_recovered,
@@ -550,6 +584,10 @@ def _count_summary(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
         "unsupported_rate": _rate(unsupported, total),
         "failure_rate": _rate(failed + execution_error, total),
     }
+
+
+def _summary_class(run: Mapping[str, Any]) -> str:
+    return str(run.get("evidence_class") or run.get("classification") or "unknown")
 
 
 def _headline_metrics(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
