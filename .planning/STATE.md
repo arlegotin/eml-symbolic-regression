@@ -32,8 +32,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 Phase: 30 (Bounded Shallow Blind Training Recovery) — EXECUTING
 Plan: 1 of 3
-Status: Executing Phase 30
-Last activity: 2026-04-15 -- Phase 30 execution started
+Status: Phase 30 review-blocked
+Last activity: 2026-04-15 -- Phase 30 review fix separated scaffolded recovery from pure blind recovery
 Progress: [##--------] 20% by completed phases (v1.5: 1/5 planned)
 
 ## Performance Metrics
@@ -81,7 +81,7 @@ Target features:
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
 | 29 | Paper Claim Contract and Proof Dataset Harness | Complete | CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04 |
-| 30 | Bounded Shallow Blind Training Recovery | Pending | SHAL-01, SHAL-02, SHAL-03, SHAL-04 |
+| 30 | Bounded Shallow Blind Training Recovery | Review Blocked | SHAL-01, SHAL-02, SHAL-03, SHAL-04 |
 | 31 | Perturbed Basin Training and Local Repair | Pending | BASN-01, BASN-02, BASN-03, BASN-04, BASN-05 |
 | 32 | Paper Depth-Curve Training Evidence | Pending | CURV-01, CURV-02, CURV-03, CURV-04 |
 | 33 | Proof Campaign Report and Evidence Lockdown | Pending | EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
@@ -98,6 +98,7 @@ Target features:
 - Phase 28 comparison shows overall v1.4 recovery improved from 18/45 to 27/45 across standard and showcase campaigns.
 - v1.5 interprets "100% fully functional training" as 100% recovery over explicitly declared bounded proof suites, plus honest measured failure boundaries for deeper blind recovery.
 - Phase 29 established the v1.5 proof contract: stable paper claim matrix, deterministic proof dataset manifests, proof-aware benchmark artifacts, derived evidence classes, claim-level threshold summaries, CLI inspection commands, and campaign proof metadata/reporting.
+- Phase 30 implemented a six-case shallow suite and scaffolded scaled-exponential recovery, but code review found this cannot honestly satisfy the pure blind proof claim. The current code distinguishes `scaffolded_blind_training_recovered` from `blind_training_recovered`, leaving SHAL-02 unresolved.
 
 ### Pending Todos
 
@@ -106,6 +107,8 @@ None recorded.
 ### Blockers/Concerns
 
 The milestone must not claim universal blind recovery of arbitrary deep elementary expressions, because the source paper reports rapid blind recovery degradation beyond shallow depths.
+
+Phase 30 is blocked on claim semantics: current scaled-exponential successes come from exact scaffold initializers, not random-initialized blind recovery. Decide whether to narrow the blind proof suite or introduce a separate scaffolded-training proof claim.
 
 ## Session Continuity
 

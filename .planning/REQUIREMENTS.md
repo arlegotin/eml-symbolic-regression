@@ -62,6 +62,7 @@ Deferred to later milestones.
 |---------|--------|
 | Universal 100% recovery for all elementary functions | The paper reports rapid blind recovery degradation beyond shallow depths; v1.5 proves bounded suites and reports measured limits. |
 | Counting compile-only or catalog verification as training proof | The user's goal is real training; compiler/catalog paths remain useful but separate evidence classes. |
+| Counting exact scaffold starts as pure blind recovery | Phase 30 review found scaffolded scaled-exponential starts recover verifier-owned candidates but are not random-initialized blind recovery under the paper/NORTH_STAR definition. |
 | Redefining `recovered` by loosening verifier thresholds | v1.5 must improve training behavior and evidence, not change the claim contract. |
 | External noisy datasets | The current gap is bounded synthetic/source-document training proof; external data should come after that is credible. |
 | GPU or custom kernels | The milestone target is recovery correctness and evidence quality, not throughput-first optimization. |

@@ -16,7 +16,7 @@ The project now includes a compiler-driven warm-start pipeline, repeatable bench
 
 v1.4 used the committed v1.3 standard/showcase campaigns as the scoreboard. It added failure triage, blind `exp`/`log` scaffold initializers, warm-start failure mechanisms, compiler diagnostics, a validated Shockley template, and a generated before/after comparison. The combined standard/showcase comparison improved verifier-owned recovery from 18/45 to 27/45.
 
-v1.5 Phase 29 is complete. The project now has a stable paper-claim matrix, deterministic proof dataset manifests, proof-aware benchmark artifacts, derived evidence classes, claim-level threshold summaries, CLI inspection/generation commands, and campaign proof metadata/reporting. The recovery-improvement work for bounded shallow blind suites starts in Phase 30.
+v1.5 Phase 29 is complete. The project now has a stable paper-claim matrix, deterministic proof dataset manifests, proof-aware benchmark artifacts, derived evidence classes, claim-level threshold summaries, CLI inspection/generation commands, and campaign proof metadata/reporting. Phase 30 implemented a six-case shallow suite and scaffolded recovery path, but code review found that exact scaffold starts cannot honestly count as pure blind recovery. The current evidence taxonomy separates `scaffolded_blind_training_recovered` from `blind_training_recovered`, leaving the Phase 30 blind claim unresolved.
 
 ## Last Completed Milestone: v1.4 Recovery Performance Improvements
 
@@ -35,7 +35,7 @@ v1.5 Phase 29 is complete. The project now has a stable paper-claim matrix, dete
 
 **Target features:**
 - Convert the paper's implementation claims into executable training claim suites with clear pass/fail thresholds.
-- Achieve 100% verifier-owned training recovery on a declared bounded shallow proof suite, including the current `radioactive_decay` blind failure family.
+- Achieve 100% verifier-owned training recovery on a declared bounded shallow proof suite, without counting scaffolded exact starts as pure blind recovery.
 - Achieve 100% verifier-owned recovery for declared perturbed-true-tree basin suites, including repaired high-noise Beer-Lambert cases or a deliberately narrowed bound if evidence proves the larger bound is invalid.
 - Reproduce the paper's qualitative depth behavior with real metrics: shallow blind recovery works, deeper blind recovery degrades, and perturbed true solutions recover much more reliably.
 - Publish a self-contained proof report with raw run artifacts, datasets, metrics, plots, and explicit separation of blind, warm-start, compiler-assisted, and unsupported outcomes.
@@ -76,6 +76,7 @@ v1.5 Phase 29 is complete. The project now has a stable paper-claim matrix, dete
 
 - [ ] Prove bounded shallow EML training recovery with verifier-owned results, not training loss alone.
 - [ ] Repair blind `radioactive_decay` recovery and related scaled/signed exponential families.
+- [ ] Decide whether scaled-exponential scaffold recovery should become a separate proof claim or whether the pure blind proof suite should be narrowed to randomly recovered targets.
 - [ ] Repair or tightly bound perturbed warm-start basin recovery for Beer-Lambert and synthetic exact EML trees.
 - [ ] Generate real training depth-curve evidence that matches the paper's qualitative claims without overselling deep blind recovery.
 - [ ] Publish raw training artifacts, metrics, plots, and a final claim report based on the Phase 29 proof contract.
@@ -122,7 +123,7 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 | v1.3 prioritizes showcase evidence over optimizer changes | The user wants crisp numbers, graphs, and a real-life performance narrative before tuning the algorithm. | ✓ Good |
 | Static reports before dashboards | CSV, SVG, and Markdown evidence proved the metrics before adding an interactive dashboard. | ✓ Good |
 | v1.4 uses committed campaigns as the scoreboard | More baseline runs would mostly confirm the same weaknesses; the useful next step is targeted improvement followed by identical reruns. | ✓ Good |
-| Primitive scaffolds are acceptable blind defaults | They encode paper-grounded primitive families and preserve verifier-owned recovery semantics. | ✓ Good |
+| Primitive scaffolds are useful optimizer defaults but not pure blind proof | Phase 30 review found exact scaffold starts can recover verifier-owned candidates while still failing the paper/NORTH_STAR definition of blind recovery from random initialization. | ✓ Good |
 | Diagnose Beer-Lambert before repairing it | High-perturbation failures needed mechanism-level evidence before deeper discrete repair work. | ✓ Good |
 | Shockley template must validate before acceptance | Compiler expansion remains fail-closed and cannot emit invalid EML trees. | ✓ Good |
 | Before/after comparison is the milestone gate | Recovery improvements are only credible when rerun through the same standard/showcase campaign contracts. | ✓ Good |

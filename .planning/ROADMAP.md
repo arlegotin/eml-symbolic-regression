@@ -40,7 +40,7 @@ The milestone target is deliberately bounded and measurable. It must achieve 100
 - Decimal phases can be inserted later for urgent gap closure.
 
 - [x] **Phase 29: Paper Claim Contract and Proof Dataset Harness** - Convert paper statements into executable claim suites, datasets, and pass/fail thresholds. (requirements: CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04) (completed 2026-04-15)
-- [x] **Phase 30: Bounded Shallow Blind Training Recovery** - Repair blind training so the declared shallow proof suite reaches 100% verifier-owned recovery. (requirements: SHAL-01, SHAL-02, SHAL-03, SHAL-04) (completed 2026-04-15)
+- [ ] **Phase 30: Bounded Shallow Blind Training Recovery** - Repair blind training so the declared shallow proof suite reaches 100% verifier-owned recovery. (requirements: SHAL-01, SHAL-02, SHAL-03, SHAL-04) (review-blocked 2026-04-15: current recovery is scaffolded, not pure blind)
 - [ ] **Phase 31: Perturbed Basin Training and Local Repair** - Prove perturbed true-tree recovery over declared bounds and repair Beer-Lambert high-noise failures where feasible. (requirements: BASN-01, BASN-02, BASN-03, BASN-04, BASN-05)
 - [ ] **Phase 32: Paper Depth-Curve Training Evidence** - Reproduce the paper's qualitative blind-vs-perturbed depth behavior with real training runs and metrics. (requirements: CURV-01, CURV-02, CURV-03, CURV-04)
 - [ ] **Phase 33: Proof Campaign Report and Evidence Lockdown** - Generate the v1.5 proof campaign, report claims honestly, and lock the workflow with tests. (requirements: EVID-01, EVID-02, EVID-03, EVID-04, EVID-05)
@@ -66,6 +66,7 @@ Plans:
 **Goal**: Users get 100% verifier-owned blind training recovery on the declared shallow proof suite, including the current `radioactive_decay` failure family.
 **Depends on**: Phase 29
 **Requirements**: SHAL-01, SHAL-02, SHAL-03, SHAL-04
+**Status**: Review-blocked. Plans 30-01 through 30-03 are implemented, but code review CR-01 found that the passing suite used exact scaffold starts. The fix reclassifies those runs as `scaffolded_blind_training_recovered`, so they no longer satisfy the pure `paper-shallow-blind-recovery` threshold.
 **Success Criteria** (what must be TRUE):
   1. Shallow blind suite includes `exp`, `log`, `radioactive_decay`, Beer-Lambert-style scaled exponentials, and signed/scaled exponential variants.
   2. Blind training reaches 100% verifier-owned recovery across declared seeds, budgets, and tolerances, with no catalog or compile-only cases counted.
@@ -162,7 +163,7 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 19-23. v1.3 Benchmark Campaign and Evidence Report | Complete | Complete | 2026-04-15 |
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
 | 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete    | 2026-04-15 |
-| 30. Bounded Shallow Blind Training Recovery | 3/3 | Complete   | 2026-04-15 |
+| 30. Bounded Shallow Blind Training Recovery | 3/3 | Review Blocked | - |
 | 31. Perturbed Basin Training and Local Repair | 0/1 | Pending | - |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
 | 33. Proof Campaign Report and Evidence Lockdown | 0/1 | Pending | - |
