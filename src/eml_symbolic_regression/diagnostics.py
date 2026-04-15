@@ -482,6 +482,8 @@ def _bound_report_rows(aggregate: Mapping[str, Any], *, row_source: str, formula
         if row.get("formula") != formula:
             continue
         metrics = row.get("metrics") if isinstance(row.get("metrics"), Mapping) else {}
+        repair_status = row.get("repair_status") or metrics.get("repair_status")
+        evidence_class = _bound_report_evidence_class(row, repair_status=repair_status)
         rows.append(
             {
                 "row_source": row_source,
@@ -493,16 +495,23 @@ def _bound_report_rows(aggregate: Mapping[str, Any], *, row_source: str, formula
                 "perturbation_noise": float(row.get("perturbation_noise") or 0.0),
                 "status": row.get("status"),
                 "claim_status": row.get("claim_status"),
-                "evidence_class": row.get("evidence_class") or row.get("classification") or row.get("status"),
+                "evidence_class": evidence_class,
                 "return_kind": row.get("return_kind"),
                 "raw_status": row.get("raw_status"),
-                "repair_status": row.get("repair_status") or metrics.get("repair_status"),
+                "repair_status": repair_status,
                 "changed_slot_count": _row_or_metric(row, metrics, "changed_slot_count"),
                 "repair_accepted_move_count": _row_or_metric(row, metrics, "repair_accepted_move_count"),
                 "reason": row.get("reason"),
             }
         )
     return rows
+
+
+def _bound_report_evidence_class(row: Mapping[str, Any], *, repair_status: Any) -> str:
+    evidence_class = row.get("evidence_class") or row.get("classification") or row.get("status")
+    if repair_status == "repaired" or row.get("status") == "repaired_candidate":
+        return "repaired_candidate"
+    return str(evidence_class or "unknown")
 
 
 def _row_or_metric(row: Mapping[str, Any], metrics: Mapping[str, Any], key: str) -> Any:
