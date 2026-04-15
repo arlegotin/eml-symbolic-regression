@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-current_phase: 30
-status: executing
-stopped_at: Phase 29 complete; ready for Phase 30 planning
-last_updated: "2026-04-15T14:58:43.338Z"
-last_activity: 2026-04-15 -- Phase 30 execution started
+current_phase: 31
+status: planned
+stopped_at: Phase 31 planned; ready for execution
+last_updated: "2026-04-15T18:28:51.507Z"
+last_activity: 2026-04-15 -- Phase 31 planning complete
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 6
-  completed_plans: 3
-  percent: 50
+  total_plans: 9
+  completed_plans: 6
+  percent: 20
 ---
 
 # GSD State: EML Symbolic Regression
@@ -30,10 +30,10 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 ## Current Position
 
-Phase: 30 (Bounded Shallow Blind Training Recovery) — EXECUTING
-Plan: 1 of 3
-Status: Phase 30 review-blocked
-Last activity: 2026-04-15 -- Phase 30 review fix separated scaffolded recovery from pure blind recovery
+Phase: 31 (Perturbed Basin Training and Local Repair) — PLANNED
+Plan: 0 of 3
+Status: Ready to execute
+Last activity: 2026-04-15 -- Phase 31 planning complete
 Progress: [##--------] 20% by completed phases (v1.5: 1/5 planned)
 
 ## Performance Metrics
