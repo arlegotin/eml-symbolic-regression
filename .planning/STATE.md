@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: Training Benchmark and Recovery Evidence
 current_phase: Complete
 status: completed
-stopped_at: v1.2 archived; cleanup pending
+stopped_at: v1.2 archived and phase directories cleaned up
 last_updated: "2026-04-15T10:42:56Z"
 last_activity: 2026-04-15
 progress:
@@ -60,6 +60,7 @@ Progress: [##########] 100% by completed phases (v1.2: 5/5)
 | Milestone archive | `.planning/milestones/v1.2-ROADMAP.md` | Complete |
 | Requirements archive | `.planning/milestones/v1.2-REQUIREMENTS.md` | Complete |
 | Audit archive | `.planning/milestones/v1.2-MILESTONE-AUDIT.md` | Complete |
+| Phase archive | `.planning/milestones/v1.2-phases/` | Complete |
 
 ## Current Milestone
 
@@ -125,8 +126,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: v1.2 archived; cleanup pending
+Stopped at: v1.2 archived and phase directories cleaned up
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after archiving milestone v1.2*
+*Last updated: 2026-04-15 after completing milestone v1.2 lifecycle*
