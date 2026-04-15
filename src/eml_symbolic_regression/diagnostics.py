@@ -89,23 +89,33 @@ def build_perturbed_basin_bound_report(
         formula=formula,
     )
     incomplete_noise_values = sorted({float(row["perturbation_noise"]) for row in missing_seed_noise_rows})
+    grid_values = set(grid)
+    artifact_incomplete_noise_values = sorted(
+        {
+            float(row["perturbation_noise"])
+            for row in rows
+            if float(row["perturbation_noise"]) in grid_values and not _has_durable_artifact(row)
+        }
+    )
+    incomplete_noise_values = sorted(set(incomplete_noise_values) | set(artifact_incomplete_noise_values))
     raw_supported = _supported_noise_prefix(
         rows,
         grid,
-        lambda row: row.get("evidence_class") == "perturbed_true_tree_recovered",
+        lambda row: _has_durable_artifact(row) and row.get("evidence_class") == "perturbed_true_tree_recovered",
         expected_seeds_by_noise=expected_seeds_by_noise,
     )
     repaired_supported = _supported_noise_prefix(
         rows,
         grid,
-        lambda row: row.get("evidence_class") in {"perturbed_true_tree_recovered", "repaired_candidate"},
+        lambda row: _has_durable_artifact(row)
+        and row.get("evidence_class") in {"perturbed_true_tree_recovered", "repaired_candidate"},
         expected_seeds_by_noise=expected_seeds_by_noise,
     )
     unsupported_noise_values = sorted(
         {
             float(row["perturbation_noise"])
             for row in rows
-            if float(row["perturbation_noise"]) in set(grid)
+            if float(row["perturbation_noise"]) in grid_values
             and row.get("evidence_class") not in {"perturbed_true_tree_recovered", "repaired_candidate"}
         }
         | set(incomplete_noise_values)
@@ -122,6 +132,7 @@ def build_perturbed_basin_bound_report(
         "repaired_supported_noise_max": repaired_supported,
         "expected_seed_noise_rows": expected_seed_noise_rows,
         "missing_seed_noise_rows": missing_seed_noise_rows,
+        "invalid_artifact_noise_values": artifact_incomplete_noise_values,
         "incomplete_noise_values": incomplete_noise_values,
         "unsupported_noise_values": unsupported_noise_values,
         "claim_recommendation": _bound_claim_recommendation(
@@ -535,7 +546,7 @@ def _bound_report_rows(aggregate: Mapping[str, Any], *, row_source: str, formula
                 "case_id": row.get("case_id"),
                 "run_id": row.get("run_id"),
                 "artifact_path": artifact_path,
-                "artifact_sha256": _artifact_sha256(artifact_path),
+                "artifact_sha256": _artifact_sha256(artifact_path, row.get("artifact_sha256")),
                 "seed": row.get("seed"),
                 "perturbation_noise": float(row.get("perturbation_noise") or 0.0),
                 "status": row.get("status"),
@@ -681,6 +692,14 @@ def _supported_noise_prefix(
     return supported
 
 
+def _has_durable_artifact(row: Mapping[str, Any]) -> bool:
+    artifact_path = row.get("artifact_path")
+    artifact_sha256 = row.get("artifact_sha256")
+    if not _is_durable_artifact_path(artifact_path) or not _is_sha256_hex(artifact_sha256):
+        return False
+    return _artifact_sha256(artifact_path) == str(artifact_sha256).lower()
+
+
 def _bound_claim_recommendation(repaired_supported_noise_max: float | None, *, declared_bound_noise_max: float) -> str:
     if repaired_supported_noise_max is None or repaired_supported_noise_max < declared_bound_noise_max:
         return f"narrow_to_{_bound_label(repaired_supported_noise_max)}"
@@ -801,13 +820,35 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _artifact_sha256(path: Any) -> str | None:
-    if path is None:
+def _artifact_sha256(path: Any, declared_sha256: Any = None) -> str | None:
+    if not _is_durable_artifact_path(path):
         return None
     artifact_path = Path(str(path))
-    if not artifact_path.exists():
+    if not artifact_path.is_file():
         return None
-    return _sha256(artifact_path)
+    actual_sha256 = _sha256(artifact_path)
+    if declared_sha256 is not None and (
+        not _is_sha256_hex(declared_sha256) or str(declared_sha256).lower() != actual_sha256
+    ):
+        return None
+    return actual_sha256
+
+
+def _is_durable_artifact_path(path: Any) -> bool:
+    if not isinstance(path, str) or not path:
+        return False
+    artifact_path = Path(path)
+    return not artifact_path.is_absolute() and ".." not in artifact_path.parts
+
+
+def _is_sha256_hex(value: Any) -> bool:
+    if not isinstance(value, str) or len(value) != 64:
+        return False
+    try:
+        int(value, 16)
+    except ValueError:
+        return False
+    return True
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:

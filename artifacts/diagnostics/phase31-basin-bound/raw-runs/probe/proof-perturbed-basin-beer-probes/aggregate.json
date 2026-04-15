@@ -15,11 +15,11 @@
     "verifier_recovery_rate": 1.0
   },
   "environment": {
-    "code_version": "77f0504",
+    "code_version": "snapshot",
     "platform": "macOS-15.6.1-arm64-arm-64bit",
     "python": "3.11.5"
   },
-  "generated_at": "2026-04-15T19:37:20.810876+00:00",
+  "generated_at": "1970-01-01T00:00:00+00:00",
   "groups": {
     "depth": [
       {

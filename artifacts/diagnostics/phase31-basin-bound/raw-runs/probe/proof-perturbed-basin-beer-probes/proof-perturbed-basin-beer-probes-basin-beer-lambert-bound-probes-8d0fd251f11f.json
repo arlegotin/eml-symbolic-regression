@@ -262,7 +262,7 @@
     "variable": "x"
   },
   "environment": {
-    "code_version": "77f0504",
+    "code_version": "snapshot",
     "platform": "macOS-15.6.1-arm64-arm-64bit",
     "python": "3.11.5"
   },
@@ -11197,7 +11197,7 @@
   "status": "repaired_candidate",
   "threshold": null,
   "timing": {
-    "elapsed_seconds": 6.113546208012849
+    "elapsed_seconds": 0.0
   },
   "trained_eml_candidate": {
     "best_loss": 6.990470078700528,

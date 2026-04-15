@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -89,42 +90,58 @@ def _row(
     }
 
 
-def test_bound_report_keeps_probe_rows_and_computes_continuous_prefixes():
-    bounded = _aggregate(
-        "proof-perturbed-basin",
-        [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered", seed=0)],
-    )
-    probe = _aggregate(
-        "proof-perturbed-basin-beer-probes",
-        [
-            _row(
-                noise=15.0,
-                evidence_class="repaired_candidate",
-                suite_id="proof-perturbed-basin-beer-probes",
-                case_id="basin-beer-lambert-bound-probes",
-                status="repaired_candidate",
-                return_kind="snapped_but_failed",
-                raw_status="snapped_but_failed",
-                repair_status="repaired",
-                changed_slot_count=2,
-                repair_accepted_move_count=1,
-            ),
-            _row(
-                noise=35.0,
-                evidence_class="snapped_but_failed",
-                suite_id="proof-perturbed-basin-beer-probes",
-                case_id="basin-beer-lambert-bound-probes",
-                status="snapped_but_failed",
-                claim_status="failed",
-                return_kind="snapped_but_failed",
-                raw_status="snapped_but_failed",
-                repair_status="not_repaired",
-                changed_slot_count=3,
-                reason="verifier_mismatch",
-            ),
-            _row(noise=15.0, evidence_class="perturbed_true_tree_recovered", formula="exp"),
-        ],
-    )
+def _write_row_artifacts(root: Path, rows: list[dict]) -> None:
+    for row in rows:
+        artifact_path = row.get("artifact_path")
+        if not artifact_path:
+            continue
+        path = Path(str(artifact_path))
+        target = path if path.is_absolute() else root / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(
+            json.dumps({"run_id": row.get("run_id"), "seed": row.get("seed")}, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def test_bound_report_keeps_probe_rows_and_computes_continuous_prefixes(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    bounded_rows = [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered", seed=0)]
+    probe_rows = [
+        _row(
+            noise=15.0,
+            evidence_class="repaired_candidate",
+            suite_id="proof-perturbed-basin-beer-probes",
+            case_id="basin-beer-lambert-bound-probes",
+            status="repaired_candidate",
+            return_kind="snapped_but_failed",
+            raw_status="snapped_but_failed",
+            repair_status="repaired",
+            changed_slot_count=2,
+            repair_accepted_move_count=1,
+        ),
+        _row(
+            noise=35.0,
+            evidence_class="snapped_but_failed",
+            suite_id="proof-perturbed-basin-beer-probes",
+            case_id="basin-beer-lambert-bound-probes",
+            status="snapped_but_failed",
+            claim_status="failed",
+            return_kind="snapped_but_failed",
+            raw_status="snapped_but_failed",
+            repair_status="not_repaired",
+            changed_slot_count=3,
+            reason="verifier_mismatch",
+        ),
+        _row(noise=15.0, evidence_class="perturbed_true_tree_recovered", formula="exp"),
+    ]
+    _write_row_artifacts(tmp_path, [*bounded_rows, *probe_rows])
+    bounded = _aggregate("proof-perturbed-basin", bounded_rows)
+    probe = _aggregate("proof-perturbed-basin-beer-probes", probe_rows)
 
     report = build_perturbed_basin_bound_report(bounded, probe)
 
@@ -150,33 +167,31 @@ def test_bound_report_keeps_probe_rows_and_computes_continuous_prefixes():
     assert failed["artifact_path"].endswith("noise35.json")
 
 
-def test_supported_max_uses_continuous_prefix_not_isolated_higher_pass():
-    bounded = _aggregate(
-        "proof-perturbed-basin",
-        [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered")],
-    )
-    probe = _aggregate(
-        "proof-perturbed-basin-beer-probes",
-        [
-            _row(
-                noise=15.0,
-                evidence_class="snapped_but_failed",
-                suite_id="proof-perturbed-basin-beer-probes",
-                case_id="basin-beer-lambert-bound-probes",
-                status="snapped_but_failed",
-                claim_status="failed",
-                return_kind="snapped_but_failed",
-                raw_status="snapped_but_failed",
-                repair_status="not_repaired",
-            ),
-            _row(
-                noise=35.0,
-                evidence_class="perturbed_true_tree_recovered",
-                suite_id="proof-perturbed-basin-beer-probes",
-                case_id="basin-beer-lambert-bound-probes",
-            ),
-        ],
-    )
+def test_supported_max_uses_continuous_prefix_not_isolated_higher_pass(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    bounded_rows = [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered")]
+    probe_rows = [
+        _row(
+            noise=15.0,
+            evidence_class="snapped_but_failed",
+            suite_id="proof-perturbed-basin-beer-probes",
+            case_id="basin-beer-lambert-bound-probes",
+            status="snapped_but_failed",
+            claim_status="failed",
+            return_kind="snapped_but_failed",
+            raw_status="snapped_but_failed",
+            repair_status="not_repaired",
+        ),
+        _row(
+            noise=35.0,
+            evidence_class="perturbed_true_tree_recovered",
+            suite_id="proof-perturbed-basin-beer-probes",
+            case_id="basin-beer-lambert-bound-probes",
+        ),
+    ]
+    _write_row_artifacts(tmp_path, [*bounded_rows, *probe_rows])
+    bounded = _aggregate("proof-perturbed-basin", bounded_rows)
+    probe = _aggregate("proof-perturbed-basin-beer-probes", probe_rows)
 
     report = build_perturbed_basin_bound_report(bounded, probe)
 
@@ -186,10 +201,13 @@ def test_supported_max_uses_continuous_prefix_not_isolated_higher_pass():
     assert report["claim_recommendation"] == "support_declared_bound"
 
 
-def test_supported_bound_requires_all_expected_seed_rows():
+def test_supported_bound_requires_all_expected_seed_rows(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    rows = [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered", seed=0)]
+    _write_row_artifacts(tmp_path, rows)
     bounded = _aggregate(
         "proof-perturbed-basin",
-        [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered", seed=0)],
+        rows,
         cases=[_case(seeds=(0, 1), perturbation_noise=(5.0,))],
     )
 
@@ -216,21 +234,52 @@ def test_supported_bound_requires_all_expected_seed_rows():
     assert "missing_expected_seed_noise_row" in markdown
 
 
-def test_failed_declared_bound_recommends_narrowing():
-    bounded = _aggregate(
-        "proof-perturbed-basin",
-        [
-            _row(
-                noise=5.0,
-                evidence_class="snapped_but_failed",
-                status="snapped_but_failed",
-                claim_status="failed",
-                return_kind="snapped_but_failed",
-                raw_status="snapped_but_failed",
-                repair_status="not_repaired",
-            )
-        ],
+@pytest.mark.parametrize("artifact_case", ["missing_path", "absolute_path", "missing_checksum", "invalid_checksum"])
+def test_bound_support_requires_durable_raw_artifact_checksums(tmp_path, monkeypatch, artifact_case):
+    monkeypatch.chdir(tmp_path)
+    row = _row(noise=5.0, evidence_class="perturbed_true_tree_recovered", seed=0)
+    if artifact_case == "missing_path":
+        row.pop("artifact_path")
+    elif artifact_case == "absolute_path":
+        row["artifact_path"] = str(tmp_path / "absolute-run.json")
+        _write_row_artifacts(tmp_path, [row])
+    elif artifact_case == "missing_checksum":
+        row["artifact_path"] = "artifacts/benchmarks/missing-run.json"
+    elif artifact_case == "invalid_checksum":
+        _write_row_artifacts(tmp_path, [row])
+        row["artifact_sha256"] = "0" * 64
+
+    report = build_perturbed_basin_bound_report(
+        _aggregate(
+            "proof-perturbed-basin",
+            [row],
+            cases=[_case(seeds=(0,), perturbation_noise=(5.0,))],
+        )
     )
+
+    assert report["raw_supported_noise_max"] is None
+    assert report["repaired_supported_noise_max"] is None
+    assert report["invalid_artifact_noise_values"] == [5.0]
+    assert report["incomplete_noise_values"] == [5.0]
+    assert report["unsupported_noise_values"] == [5.0]
+    assert report["claim_recommendation"] == "narrow_to_none"
+
+
+def test_failed_declared_bound_recommends_narrowing(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    rows = [
+        _row(
+            noise=5.0,
+            evidence_class="snapped_but_failed",
+            status="snapped_but_failed",
+            claim_status="failed",
+            return_kind="snapped_but_failed",
+            raw_status="snapped_but_failed",
+            repair_status="not_repaired",
+        )
+    ]
+    _write_row_artifacts(tmp_path, rows)
+    bounded = _aggregate("proof-perturbed-basin", rows)
 
     report = build_perturbed_basin_bound_report(bounded)
 
@@ -244,11 +293,11 @@ def test_failed_declared_bound_recommends_narrowing():
     "evidence_class",
     ["scaffolded_blind_training_recovered", "compile_only_verified", "catalog_verified", "same_ast"],
 )
-def test_forbidden_evidence_classes_do_not_support_perturbed_basin_bounds(evidence_class):
-    bounded = _aggregate(
-        "proof-perturbed-basin",
-        [_row(noise=5.0, evidence_class=evidence_class, status="recovered", claim_status="recovered")],
-    )
+def test_forbidden_evidence_classes_do_not_support_perturbed_basin_bounds(tmp_path, monkeypatch, evidence_class):
+    monkeypatch.chdir(tmp_path)
+    rows = [_row(noise=5.0, evidence_class=evidence_class, status="recovered", claim_status="recovered")]
+    _write_row_artifacts(tmp_path, rows)
+    bounded = _aggregate("proof-perturbed-basin", rows)
 
     report = build_perturbed_basin_bound_report(bounded)
 
@@ -258,22 +307,22 @@ def test_forbidden_evidence_classes_do_not_support_perturbed_basin_bounds(eviden
     assert report["claim_recommendation"] == "narrow_to_none"
 
 
-def test_repaired_rows_cannot_inflate_raw_perturbed_recovery():
-    bounded = _aggregate(
-        "proof-perturbed-basin",
-        [
-            _row(
-                noise=5.0,
-                evidence_class="perturbed_true_tree_recovered",
-                status="repaired_candidate",
-                claim_status="recovered",
-                return_kind="snapped_but_failed",
-                raw_status="snapped_but_failed",
-                repair_status="repaired",
-                repair_accepted_move_count=1,
-            )
-        ],
-    )
+def test_repaired_rows_cannot_inflate_raw_perturbed_recovery(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    rows = [
+        _row(
+            noise=5.0,
+            evidence_class="perturbed_true_tree_recovered",
+            status="repaired_candidate",
+            claim_status="recovered",
+            return_kind="snapped_but_failed",
+            raw_status="snapped_but_failed",
+            repair_status="repaired",
+            repair_accepted_move_count=1,
+        )
+    ]
+    _write_row_artifacts(tmp_path, rows)
+    bounded = _aggregate("proof-perturbed-basin", rows)
 
     report = build_perturbed_basin_bound_report(bounded)
 
@@ -283,33 +332,32 @@ def test_repaired_rows_cannot_inflate_raw_perturbed_recovery():
     assert report["repaired_supported_noise_max"] == 5.0
 
 
-def test_write_bound_report_outputs_json_and_markdown(tmp_path):
+def test_write_bound_report_outputs_json_and_markdown(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
     bounded_path = tmp_path / "bounded" / "aggregate.json"
     probe_path = tmp_path / "probe" / "aggregate.json"
     bounded_path.parent.mkdir()
     probe_path.parent.mkdir()
+    bounded_rows = [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered")]
+    probe_rows = [
+        _row(
+            noise=15.0,
+            evidence_class="repaired_candidate",
+            suite_id="proof-perturbed-basin-beer-probes",
+            case_id="basin-beer-lambert-bound-probes",
+            status="repaired_candidate",
+            return_kind="snapped_but_failed",
+            raw_status="snapped_but_failed",
+            repair_status="repaired",
+        )
+    ]
+    _write_row_artifacts(tmp_path, [*bounded_rows, *probe_rows])
     bounded_path.write_text(
-        json.dumps(_aggregate("proof-perturbed-basin", [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered")])),
+        json.dumps(_aggregate("proof-perturbed-basin", bounded_rows)),
         encoding="utf-8",
     )
     probe_path.write_text(
-        json.dumps(
-            _aggregate(
-                "proof-perturbed-basin-beer-probes",
-                [
-                    _row(
-                        noise=15.0,
-                        evidence_class="repaired_candidate",
-                        suite_id="proof-perturbed-basin-beer-probes",
-                        case_id="basin-beer-lambert-bound-probes",
-                        status="repaired_candidate",
-                        return_kind="snapped_but_failed",
-                        raw_status="snapped_but_failed",
-                        repair_status="repaired",
-                    )
-                ],
-            )
-        ),
+        json.dumps(_aggregate("proof-perturbed-basin-beer-probes", probe_rows)),
         encoding="utf-8",
     )
 
@@ -329,33 +377,32 @@ def test_cli_diagnostics_basin_bound_writes_reports(tmp_path):
     bounded_path = tmp_path / "bounded.json"
     probe_path = tmp_path / "probe.json"
     output_dir = tmp_path / "diagnostics"
+    repo_root = Path(__file__).parents[1]
+    bounded_rows = [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered")]
+    probe_rows = [
+        _row(
+            noise=35.0,
+            evidence_class="snapped_but_failed",
+            suite_id="proof-perturbed-basin-beer-probes",
+            case_id="basin-beer-lambert-bound-probes",
+            status="snapped_but_failed",
+            claim_status="failed",
+            return_kind="snapped_but_failed",
+            raw_status="snapped_but_failed",
+            repair_status="not_repaired",
+        )
+    ]
+    _write_row_artifacts(tmp_path, [*bounded_rows, *probe_rows])
     bounded_path.write_text(
-        json.dumps(_aggregate("proof-perturbed-basin", [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered")])),
+        json.dumps(_aggregate("proof-perturbed-basin", bounded_rows)),
         encoding="utf-8",
     )
     probe_path.write_text(
-        json.dumps(
-            _aggregate(
-                "proof-perturbed-basin-beer-probes",
-                [
-                    _row(
-                        noise=35.0,
-                        evidence_class="snapped_but_failed",
-                        suite_id="proof-perturbed-basin-beer-probes",
-                        case_id="basin-beer-lambert-bound-probes",
-                        status="snapped_but_failed",
-                        claim_status="failed",
-                        return_kind="snapped_but_failed",
-                        raw_status="snapped_but_failed",
-                        repair_status="not_repaired",
-                    )
-                ],
-            )
-        ),
+        json.dumps(_aggregate("proof-perturbed-basin-beer-probes", probe_rows)),
         encoding="utf-8",
     )
     env = os.environ.copy()
-    env["PYTHONPATH"] = "src"
+    env["PYTHONPATH"] = str(repo_root / "src")
 
     result = subprocess.run(
         [
@@ -371,7 +418,7 @@ def test_cli_diagnostics_basin_bound_writes_reports(tmp_path):
             "--output-dir",
             str(output_dir),
         ],
-        cwd=Path(__file__).parents[1],
+        cwd=tmp_path,
         env=env,
         check=False,
         capture_output=True,
@@ -393,6 +440,7 @@ def test_committed_basin_bound_evidence_uses_repo_relative_raw_artifacts():
 
     assert "/tmp/" not in markdown
     assert report["missing_seed_noise_rows"] == []
+    assert report["invalid_artifact_noise_values"] == []
     assert len(report["expected_seed_noise_rows"]) == 6
     for row in report["rows"]:
         artifact_path = Path(row["artifact_path"])
@@ -401,6 +449,7 @@ def test_committed_basin_bound_evidence_uses_repo_relative_raw_artifacts():
         assert (repo_root / artifact_path).exists()
         assert isinstance(row.get("artifact_sha256"), str)
         assert len(row["artifact_sha256"]) == 64
+        assert row["artifact_sha256"] == _sha256(repo_root / artifact_path)
 
 
 @pytest.mark.integration
@@ -419,7 +468,7 @@ def test_beer_lambert_bound_and_probe_evidence_generates_stable_report():
         bounded_suite,
         run_filter=RunFilter(case_ids=("basin-beer-lambert-bound",)),
     )
-    bounded_paths = write_aggregate_reports(bounded_result)
+    bounded_paths = write_aggregate_reports(bounded_result, stable_snapshot=True)
 
     probe_suite = load_suite("proof-perturbed-basin-beer-probes")
     probe_suite = type(probe_suite)(
@@ -433,7 +482,7 @@ def test_beer_lambert_bound_and_probe_evidence_generates_stable_report():
         probe_suite,
         run_filter=RunFilter(case_ids=("basin-beer-lambert-bound-probes",)),
     )
-    probe_paths = write_aggregate_reports(probe_result)
+    probe_paths = write_aggregate_reports(probe_result, stable_snapshot=True)
 
     report_paths = write_perturbed_basin_bound_report(bounded_paths["json"], probe_paths["json"], output_dir)
     report = json.loads(report_paths["json"].read_text(encoding="utf-8"))
@@ -448,6 +497,10 @@ def test_beer_lambert_bound_and_probe_evidence_generates_stable_report():
 
     assert len(bounded_rows) == 2
     assert len(probe_rows) == 4
+    assert bounded_aggregate["generated_at"] == "1970-01-01T00:00:00+00:00"
+    assert probe_aggregate["generated_at"] == "1970-01-01T00:00:00+00:00"
+    assert bounded_aggregate["environment"]["code_version"] == "snapshot"
+    assert probe_aggregate["environment"]["code_version"] == "snapshot"
     assert bounded_aggregate["thresholds"][0]["eligible"] == 2
     assert probe_aggregate["thresholds"] == []
     assert set(report["bounded_noise_values"]) == {5.0}
@@ -456,6 +509,10 @@ def test_beer_lambert_bound_and_probe_evidence_generates_stable_report():
     assert all(not Path(path).is_absolute() for path in reported_artifacts)
     assert all(str(path).startswith("artifacts/diagnostics/phase31-basin-bound/raw-runs/") for path in reported_artifacts)
     assert all(row["artifact_sha256"] for row in report["rows"])
+    for artifact_path in expected_artifacts:
+        payload = json.loads(Path(artifact_path).read_text(encoding="utf-8"))
+        assert payload["environment"]["code_version"] == "snapshot"
+        assert payload["timing"]["elapsed_seconds"] == 0.0
     assert "/tmp/" not in markdown
     assert {row["perturbation_noise"] for row in report["rows"] if row["row_source"] == "probe"} == {15.0, 35.0}
     assert report["raw_supported_noise_max"] in {None, 5.0, 15.0, 35.0}

@@ -7,6 +7,7 @@ import json
 import platform
 import subprocess
 import time
+from copy import deepcopy
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -44,6 +45,9 @@ BUILTIN_SUITES = (
     "proof-perturbed-basin-beer-probes",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
+STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
+STABLE_EVIDENCE_SNAPSHOT_CODE_VERSION = "snapshot"
+STABLE_EVIDENCE_SNAPSHOT_ELAPSED_SECONDS = 0.0
 
 
 class BenchmarkValidationError(ValueError):
@@ -1303,9 +1307,18 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def write_aggregate_reports(result: BenchmarkSuiteResult, output_dir: Path | None = None) -> dict[str, Path]:
+def write_aggregate_reports(
+    result: BenchmarkSuiteResult,
+    output_dir: Path | None = None,
+    *,
+    stable_snapshot: bool = False,
+) -> dict[str, Path]:
     output_dir = output_dir or (result.suite.artifact_root / result.suite.id)
     aggregate = aggregate_evidence(result)
+    if stable_snapshot:
+        aggregate = _stable_evidence_snapshot(aggregate)
+        for item in result.results:
+            _write_json(item.artifact_path, _stable_evidence_snapshot(item.payload))
     json_path = output_dir / "aggregate.json"
     markdown_path = output_dir / "aggregate.md"
     _write_json(json_path, aggregate)
@@ -1339,6 +1352,19 @@ def aggregate_evidence(result: BenchmarkSuiteResult) -> dict[str, Any]:
         "thresholds": _threshold_summary(runs),
         "runs": runs,
     }
+
+
+def _stable_evidence_snapshot(payload: Mapping[str, Any]) -> dict[str, Any]:
+    snapshot = deepcopy(dict(payload))
+    if "generated_at" in snapshot:
+        snapshot["generated_at"] = STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT
+    environment = snapshot.get("environment")
+    if isinstance(environment, dict):
+        environment["code_version"] = STABLE_EVIDENCE_SNAPSHOT_CODE_VERSION
+    timing = snapshot.get("timing")
+    if isinstance(timing, dict):
+        timing["elapsed_seconds"] = STABLE_EVIDENCE_SNAPSHOT_ELAPSED_SECONDS
+    return snapshot
 
 
 def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
