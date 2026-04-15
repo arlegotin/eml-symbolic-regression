@@ -41,7 +41,7 @@ The milestone target is deliberately bounded and measurable. It must achieve 100
 
 - [x] **Phase 29: Paper Claim Contract and Proof Dataset Harness** - Convert paper statements into executable claim suites, datasets, and pass/fail thresholds. (requirements: CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04) (completed 2026-04-15)
 - [ ] **Phase 30: Bounded Shallow Blind Training Recovery** - Repair blind training so the declared shallow proof suite reaches 100% verifier-owned recovery. (requirements: SHAL-01, SHAL-02, SHAL-03, SHAL-04) (review-blocked 2026-04-15: current recovery is scaffolded, not pure blind)
-- [ ] **Phase 31: Perturbed Basin Training and Local Repair** - Prove perturbed true-tree recovery over declared bounds and repair Beer-Lambert high-noise failures where feasible. (requirements: BASN-01, BASN-02, BASN-03, BASN-04, BASN-05)
+- [x] **Phase 31: Perturbed Basin Training and Local Repair** - Prove perturbed true-tree recovery over declared bounds and repair Beer-Lambert high-noise failures where feasible. (requirements: BASN-01, BASN-02, BASN-03, BASN-04, BASN-05) (completed 2026-04-15)
 - [ ] **Phase 32: Paper Depth-Curve Training Evidence** - Reproduce the paper's qualitative blind-vs-perturbed depth behavior with real training runs and metrics. (requirements: CURV-01, CURV-02, CURV-03, CURV-04)
 - [ ] **Phase 33: Proof Campaign Report and Evidence Lockdown** - Generate the v1.5 proof campaign, report claims honestly, and lock the workflow with tests. (requirements: EVID-01, EVID-02, EVID-03, EVID-04, EVID-05)
 
@@ -92,7 +92,7 @@ Plans:
 Plans:
 - [x] 31-01-PLAN.md - Perturbed true-tree suite and first-class `perturbed_tree` runner contract.
 - [x] 31-02-PLAN.md - Local snap/discrete repair with `repaired_candidate` provenance.
-- [ ] 31-03-PLAN.md - Beer-Lambert bound evidence, high-noise probes, and guardrails.
+- [x] 31-03-PLAN.md - Beer-Lambert bound evidence, high-noise probes, and guardrails.
 
 ### Phase 32: Paper Depth-Curve Training Evidence
 **Goal**: Users can reproduce the paper's qualitative depth behavior using this implementation's real training runs, metrics, and artifacts.
@@ -168,7 +168,7 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
 | 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete    | 2026-04-15 |
 | 30. Bounded Shallow Blind Training Recovery | 3/3 | Review Blocked | - |
-| 31. Perturbed Basin Training and Local Repair | 2/3 | In Progress|  |
+| 31. Perturbed Basin Training and Local Repair | 3/3 | Complete   | 2026-04-15 |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
 | 33. Proof Campaign Report and Evidence Lockdown | 0/1 | Pending | - |
 
