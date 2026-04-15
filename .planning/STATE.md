@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-current_phase: 31
-status: executing
-stopped_at: Phase 31 execution started
-last_updated: "2026-04-15T18:29:37.340Z"
-last_activity: 2026-04-15 -- Phase 31 execution started
+current_phase: 32
+status: blocked
+stopped_at: Phase 31 complete; Phase 32 blocked by Phase 30 review blocker
+last_updated: "2026-04-15T20:44:21.323Z"
+last_activity: 2026-04-15 -- Phase 31 verified complete; Phase 32 blocked by Phase 30
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 9
-  completed_plans: 6
-  percent: 20
+  completed_plans: 9
+  percent: 40
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 31
+**Current phase:** 32
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 31 — Perturbed Basin Training and Local Repair
+**Current focus:** Phase 32 — Paper Depth-Curve Training Evidence (blocked by Phase 30)
 
 ## Current Position
 
-Phase: 31 (Perturbed Basin Training and Local Repair) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 31
-Last activity: 2026-04-15 -- Phase 31 execution started
-Progress: [##--------] 20% by completed phases (v1.5: 1/5 planned)
+Phase: 32 (Paper Depth-Curve Training Evidence) — BLOCKED
+Plan: Not started
+Status: Blocked until Phase 30 claim semantics are resolved
+Last activity: 2026-04-15 -- Phase 31 verified complete; Phase 32 blocked by Phase 30
+Progress: [####------] 40% by completed phases (v1.5: 2/5 complete; Phase 30 review-blocked)
 
 ## Performance Metrics
 
@@ -82,8 +82,8 @@ Target features:
 |-------|------|--------|--------------|
 | 29 | Paper Claim Contract and Proof Dataset Harness | Complete | CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04 |
 | 30 | Bounded Shallow Blind Training Recovery | Review Blocked | SHAL-01, SHAL-02, SHAL-03, SHAL-04 |
-| 31 | Perturbed Basin Training and Local Repair | Pending | BASN-01, BASN-02, BASN-03, BASN-04, BASN-05 |
-| 32 | Paper Depth-Curve Training Evidence | Pending | CURV-01, CURV-02, CURV-03, CURV-04 |
+| 31 | Perturbed Basin Training and Local Repair | Complete | BASN-01, BASN-02, BASN-03, BASN-04, BASN-05 |
+| 32 | Paper Depth-Curve Training Evidence | Blocked | CURV-01, CURV-02, CURV-03, CURV-04 |
 | 33 | Proof Campaign Report and Evidence Lockdown | Pending | EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
 
 ## Accumulated Context
@@ -99,6 +99,7 @@ Target features:
 - v1.5 interprets "100% fully functional training" as 100% recovery over explicitly declared bounded proof suites, plus honest measured failure boundaries for deeper blind recovery.
 - Phase 29 established the v1.5 proof contract: stable paper claim matrix, deterministic proof dataset manifests, proof-aware benchmark artifacts, derived evidence classes, claim-level threshold summaries, CLI inspection commands, and campaign proof metadata/reporting.
 - Phase 30 implemented a six-case shallow suite and scaffolded scaled-exponential recovery, but code review found this cannot honestly satisfy the pure blind proof claim. The current code distinguishes `scaffolded_blind_training_recovered` from `blind_training_recovered`, leaving SHAL-02 unresolved.
+- Phase 31 completed and verified perturbed true-tree basin recovery, verifier-gated local repair, and durable Beer-Lambert bound evidence. BASN-01 through BASN-05 are complete.
 
 ### Pending Todos
 
@@ -110,11 +111,13 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 Phase 30 is blocked on claim semantics: current scaled-exponential successes come from exact scaffold initializers, not random-initialized blind recovery. Decide whether to narrow the blind proof suite or introduce a separate scaffolded-training proof claim.
 
+Phase 32 depends on Phase 30, Phase 31, and Phase 29. Phase 31 is complete, but Phase 32 must not start while Phase 30's blind-recovery claim semantics remain unresolved.
+
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Phase 29 complete; ready for Phase 30 planning
+Stopped at: Phase 31 complete; Phase 32 blocked by Phase 30 review blocker
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after completing Phase 29*
+*Last updated: 2026-04-15 after completing Phase 31 and recording the Phase 32 blocker*

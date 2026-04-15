@@ -24,11 +24,11 @@ Requirements for this milestone only. Completed v1, v1.1, v1.2, v1.3, and v1.4 r
 
 ### Perturbed Basin Training
 
-- [ ] **BASN-01**: User can generate exact EML target trees at declared depths and perturb their active categorical slots under deterministic noise envelopes.
-- [ ] **BASN-02**: User receives 100% verifier-owned recovery for the declared perturbed-true-tree basin proof suite, with per-depth and per-noise thresholds documented before execution.
-- [ ] **BASN-03**: User can run Beer-Lambert perturbation repair experiments that either recover all declared high-noise cases or formally narrow the supported perturbation bound with evidence.
-- [ ] **BASN-04**: User can apply local snap/discrete repair around failed trained candidates and inspect which slots or subtrees changed.
-- [ ] **BASN-05**: User can verify that same-AST return, verified-equivalent AST, repaired AST, snapped-but-failed, soft-fit-only, and unsupported outcomes remain distinct.
+- [x] **BASN-01**: User can generate exact EML target trees at declared depths and perturb their active categorical slots under deterministic noise envelopes.
+- [x] **BASN-02**: User receives 100% verifier-owned recovery for the declared perturbed-true-tree basin proof suite, with per-depth and per-noise thresholds documented before execution.
+- [x] **BASN-03**: User can run Beer-Lambert perturbation repair experiments that either recover all declared high-noise cases or formally narrow the supported perturbation bound with evidence.
+- [x] **BASN-04**: User can apply local snap/discrete repair around failed trained candidates and inspect which slots or subtrees changed.
+- [x] **BASN-05**: User can verify that same-AST return, verified-equivalent AST, repaired AST, snapped-but-failed, soft-fit-only, and unsupported outcomes remain distinct.
 
 ### Depth-Curve Training Evidence
 
@@ -80,11 +80,11 @@ Deferred to later milestones.
 | SHAL-02 | Phase 30 | Pending |
 | SHAL-03 | Phase 30 | Pending |
 | SHAL-04 | Phase 30 | Pending |
-| BASN-01 | Phase 31 | Pending |
-| BASN-02 | Phase 31 | Pending |
-| BASN-03 | Phase 31 | Pending |
-| BASN-04 | Phase 31 | Pending |
-| BASN-05 | Phase 31 | Pending |
+| BASN-01 | Phase 31 | Complete |
+| BASN-02 | Phase 31 | Complete |
+| BASN-03 | Phase 31 | Complete |
+| BASN-04 | Phase 31 | Complete |
+| BASN-05 | Phase 31 | Complete |
 | CURV-01 | Phase 32 | Pending |
 | CURV-02 | Phase 32 | Pending |
 | CURV-03 | Phase 32 | Pending |

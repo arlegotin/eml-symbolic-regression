@@ -138,11 +138,11 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | SHAL-02 | Phase 30 | Pending |
 | SHAL-03 | Phase 30 | Pending |
 | SHAL-04 | Phase 30 | Pending |
-| BASN-01 | Phase 31 | Pending |
-| BASN-02 | Phase 31 | Pending |
-| BASN-03 | Phase 31 | Pending |
-| BASN-04 | Phase 31 | Pending |
-| BASN-05 | Phase 31 | Pending |
+| BASN-01 | Phase 31 | Complete |
+| BASN-02 | Phase 31 | Complete |
+| BASN-03 | Phase 31 | Complete |
+| BASN-04 | Phase 31 | Complete |
+| BASN-05 | Phase 31 | Complete |
 | CURV-01 | Phase 32 | Pending |
 | CURV-02 | Phase 32 | Pending |
 | CURV-03 | Phase 32 | Pending |
@@ -168,7 +168,7 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
 | 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete    | 2026-04-15 |
 | 30. Bounded Shallow Blind Training Recovery | 3/3 | Review Blocked | - |
-| 31. Perturbed Basin Training and Local Repair | 3/3 | Complete   | 2026-04-15 |
+| 31. Perturbed Basin Training and Local Repair | 3/3 | Complete    | 2026-04-15 |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
 | 33. Proof Campaign Report and Evidence Lockdown | 0/1 | Pending | - |
 
