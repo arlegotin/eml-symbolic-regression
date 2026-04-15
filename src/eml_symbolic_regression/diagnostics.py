@@ -53,6 +53,118 @@ def write_campaign_comparison(
     return {"json": json_path, "markdown": markdown_path}
 
 
+def build_perturbed_basin_bound_report(
+    bounded_aggregate: Mapping[str, Any],
+    probe_aggregate: Mapping[str, Any] | None = None,
+    *,
+    formula: str = "beer_lambert",
+    declared_noise_grid: tuple[float, ...] = (5.0, 15.0, 35.0),
+    declared_bound_noise_max: float = 5.0,
+) -> dict[str, Any]:
+    """Build a Beer-Lambert perturbed-basin bound report from aggregate rows."""
+
+    bounded_rows = _bound_report_rows(bounded_aggregate, row_source="bounded", formula=formula)
+    probe_rows = _bound_report_rows(probe_aggregate or {}, row_source="probe", formula=formula)
+    rows = sorted(
+        [*bounded_rows, *probe_rows],
+        key=lambda row: (
+            float(row["perturbation_noise"]),
+            str(row["row_source"]),
+            int(row["seed"]) if row.get("seed") is not None else -1,
+            str(row.get("run_id") or ""),
+        ),
+    )
+    grid = tuple(float(value) for value in declared_noise_grid)
+    declared_bound = float(declared_bound_noise_max)
+    raw_supported = _supported_noise_prefix(
+        rows,
+        grid,
+        lambda row: row.get("evidence_class") == "perturbed_true_tree_recovered",
+    )
+    repaired_supported = _supported_noise_prefix(
+        rows,
+        grid,
+        lambda row: row.get("evidence_class") in {"perturbed_true_tree_recovered", "repaired_candidate"},
+    )
+    unsupported_noise_values = sorted(
+        {
+            float(row["perturbation_noise"])
+            for row in rows
+            if float(row["perturbation_noise"]) in set(grid)
+            and row.get("evidence_class") not in {"perturbed_true_tree_recovered", "repaired_candidate"}
+        }
+    )
+
+    return {
+        "schema": "eml.perturbed_basin_bound_report.v1",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "formula": formula,
+        "declared_noise_grid": list(grid),
+        "bounded_noise_values": _noise_values(bounded_rows),
+        "probe_noise_values": _noise_values(probe_rows),
+        "declared_bound_noise_max": declared_bound,
+        "raw_supported_noise_max": raw_supported,
+        "repaired_supported_noise_max": repaired_supported,
+        "unsupported_noise_values": unsupported_noise_values,
+        "claim_recommendation": _bound_claim_recommendation(
+            repaired_supported,
+            declared_bound_noise_max=declared_bound,
+        ),
+        "rows": rows,
+    }
+
+
+def write_perturbed_basin_bound_report(
+    bounded_aggregate_path: Path,
+    probe_aggregate_path: Path | None,
+    output_dir: Path,
+) -> dict[str, Path]:
+    """Write JSON and Markdown Beer-Lambert perturbed-basin bound evidence."""
+
+    bounded_aggregate = json.loads(Path(bounded_aggregate_path).read_text(encoding="utf-8"))
+    probe_aggregate = None
+    if probe_aggregate_path is not None:
+        probe_aggregate = json.loads(Path(probe_aggregate_path).read_text(encoding="utf-8"))
+    report = build_perturbed_basin_bound_report(bounded_aggregate, probe_aggregate)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    json_path = output_dir / "basin-bound.json"
+    markdown_path = output_dir / "basin-bound.md"
+    _write_json(json_path, report)
+    markdown_path.write_text(render_perturbed_basin_bound_markdown(report), encoding="utf-8")
+    return {"json": json_path, "markdown": markdown_path}
+
+
+def render_perturbed_basin_bound_markdown(report: Mapping[str, Any]) -> str:
+    declared_noise_grid = ", ".join(_fmt(value) for value in report.get("declared_noise_grid", ()))
+    lines = [
+        "# Perturbed Basin Bound Report",
+        "",
+        f"- Formula: `{report.get('formula')}`",
+        f"- Declared noise grid: {declared_noise_grid}",
+        f"- Declared bounded proof max: {_fmt(report.get('declared_bound_noise_max'))}",
+        f"- Raw supported max: {_fmt(report.get('raw_supported_noise_max'))}",
+        f"- Repaired supported max: {_fmt(report.get('repaired_supported_noise_max'))}",
+        f"- Claim recommendation: `{report.get('claim_recommendation')}`",
+        "",
+        "High-noise probe rows remain separate from bounded proof thresholds. Probe evidence can support a follow-up bound only when it forms a continuous declared-grid prefix.",
+        "",
+        "## Rows",
+        "",
+        "| Source | Suite | Case | Run | Seed | Noise | Status | Claim | Evidence | Return Kind | Raw Status | Repair Status | Changed Slots | Accepted Repair Moves | Reason | Artifact |",
+        "|--------|-------|------|-----|------|-------|--------|-------|----------|-------------|------------|---------------|---------------|-----------------------|--------|----------|",
+    ]
+    for row in report.get("rows", ()):
+        lines.append(
+            f"| {row.get('row_source')} | {row.get('suite_id')} | {row.get('case_id')} | {row.get('run_id')} | "
+            f"{row.get('seed')} | {_fmt(row.get('perturbation_noise'))} | {row.get('status')} | "
+            f"{row.get('claim_status')} | {row.get('evidence_class')} | {row.get('return_kind')} | "
+            f"{row.get('raw_status')} | {row.get('repair_status')} | {_fmt(row.get('changed_slot_count'))} | "
+            f"{_fmt(row.get('repair_accepted_move_count'))} | {row.get('reason')} | {row.get('artifact_path')} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
 def build_campaign_comparison(baseline_dirs: tuple[Path, ...], candidate_dirs: tuple[Path, ...]) -> dict[str, Any]:
     if len(baseline_dirs) != len(candidate_dirs):
         raise ValueError("baseline and candidate campaign counts must match")
@@ -361,6 +473,80 @@ def render_campaign_comparison_markdown(comparison: Mapping[str, Any]) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def _bound_report_rows(aggregate: Mapping[str, Any], *, row_source: str, formula: str) -> list[dict[str, Any]]:
+    suite_id = aggregate.get("suite", {}).get("id") if isinstance(aggregate.get("suite"), Mapping) else None
+    rows: list[dict[str, Any]] = []
+    for row in aggregate.get("runs", ()):
+        if row.get("formula") != formula:
+            continue
+        metrics = row.get("metrics") if isinstance(row.get("metrics"), Mapping) else {}
+        rows.append(
+            {
+                "row_source": row_source,
+                "suite_id": row.get("suite_id") or suite_id,
+                "case_id": row.get("case_id"),
+                "run_id": row.get("run_id"),
+                "artifact_path": row.get("artifact_path"),
+                "seed": row.get("seed"),
+                "perturbation_noise": float(row.get("perturbation_noise") or 0.0),
+                "status": row.get("status"),
+                "claim_status": row.get("claim_status"),
+                "evidence_class": row.get("evidence_class") or row.get("classification") or row.get("status"),
+                "return_kind": row.get("return_kind"),
+                "raw_status": row.get("raw_status"),
+                "repair_status": row.get("repair_status") or metrics.get("repair_status"),
+                "changed_slot_count": _row_or_metric(row, metrics, "changed_slot_count"),
+                "repair_accepted_move_count": _row_or_metric(row, metrics, "repair_accepted_move_count"),
+                "reason": row.get("reason"),
+            }
+        )
+    return rows
+
+
+def _row_or_metric(row: Mapping[str, Any], metrics: Mapping[str, Any], key: str) -> Any:
+    if key in row:
+        return row.get(key)
+    return metrics.get(key)
+
+
+def _noise_values(rows: Iterable[Mapping[str, Any]]) -> list[float]:
+    return sorted({float(row["perturbation_noise"]) for row in rows})
+
+
+def _supported_noise_prefix(rows: list[Mapping[str, Any]], grid: tuple[float, ...], predicate: Any) -> float | None:
+    by_noise: dict[float, list[Mapping[str, Any]]] = {}
+    for row in rows:
+        noise = float(row["perturbation_noise"])
+        by_noise.setdefault(noise, []).append(row)
+
+    supported: float | None = None
+    for noise in sorted(grid):
+        noise_rows = by_noise.get(float(noise), [])
+        if not noise_rows:
+            break
+        if not all(predicate(row) for row in noise_rows):
+            break
+        supported = float(noise)
+    return supported
+
+
+def _bound_claim_recommendation(repaired_supported_noise_max: float | None, *, declared_bound_noise_max: float) -> str:
+    if repaired_supported_noise_max is None or repaired_supported_noise_max < declared_bound_noise_max:
+        return f"narrow_to_{_bound_label(repaired_supported_noise_max)}"
+    if repaired_supported_noise_max > declared_bound_noise_max:
+        return f"probe_supports_{_bound_label(repaired_supported_noise_max)}"
+    return "support_declared_bound"
+
+
+def _bound_label(value: float | None) -> str:
+    if value is None:
+        return "none"
+    number = float(value)
+    if number.is_integer():
+        return str(int(number))
+    return f"{number:.15g}"
 
 
 def _load_campaign_dir(path: Path) -> dict[str, Any]:
