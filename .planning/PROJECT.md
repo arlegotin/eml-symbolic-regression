@@ -10,6 +10,17 @@ The first release is a research-grade Python package and CLI for recovering comp
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
+## Current Milestone: v1.1 EML Compiler and Warm Starts
+
+**Goal:** Turn verified reference demos into actual EML-tree recovery workflows by compiling ordinary formulas into exact EML ASTs and using those trees as warm starts for training.
+
+**Target features:**
+- Implement a practical ordinary-expression-to-EML compiler subset for constants, variables, `exp`, `log`, negation/subtraction, addition, multiplication, and division where feasible.
+- Embed compiled exact EML trees into compatible soft master trees and initialize logits near the compiled structure.
+- Add perturbation/warm-start training that demonstrates recovery from near-correct EML trees.
+- Promote Beer-Lambert and Michaelis-Menten from catalog showcase formulas to trained EML recovery demos when verification passes.
+- Keep normalized Planck as a stretch showcase with honest success/failure reporting.
+
 ## Requirements
 
 ### Validated
@@ -22,7 +33,12 @@ Recover verified, human-readable elementary formulas from data using the paper's
 
 ### Active
 
-(None currently — v1 MVP implemented and ready for review)
+- [ ] Compile a defined subset of ordinary SymPy expressions into exact EML ASTs.
+- [ ] Serialize compiler output with enough metadata to trace source expressions and compiler rules.
+- [ ] Embed compiled EML ASTs into soft master trees as warm-start logits.
+- [ ] Add controlled perturbation of warm-start logits to test return-to-solution behavior.
+- [ ] Run and verify trained EML recovery demos for Beer-Lambert and Michaelis-Menten.
+- [ ] Document which demo formulas are exact trained EML recoveries, warm-start recoveries, catalog showcases, or still unsupported.
 
 ### Out of Scope
 
@@ -57,6 +73,7 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 | Keep Rust/CUDA as later acceleration targets | The north-star doc recommends Rust and CUDA after profiling, but v1 can validate semantics and pipeline in Python first. | - Pending |
 | Build a package and CLI before any UI | The strong MVP needs reproducible experiments, verification, and demos more than a frontend. | - Pending |
 | Use YOLO GSD defaults | The user asked to implement start to end and this session cannot use interactive GSD questions. | - Pending |
+| v1.1 focuses on compiler-driven warm starts | This is the shortest path from verified catalog demos to actual trained EML recovery without overpromising blind deep search. | - Pending |
 
 ## Evolution
 
@@ -76,4 +93,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after implementation and verification*
+*Last updated: 2026-04-15 after starting milestone v1.1*

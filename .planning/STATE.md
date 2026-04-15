@@ -1,7 +1,7 @@
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** v1 complete
+**Current phase:** Not started (defining requirements)
 **Mode:** YOLO
 
 ## Project Reference
@@ -9,7 +9,14 @@
 See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Review and extend the v1 MVP after implementation.
+**Current focus:** Milestone v1.1 - EML Compiler and Warm Starts
+
+## Current Position
+
+Phase: Not started (defining requirements)
+Plan: -
+Status: Defining requirements
+Last activity: 2026-04-15 - Milestone v1.1 started
 
 ## Artifacts
 
@@ -20,6 +27,19 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 | Research summary | `.planning/research/SUMMARY.md` | Complete |
 | Requirements | `.planning/REQUIREMENTS.md` | Complete |
 | Roadmap | `.planning/ROADMAP.md` | Complete |
+
+## Current Milestone
+
+**v1.1: EML Compiler and Warm Starts**
+
+Goal: Turn verified reference demos into actual EML-tree recovery workflows by compiling ordinary formulas into exact EML ASTs and using those trees as warm starts for training.
+
+Target features:
+- Ordinary-expression-to-EML compiler subset.
+- Warm-start embedding into soft master trees.
+- Perturbed warm-start recovery tests.
+- Trained EML recovery demos for Beer-Lambert and Michaelis-Menten.
+- Normalized Planck stretch reporting.
 
 ## Phase Status
 
@@ -43,4 +63,4 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 - Demo reports generated under `artifacts/` for exact EML `exp`, Michaelis-Menten, and normalized Planck.
 
 ---
-*Last updated: 2026-04-15 after implementation and verification*
+*Last updated: 2026-04-15 after starting milestone v1.1*
