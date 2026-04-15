@@ -27,6 +27,7 @@ from .proof import (
     threshold_policy,
     validate_claim_reference,
 )
+from .repair import repair_perturbed_candidate
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
@@ -1154,16 +1155,43 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         stage_statuses["perturbed_true_tree_attempt"] = basin.status
         if basin.verification is not None:
             stage_statuses["trained_exact_recovery"] = basin.verification.status
+        raw_status = str(basin.manifest.get("raw_status") or basin.status)
+        status = basin.status
+        claim_status = basin.verification.status if basin.verification else basin.status
+        repair_payload = None
+        repair_status = "not_attempted"
+        if basin.status != "recovered":
+            repair_constants = tuple(sorted(target_expr.constants(), key=lambda value: (value.real, value.imag)))
+            repair = repair_perturbed_candidate(
+                basin.fit,
+                target_expr=target_expr,
+                embedding=basin.embedding,
+                depth=training_depth,
+                variables=tuple(sorted(target_expr.variables())),
+                constants=repair_constants,
+                verification_splits=splits,
+                tolerance=run.dataset.tolerance,
+                original_status=raw_status,
+                return_kind=basin.return_kind,
+            )
+            repair_payload = repair.as_dict()
+            repair_status = "repaired" if repair.status == "repaired_candidate" else repair.status
+            stage_statuses["local_repair"] = repair.status
+            if repair.status == "repaired_candidate" and repair.verification is not None:
+                status = "repaired_candidate"
+                claim_status = repair.verification.status
         return {
-            "status": basin.status,
+            "status": status,
             "stage_statuses": stage_statuses,
             **target_payload,
             "perturbed_true_tree": basin.manifest,
             "trained_eml_candidate": basin.fit.manifest,
             "trained_eml_verification": basin.verification.as_dict() if basin.verification else None,
             "return_kind": basin.return_kind,
-            "raw_status": basin.manifest["raw_status"],
-            "claim_status": basin.verification.status if basin.verification else basin.status,
+            "raw_status": raw_status,
+            "repair": repair_payload,
+            "repair_status": repair_status,
+            "claim_status": claim_status,
         }
 
     raise BenchmarkValidationError("invalid_start_mode", f"unsupported start mode {run.start_mode!r}")
@@ -1233,6 +1261,11 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     if not verification:
         verification = payload.get("compiled_eml_verification") or payload.get("verification")
 
+    repair = payload.get("repair")
+    repair_verification = repair.get("verification") if isinstance(repair, Mapping) else None
+    repair_attempts = repair.get("moves_attempted") if isinstance(repair, Mapping) else None
+    repair_accepted = repair.get("accepted_moves") if isinstance(repair, Mapping) else None
+
     diagnosis = {}
     warm_start = payload.get("warm_start_eml")
     if isinstance(warm_start, Mapping):
@@ -1263,6 +1296,10 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "high_precision_max_error": verification.get("high_precision_max_error") if isinstance(verification, Mapping) else None,
         "warm_start_mechanism": diagnosis.get("mechanism"),
         "warm_start_status": diagnosis.get("status"),
+        "repair_status": payload.get("repair_status"),
+        "repair_move_count": len(repair_attempts) if isinstance(repair_attempts, list) else 0,
+        "repair_accepted_move_count": len(repair_accepted) if isinstance(repair_accepted, list) else 0,
+        "repair_verifier_status": repair_verification.get("status") if isinstance(repair_verification, Mapping) else None,
     }
 
 
@@ -1292,6 +1329,9 @@ def aggregate_evidence(result: BenchmarkSuiteResult) -> dict[str, Any]:
             "formula": _group_counts(runs, lambda item: item["formula"]),
             "start_mode": _group_counts(runs, lambda item: item["start_mode"]),
             "evidence_class": _group_counts(runs, lambda item: item["evidence_class"]),
+            "return_kind": _group_counts(runs, lambda item: item.get("return_kind") or "none"),
+            "raw_status": _group_counts(runs, lambda item: item.get("raw_status") or "none"),
+            "repair_status": _group_counts(runs, lambda item: item.get("repair_status") or "none"),
             "perturbation_noise": _group_counts(runs, lambda item: str(item["perturbation_noise"])),
             "depth": _group_counts(runs, lambda item: str(item["optimizer"]["depth"])),
             "seed_group": _group_counts(runs, lambda item: "all" if item["seed"] is not None else "unknown"),
@@ -1313,12 +1353,24 @@ def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
         "|--------|-------|",
     ]
     counts = aggregate["counts"]
-    for key in ("total", "verifier_recovered", "same_ast_return", "verified_equivalent_ast", "unsupported", "failed", "execution_error"):
+    for key in (
+        "total",
+        "verifier_recovered",
+        "same_ast_return",
+        "verified_equivalent_ast",
+        "repaired_candidate",
+        "unsupported",
+        "failed",
+        "execution_error",
+    ):
         lines.append(f"| {key} | {counts[key]} |")
     lines.append(f"| verifier_recovery_rate | {counts['verifier_recovery_rate']:.3f} |")
     lines.extend(["", "## By Formula", "", _markdown_group_table(aggregate["groups"]["formula"])])
     lines.extend(["", "## By Start Mode", "", _markdown_group_table(aggregate["groups"]["start_mode"])])
     lines.extend(["", "## By Evidence Class", "", _markdown_group_table(aggregate["groups"]["evidence_class"])])
+    lines.extend(["", "## By Return Kind", "", _markdown_group_table(aggregate["groups"]["return_kind"])])
+    lines.extend(["", "## By Raw Status", "", _markdown_group_table(aggregate["groups"]["raw_status"])])
+    lines.extend(["", "## By Repair Status", "", _markdown_group_table(aggregate["groups"]["repair_status"])])
     lines.extend(["", "## Thresholds", "", _markdown_threshold_table(aggregate.get("thresholds", []))])
     lines.extend(["", "## Runs", "", "| Run ID | Formula | Mode | Status | Classification | Artifact |", "|--------|---------|------|--------|----------------|----------|"])
     for run in aggregate["runs"]:
@@ -1424,7 +1476,16 @@ def _run_reason(payload: Mapping[str, Any]) -> str:
 def classify_run(payload: Mapping[str, Any]) -> str:
     status = payload.get("status")
     claim_status = payload.get("claim_status")
+    return_kind = payload.get("return_kind")
+    raw_status = payload.get("raw_status")
+    repair_status = payload.get("repair_status")
     start_mode = payload.get("run", {}).get("start_mode") if isinstance(payload.get("run"), Mapping) else None
+    if repair_status == "repaired":
+        return "repaired_candidate"
+    if return_kind in {"same_ast_return", "verified_equivalent_ast", "snapped_but_failed", "soft_fit_only"}:
+        return str(return_kind)
+    if raw_status == "unsupported":
+        return "unsupported"
     if status == "unsupported":
         return "unsupported"
     if status == "execution_error":
@@ -1525,8 +1586,11 @@ def _aggregate_counts(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
     return {
         "total": total,
         "verifier_recovered": verifier_recovered,
-        "same_ast_return": sum(1 for run in runs if run["classification"] == "same_ast_warm_start_return"),
-        "verified_equivalent_ast": sum(1 for run in runs if run["classification"] == "verified_equivalent_warm_start_recovery"),
+        "same_ast_return": sum(1 for run in runs if run["classification"] in {"same_ast_warm_start_return", "same_ast_return"}),
+        "verified_equivalent_ast": sum(
+            1 for run in runs if run["classification"] in {"verified_equivalent_warm_start_recovery", "verified_equivalent_ast"}
+        ),
+        "repaired_candidate": sum(1 for run in runs if run["classification"] == "repaired_candidate"),
         "unsupported": sum(1 for run in runs if run["classification"] == "unsupported"),
         "failed": sum(1 for run in runs if run["classification"] in {"failed", "snapped_but_failed", "soft_fit_only"}),
         "execution_error": sum(1 for run in runs if run["classification"] == "execution_failure"),
