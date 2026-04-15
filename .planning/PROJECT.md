@@ -27,14 +27,16 @@ v1.4 used the committed v1.3 standard/showcase campaigns as the scoreboard. It a
 - Compiler diagnostics and a lower-depth Shockley `c*exp(a)-c` template validated before acceptance.
 - v1.4 standard/showcase campaign folders plus a comparison report showing overall recovery improved from 18/45 to 27/45.
 
-## Next Milestone
+## Current Milestone: v1.5 Training Proof and Recovery Guarantees
 
-No active milestone is currently defined. Candidate directions for the next milestone are listed in Active requirements below; start the next cycle with `/gsd-new-milestone`.
+**Goal:** Prove the paper-grounded EML training claims with real training runs, bounded 100% recovery targets, transparent failure boundaries, metrics, and reproducible datasets.
 
-**Candidate directions:**
-- Repair Beer-Lambert high-perturbation warm-start failures now that active-slot perturbation is identified.
-- Add lower-depth compiler templates or simplification passes for Planck, logistic, Michaelis-Menten, and damped oscillator.
-- Add external noisy datasets and external symbolic-regression baselines after synthetic/source-document campaigns remain reproducible and interpretable.
+**Target features:**
+- Convert the paper's implementation claims into executable training claim suites with clear pass/fail thresholds.
+- Achieve 100% verifier-owned training recovery on a declared bounded shallow proof suite, including the current `radioactive_decay` blind failure family.
+- Achieve 100% verifier-owned recovery for declared perturbed-true-tree basin suites, including repaired high-noise Beer-Lambert cases or a deliberately narrowed bound if evidence proves the larger bound is invalid.
+- Reproduce the paper's qualitative depth behavior with real metrics: shallow blind recovery works, deeper blind recovery degrades, and perturbed true solutions recover much more reliably.
+- Publish a self-contained proof report with raw run artifacts, datasets, metrics, plots, and explicit separation of blind, warm-start, compiler-assisted, and unsupported outcomes.
 
 ## Requirements
 
@@ -69,14 +71,16 @@ No active milestone is currently defined. Candidate directions for the next mile
 
 ### Active
 
-- [ ] Repair high-perturbation Beer-Lambert warm-start failures now that active-slot perturbation is identified.
-- [ ] Reduce compiled arithmetic tree depth or add templates for Planck, logistic, Michaelis-Menten, and damped oscillator cases still blocked by compiler gates.
-- [ ] Add external noisy datasets after synthetic/source-document campaigns remain reproducible and interpretable.
-- [ ] Compare EML recovery against external symbolic-regression baselines.
+- [ ] Prove bounded shallow EML training recovery with verifier-owned results, not training loss alone.
+- [ ] Repair blind `radioactive_decay` recovery and related scaled/signed exponential families.
+- [ ] Repair or tightly bound perturbed warm-start basin recovery for Beer-Lambert and synthetic exact EML trees.
+- [ ] Generate real training depth-curve evidence that matches the paper's qualitative claims without overselling deep blind recovery.
+- [ ] Publish reproducible proof datasets, raw training artifacts, metrics, plots, and a claim report.
 
 ### Out of Scope
 
 - Full blind recovery of arbitrary depth-6 formulas - the paper reports no blind recovery at depth 6 in 448 attempts, so this cannot be promised for v1.
+- Universal 100% recovery over all elementary functions - v1.5 targets 100% recovery only over explicitly declared bounded proof suites and reports measured limits elsewhere.
 - High-noise real-world scientific datasets without priors - v1 focuses on noiseless or modest-noise demonstration problems.
 - Custom CUDA kernels - use normal PyTorch execution first and profile before adding kernels.
 - A web GUI - the first target is a reproducible package, CLI, tests, and demos.
@@ -119,6 +123,8 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 | Diagnose Beer-Lambert before repairing it | High-perturbation failures needed mechanism-level evidence before deeper discrete repair work. | ✓ Good |
 | Shockley template must validate before acceptance | Compiler expansion remains fail-closed and cannot emit invalid EML trees. | ✓ Good |
 | Before/after comparison is the milestone gate | Recovery improvements are only credible when rerun through the same standard/showcase campaign contracts. | ✓ Good |
+| v1.5 training proof must be bounded | The user wants 100% functional training, but the paper itself reports rapid blind degradation at depth; the defensible target is 100% over declared suites plus honest depth curves. | - Pending |
+| Compile-only success does not prove training | v1.5 reports compiler-assisted cases separately and counts proof success only when actual training and verifier checks pass. | - Pending |
 
 ## Evolution
 
@@ -138,4 +144,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after shipping milestone v1.4*
+*Last updated: 2026-04-15 after starting milestone v1.5*
