@@ -39,7 +39,7 @@ The milestone target is deliberately bounded and measurable. It must achieve 100
 - Integer phases are planned milestone work.
 - Decimal phases can be inserted later for urgent gap closure.
 
-- [ ] **Phase 29: Paper Claim Contract and Proof Dataset Harness** - Convert paper statements into executable claim suites, datasets, and pass/fail thresholds. (requirements: CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04)
+- [x] **Phase 29: Paper Claim Contract and Proof Dataset Harness** - Convert paper statements into executable claim suites, datasets, and pass/fail thresholds. (requirements: CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04) (completed 2026-04-15)
 - [ ] **Phase 30: Bounded Shallow Blind Training Recovery** - Repair blind training so the declared shallow proof suite reaches 100% verifier-owned recovery. (requirements: SHAL-01, SHAL-02, SHAL-03, SHAL-04)
 - [ ] **Phase 31: Perturbed Basin Training and Local Repair** - Prove perturbed true-tree recovery over declared bounds and repair Beer-Lambert high-noise failures where feasible. (requirements: BASN-01, BASN-02, BASN-03, BASN-04, BASN-05)
 - [ ] **Phase 32: Paper Depth-Curve Training Evidence** - Reproduce the paper's qualitative blind-vs-perturbed depth behavior with real training runs and metrics. (requirements: CURV-01, CURV-02, CURV-03, CURV-04)
@@ -60,7 +60,7 @@ The milestone target is deliberately bounded and measurable. It must achieve 100
 Plans:
 - [x] 29-01-PLAN.md — Claim matrix, threshold policies, and deterministic dataset manifests.
 - [x] 29-02-PLAN.md — Benchmark proof metadata, run artifact schema, evidence classes, and aggregate thresholds.
-- [ ] 29-03-PLAN.md — CLI inspection/generation commands plus campaign table/report proof metadata propagation.
+- [x] 29-03-PLAN.md — CLI inspection/generation commands plus campaign table/report proof metadata propagation.
 
 ### Phase 30: Bounded Shallow Blind Training Recovery
 **Goal**: Users get 100% verifier-owned blind training recovery on the declared shallow proof suite, including the current `radioactive_decay` failure family.
@@ -157,7 +157,7 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 14-18. v1.2 Training Benchmark and Recovery Evidence | Complete | Complete | 2026-04-15 |
 | 19-23. v1.3 Benchmark Campaign and Evidence Report | Complete | Complete | 2026-04-15 |
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
-| 29. Paper Claim Contract and Proof Dataset Harness | 2/3 | In Progress|  |
+| 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete   | 2026-04-15 |
 | 30. Bounded Shallow Blind Training Recovery | 0/1 | Pending | - |
 | 31. Perturbed Basin Training and Local Repair | 0/1 | Pending | - |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
