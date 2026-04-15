@@ -28,6 +28,10 @@ def _synthetic_result(
     evidence_class: str,
     status: str = "recovered",
     claim_status: str = "recovered",
+    perturbation_noise: float = 0.0,
+    return_kind: str | None = None,
+    raw_status: str | None = None,
+    repair_status: str | None = None,
     claim_id: str | None = "paper-shallow-blind-recovery",
     claim_class: str | None = "bounded_training_proof",
     threshold_policy_id: str | None = "bounded_100_percent",
@@ -38,7 +42,7 @@ def _synthetic_result(
         formula="exp",
         start_mode=start_mode,
         seed=0,
-        perturbation_noise=0.0,
+        perturbation_noise=perturbation_noise,
         dataset=DatasetConfig(points=12),
         optimizer=OptimizerBudget(depth=1, steps=1, restarts=1),
         artifact_path=Path(f"/tmp/{case_id}.json"),
@@ -54,6 +58,9 @@ def _synthetic_result(
         "claim_class": claim_class,
         "training_mode": training_mode,
         "evidence_class": evidence_class,
+        "return_kind": return_kind,
+        "raw_status": raw_status,
+        "repair_status": repair_status,
         "threshold": {"id": threshold_policy_id} if threshold_policy_id is not None else None,
         "dataset": run.dataset.as_dict(),
         "dataset_manifest": {"schema": "eml.proof_dataset_manifest.v1"},
@@ -191,6 +198,178 @@ def test_shallow_bounded_threshold_counts_only_blind_training_recovery():
     assert threshold["required_rate"] == 1.0
     assert threshold["status"] == "failed"
     assert threshold["evidence_classes"] == aggregate["counts"]["evidence_classes"]
+
+
+def test_perturbed_bounded_threshold_counts_repaired_candidates():
+    suite = BenchmarkSuite("synthetic-perturbed-proof", "synthetic perturbed proof aggregate", ())
+    result = SimpleNamespace(
+        suite=suite,
+        results=(
+            _synthetic_result(
+                case_id="raw",
+                start_mode="perturbed_tree",
+                training_mode="perturbed_true_tree_training",
+                evidence_class="perturbed_true_tree_recovered",
+                perturbation_noise=0.05,
+                return_kind="same_ast_return",
+                raw_status="recovered",
+                claim_id="paper-perturbed-true-tree-basin",
+                threshold_policy_id="bounded_100_percent",
+            ),
+            _synthetic_result(
+                case_id="repair",
+                start_mode="perturbed_tree",
+                training_mode="perturbed_true_tree_training",
+                evidence_class="repaired_candidate",
+                status="repaired_candidate",
+                claim_status="recovered",
+                perturbation_noise=0.05,
+                return_kind="snapped_but_failed",
+                raw_status="snapped_but_failed",
+                repair_status="repaired",
+                claim_id="paper-perturbed-true-tree-basin",
+                threshold_policy_id="bounded_100_percent",
+            ),
+            _synthetic_result(
+                case_id="failed",
+                start_mode="perturbed_tree",
+                training_mode="perturbed_true_tree_training",
+                evidence_class="snapped_but_failed",
+                status="snapped_but_failed",
+                claim_status="failed",
+                perturbation_noise=0.05,
+                return_kind="snapped_but_failed",
+                raw_status="snapped_but_failed",
+                repair_status="not_repaired",
+                claim_id="paper-perturbed-true-tree-basin",
+                threshold_policy_id="bounded_100_percent",
+            ),
+        ),
+    )
+
+    threshold = aggregate_evidence(result)["thresholds"][0]
+
+    assert threshold["claim_id"] == "paper-perturbed-true-tree-basin"
+    assert threshold["eligible"] == 3
+    assert threshold["passed"] == 2
+    assert threshold["failed"] == 1
+    assert threshold["status"] == "failed"
+    assert threshold["evidence_classes"] == {
+        "perturbed_true_tree_recovered": 1,
+        "repaired_candidate": 1,
+        "snapped_but_failed": 1,
+    }
+
+
+def test_aggregate_evidence_keeps_perturbed_raw_and_repair_taxonomy_distinct():
+    suite = BenchmarkSuite("synthetic-perturbed-taxonomy", "synthetic taxonomy aggregate", ())
+    common = {
+        "start_mode": "perturbed_tree",
+        "training_mode": "perturbed_true_tree_training",
+        "claim_id": None,
+        "claim_class": None,
+        "threshold_policy_id": None,
+        "perturbation_noise": 0.05,
+    }
+    result = SimpleNamespace(
+        suite=suite,
+        results=(
+            _synthetic_result(
+                case_id="same-ast",
+                evidence_class="perturbed_true_tree_recovered",
+                return_kind="same_ast_return",
+                raw_status="recovered",
+                **common,
+            ),
+            _synthetic_result(
+                case_id="verified-equivalent",
+                evidence_class="perturbed_true_tree_recovered",
+                return_kind="verified_equivalent_ast",
+                raw_status="recovered",
+                **common,
+            ),
+            _synthetic_result(
+                case_id="repair",
+                evidence_class="repaired_candidate",
+                status="repaired_candidate",
+                claim_status="recovered",
+                return_kind="snapped_but_failed",
+                raw_status="snapped_but_failed",
+                repair_status="repaired",
+                **common,
+            ),
+            _synthetic_result(
+                case_id="snapped",
+                evidence_class="perturbed_true_tree_recovered",
+                status="snapped_but_failed",
+                claim_status="failed",
+                return_kind="snapped_but_failed",
+                raw_status="snapped_but_failed",
+                repair_status="not_repaired",
+                **common,
+            ),
+            _synthetic_result(
+                case_id="soft-fit",
+                evidence_class="perturbed_true_tree_recovered",
+                status="soft_fit_only",
+                claim_status="failed",
+                return_kind="soft_fit_only",
+                raw_status="soft_fit_only",
+                repair_status="not_repaired",
+                **common,
+            ),
+            _synthetic_result(
+                case_id="unsupported",
+                evidence_class="unsupported",
+                status="unsupported",
+                claim_status="unsupported",
+                raw_status="unsupported",
+                **common,
+            ),
+            _synthetic_result(
+                case_id="execution-error",
+                evidence_class="execution_failure",
+                status="execution_error",
+                claim_status="execution_error",
+                raw_status="execution_error",
+                **common,
+            ),
+        ),
+    )
+
+    aggregate = aggregate_evidence(result)
+    markdown = render_aggregate_markdown(aggregate)
+    classifications = {run["case_id"]: run["classification"] for run in aggregate["runs"]}
+
+    assert classifications == {
+        "same-ast": "same_ast_return",
+        "verified-equivalent": "verified_equivalent_ast",
+        "repair": "repaired_candidate",
+        "snapped": "snapped_but_failed",
+        "soft-fit": "soft_fit_only",
+        "unsupported": "unsupported",
+        "execution-error": "execution_failure",
+    }
+    assert aggregate["counts"]["same_ast_return"] == 1
+    assert aggregate["counts"]["verified_equivalent_ast"] == 1
+    assert aggregate["counts"]["repaired_candidate"] == 1
+    assert {group["key"] for group in aggregate["groups"]["return_kind"]} >= {
+        "same_ast_return",
+        "verified_equivalent_ast",
+        "snapped_but_failed",
+        "soft_fit_only",
+    }
+    assert {group["key"] for group in aggregate["groups"]["raw_status"]} >= {
+        "recovered",
+        "snapped_but_failed",
+        "soft_fit_only",
+        "unsupported",
+        "execution_error",
+    }
+    assert {group["key"] for group in aggregate["groups"]["repair_status"]} >= {"repaired", "not_repaired", "none"}
+    assert "## By Return Kind" in markdown
+    assert "## By Raw Status" in markdown
+    assert "## By Repair Status" in markdown
 
 
 def test_measured_depth_curve_threshold_is_reported_not_failed():

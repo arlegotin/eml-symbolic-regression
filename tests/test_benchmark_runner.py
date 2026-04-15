@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+import eml_symbolic_regression.benchmark as benchmark_module
+from eml_symbolic_regression.basin import BasinTrainingResult
 from eml_symbolic_regression.benchmark import (
     BenchmarkCase,
     BenchmarkRun,
@@ -18,10 +20,40 @@ from eml_symbolic_regression.benchmark import (
     execute_benchmark_run,
     run_benchmark_suite,
 )
+from eml_symbolic_regression.expression import Const, Eml, Var
+from eml_symbolic_regression.master_tree import SoftEMLTree
+from eml_symbolic_regression.optimize import FitResult
+from eml_symbolic_regression.verify import SplitResult, VerificationReport
 
 
 ROOT = Path(__file__).resolve().parents[1]
 CLI_ENV = {**os.environ, "PYTHONPATH": str(ROOT / "src")}
+
+
+def _verification_report(status: str) -> VerificationReport:
+    return VerificationReport(
+        status=status,
+        candidate_kind="exact_eml",
+        reason="verified" if status == "recovered" else "heldout_failed",
+        split_results=[SplitResult("heldout", 0.0 if status == "recovered" else 1.0, 0.0, 0.0, status == "recovered")],
+        high_precision_max_error=0.0 if status == "recovered" else 1.0,
+        tolerance=1e-8,
+    )
+
+
+def _fit_from_slots(slots: dict[str, str], *, depth: int = 2) -> FitResult:
+    tree = SoftEMLTree(depth, ("x",), (1.0,))
+    for slot, choice in slots.items():
+        node_path, side = slot.rsplit(".", 1)
+        tree.set_slot(node_path, side, choice, strength=40.0)
+    snap = tree.snap()
+    return FitResult(
+        status="snapped_candidate",
+        best_loss=1.0,
+        post_snap_loss=1.0,
+        snap=snap,
+        manifest={"schema": "eml.run_manifest.v1", "status": "snapped_candidate", "snap": snap.as_dict()},
+    )
 
 
 def test_runner_executes_catalog_compile_blind_and_warm_start(tmp_path):
@@ -252,6 +284,67 @@ def test_perturbed_tree_runner_records_return_kind_and_raw_status(tmp_path):
     assert artifact["perturbed_true_tree"]["schema"] == "eml.perturbed_true_tree_manifest.v1"
     assert artifact["perturbed_true_tree"]["optimizer"]["best_restart"]["initialization"]["kind"] == "perturbed_true_tree"
     assert artifact["metrics"]["verifier_status"] == "recovered"
+
+
+def test_perturbed_tree_repair_promotes_artifact_without_overwriting_raw(monkeypatch, tmp_path):
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    raw_fit = _fit_from_slots({"root.left": "var:x", "root.right": "const:1"})
+    embedding = SoftEMLTree(2, ("x",), (1.0,)).embed_expr(target_expr)
+    raw_verification = _verification_report("failed")
+
+    def fake_fit_perturbed_true_tree(*args, **kwargs):
+        return BasinTrainingResult(
+            status="snapped_but_failed",
+            return_kind="snapped_but_failed",
+            fit=raw_fit,
+            embedding=embedding,
+            verification=raw_verification,
+            manifest={
+                "schema": "eml.perturbed_true_tree_manifest.v1",
+                "status": "snapped_but_failed",
+                "raw_status": "snapped_but_failed",
+                "return_kind": "snapped_but_failed",
+                "optimizer": raw_fit.manifest,
+                "verification": raw_verification.as_dict(),
+            },
+        )
+
+    monkeypatch.setattr(benchmark_module, "fit_perturbed_true_tree", fake_fit_perturbed_true_tree)
+    run = BenchmarkRun(
+        suite_id="proof-perturbed-basin",
+        case_id="basin-depth2-perturbed",
+        formula="basin_depth2_exp_exp",
+        start_mode="perturbed_tree",
+        seed=0,
+        perturbation_noise=0.05,
+        dataset=DatasetConfig(points=12),
+        optimizer=OptimizerBudget(depth=2, warm_steps=1, warm_restarts=1),
+        artifact_path=tmp_path / "repaired-perturbed.json",
+        claim_id="paper-perturbed-true-tree-basin",
+        threshold_policy_id="bounded_100_percent",
+        training_mode="perturbed_true_tree_training",
+    )
+
+    result = execute_benchmark_run(run)
+    artifact = json.loads(result.artifact_path.read_text(encoding="utf-8"))
+
+    assert result.status == "repaired_candidate"
+    assert artifact["status"] == "repaired_candidate"
+    assert artifact["claim_status"] == "recovered"
+    assert artifact["return_kind"] == "snapped_but_failed"
+    assert artifact["raw_status"] == "snapped_but_failed"
+    assert artifact["repair_status"] == "repaired"
+    assert artifact["evidence_class"] == "repaired_candidate"
+    assert artifact["perturbed_true_tree"]["status"] == "snapped_but_failed"
+    assert artifact["stage_statuses"]["perturbed_true_tree_attempt"] == "snapped_but_failed"
+    assert artifact["stage_statuses"]["local_repair"] == "repaired_candidate"
+    assert artifact["repair"]["status"] == "repaired_candidate"
+    assert artifact["repair"]["verification"]["status"] == "recovered"
+    assert artifact["repair"]["accepted_moves"][0]["source"] == "embedded_target_slot"
+    assert artifact["metrics"]["repair_status"] == "repaired"
+    assert artifact["metrics"]["repair_move_count"] >= 1
+    assert artifact["metrics"]["repair_accepted_move_count"] >= 1
+    assert artifact["metrics"]["repair_verifier_status"] == "recovered"
 
 
 def test_cli_benchmark_writes_suite_result(tmp_path):
