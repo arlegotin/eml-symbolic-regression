@@ -1,6 +1,7 @@
 import numpy as np
+import pytest
 
-from eml_symbolic_regression.master_tree import SoftEMLTree
+from eml_symbolic_regression.master_tree import EmbeddingError, SoftEMLTree
 
 
 def test_univariate_parameter_count_matches_paper():
@@ -33,3 +34,26 @@ def test_slot_catalog_exposes_child_choices():
     catalog = tree.slot_catalog()
     assert catalog["root.left"] == ["const:1", "var:x", "child"]
     assert catalog["root.L.left"] == ["const:1", "var:x"]
+
+
+def test_force_scaled_exp_snaps_to_exact_depth_nine_shape():
+    tree = SoftEMLTree(9, ("x",), constants=(-0.8,))
+
+    embedding = tree.force_scaled_exp("x", -0.8)
+    snap = tree.snap()
+
+    x = np.linspace(0.0, 3.0, 12)
+    np.testing.assert_allclose(snap.expression.evaluate_numpy({"x": x}), np.exp(-0.8 * x), atol=1e-12)
+    assert embedding.success
+    assert embedding.round_trip_equal
+    assert snap.expression.depth() == 9
+    assert snap.active_node_count == 19
+    assert snap.min_margin > 0.99
+    assert embedding.snap.min_margin > 0.99
+
+
+def test_force_scaled_exp_requires_coefficient_in_constant_bank():
+    tree = SoftEMLTree(9, ("x",), constants=(1.0,))
+
+    with pytest.raises(EmbeddingError, match="missing_constant"):
+        tree.force_scaled_exp("x", -0.8)
