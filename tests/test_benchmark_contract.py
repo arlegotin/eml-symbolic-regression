@@ -409,7 +409,7 @@ def test_perturbed_basin_proof_cases_reject_invalid_metadata(override, path_suff
         "training_mode": "perturbed_true_tree_training",
         **{key: value for key, value in override.items() if value is not None},
     }
-    if override.get("training_mode") is None:
+    if "training_mode" in override and override["training_mode"] is None:
         payload.pop("training_mode")
     suite = BenchmarkSuite.from_mapping({"id": "proof-perturbed-basin", "cases": [payload]})
 
