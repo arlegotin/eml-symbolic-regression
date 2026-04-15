@@ -6,10 +6,14 @@ from pathlib import Path
 
 from eml_symbolic_regression.benchmark import (
     BenchmarkCase,
+    BenchmarkRun,
     BenchmarkSuite,
+    DatasetConfig,
+    OptimizerBudget,
     RunFilter,
     builtin_suite,
     evidence_class_for_payload,
+    execute_benchmark_run,
     run_benchmark_suite,
 )
 
@@ -90,6 +94,31 @@ def test_proof_aware_run_artifact_includes_threshold_dataset_and_provenance(tmp_
     assert artifact["provenance"]["symbolic_expression"] == "exp(x)"
     assert artifact["provenance"]["source_document"] == "sources/paper.pdf"
     assert artifact["evidence_class"] == evidence_class_for_payload(artifact)
+
+
+def test_runner_writes_execution_error_if_payload_construction_fails(tmp_path):
+    run = BenchmarkRun(
+        suite_id="direct",
+        case_id="orphan-threshold",
+        formula="exp",
+        start_mode="blind",
+        seed=0,
+        perturbation_noise=0.0,
+        dataset=DatasetConfig(points=12),
+        optimizer=OptimizerBudget(depth=1, steps=1, restarts=1),
+        artifact_path=tmp_path / "orphan-threshold.json",
+        threshold_policy_id="missing-policy",
+        training_mode="blind_training",
+    )
+
+    result = execute_benchmark_run(run)
+    artifact = json.loads(result.artifact_path.read_text(encoding="utf-8"))
+
+    assert result.status == "execution_error"
+    assert artifact["status"] == "execution_error"
+    assert artifact["error"]["type"] == "ProofContractError"
+    assert artifact["threshold"] is None
+    assert artifact["evidence_class"] == "execution_failure"
 
 
 def test_evidence_class_for_payload_is_derived_and_covers_reserved_repair():

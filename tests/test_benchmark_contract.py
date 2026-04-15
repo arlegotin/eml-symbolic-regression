@@ -188,6 +188,7 @@ def test_proof_contract_validation_enforces_claim_suite_and_case_scope(suite_id,
 @pytest.mark.parametrize(
     ("override", "path_suffix"),
     [
+        ({"threshold_policy_id": "missing-policy"}, "threshold_policy_id"),
         ({"claim_id": "missing-claim", "threshold_policy_id": "bounded_100_percent", "training_mode": "blind_training"}, "claim_id"),
         ({"claim_id": "paper-shallow-blind-recovery", "training_mode": "blind_training"}, "threshold_policy_id"),
         ({"claim_id": "paper-shallow-blind-recovery", "threshold_policy_id": "missing-policy", "training_mode": "blind_training"}, "threshold_policy_id"),

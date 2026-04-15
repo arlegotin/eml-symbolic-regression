@@ -227,6 +227,12 @@ class BenchmarkCase:
         training_mode = self.training_mode or _default_training_mode(self.start_mode)
         _validate_training_mode_for_start_mode(training_mode, self.start_mode, f"{path}.training_mode")
         if self.claim_id is None:
+            if self.threshold_policy_id is not None:
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "threshold_policy_id requires claim_id",
+                    path=f"{path}.threshold_policy_id",
+                )
             return
         if self.threshold_policy_id is None:
             raise BenchmarkValidationError(
@@ -753,10 +759,13 @@ def run_benchmark_suite(suite: BenchmarkSuite, *, run_filter: RunFilter | None =
 
 def execute_benchmark_run(run: BenchmarkRun) -> BenchmarkRunResult:
     started = time.perf_counter()
-    payload = _base_run_payload(run)
+    payload: dict[str, Any] | None = None
     try:
+        payload = _base_run_payload(run)
         payload.update(_execute_benchmark_run_inner(run))
     except Exception as exc:  # noqa: BLE001 - benchmark suites must preserve unexpected run failures.
+        if payload is None:
+            payload = _minimal_run_payload(run)
         payload["status"] = "execution_error"
         payload["error"] = {"type": type(exc).__name__, "message": str(exc)}
     payload.pop("_compiled", None)
@@ -765,6 +774,21 @@ def execute_benchmark_run(run: BenchmarkRun) -> BenchmarkRunResult:
     payload["timing"] = {"elapsed_seconds": time.perf_counter() - started}
     _write_json(run.artifact_path, payload)
     return BenchmarkRunResult(run, str(payload["status"]), run.artifact_path, payload)
+
+
+def _minimal_run_payload(run: BenchmarkRun) -> dict[str, Any]:
+    return {
+        "schema": "eml.benchmark_run.v1",
+        "run": run.as_dict(),
+        "claim_id": run.claim_id,
+        "claim_class": None,
+        "training_mode": run.training_mode,
+        "threshold": None,
+        "dataset": run.dataset.as_dict(),
+        "dataset_manifest": None,
+        "budget": run.optimizer.as_dict(),
+        "provenance": None,
+    }
 
 
 def _base_run_payload(run: BenchmarkRun) -> dict[str, Any]:
