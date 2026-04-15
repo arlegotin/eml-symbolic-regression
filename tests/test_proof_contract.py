@@ -50,6 +50,17 @@ def test_claims_keep_catalog_compile_and_training_classes_distinct():
     assert ".planning/REQUIREMENTS.md" in shallow_claim.source_refs
     assert ".planning/ROADMAP.md" in shallow_claim.source_refs
 
+    perturbed_claim = paper_claim("paper-perturbed-true-tree-basin")
+    assert perturbed_claim.case_ids == (
+        "basin-depth1-perturbed",
+        "basin-depth2-perturbed",
+        "basin-depth3-perturbed",
+        "basin-beer-lambert-bound",
+    )
+    assert any("declared nonzero perturbation" in note for note in perturbed_claim.notes)
+    assert any("return_kind" in note for note in perturbed_claim.notes)
+    assert not any("not by itself bounded training proof" in note for note in perturbed_claim.notes)
+
 
 def test_bounded_100_percent_policy_allows_only_verifier_owned_training_evidence():
     policy = threshold_policy("bounded_100_percent")

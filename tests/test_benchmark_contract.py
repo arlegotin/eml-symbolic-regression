@@ -11,11 +11,19 @@ from eml_symbolic_regression.benchmark import (
     list_builtin_suites,
     load_suite,
 )
+from eml_symbolic_regression.cli import build_parser
 from eml_symbolic_regression.proof import paper_claim
 
 
 def test_builtin_suite_registry_expands_stable_run_ids():
-    assert {"smoke", "v1.2-evidence", "for-demo-diagnostics", "v1.5-shallow-proof"} <= set(list_builtin_suites())
+    assert {
+        "smoke",
+        "v1.2-evidence",
+        "for-demo-diagnostics",
+        "v1.5-shallow-proof",
+        "proof-perturbed-basin",
+        "proof-perturbed-basin-beer-probes",
+    } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
 
@@ -325,6 +333,111 @@ def test_v15_shallow_proof_suite_expands_fixed_proof_contract_runs():
         assert case.optimizer.depth == 9
         assert case.optimizer.constants == (complex(coefficient),)
         assert case.optimizer.as_dict()["constants"] == [repr(float(coefficient))]
+
+
+def test_proof_perturbed_basin_suite_expands_bounded_nonzero_runs():
+    suite = load_suite("proof-perturbed-basin")
+    runs = suite.expanded_runs()
+    cases_by_id = {case.id: case for case in suite.cases}
+
+    assert [case.id for case in suite.cases] == [
+        "basin-depth1-perturbed",
+        "basin-depth2-perturbed",
+        "basin-depth3-perturbed",
+        "basin-beer-lambert-bound",
+    ]
+    assert len(runs) == 9
+    assert {run.start_mode for run in runs} == {"perturbed_tree"}
+    assert {run.training_mode for run in runs} == {"perturbed_true_tree_training"}
+    assert {run.claim_id for run in runs} == {"paper-perturbed-true-tree-basin"}
+    assert {run.threshold_policy_id for run in runs} == {"bounded_100_percent"}
+    assert all(run.perturbation_noise > 0.0 for run in runs)
+    assert all({"v1.5", "proof", "bounded", "perturbed_tree"} <= set(run.tags) for run in runs)
+    assert all(run.threshold_policy_id == paper_claim(run.claim_id).threshold_policy_id for run in runs)
+    assert cases_by_id["basin-depth1-perturbed"].optimizer.depth == 1
+    assert cases_by_id["basin-depth1-perturbed"].optimizer.warm_steps == 12
+    assert cases_by_id["basin-depth2-perturbed"].optimizer.depth == 2
+    assert cases_by_id["basin-depth2-perturbed"].optimizer.warm_steps == 16
+    assert cases_by_id["basin-depth3-perturbed"].optimizer.depth == 3
+    assert cases_by_id["basin-depth3-perturbed"].optimizer.warm_steps == 20
+    assert cases_by_id["basin-beer-lambert-bound"].optimizer.warm_steps == 40
+    assert cases_by_id["basin-beer-lambert-bound"].optimizer.warm_restarts == 1
+    assert cases_by_id["basin-beer-lambert-bound"].optimizer.max_warm_depth == 10
+
+
+def test_perturbed_basin_probe_suite_keeps_high_noise_outside_thresholds():
+    suite = load_suite("proof-perturbed-basin-beer-probes")
+    runs = suite.expanded_runs()
+
+    assert [case.id for case in suite.cases] == ["basin-beer-lambert-bound-probes"]
+    assert len(runs) == 4
+    assert {run.formula for run in runs} == {"beer_lambert"}
+    assert {run.start_mode for run in runs} == {"perturbed_tree"}
+    assert {run.training_mode for run in runs} == {"perturbed_true_tree_training"}
+    assert {run.perturbation_noise for run in runs} == {15.0, 35.0}
+    assert {run.seed for run in runs} == {0, 1}
+    assert {run.claim_id for run in runs} == {None}
+    assert {run.threshold_policy_id for run in runs} == {None}
+    assert all({"bound_probe", "beer_lambert", "high_noise"} <= set(run.tags) for run in runs)
+
+
+def test_cli_start_mode_filter_accepts_perturbed_tree():
+    args = build_parser().parse_args(["benchmark", "proof-perturbed-basin", "--start-mode", "perturbed_tree"])
+
+    assert args.start_mode == ["perturbed_tree"]
+
+
+@pytest.mark.parametrize(
+    ("override", "path_suffix"),
+    [
+        ({"start_mode": "warm_start", "training_mode": "compiler_warm_start_training"}, "start_mode"),
+        ({"start_mode": "blind", "training_mode": "blind_training"}, "start_mode"),
+        ({"start_mode": "compile", "training_mode": "compile_only_verification"}, "start_mode"),
+        ({"perturbation_noise": [0.0]}, "perturbation_noise"),
+        ({"training_mode": None}, "training_mode"),
+        ({"threshold_policy_id": "measured_depth_curve"}, "threshold_policy_id"),
+    ],
+)
+def test_perturbed_basin_proof_cases_reject_invalid_metadata(override, path_suffix):
+    payload = {
+        "id": "basin-depth1-perturbed",
+        "formula": "basin_depth1_exp",
+        "start_mode": "perturbed_tree",
+        "perturbation_noise": [0.05],
+        "claim_id": "paper-perturbed-true-tree-basin",
+        "threshold_policy_id": "bounded_100_percent",
+        "training_mode": "perturbed_true_tree_training",
+        **{key: value for key, value in override.items() if value is not None},
+    }
+    if override.get("training_mode") is None:
+        payload.pop("training_mode")
+    suite = BenchmarkSuite.from_mapping({"id": "proof-perturbed-basin", "cases": [payload]})
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        suite.validate()
+
+    assert exc.value.reason == "invalid_proof_contract"
+    assert exc.value.path == f"cases[0].{path_suffix}"
+
+
+def test_perturbed_basin_proof_cases_reject_caller_supplied_evidence_class():
+    with pytest.raises(BenchmarkValidationError) as exc:
+        BenchmarkCase.from_mapping(
+            {
+                "id": "basin-depth1-perturbed",
+                "formula": "basin_depth1_exp",
+                "start_mode": "perturbed_tree",
+                "perturbation_noise": [0.05],
+                "claim_id": "paper-perturbed-true-tree-basin",
+                "threshold_policy_id": "bounded_100_percent",
+                "training_mode": "perturbed_true_tree_training",
+                "evidence_class": "perturbed_true_tree_recovered",
+            },
+            path="cases[0]",
+        )
+
+    assert exc.value.reason == "invalid_proof_contract"
+    assert exc.value.path == "cases[0].evidence_class"
 
 
 @pytest.mark.parametrize(
