@@ -6,6 +6,7 @@ import sys
 
 import pytest
 
+from eml_symbolic_regression.benchmark import RunFilter, load_suite, run_benchmark_suite, write_aggregate_reports
 from eml_symbolic_regression.diagnostics import (
     build_perturbed_basin_bound_report,
     write_perturbed_basin_bound_report,
@@ -187,6 +188,49 @@ def test_failed_declared_bound_recommends_narrowing():
     assert report["claim_recommendation"] == "narrow_to_none"
 
 
+@pytest.mark.parametrize(
+    "evidence_class",
+    ["scaffolded_blind_training_recovered", "compile_only_verified", "catalog_verified", "same_ast"],
+)
+def test_forbidden_evidence_classes_do_not_support_perturbed_basin_bounds(evidence_class):
+    bounded = _aggregate(
+        "proof-perturbed-basin",
+        [_row(noise=5.0, evidence_class=evidence_class, status="recovered", claim_status="recovered")],
+    )
+
+    report = build_perturbed_basin_bound_report(bounded)
+
+    assert report["raw_supported_noise_max"] is None
+    assert report["repaired_supported_noise_max"] is None
+    assert report["unsupported_noise_values"] == [5.0]
+    assert report["claim_recommendation"] == "narrow_to_none"
+
+
+def test_repaired_rows_cannot_inflate_raw_perturbed_recovery():
+    bounded = _aggregate(
+        "proof-perturbed-basin",
+        [
+            _row(
+                noise=5.0,
+                evidence_class="perturbed_true_tree_recovered",
+                status="repaired_candidate",
+                claim_status="recovered",
+                return_kind="snapped_but_failed",
+                raw_status="snapped_but_failed",
+                repair_status="repaired",
+                repair_accepted_move_count=1,
+            )
+        ],
+    )
+
+    report = build_perturbed_basin_bound_report(bounded)
+
+    assert report["rows"][0]["evidence_class"] == "repaired_candidate"
+    assert report["rows"][0]["raw_status"] == "snapped_but_failed"
+    assert report["raw_supported_noise_max"] is None
+    assert report["repaired_supported_noise_max"] == 5.0
+
+
 def test_write_bound_report_outputs_json_and_markdown(tmp_path):
     bounded_path = tmp_path / "bounded" / "aggregate.json"
     probe_path = tmp_path / "probe" / "aggregate.json"
@@ -287,3 +331,60 @@ def test_cli_diagnostics_basin_bound_writes_reports(tmp_path):
     assert "basin-bound.md" in result.stdout
     assert json.loads((output_dir / "basin-bound.json").read_text(encoding="utf-8"))["unsupported_noise_values"] == [35.0]
     assert "proof-perturbed-basin-beer-probes" in (output_dir / "basin-bound.md").read_text(encoding="utf-8")
+
+
+@pytest.mark.integration
+def test_beer_lambert_bound_and_probe_evidence_generates_stable_report(tmp_path):
+    bounded_suite = load_suite("proof-perturbed-basin")
+    bounded_suite = type(bounded_suite)(
+        bounded_suite.id,
+        bounded_suite.description,
+        bounded_suite.cases,
+        tmp_path / "bounded-runs",
+        bounded_suite.schema,
+    )
+    bounded_result = run_benchmark_suite(
+        bounded_suite,
+        run_filter=RunFilter(case_ids=("basin-beer-lambert-bound",)),
+    )
+    bounded_paths = write_aggregate_reports(bounded_result)
+
+    probe_suite = load_suite("proof-perturbed-basin-beer-probes")
+    probe_suite = type(probe_suite)(
+        probe_suite.id,
+        probe_suite.description,
+        probe_suite.cases,
+        tmp_path / "probe-runs",
+        probe_suite.schema,
+    )
+    probe_result = run_benchmark_suite(
+        probe_suite,
+        run_filter=RunFilter(case_ids=("basin-beer-lambert-bound-probes",)),
+    )
+    probe_paths = write_aggregate_reports(probe_result)
+
+    output_dir = Path("artifacts") / "diagnostics" / "phase31-basin-bound"
+    report_paths = write_perturbed_basin_bound_report(bounded_paths["json"], probe_paths["json"], output_dir)
+    report = json.loads(report_paths["json"].read_text(encoding="utf-8"))
+    bounded_aggregate = json.loads(bounded_paths["json"].read_text(encoding="utf-8"))
+    probe_aggregate = json.loads(probe_paths["json"].read_text(encoding="utf-8"))
+
+    bounded_rows = [row for row in bounded_aggregate["runs"] if row["formula"] == "beer_lambert"]
+    probe_rows = [row for row in probe_aggregate["runs"] if row["formula"] == "beer_lambert"]
+    expected_artifacts = {row["artifact_path"] for row in [*bounded_rows, *probe_rows]}
+    reported_artifacts = {row["artifact_path"] for row in report["rows"]}
+
+    assert len(bounded_rows) == 2
+    assert len(probe_rows) == 4
+    assert bounded_aggregate["thresholds"][0]["eligible"] == 2
+    assert probe_aggregate["thresholds"] == []
+    assert set(report["bounded_noise_values"]) == {5.0}
+    assert set(report["probe_noise_values"]) == {15.0, 35.0}
+    assert expected_artifacts <= reported_artifacts
+    assert {row["perturbation_noise"] for row in report["rows"] if row["row_source"] == "probe"} == {15.0, 35.0}
+    assert report["raw_supported_noise_max"] in {None, 5.0, 15.0, 35.0}
+    assert report["repaired_supported_noise_max"] in {None, 5.0, 15.0, 35.0}
+    assert report_paths["json"] == output_dir / "basin-bound.json"
+    assert report_paths["markdown"] == output_dir / "basin-bound.md"
+    assert report_paths["json"].exists()
+    assert report_paths["markdown"].exists()
