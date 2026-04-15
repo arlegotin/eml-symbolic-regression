@@ -24,10 +24,10 @@ Requirements for this milestone only. Completed v1, v1.1, v1.2, and v1.3 require
 
 ### Warm-Start Perturbation Robustness
 
-- [ ] **PERT-01**: User can run Beer-Lambert warm-start perturbation diagnostics across the v1.3 noise levels with changed-slot counts, final snap status, and verifier status.
-- [ ] **PERT-02**: User receives a warm-start training or snapping improvement that improves recovery at high perturbation or explicitly narrows the failure mechanism with reproducible evidence.
-- [ ] **PERT-03**: User can distinguish same-AST return, verified-equivalent recovery, snapped-but-failed, and soft-fit-only outcomes in all perturbation diagnostics.
-- [ ] **PERT-04**: User can rerun the Beer-Lambert perturbation sweep without weakening literal-constant provenance or verifier-owned recovery semantics.
+- [x] **PERT-01**: User can run Beer-Lambert warm-start perturbation diagnostics across the v1.3 noise levels with changed-slot counts, final snap status, and verifier status.
+- [x] **PERT-02**: User receives a warm-start training or snapping improvement that improves recovery at high perturbation or explicitly narrows the failure mechanism with reproducible evidence.
+- [x] **PERT-03**: User can distinguish same-AST return, verified-equivalent recovery, snapped-but-failed, and soft-fit-only outcomes in all perturbation diagnostics.
+- [x] **PERT-04**: User can rerun the Beer-Lambert perturbation sweep without weakening literal-constant provenance or verifier-owned recovery semantics.
 
 ### Compiler Coverage and Depth Reduction
 
@@ -78,10 +78,10 @@ Deferred to later milestones.
 | BLIND-02 | Phase 25 | Complete |
 | BLIND-03 | Phase 25 | Complete |
 | BLIND-04 | Phase 25 | Complete |
-| PERT-01 | Phase 26 | Pending |
-| PERT-02 | Phase 26 | Pending |
-| PERT-03 | Phase 26 | Pending |
-| PERT-04 | Phase 26 | Pending |
+| PERT-01 | Phase 26 | Complete |
+| PERT-02 | Phase 26 | Complete |
+| PERT-03 | Phase 26 | Complete |
+| PERT-04 | Phase 26 | Complete |
 | COV-01 | Phase 27 | Pending |
 | COV-02 | Phase 27 | Pending |
 | COV-03 | Phase 27 | Pending |
@@ -99,4 +99,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after completing Phase 25 blind optimizer improvements*
+*Last updated: 2026-04-15 after completing Phase 26 warm-start perturbation diagnostics*
