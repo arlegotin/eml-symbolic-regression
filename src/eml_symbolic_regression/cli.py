@@ -13,9 +13,10 @@ from .benchmark import RunFilter, list_builtin_suites, load_suite, run_benchmark
 from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_presets, run_campaign
 from .cleanup import cleanup_candidate
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
-from .datasets import demo_specs, get_demo
+from .datasets import demo_specs, get_demo, proof_dataset_manifest
 from .diagnostics import DEFAULT_BASELINE_CAMPAIGNS, run_diagnostic_subset, write_baseline_triage, write_campaign_comparison
 from .optimize import TrainingConfig, fit_eml_tree
+from .proof import list_claims
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
@@ -171,6 +172,21 @@ def list_benchmarks(args: argparse.Namespace | None = None) -> int:
     return 0
 
 
+def list_claims_command(args: argparse.Namespace | None = None) -> int:
+    for claim in sorted(list_claims(), key=lambda item: item.id):
+        suites = ",".join(claim.suite_ids)
+        print(f"{claim.id}: {claim.claim_class} threshold={claim.threshold_policy_id} suites={suites}")
+    return 0
+
+
+def proof_dataset_command(args: argparse.Namespace) -> int:
+    output = Path(args.output) if args.output else Path("artifacts") / "proof-datasets" / f"{args.formula}-manifest.json"
+    manifest = proof_dataset_manifest(args.formula, points=args.points, seed=args.seed, tolerance=args.tolerance)
+    _write_json(output, manifest)
+    print(f"{args.formula}: dataset manifest -> {output}")
+    return 0
+
+
 def list_campaigns(args: argparse.Namespace | None = None) -> int:
     for name in list_campaign_presets():
         preset = campaign_preset(name)
@@ -300,6 +316,17 @@ def build_parser() -> argparse.ArgumentParser:
 
     list_bench = sub.add_parser("list-benchmarks", help="List built-in benchmark suites.")
     list_bench.set_defaults(func=list_benchmarks)
+
+    claims = sub.add_parser("list-claims", help="List paper claim IDs and proof threshold policies.")
+    claims.set_defaults(func=list_claims_command)
+
+    proof_dataset = sub.add_parser("proof-dataset", help="Write a deterministic proof dataset manifest.")
+    proof_dataset.add_argument("formula", help="Formula ID. Use list-demos to inspect options.")
+    proof_dataset.add_argument("--output", help="Output manifest path. Defaults to artifacts/proof-datasets/<formula>-manifest.json.")
+    proof_dataset.add_argument("--points", type=int, default=80)
+    proof_dataset.add_argument("--seed", type=int, default=0)
+    proof_dataset.add_argument("--tolerance", type=float, default=1e-8)
+    proof_dataset.set_defaults(func=proof_dataset_command)
 
     bench = sub.add_parser("benchmark", help="Run a benchmark suite or filtered subset.")
     bench.add_argument("suite", help="Built-in suite name or path to a suite JSON file.")
