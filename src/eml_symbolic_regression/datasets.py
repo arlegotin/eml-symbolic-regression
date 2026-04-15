@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
-from typing import Callable
+from typing import Any, Callable
 
 import numpy as np
 import sympy as sp
@@ -24,6 +26,9 @@ class DemoSpec:
     train_domain: tuple[float, float]
     heldout_domain: tuple[float, float]
     extrap_domain: tuple[float, float]
+    source_document: str
+    source_linkage: str
+    normalized_dimensionless: bool
 
     def make_splits(self, *, points: int = 80, seed: int = 0) -> list[DataSplit]:
         rng = np.random.default_rng(seed)
@@ -44,6 +49,19 @@ class DemoSpec:
             DataSplit("extrapolation", {self.variable: extrap_x}, self.target(extrap_x), target_hp),
         ]
 
+    def formula_provenance(self) -> dict[str, Any]:
+        candidate_name = getattr(self.candidate, "name", getattr(self.candidate, "candidate_kind", type(self.candidate).__name__))
+        return {
+            "formula_id": self.name,
+            "variable": self.variable,
+            "description": self.description,
+            "symbolic_expression": sp.sstr(self.candidate.to_sympy()),
+            "candidate_name": str(candidate_name),
+            "source_document": self.source_document,
+            "source_linkage": self.source_linkage,
+            "normalized_dimensionless": self.normalized_dimensionless,
+        }
+
 
 def _sympy_candidate(expr: sp.Expr, variable: str, name: str) -> SympyCandidate:
     return SympyCandidate(expr, (variable,), name=name)
@@ -62,6 +80,9 @@ def demo_specs() -> dict[str, DemoSpec]:
             train_domain=(-1.0, 1.0),
             heldout_domain=(-0.8, 0.8),
             extrap_domain=(1.05, 1.5),
+            source_document="sources/paper.pdf",
+            source_linkage="sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+            normalized_dimensionless=True,
         ),
         "log": DemoSpec(
             name="log",
@@ -72,6 +93,9 @@ def demo_specs() -> dict[str, DemoSpec]:
             train_domain=(0.25, 3.0),
             heldout_domain=(0.35, 2.75),
             extrap_domain=(3.1, 4.2),
+            source_document="sources/paper.pdf",
+            source_linkage="sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+            normalized_dimensionless=True,
         ),
         "beer_lambert": DemoSpec(
             name="beer_lambert",
@@ -82,6 +106,9 @@ def demo_specs() -> dict[str, DemoSpec]:
             train_domain=(0.0, 3.0),
             heldout_domain=(0.15, 2.7),
             extrap_domain=(3.1, 4.5),
+            source_document="sources/FOR_DEMO.md",
+            source_linkage="Beer-Lambert law high-success-probability sanity check",
+            normalized_dimensionless=True,
         ),
         "radioactive_decay": DemoSpec(
             name="radioactive_decay",
@@ -92,6 +119,9 @@ def demo_specs() -> dict[str, DemoSpec]:
             train_domain=(0.0, 5.0),
             heldout_domain=(0.15, 4.7),
             extrap_domain=(5.1, 7.0),
+            source_document="sources/FOR_DEMO.md",
+            source_linkage="Radioactive decay / Newton cooling smoke-test family",
+            normalized_dimensionless=True,
         ),
         "michaelis_menten": DemoSpec(
             name="michaelis_menten",
@@ -102,6 +132,9 @@ def demo_specs() -> dict[str, DemoSpec]:
             train_domain=(0.05, 5.0),
             heldout_domain=(0.08, 4.5),
             extrap_domain=(5.1, 7.0),
+            source_document="sources/FOR_DEMO.md",
+            source_linkage="Michaelis-Menten best showcase set mechanistic biochemistry law",
+            normalized_dimensionless=True,
         ),
         "logistic": DemoSpec(
             name="logistic",
@@ -112,6 +145,9 @@ def demo_specs() -> dict[str, DemoSpec]:
             train_domain=(0.0, 5.0),
             heldout_domain=(0.1, 4.8),
             extrap_domain=(5.1, 7.0),
+            source_document="sources/FOR_DEMO.md",
+            source_linkage="Logistic growth first serious demo after simpler warm-ups",
+            normalized_dimensionless=True,
         ),
         "shockley": DemoSpec(
             name="shockley",
@@ -122,6 +158,9 @@ def demo_specs() -> dict[str, DemoSpec]:
             train_domain=(0.0, 2.0),
             heldout_domain=(0.05, 1.8),
             extrap_domain=(2.05, 2.5),
+            source_document="sources/FOR_DEMO.md",
+            source_linkage="Shockley diode equation electronics demo structurally close to exponential-minus-constant behavior",
+            normalized_dimensionless=True,
         ),
         "damped_oscillator": DemoSpec(
             name="damped_oscillator",
@@ -132,6 +171,9 @@ def demo_specs() -> dict[str, DemoSpec]:
             train_domain=(0.0, 6.0),
             heldout_domain=(0.05, 5.8),
             extrap_domain=(6.1, 8.0),
+            source_document="sources/FOR_DEMO.md",
+            source_linkage="Damped harmonic oscillator headline time-series symbolic-recovery demo",
+            normalized_dimensionless=True,
         ),
         "planck": DemoSpec(
             name="planck",
@@ -142,6 +184,9 @@ def demo_specs() -> dict[str, DemoSpec]:
             train_domain=(0.2, 8.0),
             heldout_domain=(0.25, 7.5),
             extrap_domain=(8.1, 10.0),
+            source_document="sources/FOR_DEMO.md",
+            source_linkage="Normalized Planck spectrum flagship dimensionless physics demo",
+            normalized_dimensionless=True,
         ),
     }
 
@@ -153,3 +198,48 @@ def get_demo(name: str) -> DemoSpec:
     except KeyError as exc:
         available = ", ".join(sorted(specs))
         raise KeyError(f"Unknown demo {name!r}. Available: {available}") from exc
+
+
+def _array_sha256(values: np.ndarray) -> str:
+    array = np.ascontiguousarray(values)
+    digest = hashlib.sha256()
+    digest.update(str(array.dtype).encode("utf-8"))
+    digest.update(json.dumps(array.shape, separators=(",", ":")).encode("utf-8"))
+    digest.update(array.tobytes())
+    return digest.hexdigest()
+
+
+def proof_dataset_manifest(formula_id: str, *, points: int = 80, seed: int = 0, tolerance: float = 1e-8) -> dict[str, Any]:
+    spec = get_demo(formula_id)
+    splits = spec.make_splits(points=points, seed=seed)
+    domains = {
+        "train": spec.train_domain,
+        "heldout": spec.heldout_domain,
+        "extrapolation": spec.extrap_domain,
+    }
+    split_metadata: list[dict[str, Any]] = []
+    for split in splits:
+        inputs = split.inputs[spec.variable]
+        split_metadata.append(
+            {
+                "name": split.name,
+                "domain": [float(value) for value in domains[split.name]],
+                "count": int(len(inputs)),
+                "input_sha256": _array_sha256(inputs),
+                "target_sha256": _array_sha256(split.target),
+            }
+        )
+
+    manifest: dict[str, Any] = {
+        "schema": "eml.proof_dataset_manifest.v1",
+        "formula_id": spec.name,
+        "variable": spec.variable,
+        "seed": int(seed),
+        "points": int(points),
+        "tolerance": float(tolerance),
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "splits": split_metadata,
+        "provenance": spec.formula_provenance(),
+    }
+    encoded = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return {**manifest, "manifest_sha256": hashlib.sha256(encoded).hexdigest()}
