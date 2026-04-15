@@ -3,6 +3,7 @@ from pathlib import Path
 
 from eml_symbolic_regression.benchmark import RunFilter
 from eml_symbolic_regression.diagnostics import (
+    build_perturbed_basin_bound_report,
     classify_blind_failure,
     compare_blind_runs,
     filter_for_runs,
@@ -10,6 +11,13 @@ from eml_symbolic_regression.diagnostics import (
     write_baseline_triage,
     write_campaign_comparison,
 )
+
+
+def test_diagnostics_exposes_perturbed_basin_bound_builder():
+    report = build_perturbed_basin_bound_report({"runs": []})
+
+    assert report["schema"] == "eml.perturbed_basin_bound_report.v1"
+    assert report["rows"] == []
 
 
 def _write_fake_campaign(path: Path) -> None:
