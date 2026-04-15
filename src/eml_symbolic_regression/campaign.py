@@ -313,9 +313,14 @@ def write_campaign_report(
         f"| Median post-snap loss | {_format_optional(headline['median_post_snap_loss'])} |",
         f"| Median runtime seconds | {_format_optional(headline['median_runtime_seconds'])} |",
         "",
-        "## Figures",
-        "",
     ]
+    lines.extend(_proof_contract_section(runs, aggregate))
+    lines.extend(
+        [
+            "## Figures",
+            "",
+        ]
+    )
     for key, path in figure_paths.items():
         rel = _relative_link(path, campaign_dir)
         lines.append(f"- [{key.replace('_', ' ')}]({rel})")
@@ -670,6 +675,30 @@ def _strengths_paragraph(counts: Mapping[str, Any]) -> str:
         "Those are not blind-discovery claims, but they are practical evidence that the paper's uniform EML tree can be "
         "compiled, embedded, perturbed, optimized, snapped, and independently verified."
     )
+
+
+def _proof_contract_section(runs: list[Mapping[str, Any]], aggregate: Mapping[str, Any]) -> list[str]:
+    if not any(run.get("claim_id") for run in runs):
+        return []
+    lines = [
+        "## Proof Contract",
+        "",
+        "| Claim | Threshold | Status | Passed | Eligible | Rate |",
+        "|-------|-----------|--------|--------|----------|------|",
+    ]
+    for row in aggregate.get("thresholds", []):
+        lines.append(
+            f"| {row['claim_id']} | {row['threshold_policy_id']} | {row['status']} | "
+            f"{row['passed']} | {row['eligible']} | {row['rate']:.3f} |"
+        )
+    lines.extend(
+        [
+            "",
+            "Bounded proof thresholds count only allowed verifier-owned training evidence classes; catalog and compile-only verification remain separate evidence classes.",
+            "",
+        ]
+    )
+    return lines
 
 
 def _limitations_section(runs: list[Mapping[str, Any]]) -> str:
