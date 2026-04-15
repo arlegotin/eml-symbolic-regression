@@ -1,8 +1,8 @@
 ---
 phase: 30-bounded-shallow-blind-training-recovery
-reviewed: 2026-04-15T16:54:41Z
+reviewed: 2026-04-15T17:47:51Z
 depth: standard
-files_reviewed: 13
+files_reviewed: 14
 files_reviewed_list:
   - src/eml_symbolic_regression/benchmark.py
   - src/eml_symbolic_regression/compiler.py
@@ -15,69 +15,54 @@ files_reviewed_list:
   - tests/test_benchmark_runner.py
   - tests/test_master_tree.py
   - tests/test_optimizer_cleanup.py
+  - tests/test_proof_contract.py
   - tests/test_shallow_blind_proof_regression.py
   - tests/test_shallow_scaled_exponential_contract.py
 findings:
-  critical: 1
+  critical: 0
   warning: 0
   info: 0
-  total: 1
-status: issues_found
+  total: 0
+status: clean
 ---
 
 # Phase 30: Code Review Report
 
-**Reviewed:** 2026-04-15T16:54:41Z
+**Reviewed:** 2026-04-15T17:47:51Z
 **Depth:** standard
-**Files Reviewed:** 13
-**Status:** issues_found
+**Files Reviewed:** 14
+**Status:** clean
 
 ## Summary
 
-Reviewed the Phase 30 benchmark, proof-contract, optimizer, scaled-exponential scaffold, dataset, and regression-test changes. The implementation adds exact scaled-exponential scaffold starts and then counts those runs as `blind_training_recovered`. That breaks the bounded shallow-blind proof contract: a run can satisfy the verifier because the target family and coefficient were injected through the initializer, not because blind training recovered the expression.
+Re-reviewed the Phase 30 benchmark, proof-contract, optimizer, compiler, dataset, master-tree, and regression-test changes after CR-01 was fixed.
 
-## Critical Issues
+The CR-01 contract leak is closed in the reviewed code: scaffolded blind runs are still verifier-recovered, but `evidence_class_for_payload()` classifies recovered scaffold attempts as `scaffolded_blind_training_recovered`, and the `paper-shallow-blind-recovery` threshold counts only `blind_training_recovered`. The full shallow suite therefore no longer satisfies the pure blind proof threshold through scaffolded starts.
 
-### CR-01: Scaffolded Exact Starts Are Counted as Blind-Training Proof
+All reviewed files meet the current code-review bar. No remaining bugs, security issues, contract regressions, or missing-test gaps were found in the scoped files.
 
-**File:** `src/eml_symbolic_regression/benchmark.py:893`
+## Residual Phase Status
 
-**Issue:** The blind benchmark path constructs `TrainingConfig` without overriding `scaffold_initializers`, so it uses the optimizer default from `src/eml_symbolic_regression/optimize.py:29`. For Phase 30 depth-9 proof cases, `_training_attempts` adds `scaffold_scaled_exp` attempts from the suite-provided coefficient constants (`src/eml_symbolic_regression/optimize.py:135-156`), and `_apply_scaffold` embeds the exact `exp(coefficient * variable)` tree before training (`src/eml_symbolic_regression/optimize.py:197-207`). The recovered artifact is then classified as `blind_training_recovered` solely because the run metadata says `training_mode == "blind_training"` (`src/eml_symbolic_regression/benchmark.py:1279-1280`).
+This clean re-review does not mark Phase 30 complete. The planning state correctly remains review-blocked because SHAL-02 is unresolved: the current implementation demonstrates scaffolded recovery, not pure random-initialized blind training recovery.
 
-This turns the bounded shallow-blind proof into scaffolded exact-shape verification. The tests also lock in the wrong contract by requiring a non-null scaffold source for proof runs (`tests/test_shallow_blind_proof_regression.py:80`) and by asserting the Beer-Lambert blind proof uses `scaffold_scaled_exp` (`tests/test_benchmark_runner.py:104-112`).
+Verified planning state:
+- `.planning/ROADMAP.md` records Phase 30 as review-blocked because current recovery is scaffolded, not pure blind.
+- `.planning/STATE.md` records Phase 30 as review-blocked and calls out SHAL-02 as unresolved.
 
-**Fix:**
-Disable scaffold initializers for runs that are reported as blind proof, and prevent scaffolded recoveries from being counted as `blind_training_recovered` as a defense-in-depth check.
+## Verification
 
-```python
-# src/eml_symbolic_regression/benchmark.py
-if run.start_mode == "blind":
-    train = splits[0]
-    config = TrainingConfig(
-        depth=run.optimizer.depth,
-        variables=(spec.variable,),
-        constants=run.optimizer.constants,
-        steps=run.optimizer.steps,
-        restarts=run.optimizer.restarts,
-        seed=run.seed,
-        lr=run.optimizer.lr,
-        scaffold_initializers=(),
-    )
+Executed:
+
+```bash
+python -m pytest tests/test_benchmark_contract.py tests/test_benchmark_reports.py tests/test_benchmark_runner.py tests/test_master_tree.py tests/test_optimizer_cleanup.py tests/test_proof_contract.py tests/test_shallow_blind_proof_regression.py tests/test_shallow_scaled_exponential_contract.py -q
 ```
 
-Then update the proof tests to assert blind-proof artifacts are not scaffolded:
+Result: `71 passed, 6 warnings in 1305.02s (0:21:45)`.
 
-```python
-candidate = artifact["trained_eml_candidate"]
-assert candidate["best_restart"]["attempt_kind"] == "random"
-assert candidate["best_restart"]["initialization"] is None
-assert artifact["metrics"]["scaffold_source"] is None
-```
-
-If scaffolded scaled-exponential recovery is intentional evidence, model it as a separate start mode or training mode and keep it out of the `paper-shallow-blind-recovery` bounded threshold.
+Warnings were runtime numerical warnings from `src/eml_symbolic_regression/semantics.py:110` during EML `exp/log` evaluation paths; they did not indicate a regression in the reviewed contract.
 
 ---
 
-_Reviewed: 2026-04-15T16:54:41Z_
+_Reviewed: 2026-04-15T17:47:51Z_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_
