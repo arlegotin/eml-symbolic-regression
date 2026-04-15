@@ -8,7 +8,7 @@ from typing import Any, Callable, Mapping
 import numpy as np
 import torch
 
-from .master_tree import SnapResult, SoftEMLTree
+from .master_tree import SnapResult, SoftEMLTree, constant_label
 from .expression import format_constant_value
 from .semantics import AnomalyStats, as_complex_tensor, mse_complex_numpy
 
@@ -26,7 +26,7 @@ class TrainingConfig:
     entropy_weight: float = 1e-3
     size_weight: float = 1e-4
     seed: int = 0
-    scaffold_initializers: tuple[str, ...] = ("exp", "log")
+    scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
 
 
 @dataclass(frozen=True)
@@ -136,19 +136,33 @@ def _training_attempts(config: TrainingConfig, has_external_initializer: bool) -
     attempts: list[dict[str, Any]] = []
     if not has_external_initializer:
         for scaffold in config.scaffold_initializers:
-            if scaffold not in {"exp", "log"}:
+            if scaffold not in {"exp", "log", "scaled_exp"}:
                 continue
             if scaffold == "log" and config.depth < 3:
                 continue
+            if scaffold == "scaled_exp" and config.depth < 9:
+                continue
             for variable in config.variables:
-                attempts.append(
-                    {
-                        "kind": f"scaffold_{scaffold}",
-                        "variable": variable,
-                        "restart": -1,
-                        "seed": config.seed,
-                    }
-                )
+                if scaffold == "scaled_exp":
+                    for coefficient in _scaled_exp_constants(config.constants):
+                        attempts.append(
+                            {
+                                "kind": "scaffold_scaled_exp",
+                                "variable": variable,
+                                "coefficient": coefficient,
+                                "restart": -1,
+                                "seed": config.seed,
+                            }
+                        )
+                else:
+                    attempts.append(
+                        {
+                            "kind": f"scaffold_{scaffold}",
+                            "variable": variable,
+                            "restart": -1,
+                            "seed": config.seed,
+                        }
+                    )
     for restart in range(config.restarts):
         attempts.append(
             {
@@ -161,6 +175,18 @@ def _training_attempts(config: TrainingConfig, has_external_initializer: bool) -
     return attempts
 
 
+def _scaled_exp_constants(constants: tuple[complex, ...]) -> tuple[complex, ...]:
+    result: list[complex] = []
+    for value in constants:
+        coefficient = complex(value)
+        if not (np.isfinite(coefficient.real) and np.isfinite(coefficient.imag)):
+            continue
+        if abs(coefficient - 1.0) <= 1e-12:
+            continue
+        result.append(coefficient)
+    return tuple(result)
+
+
 def _apply_scaffold(model: SoftEMLTree, attempt: Mapping[str, Any]) -> dict[str, Any]:
     kind = str(attempt["kind"])
     variable = str(attempt["variable"])
@@ -168,6 +194,18 @@ def _apply_scaffold(model: SoftEMLTree, attempt: Mapping[str, Any]) -> dict[str,
         model.force_exp(variable)
     elif kind == "scaffold_log":
         model.force_log(variable)
+    elif kind == "scaffold_scaled_exp":
+        coefficient = complex(attempt["coefficient"])
+        embedding = model.force_scaled_exp(variable, coefficient)
+        return {
+            "kind": kind,
+            "variable": variable,
+            "coefficient": format_constant_value(coefficient),
+            "constant_label": constant_label(coefficient),
+            "seed": attempt["seed"],
+            "strategy": "paper_scaled_exponential_family",
+            "embedding": embedding.as_dict(),
+        }
     else:
         raise ValueError(f"unknown scaffold initializer {kind!r}")
     return {
