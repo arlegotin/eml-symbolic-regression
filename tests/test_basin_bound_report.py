@@ -9,15 +9,37 @@ import pytest
 from eml_symbolic_regression.benchmark import RunFilter, load_suite, run_benchmark_suite, write_aggregate_reports
 from eml_symbolic_regression.diagnostics import (
     build_perturbed_basin_bound_report,
+    render_perturbed_basin_bound_markdown,
     write_perturbed_basin_bound_report,
 )
 
 
-def _aggregate(suite_id: str, rows: list[dict]) -> dict:
+def _aggregate(suite_id: str, rows: list[dict], *, cases: list[dict] | None = None) -> dict:
+    suite = {"id": suite_id}
+    if cases is not None:
+        suite["cases"] = cases
     return {
         "schema": "eml.benchmark_aggregate.v1",
-        "suite": {"id": suite_id},
+        "suite": suite,
         "runs": rows,
+    }
+
+
+def _case(
+    *,
+    suite_id: str = "proof-perturbed-basin",
+    case_id: str = "basin-beer-lambert-bound",
+    formula: str = "beer_lambert",
+    seeds: tuple[int, ...] = (0, 1),
+    perturbation_noise: tuple[float, ...] = (5.0,),
+) -> dict:
+    return {
+        "id": case_id,
+        "formula": formula,
+        "start_mode": "perturbed_tree",
+        "seeds": list(seeds),
+        "perturbation_noise": list(perturbation_noise),
+        "suite_id": suite_id,
     }
 
 
@@ -162,6 +184,36 @@ def test_supported_max_uses_continuous_prefix_not_isolated_higher_pass():
     assert report["repaired_supported_noise_max"] == 5.0
     assert report["unsupported_noise_values"] == [15.0]
     assert report["claim_recommendation"] == "support_declared_bound"
+
+
+def test_supported_bound_requires_all_expected_seed_rows():
+    bounded = _aggregate(
+        "proof-perturbed-basin",
+        [_row(noise=5.0, evidence_class="perturbed_true_tree_recovered", seed=0)],
+        cases=[_case(seeds=(0, 1), perturbation_noise=(5.0,))],
+    )
+
+    report = build_perturbed_basin_bound_report(bounded)
+
+    assert report["raw_supported_noise_max"] is None
+    assert report["repaired_supported_noise_max"] is None
+    assert report["incomplete_noise_values"] == [5.0]
+    assert report["unsupported_noise_values"] == [5.0]
+    assert report["claim_recommendation"] == "narrow_to_none"
+    assert report["missing_seed_noise_rows"] == [
+        {
+            "row_source": "bounded",
+            "suite_id": "proof-perturbed-basin",
+            "case_id": "basin-beer-lambert-bound",
+            "formula": "beer_lambert",
+            "seed": 1,
+            "perturbation_noise": 5.0,
+            "reason": "missing_expected_seed_noise_row",
+        }
+    ]
+    markdown = render_perturbed_basin_bound_markdown(report)
+    assert "## Missing Seed/Noise Rows" in markdown
+    assert "missing_expected_seed_noise_row" in markdown
 
 
 def test_failed_declared_bound_recommends_narrowing():

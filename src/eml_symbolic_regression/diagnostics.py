@@ -76,15 +76,30 @@ def build_perturbed_basin_bound_report(
     )
     grid = tuple(float(value) for value in declared_noise_grid)
     declared_bound = float(declared_bound_noise_max)
+    expected_seed_noise_rows = _expected_seed_noise_rows(
+        (("bounded", bounded_aggregate), ("probe", probe_aggregate or {})),
+        formula=formula,
+        grid=grid,
+        rows=rows,
+    )
+    expected_seeds_by_noise = _expected_seeds_by_noise(expected_seed_noise_rows)
+    missing_seed_noise_rows = _missing_seed_noise_rows(
+        expected_seed_noise_rows,
+        rows,
+        formula=formula,
+    )
+    incomplete_noise_values = sorted({float(row["perturbation_noise"]) for row in missing_seed_noise_rows})
     raw_supported = _supported_noise_prefix(
         rows,
         grid,
         lambda row: row.get("evidence_class") == "perturbed_true_tree_recovered",
+        expected_seeds_by_noise=expected_seeds_by_noise,
     )
     repaired_supported = _supported_noise_prefix(
         rows,
         grid,
         lambda row: row.get("evidence_class") in {"perturbed_true_tree_recovered", "repaired_candidate"},
+        expected_seeds_by_noise=expected_seeds_by_noise,
     )
     unsupported_noise_values = sorted(
         {
@@ -93,6 +108,7 @@ def build_perturbed_basin_bound_report(
             if float(row["perturbation_noise"]) in set(grid)
             and row.get("evidence_class") not in {"perturbed_true_tree_recovered", "repaired_candidate"}
         }
+        | set(incomplete_noise_values)
     )
 
     return {
@@ -104,6 +120,9 @@ def build_perturbed_basin_bound_report(
         "declared_bound_noise_max": declared_bound,
         "raw_supported_noise_max": raw_supported,
         "repaired_supported_noise_max": repaired_supported,
+        "expected_seed_noise_rows": expected_seed_noise_rows,
+        "missing_seed_noise_rows": missing_seed_noise_rows,
+        "incomplete_noise_values": incomplete_noise_values,
         "unsupported_noise_values": unsupported_noise_values,
         "claim_recommendation": _bound_claim_recommendation(
             repaired_supported,
@@ -144,14 +163,38 @@ def render_perturbed_basin_bound_markdown(report: Mapping[str, Any]) -> str:
         f"- Raw supported max: {_fmt(report.get('raw_supported_noise_max'))}",
         f"- Repaired supported max: {_fmt(report.get('repaired_supported_noise_max'))}",
         f"- Claim recommendation: `{report.get('claim_recommendation')}`",
+        f"- Expected seed/noise rows: {len(report.get('expected_seed_noise_rows', ()))}",
+        f"- Missing seed/noise rows: {len(report.get('missing_seed_noise_rows', ()))}",
         "",
         "High-noise probe rows remain separate from bounded proof thresholds. Probe evidence can support a follow-up bound only when it forms a continuous declared-grid prefix.",
         "",
-        "## Rows",
-        "",
-        "| Source | Suite | Case | Run | Seed | Noise | Status | Claim | Evidence | Return Kind | Raw Status | Repair Status | Changed Slots | Accepted Repair Moves | Reason | Artifact |",
-        "|--------|-------|------|-----|------|-------|--------|-------|----------|-------------|------------|---------------|---------------|-----------------------|--------|----------|",
     ]
+
+    missing_rows = list(report.get("missing_seed_noise_rows", ()))
+    if missing_rows:
+        lines.extend(
+            [
+                "## Missing Seed/Noise Rows",
+                "",
+                "| Source | Suite | Case | Seed | Noise | Reason |",
+                "|--------|-------|------|------|-------|--------|",
+            ]
+        )
+        for row in missing_rows:
+            lines.append(
+                f"| {row.get('row_source')} | {row.get('suite_id')} | {row.get('case_id')} | "
+                f"{row.get('seed')} | {_fmt(row.get('perturbation_noise'))} | {row.get('reason')} |"
+            )
+        lines.append("")
+
+    lines.extend(
+        [
+            "## Rows",
+            "",
+            "| Source | Suite | Case | Run | Seed | Noise | Status | Claim | Evidence | Return Kind | Raw Status | Repair Status | Changed Slots | Accepted Repair Moves | Reason | Artifact |",
+            "|--------|-------|------|-----|------|-------|--------|-------|----------|-------------|------------|---------------|---------------|-----------------------|--------|----------|",
+        ]
+    )
     for row in report.get("rows", ()):
         lines.append(
             f"| {row.get('row_source')} | {row.get('suite_id')} | {row.get('case_id')} | {row.get('run_id')} | "
@@ -523,7 +566,98 @@ def _noise_values(rows: Iterable[Mapping[str, Any]]) -> list[float]:
     return sorted({float(row["perturbation_noise"]) for row in rows})
 
 
-def _supported_noise_prefix(rows: list[Mapping[str, Any]], grid: tuple[float, ...], predicate: Any) -> float | None:
+def _expected_seed_noise_rows(
+    aggregates: Iterable[tuple[str, Mapping[str, Any]]],
+    *,
+    formula: str,
+    grid: tuple[float, ...],
+    rows: list[Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    grid_values = {float(value) for value in grid}
+    expected: dict[tuple[float, int], dict[str, Any]] = {}
+    for row_source, aggregate in aggregates:
+        suite = aggregate.get("suite") if isinstance(aggregate.get("suite"), Mapping) else {}
+        suite_id = suite.get("id") if isinstance(suite, Mapping) else None
+        cases = suite.get("cases", ()) if isinstance(suite, Mapping) else ()
+        for case in cases:
+            if not isinstance(case, Mapping) or case.get("formula") != formula:
+                continue
+            for noise in case.get("perturbation_noise", ()):
+                noise_value = float(noise)
+                if noise_value not in grid_values:
+                    continue
+                for seed in case.get("seeds", ()):
+                    seed_value = int(seed)
+                    expected.setdefault(
+                        (noise_value, seed_value),
+                        {
+                            "row_source": row_source,
+                            "suite_id": suite_id,
+                            "case_id": case.get("id"),
+                            "formula": formula,
+                            "seed": seed_value,
+                            "perturbation_noise": noise_value,
+                        },
+                    )
+
+    if expected:
+        return [expected[key] for key in sorted(expected)]
+
+    for row in rows:
+        if row.get("seed") is None:
+            continue
+        noise_value = float(row["perturbation_noise"])
+        if noise_value not in grid_values:
+            continue
+        seed_value = int(row["seed"])
+        expected.setdefault(
+            (noise_value, seed_value),
+            {
+                "row_source": row.get("row_source"),
+                "suite_id": row.get("suite_id"),
+                "case_id": row.get("case_id"),
+                "formula": formula,
+                "seed": seed_value,
+                "perturbation_noise": noise_value,
+            },
+        )
+    return [expected[key] for key in sorted(expected)]
+
+
+def _expected_seeds_by_noise(expected_seed_noise_rows: Iterable[Mapping[str, Any]]) -> dict[float, set[int]]:
+    expected: dict[float, set[int]] = {}
+    for row in expected_seed_noise_rows:
+        expected.setdefault(float(row["perturbation_noise"]), set()).add(int(row["seed"]))
+    return expected
+
+
+def _missing_seed_noise_rows(
+    expected_seed_noise_rows: Iterable[Mapping[str, Any]],
+    rows: list[Mapping[str, Any]],
+    *,
+    formula: str,
+) -> list[dict[str, Any]]:
+    observed = {
+        (float(row["perturbation_noise"]), int(row["seed"]))
+        for row in rows
+        if row.get("seed") is not None and row.get("formula", formula) == formula
+    }
+    missing = []
+    for expected in expected_seed_noise_rows:
+        key = (float(expected["perturbation_noise"]), int(expected["seed"]))
+        if key in observed:
+            continue
+        missing.append({**dict(expected), "reason": "missing_expected_seed_noise_row"})
+    return missing
+
+
+def _supported_noise_prefix(
+    rows: list[Mapping[str, Any]],
+    grid: tuple[float, ...],
+    predicate: Any,
+    *,
+    expected_seeds_by_noise: Mapping[float, set[int]],
+) -> float | None:
     by_noise: dict[float, list[Mapping[str, Any]]] = {}
     for row in rows:
         noise = float(row["perturbation_noise"])
@@ -531,8 +665,12 @@ def _supported_noise_prefix(rows: list[Mapping[str, Any]], grid: tuple[float, ..
 
     supported: float | None = None
     for noise in sorted(grid):
+        expected_seeds = expected_seeds_by_noise.get(float(noise))
+        if not expected_seeds:
+            break
         noise_rows = by_noise.get(float(noise), [])
-        if not noise_rows:
+        observed_seeds = {int(row["seed"]) for row in noise_rows if row.get("seed") is not None}
+        if observed_seeds != expected_seeds:
             break
         if not all(predicate(row) for row in noise_rows):
             break
