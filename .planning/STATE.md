@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.4
 milestone_name: Recovery Performance Improvements
 current_phase: 24
-status: defining_requirements
-stopped_at: milestone v1.4 started
-last_updated: "2026-04-15T12:45:00Z"
+status: ready_for_phase_planning
+stopped_at: roadmap created for v1.4
+last_updated: "2026-04-15T12:50:00Z"
 last_activity: 2026-04-15
 progress:
   total_phases: 5
@@ -31,9 +31,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 ## Current Position
 
 Phase: Not started (defining requirements)
-Plan: -
-Status: Defining requirements for v1.4
-Last activity: 2026-04-15 - Milestone v1.4 started
+Plan: Not started
+Status: Ready to plan phase 24
+Last activity: 2026-04-15 - Milestone v1.4 roadmap created
 Progress: [----------] 0% by completed phases (v1.4: 0/5 planned)
 
 ## Performance Metrics
@@ -99,6 +99,11 @@ Target features:
 | 21 | Static Plot Generation | Complete | PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06 |
 | 22 | Evidence Report Assembly | Complete | REPT-01, REPT-02, REPT-03, REPT-04, REPT-05 |
 | 23 | Campaign Smoke, Docs, and Report Lockdown | Complete | TEST-11, TEST-12, TEST-13 |
+| 24 | Baseline Failure Triage and Diagnostic Harness | Pending | DIAG-01, DIAG-02, DIAG-03, DIAG-04 |
+| 25 | Blind Optimizer Recovery Improvements | Pending | BLIND-01, BLIND-02, BLIND-03, BLIND-04 |
+| 26 | Warm-Start Perturbation Robustness | Pending | PERT-01, PERT-02, PERT-03, PERT-04 |
+| 27 | Compiler Coverage and Depth Reduction | Pending | COV-01, COV-02, COV-03, COV-04 |
+| 28 | Before/After Campaign Evaluation | Pending | EVAL-01, EVAL-02, EVAL-03, EVAL-04, EVAL-05 |
 
 ## Accumulated Context
 
@@ -120,6 +125,7 @@ Target features:
 - Phase 23 added CLI/docs coverage, committed the v1.3 smoke campaign artifact, and verified the full test suite.
 - v1.4 should change the measured performance, not the definition of `recovered`.
 - v1.4 should use the committed v1.3 `standard` and `showcase` campaigns as before/after baselines.
+- v1.4 maps 21 requirements across phases 24-28.
 
 ### Pending Todos
 
@@ -132,8 +138,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: milestone v1.4 started; defining requirements
+Stopped at: v1.4 roadmap created; ready for Phase 24 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after starting milestone v1.4*
+*Last updated: 2026-04-15 after creating milestone v1.4 roadmap*

@@ -4,14 +4,14 @@
 **Updated:** 2026-04-15
 **Granularity:** Coarse
 **Mode:** YOLO
-**Current milestone:** v1.3 Benchmark Campaign and Evidence Report
-**Coverage:** 23 v1.3 requirements mapped, 0 unmapped
+**Current milestone:** v1.4 Recovery Performance Improvements
+**Coverage:** 21 v1.4 requirements mapped, 0 unmapped
 
 ## Overview
 
-v1.0 established exact EML semantics, soft master trees, optimizer, verifier, cleanup, demos, tests, and documentation. v1.1 added compiler-driven warm starts, exact AST embedding, deterministic perturbation manifests, and honest demo claim reporting. v1.2 added repeatable benchmark suites, run artifacts, aggregate evidence reports, and smoke benchmark artifacts.
+v1.3 produced the evidence scoreboard: committed `smoke`, `standard`, and `showcase` campaign bundles with raw run artifacts, CSV tables, SVG figures, and reports. The measured baseline is clear: warm-start training is promising, blind recovery is weak, high Beer-Lambert perturbations fail, and several FOR_DEMO formulas are blocked by compiler depth/operator gates.
 
-v1.3 turns the benchmark harness into a polished showcase: run a real campaign, export tidy tables, generate static figures, and assemble a self-contained evidence report that explains how the paper's EML idea performs in this implementation.
+v1.4 improves the system against those committed baselines. The milestone should not change the meaning of `recovered`; it should improve optimizer/compiler behavior, then rerun the same standard/showcase campaigns and report before/after deltas.
 
 ## Milestones
 
@@ -19,176 +19,141 @@ v1.3 turns the benchmark harness into a polished showcase: run a real campaign, 
 - **v1.1 EML Compiler and Warm Starts** - Phases 8-13 complete (completed 2026-04-15)
 - **v1.2 Training Benchmark and Recovery Evidence** - Phases 14-18 complete (completed 2026-04-15)
 - **v1.3 Benchmark Campaign and Evidence Report** - Phases 19-23 complete (completed 2026-04-15)
+- **v1.4 Recovery Performance Improvements** - Phases 24-28 planned
 
 ## Completed Milestone Context
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 1 | Semantics, AST, and Deterministic Artifacts | Complete |
-| 2 | Complete Master Trees and Soft Evaluation | Complete |
-| 3 | Optimizer, Restarts, Hardening, and Recovery Statuses | Complete |
-| 4 | Verifier and Acceptance Contract | Complete |
-| 5 | Local Cleanup, SymPy Export, and Reports | Complete |
-| 6 | Demo Harness and Public Showcase | Complete |
-| 7 | Tests and Documentation | Complete |
-| 8 | Compiler Contract and Direct Rules | Complete |
-| 9 | Constant Catalog and AST Embedding | Complete |
-| 10 | Arithmetic Rule Corpus and Depth Gates | Complete |
-| 11 | Perturbed Warm-Start Training | Complete |
-| 12 | Demo Promotion and Claim Reporting | Complete |
-| 13 | Regression Tests and Documentation Lockdown | Complete |
-| 14 | Benchmark Contract and Suite Registry | Complete |
-| 15 | Benchmark Runner and Training Modes | Complete |
-| 16 | Experiment Matrix and Formula Coverage | Complete |
-| 17 | Evidence Aggregation and Report Contracts | Complete |
-| 18 | Smoke Tests, Docs, and Evidence Lockdown | Complete |
+| 1-7 | v1.0 MVP | Complete |
+| 8-13 | v1.1 EML Compiler and Warm Starts | Complete |
+| 14-18 | v1.2 Training Benchmark and Recovery Evidence | Complete |
+| 19-23 | v1.3 Benchmark Campaign and Evidence Report | Complete |
 
 ## Phases
 
 **Phase Numbering:**
-- Integer phases (19, 20, 21): Planned milestone work
-- Decimal phases (19.1, 19.2): Urgent insertions, if needed later
-- v1.3 continues from completed Phase 18 and starts at Phase 19
+- v1.4 continues from completed Phase 23 and starts at Phase 24.
+- Integer phases are planned milestone work.
+- Decimal phases can be inserted later for urgent gap closure.
 
-- [x] **Phase 19: Campaign Presets and Run Manifests** - Add named campaign presets, budget tiers, output-folder guardrails, and manifest metadata. (requirements: CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05)
-- [x] **Phase 20: Tidy CSV Export and Derived Metrics** - Export run-level and grouped CSV tables plus headline metrics for analysis and plotting. (requirements: DATA-01, DATA-02, DATA-03, DATA-04)
-- [x] **Phase 21: Static Plot Generation** - Generate deterministic static figures for recovery, losses, perturbation sensitivity, runtime/depth, and failure taxonomy. (requirements: PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06)
-- [x] **Phase 22: Evidence Report Assembly** - Assemble a self-contained campaign report with figures, tables, commands, narrative, limitations, and next experiments. (requirements: REPT-01, REPT-02, REPT-03, REPT-04, REPT-05)
-- [x] **Phase 23: Campaign Smoke, Docs, and Report Lockdown** - Lock campaign presets, CSV export, plots, report assembly, and documentation with CI-scale tests. (requirements: TEST-11, TEST-12, TEST-13)
+- [ ] **Phase 24: Baseline Failure Triage and Diagnostic Harness** - Turn v1.3 standard/showcase failures into focused reproducible diagnostics. (requirements: DIAG-01, DIAG-02, DIAG-03, DIAG-04)
+- [ ] **Phase 25: Blind Optimizer Recovery Improvements** - Improve blind optimizer behavior for shallow formulas and preserve verifier-owned recovery semantics. (requirements: BLIND-01, BLIND-02, BLIND-03, BLIND-04)
+- [ ] **Phase 26: Warm-Start Perturbation Robustness** - Improve or precisely diagnose Beer-Lambert warm-start failures at stronger perturbations. (requirements: PERT-01, PERT-02, PERT-03, PERT-04)
+- [ ] **Phase 27: Compiler Coverage and Depth Reduction** - Reduce unsupported/depth-gated FOR_DEMO cases while keeping compiler behavior fail-closed. (requirements: COV-01, COV-02, COV-03, COV-04)
+- [ ] **Phase 28: Before/After Campaign Evaluation** - Rerun standard/showcase campaigns and report deltas against v1.3 baselines. (requirements: EVAL-01, EVAL-02, EVAL-03, EVAL-04, EVAL-05)
 
 ## Phase Details
 
-### Phase 19: Campaign Presets and Run Manifests
-**Goal**: Users can run named benchmark campaign presets into reproducible output folders without manually composing filters and budgets.
-**Depends on**: Phase 18
-**Requirements**: CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05
+### Phase 24: Baseline Failure Triage and Diagnostic Harness
+**Goal**: Users can inspect and rerun focused diagnostics for the exact v1.3 failure modes before changing optimizer/compiler behavior.
+**Depends on**: Phase 23
+**Requirements**: DIAG-01, DIAG-02, DIAG-03, DIAG-04
 **Success Criteria** (what must be TRUE):
-  1. User can choose `smoke`, `standard`, or `showcase` campaign presets that map to suites, filters, budget tiers, seeds, and output roots.
-  2. User receives a versioned campaign output directory containing raw run artifacts, aggregate outputs, and a campaign manifest.
-  3. The standard preset includes shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten diagnostics, Planck diagnostics, and selected FOR_DEMO cases.
-  4. Re-running a campaign cannot silently overwrite prior evidence unless the user explicitly opts in.
-  5. Runtime and budget guardrails make the difference between smoke, standard, and showcase campaigns clear.
-**Plans**: `.planning/phases/19-campaign-presets-and-run-manifests/19-PLAN.md`
-**Completed:** 2026-04-15
+  1. Baseline triage summarizes v1.3 standard/showcase failures by formula, start mode, perturbation, and recovery class.
+  2. Each target failure class links to representative raw run artifacts and relevant optimizer/verifier metrics.
+  3. Focused diagnostic commands can rerun blind failures, Beer-Lambert perturbation failures, and compiler/depth gates without full campaigns.
+  4. v1.3 baseline metrics remain immutable comparison inputs for later phases.
+**Plans**: TBD
 
-### Phase 20: Tidy CSV Export and Derived Metrics
-**Goal**: Users can analyze benchmark results through flat CSV tables and headline metric summaries.
-**Depends on**: Phase 19
-**Requirements**: DATA-01, DATA-02, DATA-03, DATA-04
+### Phase 25: Blind Optimizer Recovery Improvements
+**Goal**: Users get a measured improvement path for blind recovery on shallow baseline formulas without weakening the verifier contract.
+**Depends on**: Phase 24
+**Requirements**: BLIND-01, BLIND-02, BLIND-03, BLIND-04
 **Success Criteria** (what must be TRUE):
-  1. Run-level CSV includes formula, start mode, seed, depth, steps, perturbation noise, best loss, post-snap loss, verifier status, recovery class, runtime, changed slots, and artifact path.
-  2. Grouped CSV summaries report recovery rates by formula, start mode, perturbation level, depth, and failure class.
-  3. Headline metrics JSON/CSV summarize total runs, recovery, unsupported/failure rates, same-AST rate, median losses, and runtimes.
-  4. Unsupported and failed cases include reason codes and source artifact links.
-**Plans**: `.planning/phases/20-tidy-csv-export-and-derived-metrics/20-PLAN.md`
-**Completed:** 2026-04-15
+  1. Blind optimizer experiments are reproducible across `exp`, `log`, and `radioactive_decay` with explicit seeds and budgets.
+  2. Optimizer variants compare against v1.3 baseline metrics using the same verifier-owned recovery status.
+  3. The selected default improves recovery or materially improves post-snap loss on at least one v1.3 blind failure family without regressing existing recovered cases.
+  4. Remaining blind failures include diagnostics that separate soft loss, snap instability, expression depth, and verifier mismatch.
+**Plans**: TBD
 
-### Phase 21: Static Plot Generation
-**Goal**: Users can generate crisp, deterministic figures from campaign CSV/aggregate data.
-**Depends on**: Phase 20
-**Requirements**: PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06
+### Phase 26: Warm-Start Perturbation Robustness
+**Goal**: Users can improve or precisely explain Beer-Lambert warm-start failures under stronger perturbations.
+**Depends on**: Phase 24
+**Requirements**: PERT-01, PERT-02, PERT-03, PERT-04
 **Success Criteria** (what must be TRUE):
-  1. Recovery-rate plots compare formulas and start modes without merging blind recovery and same-AST warm-start return.
-  2. Loss plots show best soft loss versus post-snap loss on appropriate scales.
-  3. Beer-Lambert perturbation plots show recovery class and changed-slot behavior by noise level.
-  4. Runtime and depth/budget plots make practical cost visible.
-  5. Failure-taxonomy plots show unsupported and failed cases by formula and class.
-  6. Figure filenames are stable and suitable for Markdown linking.
-**Plans**: `.planning/phases/21-static-plot-generation/21-PLAN.md`
-**Completed:** 2026-04-15
+  1. Beer-Lambert perturbation diagnostics cover v1.3 noise levels with changed-slot counts and verifier status.
+  2. Training or snapping changes improve high-perturbation recovery, or the failure mechanism is narrowed with reproducible evidence.
+  3. Same-AST return, verified-equivalent recovery, snapped-but-failed, and soft-fit-only remain distinct outcomes.
+  4. Literal-constant provenance and verifier-owned recovery semantics remain unchanged.
+**Plans**: TBD
 
-### Phase 22: Evidence Report Assembly
-**Goal**: Users receive a self-contained benchmark evidence report suitable for explaining the original paper's practical performance.
-**Depends on**: Phase 21
-**Requirements**: REPT-01, REPT-02, REPT-03, REPT-04, REPT-05
+### Phase 27: Compiler Coverage and Depth Reduction
+**Goal**: Users can move at least one v1.3 unsupported/depth-gated FOR_DEMO formula closer to verified EML coverage while preserving fail-closed compiler behavior.
+**Depends on**: Phase 24
+**Requirements**: COV-01, COV-02, COV-03, COV-04
 **Success Criteria** (what must be TRUE):
-  1. Campaign folder contains `report.md` with headline metrics, tables, figures, exact commands, and links to raw artifacts.
-  2. Report narrative clearly explains what EML demonstrates well in this implementation.
-  3. Limitations separate blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, unsupported gates, and failed fits.
-  4. Report includes next experiments that translate measured failures into optimizer or compiler priorities.
-  5. A documented single CLI command can reproduce the report from a clean checkout.
-**Plans**: `.planning/phases/22-evidence-report-assembly/22-PLAN.md`
-**Completed:** 2026-04-15
+  1. Compiler diagnostics expose depth, node count, rule trace, and unsupported reasons for the targeted FOR_DEMO formulas.
+  2. At least one v1.3 unsupported/depth-gated formula moves to a verified compiled EML AST or a documented lower-depth candidate.
+  3. Damped oscillator's unsupported operator path is either transformed into supported form or explicitly deferred with tests.
+  4. Unsupported formulas continue to emit structured reasons instead of invalid EML trees.
+**Plans**: TBD
 
-### Phase 23: Campaign Smoke, Docs, and Report Lockdown
-**Goal**: Users can trust the campaign/report workflow and understand how to present the results honestly.
-**Depends on**: Phase 22
-**Requirements**: TEST-11, TEST-12, TEST-13
+### Phase 28: Before/After Campaign Evaluation
+**Goal**: Users can see whether v1.4 improved real end-to-end performance by rerunning the same campaign contracts and comparing against v1.3 baselines.
+**Depends on**: Phase 25, Phase 26, Phase 27
+**Requirements**: EVAL-01, EVAL-02, EVAL-03, EVAL-04, EVAL-05
 **Success Criteria** (what must be TRUE):
-  1. Focused tests cover campaign preset expansion, output folder creation, overwrite protection, CSV export, and headline metrics.
-  2. Focused tests cover plot file generation and report assembly using CI-scale fixtures.
-  3. Documentation describes campaign commands, output structure, CSV schemas, plot meanings, and honest presentation rules.
-  4. Full pytest passes after report workflow integration.
-**Plans**: `.planning/phases/23-campaign-smoke-docs-and-report-lockdown/23-PLAN.md`
-**Completed:** 2026-04-15
+  1. v1.4-labeled standard and showcase campaign folders are generated after optimizer/compiler changes.
+  2. Before/after reports compute deltas for recovery, unsupported rate, failure rate, losses, and runtime against v1.3 baselines.
+  3. The report classifies each target category as improved, regressed, or unchanged.
+  4. A single documented command can reproduce the comparison from a clean checkout.
+  5. Tests cover diagnostics, optimizer/comparison outputs, compiler changes, and campaign comparison behavior.
+**Plans**: TBD
 
 ## Dependency Order
 
 ```text
-Phase 19 -> Phase 20 -> Phase 21 -> Phase 22 -> Phase 23
+Phase 24 -> Phase 25 -> Phase 28
+Phase 24 -> Phase 26 -> Phase 28
+Phase 24 -> Phase 27 -> Phase 28
 ```
 
-The order is intentionally linear. Campaign presets define where evidence lives; CSV export turns evidence into analyzable tables; plots consume the tables; the report assembles figures and narrative; tests and docs lock the workflow.
+Phase 24 creates a shared diagnostic baseline. Phases 25-27 can be executed independently after triage because they target distinct performance bottlenecks. Phase 28 must run last so it evaluates the combined result.
 
 ## Requirement Coverage
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAMP-01 | Phase 19 | Complete |
-| CAMP-02 | Phase 19 | Complete |
-| CAMP-03 | Phase 19 | Complete |
-| CAMP-04 | Phase 19 | Complete |
-| CAMP-05 | Phase 19 | Complete |
-| DATA-01 | Phase 20 | Complete |
-| DATA-02 | Phase 20 | Complete |
-| DATA-03 | Phase 20 | Complete |
-| DATA-04 | Phase 20 | Complete |
-| PLOT-01 | Phase 21 | Complete |
-| PLOT-02 | Phase 21 | Complete |
-| PLOT-03 | Phase 21 | Complete |
-| PLOT-04 | Phase 21 | Complete |
-| PLOT-05 | Phase 21 | Complete |
-| PLOT-06 | Phase 21 | Complete |
-| REPT-01 | Phase 22 | Complete |
-| REPT-02 | Phase 22 | Complete |
-| REPT-03 | Phase 22 | Complete |
-| REPT-04 | Phase 22 | Complete |
-| REPT-05 | Phase 22 | Complete |
-| TEST-11 | Phase 23 | Complete |
-| TEST-12 | Phase 23 | Complete |
-| TEST-13 | Phase 23 | Complete |
+| DIAG-01 | Phase 24 | Pending |
+| DIAG-02 | Phase 24 | Pending |
+| DIAG-03 | Phase 24 | Pending |
+| DIAG-04 | Phase 24 | Pending |
+| BLIND-01 | Phase 25 | Pending |
+| BLIND-02 | Phase 25 | Pending |
+| BLIND-03 | Phase 25 | Pending |
+| BLIND-04 | Phase 25 | Pending |
+| PERT-01 | Phase 26 | Pending |
+| PERT-02 | Phase 26 | Pending |
+| PERT-03 | Phase 26 | Pending |
+| PERT-04 | Phase 26 | Pending |
+| COV-01 | Phase 27 | Pending |
+| COV-02 | Phase 27 | Pending |
+| COV-03 | Phase 27 | Pending |
+| COV-04 | Phase 27 | Pending |
+| EVAL-01 | Phase 28 | Pending |
+| EVAL-02 | Phase 28 | Pending |
+| EVAL-03 | Phase 28 | Pending |
+| EVAL-04 | Phase 28 | Pending |
+| EVAL-05 | Phase 28 | Pending |
 
-**Coverage:** 23/23 v1.3 requirements mapped. No orphaned requirements. No duplicate phase assignments.
+**Coverage:** 21/21 v1.4 requirements mapped. No orphaned requirements. No duplicate phase assignments.
 
 ## Progress
 
-**Execution Order:** Phase 19 -> Phase 20 -> Phase 21 -> Phase 22 -> Phase 23
+**Execution Order:** Phase 24 -> Phases 25/26/27 -> Phase 28
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Semantics, AST, and Deterministic Artifacts | Complete | Complete | 2026-04-15 |
-| 2. Complete Master Trees and Soft Evaluation | Complete | Complete | 2026-04-15 |
-| 3. Optimizer, Restarts, Hardening, and Recovery Statuses | Complete | Complete | 2026-04-15 |
-| 4. Verifier and Acceptance Contract | Complete | Complete | 2026-04-15 |
-| 5. Local Cleanup, SymPy Export, and Reports | Complete | Complete | 2026-04-15 |
-| 6. Demo Harness and Public Showcase | Complete | Complete | 2026-04-15 |
-| 7. Tests and Documentation | Complete | Complete | 2026-04-15 |
-| 8. Compiler Contract and Direct Rules | Complete | Complete | 2026-04-15 |
-| 9. Constant Catalog and AST Embedding | Complete | Complete | 2026-04-15 |
-| 10. Arithmetic Rule Corpus and Depth Gates | Complete | Complete | 2026-04-15 |
-| 11. Perturbed Warm-Start Training | Complete | Complete | 2026-04-15 |
-| 12. Demo Promotion and Claim Reporting | Complete | Complete | 2026-04-15 |
-| 13. Regression Tests and Documentation Lockdown | Complete | Complete | 2026-04-15 |
-| 14. Benchmark Contract and Suite Registry | Complete | Complete | 2026-04-15 |
-| 15. Benchmark Runner and Training Modes | Complete | Complete | 2026-04-15 |
-| 16. Experiment Matrix and Formula Coverage | Complete | Complete | 2026-04-15 |
-| 17. Evidence Aggregation and Report Contracts | Complete | Complete | 2026-04-15 |
-| 18. Smoke Tests, Docs, and Evidence Lockdown | Complete | Complete | 2026-04-15 |
-| 19. Campaign Presets and Run Manifests | 1/1 | Complete | 2026-04-15 |
-| 20. Tidy CSV Export and Derived Metrics | 1/1 | Complete | 2026-04-15 |
-| 21. Static Plot Generation | 1/1 | Complete | 2026-04-15 |
-| 22. Evidence Report Assembly | 1/1 | Complete | 2026-04-15 |
-| 23. Campaign Smoke, Docs, and Report Lockdown | 1/1 | Complete | 2026-04-15 |
+| 1-7. v1.0 MVP | Complete | Complete | 2026-04-15 |
+| 8-13. v1.1 EML Compiler and Warm Starts | Complete | Complete | 2026-04-15 |
+| 14-18. v1.2 Training Benchmark and Recovery Evidence | Complete | Complete | 2026-04-15 |
+| 19-23. v1.3 Benchmark Campaign and Evidence Report | Complete | Complete | 2026-04-15 |
+| 24. Baseline Failure Triage and Diagnostic Harness | 0/1 | Pending | - |
+| 25. Blind Optimizer Recovery Improvements | 0/1 | Pending | - |
+| 26. Warm-Start Perturbation Robustness | 0/1 | Pending | - |
+| 27. Compiler Coverage and Depth Reduction | 0/1 | Pending | - |
+| 28. Before/After Campaign Evaluation | 0/1 | Pending | - |
 
 ---
-*Roadmap updated: 2026-04-15 for milestone v1.3*
+*Roadmap updated: 2026-04-15 for milestone v1.4*
