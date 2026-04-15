@@ -891,9 +891,38 @@ def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
         "status": result.status,
         "claim_status": payload.get("claim_status"),
         "classification": classify_run(payload),
+        "reason": _run_reason(payload),
         "metrics": payload.get("metrics", {}),
         "stage_statuses": payload.get("stage_statuses", {}),
     }
+
+
+def _run_reason(payload: Mapping[str, Any]) -> str:
+    error = payload.get("error")
+    if isinstance(error, Mapping):
+        error_type = error.get("type", "execution_error")
+        message = error.get("message")
+        return f"{error_type}: {message}" if message else str(error_type)
+
+    compiled = payload.get("compiled_eml")
+    if isinstance(compiled, Mapping) and compiled.get("status") == "unsupported":
+        return str(compiled.get("reason") or "unsupported")
+
+    warm = payload.get("warm_start_eml")
+    if isinstance(warm, Mapping) and warm.get("status") == "unsupported":
+        return str(warm.get("reason") or "unsupported")
+
+    for key in ("trained_eml_verification", "compiled_eml_verification", "verification"):
+        verification = payload.get(key)
+        if isinstance(verification, Mapping) and verification.get("reason"):
+            return str(verification["reason"])
+
+    if isinstance(warm, Mapping):
+        verification = warm.get("verification")
+        if isinstance(verification, Mapping) and verification.get("reason"):
+            return str(verification["reason"])
+
+    return str(payload.get("status") or "unknown")
 
 
 def classify_run(payload: Mapping[str, Any]) -> str:

@@ -18,10 +18,10 @@ Requirements for this milestone only. Completed v1, v1.1, and v1.2 requirements 
 
 ### Data Export
 
-- [ ] **DATA-01**: User receives a tidy run-level CSV containing formula, start mode, seed, depth, steps, perturbation noise, best loss, post-snap loss, verifier status, recovery class, runtime, changed slots, and artifact path.
-- [ ] **DATA-02**: User receives grouped CSV summaries for recovery rate by formula, start mode, perturbation level, depth, and failure class.
-- [ ] **DATA-03**: User receives a headline metrics JSON/CSV table with total runs, verifier recovery rate, unsupported rate, failure rate, same-AST return rate, median losses, and runtime summaries.
-- [ ] **DATA-04**: User can export unsupported and failed cases with reason codes and links back to the source run artifacts.
+- [x] **DATA-01**: User receives a tidy run-level CSV containing formula, start mode, seed, depth, steps, perturbation noise, best loss, post-snap loss, verifier status, recovery class, runtime, changed slots, and artifact path.
+- [x] **DATA-02**: User receives grouped CSV summaries for recovery rate by formula, start mode, perturbation level, depth, and failure class.
+- [x] **DATA-03**: User receives a headline metrics JSON/CSV table with total runs, verifier recovery rate, unsupported rate, failure rate, same-AST return rate, median losses, and runtime summaries.
+- [x] **DATA-04**: User can export unsupported and failed cases with reason codes and links back to the source run artifacts.
 
 ### Plot Generation
 
@@ -78,10 +78,10 @@ Deferred to later milestones.
 | CAMP-03 | Phase 19 | Complete |
 | CAMP-04 | Phase 19 | Complete |
 | CAMP-05 | Phase 19 | Complete |
-| DATA-01 | Phase 20 | Pending |
-| DATA-02 | Phase 20 | Pending |
-| DATA-03 | Phase 20 | Pending |
-| DATA-04 | Phase 20 | Pending |
+| DATA-01 | Phase 20 | Complete |
+| DATA-02 | Phase 20 | Complete |
+| DATA-03 | Phase 20 | Complete |
+| DATA-04 | Phase 20 | Complete |
 | PLOT-01 | Phase 21 | Pending |
 | PLOT-02 | Phase 21 | Pending |
 | PLOT-03 | Phase 21 | Pending |

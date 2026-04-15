@@ -1,3 +1,4 @@
+import csv
 import json
 
 import pytest
@@ -74,3 +75,51 @@ def test_campaign_refuses_silent_overwrite(tmp_path):
     )
 
     assert replacement.manifest_path.exists()
+
+
+def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
+    result = run_campaign(
+        "smoke",
+        output_root=tmp_path,
+        label="csv-smoke",
+        run_filter=RunFilter(case_ids=("beer-warm", "planck-diagnostic")),
+    )
+
+    assert result.table_paths["runs_csv"].exists()
+    assert result.table_paths["group_formula_csv"].exists()
+    assert result.table_paths["group_start_mode_csv"].exists()
+    assert result.table_paths["group_perturbation_noise_csv"].exists()
+    assert result.table_paths["group_depth_csv"].exists()
+    assert result.table_paths["group_failure_class_csv"].exists()
+    assert result.table_paths["headline_json"].exists()
+    assert result.table_paths["headline_csv"].exists()
+    assert result.table_paths["failures_csv"].exists()
+
+    run_rows = list(csv.DictReader(result.table_paths["runs_csv"].open(encoding="utf-8")))
+    assert len(run_rows) == 2
+    assert {
+        "formula",
+        "start_mode",
+        "seed",
+        "depth",
+        "steps",
+        "perturbation_noise",
+        "best_loss",
+        "post_snap_loss",
+        "verifier_status",
+        "recovery_class",
+        "runtime_seconds",
+        "changed_slot_count",
+        "artifact_path",
+    } <= set(run_rows[0])
+
+    headline = json.loads(result.table_paths["headline_json"].read_text())
+    assert headline["total_runs"] == 2
+    assert headline["verifier_recovered"] == 1
+    assert headline["unsupported"] == 1
+    assert headline["same_ast_return"] == 1
+
+    failures = list(csv.DictReader(result.table_paths["failures_csv"].open(encoding="utf-8")))
+    assert len(failures) == 1
+    assert failures[0]["classification"] == "unsupported"
+    assert failures[0]["reason"]
