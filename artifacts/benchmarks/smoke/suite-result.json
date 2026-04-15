@@ -1,7 +1,7 @@
 {
   "counts": {
     "completed": 3,
-    "failed": 0,
+    "failed": 1,
     "total": 3,
     "unsupported": 1
   },
@@ -11,7 +11,7 @@
       "payload": {
         "claim_status": "failed",
         "environment": {
-          "code_version": "3e082ed",
+          "code_version": "ea6e0a5",
           "platform": "macOS-15.6.1-arm64-arm-64bit",
           "python": "3.11.5"
         },
@@ -61,9 +61,9 @@
         "stage_statuses": {
           "blind_baseline": "failed"
         },
-        "status": "snapped_candidate",
+        "status": "snapped_but_failed",
         "timing": {
-          "elapsed_seconds": 0.27903400000650436
+          "elapsed_seconds": 0.2551576669793576
         },
         "trained_eml_candidate": {
           "best_loss": 6.593563826826581,
@@ -247,7 +247,7 @@
           "blind"
         ]
       },
-      "status": "snapped_candidate"
+      "status": "snapped_but_failed"
     },
     {
       "artifact_path": "artifacts/benchmarks/smoke/smoke-beer-warm-35bbd89a434a.json",
@@ -441,7 +441,7 @@
           "tolerance": 1e-08
         },
         "environment": {
-          "code_version": "3e082ed",
+          "code_version": "ea6e0a5",
           "platform": "macOS-15.6.1-arm64-arm-64bit",
           "python": "3.11.5"
         },
@@ -495,7 +495,7 @@
         },
         "status": "same_ast_return",
         "timing": {
-          "elapsed_seconds": 0.2719867080450058
+          "elapsed_seconds": 0.2433489590184763
         },
         "warm_start_eml": {
           "compiler_metadata": {
@@ -10126,7 +10126,7 @@
           "status": "unsupported"
         },
         "environment": {
-          "code_version": "3e082ed",
+          "code_version": "ea6e0a5",
           "platform": "macOS-15.6.1-arm64-arm-64bit",
           "python": "3.11.5"
         },
@@ -10178,7 +10178,7 @@
         },
         "status": "unsupported",
         "timing": {
-          "elapsed_seconds": 0.012792000023182482
+          "elapsed_seconds": 0.011062707984820008
         }
       },
       "run": {

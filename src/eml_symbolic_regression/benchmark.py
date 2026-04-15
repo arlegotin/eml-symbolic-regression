@@ -583,8 +583,9 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         fit = fit_eml_tree(train.inputs, train.target, config)
         report = verify_candidate(fit.snap.expression, splits, tolerance=run.dataset.tolerance)
         stage_statuses["blind_baseline"] = report.status
+        status = report.status if report.status == "recovered" else ("snapped_but_failed" if fit.status == "snapped_candidate" else fit.status)
         return {
-            "status": report.status if report.status == "recovered" else fit.status,
+            "status": status,
             "stage_statuses": stage_statuses,
             "trained_eml_candidate": fit.manifest,
             "trained_eml_verification": report.as_dict(),

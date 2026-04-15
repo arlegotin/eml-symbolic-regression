@@ -25,7 +25,7 @@ def test_runner_executes_catalog_compile_blind_and_warm_start(tmp_path):
     assert payload["counts"]["total"] == 3
     assert all(item.artifact_path.exists() for item in result.results)
     statuses = {item.run.case_id: item.status for item in result.results}
-    assert statuses["exp-blind"] in {"recovered", "snapped_candidate", "failed"}
+    assert statuses["exp-blind"] in {"recovered", "snapped_but_failed", "failed"}
     assert statuses["beer-warm"] in {"same_ast_return", "verified_equivalent_ast", "snapped_but_failed"}
     assert statuses["planck-diagnostic"] == "unsupported"
 
