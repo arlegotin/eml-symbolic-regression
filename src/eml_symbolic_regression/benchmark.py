@@ -1659,6 +1659,11 @@ def _threshold_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
 def _counted_evidence_classes_for_claim(claim_id: str, policy_classes: tuple[str, ...]) -> tuple[str, ...]:
     if claim_id == "paper-shallow-blind-recovery":
         return (EVIDENCE_CLASSES["blind_training_recovered"],)
+    if claim_id == "paper-perturbed-true-tree-basin":
+        return (
+            EVIDENCE_CLASSES["perturbed_true_tree_recovered"],
+            EVIDENCE_CLASSES["repaired_candidate"],
+        )
     return policy_classes
 
 

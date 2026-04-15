@@ -261,6 +261,42 @@ def test_perturbed_bounded_threshold_counts_repaired_candidates():
     }
 
 
+@pytest.mark.parametrize(
+    "evidence_class",
+    (
+        "compiler_warm_start_recovered",
+        "verified_equivalent",
+        "same_ast",
+        "scaffolded_blind_training_recovered",
+    ),
+)
+def test_perturbed_bounded_threshold_rejects_non_perturbed_evidence_classes(evidence_class):
+    suite = BenchmarkSuite("synthetic-perturbed-proof", "synthetic perturbed proof aggregate", ())
+    result = SimpleNamespace(
+        suite=suite,
+        results=(
+            _synthetic_result(
+                case_id=evidence_class,
+                start_mode="perturbed_tree",
+                training_mode="perturbed_true_tree_training",
+                evidence_class=evidence_class,
+                perturbation_noise=0.05,
+                claim_id="paper-perturbed-true-tree-basin",
+                threshold_policy_id="bounded_100_percent",
+            ),
+        ),
+    )
+
+    threshold = aggregate_evidence(result)["thresholds"][0]
+
+    assert threshold["claim_id"] == "paper-perturbed-true-tree-basin"
+    assert threshold["eligible"] == 1
+    assert threshold["passed"] == 0
+    assert threshold["failed"] == 1
+    assert threshold["status"] == "failed"
+    assert threshold["evidence_classes"] == {evidence_class: 1}
+
+
 def test_aggregate_evidence_keeps_perturbed_raw_and_repair_taxonomy_distinct():
     suite = BenchmarkSuite("synthetic-perturbed-taxonomy", "synthetic taxonomy aggregate", ())
     common = {
