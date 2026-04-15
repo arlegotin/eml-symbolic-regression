@@ -1,11 +1,13 @@
 import csv
 import json
+import shlex
 
 import pytest
 
 from eml_symbolic_regression.benchmark import RunFilter, load_suite
 from eml_symbolic_regression.campaign import (
     CampaignOutputExistsError,
+    _reproduction_command,
     campaign_preset,
     list_campaign_presets,
     run_campaign,
@@ -52,6 +54,50 @@ def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
     assert manifest["counts"]["total"] == 1
     assert manifest["run_filter"]["case_ids"] == ["planck-diagnostic"]
     assert "campaign smoke" in manifest["reproducibility"]["command"]
+
+
+def test_reproduction_command_quotes_shell_sensitive_values(tmp_path):
+    output_root = tmp_path / "campaign root"
+    command = _reproduction_command(
+        "smoke",
+        output_root,
+        "ok; echo injected",
+        True,
+        {
+            "formulas": ["exp", "log; rm -rf /"],
+            "start_modes": ["blind"],
+            "case_ids": ["case with space"],
+            "seeds": [0],
+            "perturbation_noises": [0.0],
+        },
+    )
+
+    assert command == shlex.join(shlex.split(command))
+    assert shlex.split(command) == [
+        "PYTHONPATH=src",
+        "python",
+        "-m",
+        "eml_symbolic_regression.cli",
+        "campaign",
+        "smoke",
+        "--output-root",
+        str(output_root),
+        "--label",
+        "ok; echo injected",
+        "--overwrite",
+        "--formula",
+        "exp",
+        "--formula",
+        "log; rm -rf /",
+        "--start-mode",
+        "blind",
+        "--case",
+        "case with space",
+        "--seed",
+        "0",
+        "--perturbation-noise",
+        "0.0",
+    ]
 
 
 def test_campaign_refuses_silent_overwrite(tmp_path):

@@ -6,6 +6,7 @@ import csv
 import json
 import math
 import platform
+import shlex
 import statistics
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -454,7 +455,7 @@ def _reproduction_command(
     ):
         for value in run_filter.get(key, []):
             parts.extend([flag, str(value)])
-    return " ".join(parts)
+    return shlex.join(parts)
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
