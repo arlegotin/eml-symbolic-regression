@@ -88,7 +88,11 @@ Plans:
   3. Beer-Lambert high-noise cases are either fully recovered inside the declared bound or the supported bound is narrowed with committed evidence.
   4. Local snap/discrete repair can inspect and modify failed trained candidates without hiding provenance.
   5. Same-AST, verified-equivalent, repaired, snapped-but-failed, soft-fit-only, and unsupported outcomes remain separately reported.
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [x] 31-01-PLAN.md - Perturbed true-tree suite and first-class `perturbed_tree` runner contract.
+- [ ] 31-02-PLAN.md - Local snap/discrete repair with `repaired_candidate` provenance.
+- [ ] 31-03-PLAN.md - Beer-Lambert bound evidence, high-noise probes, and guardrails.
 
 ### Phase 32: Paper Depth-Curve Training Evidence
 **Goal**: Users can reproduce the paper's qualitative depth behavior using this implementation's real training runs, metrics, and artifacts.
@@ -164,7 +168,7 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
 | 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete    | 2026-04-15 |
 | 30. Bounded Shallow Blind Training Recovery | 3/3 | Review Blocked | - |
-| 31. Perturbed Basin Training and Local Repair | 0/1 | Pending | - |
+| 31. Perturbed Basin Training and Local Repair | 1/3 | In Progress|  |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
 | 33. Proof Campaign Report and Evidence Lockdown | 0/1 | Pending | - |
 
