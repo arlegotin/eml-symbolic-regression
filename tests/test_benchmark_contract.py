@@ -3,6 +3,7 @@ import json
 import pytest
 
 from eml_symbolic_regression.benchmark import (
+    BenchmarkCase,
     BenchmarkSuite,
     BenchmarkValidationError,
     builtin_suite,
@@ -12,13 +13,16 @@ from eml_symbolic_regression.benchmark import (
 
 
 def test_builtin_suite_registry_expands_stable_run_ids():
-    assert {"smoke", "v1.2-evidence", "for-demo-diagnostics"} <= set(list_builtin_suites())
+    assert {"smoke", "v1.2-evidence", "for-demo-diagnostics", "v1.5-shallow-proof"} <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
 
     assert [run.case_id for run in runs] == ["exp-blind", "beer-warm", "planck-diagnostic"]
     assert runs[0].run_id == suite.expanded_runs()[0].run_id
     assert str(runs[0].artifact_path).endswith(f"{runs[0].run_id}.json")
+    assert runs[0].claim_id is None
+    assert runs[0].threshold_policy_id is None
+    assert runs[0].training_mode == "blind_training"
 
 
 def test_v12_evidence_suite_contains_perturbation_matrix():
@@ -108,4 +112,92 @@ def test_custom_suite_loads_from_json(tmp_path):
     assert suite.id == "custom"
     assert len(runs) == 1
     assert runs[0].dataset.points == 12
+    assert runs[0].claim_id is None
+    assert runs[0].threshold_policy_id is None
+    assert runs[0].training_mode == "compile_only_verification"
     assert str(runs[0].artifact_path).startswith(str(tmp_path / "artifacts"))
+
+
+def test_case_accepts_and_serializes_proof_metadata():
+    case = BenchmarkCase.from_mapping(
+        {
+            "id": "proof-exp",
+            "formula": "exp",
+            "start_mode": "blind",
+            "claim_id": "paper-shallow-blind-recovery",
+            "threshold_policy_id": "bounded_100_percent",
+            "training_mode": "blind_training",
+        },
+        path="cases[0]",
+    )
+    suite = BenchmarkSuite("proof-custom", "proof metadata custom suite", (case,))
+    suite.validate()
+    runs = suite.expanded_runs()
+
+    assert case.as_dict()["claim_id"] == "paper-shallow-blind-recovery"
+    assert runs[0].claim_id == "paper-shallow-blind-recovery"
+    assert runs[0].threshold_policy_id == "bounded_100_percent"
+    assert runs[0].training_mode == "blind_training"
+    assert runs[0].as_dict()["threshold_policy_id"] == "bounded_100_percent"
+    assert runs[0].run_id != type(runs[0])(
+        suite_id=runs[0].suite_id,
+        case_id=runs[0].case_id,
+        formula=runs[0].formula,
+        start_mode=runs[0].start_mode,
+        seed=runs[0].seed,
+        perturbation_noise=runs[0].perturbation_noise,
+        dataset=runs[0].dataset,
+        optimizer=runs[0].optimizer,
+        artifact_path=runs[0].artifact_path,
+        tags=runs[0].tags,
+        expect_recovery=runs[0].expect_recovery,
+        claim_id="paper-perturbed-true-tree-basin",
+        threshold_policy_id="bounded_100_percent",
+        training_mode="blind_training",
+    ).run_id
+
+
+@pytest.mark.parametrize(
+    ("override", "path_suffix"),
+    [
+        ({"claim_id": "missing-claim", "threshold_policy_id": "bounded_100_percent", "training_mode": "blind_training"}, "claim_id"),
+        ({"claim_id": "paper-shallow-blind-recovery", "training_mode": "blind_training"}, "threshold_policy_id"),
+        ({"claim_id": "paper-shallow-blind-recovery", "threshold_policy_id": "missing-policy", "training_mode": "blind_training"}, "threshold_policy_id"),
+        ({"claim_id": "paper-shallow-blind-recovery", "threshold_policy_id": "bounded_100_percent", "training_mode": "catalog_verification"}, "training_mode"),
+        ({"claim_id": "paper-shallow-blind-recovery", "threshold_policy_id": "bounded_100_percent", "training_mode": "perturbed_true_tree_training"}, "training_mode"),
+    ],
+)
+def test_proof_contract_validation_fails_closed(override, path_suffix):
+    payload = {
+        "id": "bad-proof-case",
+        "formula": "exp",
+        "start_mode": "blind",
+        **override,
+    }
+    suite = BenchmarkSuite.from_mapping({"id": "bad-proof-suite", "cases": [payload]})
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        suite.validate()
+
+    assert exc.value.reason == "invalid_proof_contract"
+    assert exc.value.path == f"cases[0].{path_suffix}"
+
+
+def test_v15_shallow_proof_suite_expands_fixed_proof_contract_runs():
+    suite = load_suite("v1.5-shallow-proof")
+    runs = suite.expanded_runs()
+
+    assert [case.id for case in suite.cases] == [
+        "shallow-exp-blind",
+        "shallow-log-blind",
+        "shallow-radioactive-decay-blind",
+        "shallow-beer-lambert-blind",
+    ]
+    assert len(runs) == 12
+    assert {run.seed for run in runs} == {0, 1, 2}
+    assert {run.claim_id for run in runs} == {"paper-shallow-blind-recovery"}
+    assert {run.threshold_policy_id for run in runs} == {"bounded_100_percent"}
+    assert {run.training_mode for run in runs} == {"blind_training"}
+    assert {run.start_mode for run in runs} == {"blind"}
+    assert all({"v1.5", "proof", "bounded", "blind"} <= set(run.tags) for run in runs)
+    assert all(run.optimizer.steps > 0 and run.optimizer.restarts > 0 for run in runs)
