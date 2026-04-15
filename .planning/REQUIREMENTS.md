@@ -10,11 +10,11 @@ Requirements for this milestone only. Completed v1, v1.1, and v1.2 requirements 
 
 ### Campaign Execution
 
-- [ ] **CAMP-01**: User can run named campaign presets (`smoke`, `standard`, `showcase`) that select benchmark suites, budget tiers, seeds, and output folders without hand-writing filters.
-- [ ] **CAMP-02**: User can generate a versioned campaign output directory containing raw run artifacts, suite results, aggregate reports, a campaign manifest, and reproducibility metadata.
-- [ ] **CAMP-03**: User can run a standard campaign that includes shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten diagnostics, Planck diagnostics, and selected FOR_DEMO cases.
-- [ ] **CAMP-04**: User can rerun a campaign without silently overwriting prior evidence, either by creating a new timestamped/versioned folder or explicitly allowing overwrite.
-- [ ] **CAMP-05**: User receives clear runtime/budget guardrails so smoke tests stay fast while showcase campaigns can be larger and explicit.
+- [x] **CAMP-01**: User can run named campaign presets (`smoke`, `standard`, `showcase`) that select benchmark suites, budget tiers, seeds, and output folders without hand-writing filters.
+- [x] **CAMP-02**: User can generate a versioned campaign output directory containing raw run artifacts, suite results, aggregate reports, a campaign manifest, and reproducibility metadata.
+- [x] **CAMP-03**: User can run a standard campaign that includes shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten diagnostics, Planck diagnostics, and selected FOR_DEMO cases.
+- [x] **CAMP-04**: User can rerun a campaign without silently overwriting prior evidence, either by creating a new timestamped/versioned folder or explicitly allowing overwrite.
+- [x] **CAMP-05**: User receives clear runtime/budget guardrails so smoke tests stay fast while showcase campaigns can be larger and explicit.
 
 ### Data Export
 
@@ -73,11 +73,11 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAMP-01 | Phase 19 | Pending |
-| CAMP-02 | Phase 19 | Pending |
-| CAMP-03 | Phase 19 | Pending |
-| CAMP-04 | Phase 19 | Pending |
-| CAMP-05 | Phase 19 | Pending |
+| CAMP-01 | Phase 19 | Complete |
+| CAMP-02 | Phase 19 | Complete |
+| CAMP-03 | Phase 19 | Complete |
+| CAMP-04 | Phase 19 | Complete |
+| CAMP-05 | Phase 19 | Complete |
 | DATA-01 | Phase 20 | Pending |
 | DATA-02 | Phase 20 | Pending |
 | DATA-03 | Phase 20 | Pending |

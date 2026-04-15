@@ -9,8 +9,9 @@ from typing import Any
 
 import numpy as np
 
-from .cleanup import cleanup_candidate
 from .benchmark import RunFilter, list_builtin_suites, load_suite, run_benchmark_suite, write_aggregate_reports
+from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_presets, run_campaign
+from .cleanup import cleanup_candidate
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
 from .datasets import demo_specs, get_demo
 from .optimize import TrainingConfig, fit_eml_tree
@@ -169,6 +170,13 @@ def list_benchmarks(args: argparse.Namespace | None = None) -> int:
     return 0
 
 
+def list_campaigns(args: argparse.Namespace | None = None) -> int:
+    for name in list_campaign_presets():
+        preset = campaign_preset(name)
+        print(f"{name}: {preset.description} ({preset.budget_guardrail})")
+    return 0
+
+
 def run_benchmark(args: argparse.Namespace) -> int:
     suite = load_suite(args.suite)
     if args.output_dir:
@@ -187,6 +195,27 @@ def run_benchmark(args: argparse.Namespace) -> int:
     print(
         f"{suite.id}: {counts['total']} runs, {counts['unsupported']} unsupported, "
         f"{counts['failed']} failed -> {summary_path}; aggregate -> {aggregate_paths['markdown']}"
+    )
+    return 0
+
+
+def run_campaign_command(args: argparse.Namespace) -> int:
+    run_filter = RunFilter(
+        formulas=tuple(args.formula or ()),
+        start_modes=tuple(args.start_mode or ()),
+        case_ids=tuple(args.case or ()),
+        seeds=tuple(args.seed or ()),
+    )
+    result = run_campaign(
+        args.preset,
+        output_root=Path(args.output_root),
+        label=args.label,
+        overwrite=args.overwrite,
+        run_filter=run_filter,
+    )
+    print(
+        f"{args.preset}: campaign -> {result.campaign_dir}; "
+        f"manifest -> {result.manifest_path}; aggregate -> {result.aggregate_paths['markdown']}"
     )
     return 0
 
@@ -243,6 +272,20 @@ def build_parser() -> argparse.ArgumentParser:
     bench.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")
     bench.add_argument("--seed", type=int, action="append", help="Only run this seed. Repeatable.")
     bench.set_defaults(func=run_benchmark)
+
+    list_campaign = sub.add_parser("list-campaigns", help="List named benchmark campaign presets.")
+    list_campaign.set_defaults(func=list_campaigns)
+
+    campaign = sub.add_parser("campaign", help="Run a named benchmark campaign preset.")
+    campaign.add_argument("preset", choices=list_campaign_presets(), help="Named campaign preset.")
+    campaign.add_argument("--output-root", default=str(DEFAULT_CAMPAIGN_ROOT), help="Directory that receives campaign folders.")
+    campaign.add_argument("--label", help="Stable campaign folder name. Defaults to <preset>-<UTC timestamp>.")
+    campaign.add_argument("--overwrite", action="store_true", help="Allow writing into an existing campaign folder.")
+    campaign.add_argument("--formula", action="append", help="Only run this formula ID. Repeatable.")
+    campaign.add_argument("--start-mode", choices=("catalog", "compile", "blind", "warm_start"), action="append")
+    campaign.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")
+    campaign.add_argument("--seed", type=int, action="append", help="Only run this seed. Repeatable.")
+    campaign.set_defaults(func=run_campaign_command)
     return parser
 
 

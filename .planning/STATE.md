@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Benchmark Campaign and Evidence Report
-current_phase: 19
+current_phase: 20
 status: ready_for_phase_planning
-stopped_at: roadmap created for v1.3
+stopped_at: phase 19 complete
 last_updated: "2026-04-15T11:15:22Z"
 last_activity: 2026-04-15
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 20
 ---
 
 # GSD State: EML Symbolic Regression
@@ -30,17 +30,17 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 ## Current Position
 
-Phase: 19 of 23 (Campaign Presets and Run Manifests)
+Phase: 20 of 23 (Tidy CSV Export and Derived Metrics)
 Plan: Not started
-Status: Ready to plan phase 19
+Status: Ready to plan phase 20
 Last activity: 2026-04-15
-Progress: [----------] 0% by completed phases (v1.3: 0/5)
+Progress: [██--------] 20% by completed phases (v1.3: 1/5)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1, v1.1, and v1.2 phases complete; v1.3 not started
+- Total plans completed: Historical v1, v1.1, and v1.2 phases complete; v1.3 phase 19 complete
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
@@ -93,7 +93,7 @@ Target features:
 | 16 | Experiment Matrix and Formula Coverage | Complete | MATR-01, MATR-02, MATR-03, MATR-04 |
 | 17 | Evidence Aggregation and Report Contracts | Complete | EVID-01, EVID-02, EVID-03, EVID-04 |
 | 18 | Smoke Tests, Docs, and Evidence Lockdown | Complete | TEST-05, TEST-06, TEST-07 |
-| 19 | Campaign Presets and Run Manifests | Pending | CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05 |
+| 19 | Campaign Presets and Run Manifests | Complete | CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05 |
 | 20 | Tidy CSV Export and Derived Metrics | Pending | DATA-01, DATA-02, DATA-03, DATA-04 |
 | 21 | Static Plot Generation | Pending | PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06 |
 | 22 | Evidence Report Assembly | Pending | REPT-01, REPT-02, REPT-03, REPT-04, REPT-05 |
@@ -112,6 +112,7 @@ Target features:
 - v1.2 established benchmark contracts, suite execution, formula matrix coverage, aggregate evidence reports, and smoke artifacts.
 - v1.3 should produce showcase-grade evidence before optimizer changes.
 - v1.3 continues phase numbering from v1.2 and maps 23 requirements across phases 19-23.
+- Phase 19 added campaign presets, guarded output folders, manifest metadata, and the campaign CLI.
 
 ### Pending Todos
 
@@ -124,8 +125,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: v1.3 roadmap created; ready for Phase 19 planning
+Stopped at: Phase 19 complete; ready for Phase 20 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after creating milestone v1.3 roadmap*
+*Last updated: 2026-04-15 after completing Phase 19*

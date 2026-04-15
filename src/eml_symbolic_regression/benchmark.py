@@ -22,7 +22,7 @@ from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
 
 START_MODES = ("catalog", "compile", "blind", "warm_start")
-BUILTIN_SUITES = ("smoke", "v1.2-evidence", "for-demo-diagnostics")
+BUILTIN_SUITES = ("smoke", "v1.2-evidence", "for-demo-diagnostics", "v1.3-standard", "v1.3-showcase")
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 
 
@@ -489,6 +489,71 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 _case("shockley-compile", "shockley", "compile", tags=("for_demo", "diagnostic")),
                 _case("damped-oscillator-compile", "damped_oscillator", "compile", tags=("for_demo", "stretch")),
                 _case("planck-compile", "planck", "compile", tags=("for_demo", "stretch")),
+            ),
+        )
+    if name == "v1.3-standard":
+        return BenchmarkSuite(
+            id="v1.3-standard",
+            description="Standard v1.3 campaign matrix with shallow blind baselines, perturbation sweeps, and FOR_DEMO diagnostics.",
+            cases=(
+                _case("exp-blind", "exp", "blind", seeds=(0, 1), depth=1, steps=80, tags=("blind", "shallow")),
+                _case("log-blind", "log", "blind", seeds=(0, 1), depth=3, steps=80, tags=("blind", "shallow")),
+                _case(
+                    "radioactive-decay-blind",
+                    "radioactive_decay",
+                    "blind",
+                    seeds=(0, 1),
+                    depth=4,
+                    steps=80,
+                    tags=("blind", "shallow", "for_demo"),
+                ),
+                _case(
+                    "beer-perturbation-sweep",
+                    "beer_lambert",
+                    "warm_start",
+                    seeds=(0, 1),
+                    perturbation_noise=(0.0, 5.0, 35.0),
+                    warm_steps=60,
+                    tags=("warm_start", "perturbation", "for_demo"),
+                    expect_recovery=True,
+                ),
+                _case("michaelis-warm-diagnostic", "michaelis_menten", "warm_start", tags=("diagnostic", "depth_gate", "for_demo")),
+                _case("logistic-compile", "logistic", "compile", tags=("diagnostic", "for_demo")),
+                _case("shockley-compile", "shockley", "compile", tags=("diagnostic", "for_demo")),
+                _case("planck-diagnostic", "planck", "compile", tags=("stretch", "depth_gate", "for_demo")),
+            ),
+        )
+    if name == "v1.3-showcase":
+        return BenchmarkSuite(
+            id="v1.3-showcase",
+            description="Showcase v1.3 campaign matrix with expanded seeds, perturbations, and full FOR_DEMO diagnostics.",
+            cases=(
+                _case("exp-blind", "exp", "blind", seeds=(0, 1, 2), depth=1, steps=120, tags=("blind", "shallow")),
+                _case("log-blind", "log", "blind", seeds=(0, 1, 2), depth=3, steps=120, tags=("blind", "shallow")),
+                _case(
+                    "radioactive-decay-blind",
+                    "radioactive_decay",
+                    "blind",
+                    seeds=(0, 1, 2),
+                    depth=4,
+                    steps=120,
+                    tags=("blind", "shallow", "for_demo"),
+                ),
+                _case(
+                    "beer-perturbation-sweep",
+                    "beer_lambert",
+                    "warm_start",
+                    seeds=(0, 1, 2),
+                    perturbation_noise=(0.0, 2.5, 5.0, 15.0, 35.0),
+                    warm_steps=90,
+                    tags=("warm_start", "perturbation", "for_demo"),
+                    expect_recovery=True,
+                ),
+                _case("michaelis-warm-diagnostic", "michaelis_menten", "warm_start", warm_steps=90, tags=("diagnostic", "depth_gate", "for_demo")),
+                _case("logistic-compile", "logistic", "compile", tags=("diagnostic", "for_demo")),
+                _case("shockley-compile", "shockley", "compile", tags=("diagnostic", "for_demo")),
+                _case("damped-oscillator-compile", "damped_oscillator", "compile", tags=("stretch", "for_demo")),
+                _case("planck-diagnostic", "planck", "compile", tags=("stretch", "depth_gate", "for_demo")),
             ),
         )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")

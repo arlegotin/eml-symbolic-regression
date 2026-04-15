@@ -18,7 +18,7 @@ v1.3 turns the benchmark harness into a polished showcase: run a real campaign, 
 - **v1.0 MVP** - Phases 1-7 complete (completed 2026-04-15)
 - **v1.1 EML Compiler and Warm Starts** - Phases 8-13 complete (completed 2026-04-15)
 - **v1.2 Training Benchmark and Recovery Evidence** - Phases 14-18 complete (completed 2026-04-15)
-- **v1.3 Benchmark Campaign and Evidence Report** - Phases 19-23 planned
+- **v1.3 Benchmark Campaign and Evidence Report** - Phases 19-23 in progress
 
 ## Completed Milestone Context
 
@@ -50,7 +50,7 @@ v1.3 turns the benchmark harness into a polished showcase: run a real campaign, 
 - Decimal phases (19.1, 19.2): Urgent insertions, if needed later
 - v1.3 continues from completed Phase 18 and starts at Phase 19
 
-- [ ] **Phase 19: Campaign Presets and Run Manifests** - Add named campaign presets, budget tiers, output-folder guardrails, and manifest metadata. (requirements: CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05)
+- [x] **Phase 19: Campaign Presets and Run Manifests** - Add named campaign presets, budget tiers, output-folder guardrails, and manifest metadata. (requirements: CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05)
 - [ ] **Phase 20: Tidy CSV Export and Derived Metrics** - Export run-level and grouped CSV tables plus headline metrics for analysis and plotting. (requirements: DATA-01, DATA-02, DATA-03, DATA-04)
 - [ ] **Phase 21: Static Plot Generation** - Generate deterministic static figures for recovery, losses, perturbation sensitivity, runtime/depth, and failure taxonomy. (requirements: PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06)
 - [ ] **Phase 22: Evidence Report Assembly** - Assemble a self-contained campaign report with figures, tables, commands, narrative, limitations, and next experiments. (requirements: REPT-01, REPT-02, REPT-03, REPT-04, REPT-05)
@@ -68,7 +68,8 @@ v1.3 turns the benchmark harness into a polished showcase: run a real campaign, 
   3. The standard preset includes shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten diagnostics, Planck diagnostics, and selected FOR_DEMO cases.
   4. Re-running a campaign cannot silently overwrite prior evidence unless the user explicitly opts in.
   5. Runtime and budget guardrails make the difference between smoke, standard, and showcase campaigns clear.
-**Plans**: TBD
+**Plans**: `.planning/phases/19-campaign-presets-and-run-manifests/19-PLAN.md`
+**Completed:** 2026-04-15
 
 ### Phase 20: Tidy CSV Export and Derived Metrics
 **Goal**: Users can analyze benchmark results through flat CSV tables and headline metric summaries.
@@ -129,11 +130,11 @@ The order is intentionally linear. Campaign presets define where evidence lives;
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CAMP-01 | Phase 19 | Pending |
-| CAMP-02 | Phase 19 | Pending |
-| CAMP-03 | Phase 19 | Pending |
-| CAMP-04 | Phase 19 | Pending |
-| CAMP-05 | Phase 19 | Pending |
+| CAMP-01 | Phase 19 | Complete |
+| CAMP-02 | Phase 19 | Complete |
+| CAMP-03 | Phase 19 | Complete |
+| CAMP-04 | Phase 19 | Complete |
+| CAMP-05 | Phase 19 | Complete |
 | DATA-01 | Phase 20 | Pending |
 | DATA-02 | Phase 20 | Pending |
 | DATA-03 | Phase 20 | Pending |
@@ -179,7 +180,7 @@ The order is intentionally linear. Campaign presets define where evidence lives;
 | 16. Experiment Matrix and Formula Coverage | Complete | Complete | 2026-04-15 |
 | 17. Evidence Aggregation and Report Contracts | Complete | Complete | 2026-04-15 |
 | 18. Smoke Tests, Docs, and Evidence Lockdown | Complete | Complete | 2026-04-15 |
-| 19. Campaign Presets and Run Manifests | 0/1 | Pending | - |
+| 19. Campaign Presets and Run Manifests | 1/1 | Complete | 2026-04-15 |
 | 20. Tidy CSV Export and Derived Metrics | 0/1 | Pending | - |
 | 21. Static Plot Generation | 0/1 | Pending | - |
 | 22. Evidence Report Assembly | 0/1 | Pending | - |
