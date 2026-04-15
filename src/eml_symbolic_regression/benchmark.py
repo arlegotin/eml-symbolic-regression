@@ -1328,12 +1328,13 @@ def _threshold_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
     for (claim_id, threshold_policy_id), items in sorted(grouped.items()):
         claim = paper_claim(claim_id)
         policy = threshold_policy(threshold_policy_id)
+        allowed_evidence_classes = _counted_evidence_classes_for_claim(claim_id, policy.allowed_evidence_classes)
         evidence_counts: dict[str, int] = {}
         passed = 0
         for item in items:
             evidence_class = str(item.get("evidence_class") or "unknown")
             evidence_counts[evidence_class] = evidence_counts.get(evidence_class, 0) + 1
-            if evidence_class in policy.allowed_evidence_classes:
+            if evidence_class in allowed_evidence_classes:
                 passed += 1
 
         eligible = len(items)
@@ -1364,6 +1365,12 @@ def _threshold_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
             }
         )
     return rows
+
+
+def _counted_evidence_classes_for_claim(claim_id: str, policy_classes: tuple[str, ...]) -> tuple[str, ...]:
+    if claim_id == "paper-shallow-blind-recovery":
+        return (EVIDENCE_CLASSES["blind_training_recovered"],)
+    return policy_classes
 
 
 def _group_counts(runs: list[Mapping[str, Any]], key_fn: Any) -> list[dict[str, Any]]:
