@@ -10,11 +10,13 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.4 Shipped
+## Current State: v1.5 In Progress
 
 The project now includes a compiler-driven warm-start pipeline, repeatable benchmark evidence system, campaign reporting layer, targeted recovery improvements, and before/after comparison reports. Supported SymPy formulas can compile into exact EML ASTs, validate against ordinary evaluation, embed into soft master trees with literal constant catalogs, perturb/train through the existing optimizer, snap, and delegate recovery claims to the verifier.
 
 v1.4 used the committed v1.3 standard/showcase campaigns as the scoreboard. It added failure triage, blind `exp`/`log` scaffold initializers, warm-start failure mechanisms, compiler diagnostics, a validated Shockley template, and a generated before/after comparison. The combined standard/showcase comparison improved verifier-owned recovery from 18/45 to 27/45.
+
+v1.5 Phase 29 is complete. The project now has a stable paper-claim matrix, deterministic proof dataset manifests, proof-aware benchmark artifacts, derived evidence classes, claim-level threshold summaries, CLI inspection/generation commands, and campaign proof metadata/reporting. The recovery-improvement work for bounded shallow blind suites starts in Phase 30.
 
 ## Last Completed Milestone: v1.4 Recovery Performance Improvements
 
@@ -68,6 +70,7 @@ v1.4 used the committed v1.3 standard/showcase campaigns as the scoreboard. It a
 - ✓ Warm-start perturbation mechanism reporting with campaign-level metrics — v1.4
 - ✓ Compiler diagnostics and validated Shockley compiled recovery under the v1.4 gate — v1.4
 - ✓ Before/after v1.4 standard/showcase campaigns and comparison report — v1.4
+- ✓ Paper claim matrix, deterministic proof dataset manifests, proof-aware artifacts, evidence classes, and explicit threshold policies — v1.5 Phase 29
 
 ### Active
 
@@ -75,7 +78,7 @@ v1.4 used the committed v1.3 standard/showcase campaigns as the scoreboard. It a
 - [ ] Repair blind `radioactive_decay` recovery and related scaled/signed exponential families.
 - [ ] Repair or tightly bound perturbed warm-start basin recovery for Beer-Lambert and synthetic exact EML trees.
 - [ ] Generate real training depth-curve evidence that matches the paper's qualitative claims without overselling deep blind recovery.
-- [ ] Publish reproducible proof datasets, raw training artifacts, metrics, plots, and a claim report.
+- [ ] Publish raw training artifacts, metrics, plots, and a final claim report based on the Phase 29 proof contract.
 
 ### Out of Scope
 
@@ -123,8 +126,9 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 | Diagnose Beer-Lambert before repairing it | High-perturbation failures needed mechanism-level evidence before deeper discrete repair work. | ✓ Good |
 | Shockley template must validate before acceptance | Compiler expansion remains fail-closed and cannot emit invalid EML trees. | ✓ Good |
 | Before/after comparison is the milestone gate | Recovery improvements are only credible when rerun through the same standard/showcase campaign contracts. | ✓ Good |
-| v1.5 training proof must be bounded | The user wants 100% functional training, but the paper itself reports rapid blind degradation at depth; the defensible target is 100% over declared suites plus honest depth curves. | - Pending |
-| Compile-only success does not prove training | v1.5 reports compiler-assisted cases separately and counts proof success only when actual training and verifier checks pass. | - Pending |
+| v1.5 training proof must be bounded | The user wants 100% functional training, but the paper itself reports rapid blind degradation at depth; the defensible target is 100% over declared suites plus honest depth curves. | ✓ Good |
+| Compile-only success does not prove training | v1.5 reports compiler-assisted cases separately and counts proof success only when actual training and verifier checks pass. | ✓ Good |
+| Proof evidence must be claim-labeled | Phase 29 established stable paper claim IDs, threshold policies, dataset manifests, and derived evidence classes before running proof campaigns. | ✓ Good |
 
 ## Evolution
 
@@ -144,4 +148,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after starting milestone v1.5*
+*Last updated: 2026-04-15 after completing Phase 29*
