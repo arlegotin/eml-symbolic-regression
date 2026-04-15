@@ -31,10 +31,10 @@ Requirements for this milestone only. Completed v1, v1.1, v1.2, and v1.3 require
 
 ### Compiler Coverage and Depth Reduction
 
-- [ ] **COV-01**: User can inspect compiler depth, node count, rule trace, and unsupported reason diagnostics for Michaelis-Menten, logistic, Shockley, damped oscillator, and Planck formulas.
-- [ ] **COV-02**: User receives at least one compiler coverage improvement that moves a v1.3 unsupported/depth-gated FOR_DEMO formula to a verified compiled EML AST or a documented lower-depth candidate.
-- [ ] **COV-03**: User receives clear handling for damped oscillator's unsupported operator path, either through a supported transformation or an explicit deferred reason with tests.
-- [ ] **COV-04**: User can trust that compiler improvements remain fail-closed: unsupported formulas still emit structured reasons rather than silently producing invalid EML trees.
+- [x] **COV-01**: User can inspect compiler depth, node count, rule trace, and unsupported reason diagnostics for Michaelis-Menten, logistic, Shockley, damped oscillator, and Planck formulas.
+- [x] **COV-02**: User receives at least one compiler coverage improvement that moves a v1.3 unsupported/depth-gated FOR_DEMO formula to a verified compiled EML AST or a documented lower-depth candidate.
+- [x] **COV-03**: User receives clear handling for damped oscillator's unsupported operator path, either through a supported transformation or an explicit deferred reason with tests.
+- [x] **COV-04**: User can trust that compiler improvements remain fail-closed: unsupported formulas still emit structured reasons rather than silently producing invalid EML trees.
 
 ### Before/After Campaign Evaluation
 
@@ -82,10 +82,10 @@ Deferred to later milestones.
 | PERT-02 | Phase 26 | Complete |
 | PERT-03 | Phase 26 | Complete |
 | PERT-04 | Phase 26 | Complete |
-| COV-01 | Phase 27 | Pending |
-| COV-02 | Phase 27 | Pending |
-| COV-03 | Phase 27 | Pending |
-| COV-04 | Phase 27 | Pending |
+| COV-01 | Phase 27 | Complete |
+| COV-02 | Phase 27 | Complete |
+| COV-03 | Phase 27 | Complete |
+| COV-04 | Phase 27 | Complete |
 | EVAL-01 | Phase 28 | Pending |
 | EVAL-02 | Phase 28 | Pending |
 | EVAL-03 | Phase 28 | Pending |
@@ -99,4 +99,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after completing Phase 26 warm-start perturbation diagnostics*
+*Last updated: 2026-04-15 after completing Phase 27 compiler coverage improvements*

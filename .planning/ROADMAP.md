@@ -40,7 +40,7 @@ v1.4 improves the system against those committed baselines. The milestone should
 - [x] **Phase 24: Baseline Failure Triage and Diagnostic Harness** - Turn v1.3 standard/showcase failures into focused reproducible diagnostics. (requirements: DIAG-01, DIAG-02, DIAG-03, DIAG-04) (completed 2026-04-15)
 - [x] **Phase 25: Blind Optimizer Recovery Improvements** - Improve blind optimizer behavior for shallow formulas and preserve verifier-owned recovery semantics. (requirements: BLIND-01, BLIND-02, BLIND-03, BLIND-04) (completed 2026-04-15)
 - [x] **Phase 26: Warm-Start Perturbation Robustness** - Improve or precisely diagnose Beer-Lambert warm-start failures at stronger perturbations. (requirements: PERT-01, PERT-02, PERT-03, PERT-04) (completed 2026-04-15)
-- [ ] **Phase 27: Compiler Coverage and Depth Reduction** - Reduce unsupported/depth-gated FOR_DEMO cases while keeping compiler behavior fail-closed. (requirements: COV-01, COV-02, COV-03, COV-04)
+- [x] **Phase 27: Compiler Coverage and Depth Reduction** - Reduce unsupported/depth-gated FOR_DEMO cases while keeping compiler behavior fail-closed. (requirements: COV-01, COV-02, COV-03, COV-04) (completed 2026-04-15)
 - [ ] **Phase 28: Before/After Campaign Evaluation** - Rerun standard/showcase campaigns and report deltas against v1.3 baselines. (requirements: EVAL-01, EVAL-02, EVAL-03, EVAL-04, EVAL-05)
 
 ## Phase Details
@@ -127,10 +127,10 @@ Phase 24 creates a shared diagnostic baseline. Phases 25-27 can be executed inde
 | PERT-02 | Phase 26 | Complete |
 | PERT-03 | Phase 26 | Complete |
 | PERT-04 | Phase 26 | Complete |
-| COV-01 | Phase 27 | Pending |
-| COV-02 | Phase 27 | Pending |
-| COV-03 | Phase 27 | Pending |
-| COV-04 | Phase 27 | Pending |
+| COV-01 | Phase 27 | Complete |
+| COV-02 | Phase 27 | Complete |
+| COV-03 | Phase 27 | Complete |
+| COV-04 | Phase 27 | Complete |
 | EVAL-01 | Phase 28 | Pending |
 | EVAL-02 | Phase 28 | Pending |
 | EVAL-03 | Phase 28 | Pending |
@@ -152,7 +152,7 @@ Phase 24 creates a shared diagnostic baseline. Phases 25-27 can be executed inde
 | 24. Baseline Failure Triage and Diagnostic Harness | 1/1 | Complete    | 2026-04-15 |
 | 25. Blind Optimizer Recovery Improvements | 1/1 | Complete    | 2026-04-15 |
 | 26. Warm-Start Perturbation Robustness | 1/1 | Complete    | 2026-04-15 |
-| 27. Compiler Coverage and Depth Reduction | 0/1 | Pending | - |
+| 27. Compiler Coverage and Depth Reduction | 1/1 | Complete    | 2026-04-15 |
 | 28. Before/After Campaign Evaluation | 0/1 | Pending | - |
 
 ---
