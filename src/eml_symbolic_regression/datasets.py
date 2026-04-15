@@ -67,10 +67,31 @@ def _sympy_candidate(expr: sp.Expr, variable: str, name: str) -> SympyCandidate:
     return SympyCandidate(expr, (variable,), name=name)
 
 
+def _basin_demo_specs() -> dict[str, DemoSpec]:
+    from .basin import basin_target_specs
+
+    specs: dict[str, DemoSpec] = {}
+    for spec in basin_target_specs():
+        specs[spec.id] = DemoSpec(
+            name=spec.id,
+            variable=spec.variable,
+            description=f"Phase 31 deterministic exact EML basin target {spec.id}.",
+            target=lambda a, expr=spec.expression, var=spec.variable: expr.evaluate_numpy({var: a}),
+            candidate=spec.expression,
+            train_domain=spec.train_domain,
+            heldout_domain=spec.heldout_domain,
+            extrap_domain=spec.extrap_domain,
+            source_document=spec.source_document,
+            source_linkage=spec.source_linkage,
+            normalized_dimensionless=True,
+        )
+    return specs
+
+
 def demo_specs() -> dict[str, DemoSpec]:
     x = sp.Symbol("x")
     t = sp.Symbol("t")
-    return {
+    specs = {
         "exp": DemoSpec(
             name="exp",
             variable="x",
@@ -215,6 +236,8 @@ def demo_specs() -> dict[str, DemoSpec]:
             normalized_dimensionless=True,
         ),
     }
+    specs.update(_basin_demo_specs())
+    return specs
 
 
 def get_demo(name: str) -> DemoSpec:
