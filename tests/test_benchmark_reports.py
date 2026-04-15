@@ -1,7 +1,9 @@
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
 from eml_symbolic_regression.benchmark import (
+    BenchmarkCase,
     BenchmarkRun,
     BenchmarkRunResult,
     BenchmarkSuite,
@@ -76,6 +78,37 @@ def test_aggregate_evidence_separates_unsupported_and_same_ast(tmp_path):
     assert aggregate["counts"]["evidence_classes"]["unsupported"] == 1
     assert {group["key"] for group in aggregate["groups"]["evidence_class"]} == {"same_ast", "unsupported"}
     assert {run["classification"] for run in aggregate["runs"]} == {"same_ast_warm_start_return", "unsupported"}
+
+
+def test_warm_start_depth_gate_overrides_compiled_seed_claim_status(tmp_path):
+    case = BenchmarkCase.from_mapping(
+        {
+            "id": "beer-warm-depth-gated",
+            "formula": "beer_lambert",
+            "start_mode": "warm_start",
+            "seeds": [0],
+            "perturbation_noise": [0.0],
+            "dataset": {"points": 12},
+            "optimizer": {
+                "warm_steps": 1,
+                "warm_restarts": 1,
+                "max_warm_depth": 1,
+            },
+        },
+        path="cases[0]",
+    )
+    suite = BenchmarkSuite("warm-depth-gate", "depth-gated warm-start regression", (case,), tmp_path / "artifacts")
+
+    result = run_benchmark_suite(suite)
+    aggregate = aggregate_evidence(result)
+    artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
+
+    assert result.results[0].status == "unsupported"
+    assert artifact["claim_status"] == "unsupported"
+    assert artifact["warm_start_eml"]["reason"] == "depth_too_large_for_warm_start"
+    assert aggregate["counts"]["verifier_recovered"] == 0
+    assert aggregate["counts"]["unsupported"] == 1
+    assert aggregate["runs"][0]["claim_status"] == "unsupported"
 
 
 def test_bounded_threshold_counts_allowed_training_evidence_only():

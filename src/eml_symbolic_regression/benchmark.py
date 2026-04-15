@@ -887,6 +887,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 "status": "unsupported",
                 "stage_statuses": {**stage_statuses, "warm_start_attempt": "unsupported"},
                 **compiled_payload,
+                "claim_status": "unsupported",
                 "warm_start_eml": {
                     "status": "unsupported",
                     "reason": "depth_too_large_for_warm_start",
