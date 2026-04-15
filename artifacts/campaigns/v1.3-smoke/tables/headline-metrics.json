@@ -3,7 +3,7 @@
   "failure_rate": 0.3333333333333333,
   "median_best_loss": 3.2967819134132905,
   "median_post_snap_loss": 3.325130031089465,
-  "median_runtime_seconds": 0.2719551249756478,
+  "median_runtime_seconds": 0.2740509169525467,
   "same_ast_return": 1,
   "same_ast_return_rate": 0.3333333333333333,
   "total_runs": 3,

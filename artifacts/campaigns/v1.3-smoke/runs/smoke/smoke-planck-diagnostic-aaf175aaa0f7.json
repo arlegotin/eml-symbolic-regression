@@ -7,7 +7,7 @@
     "status": "unsupported"
   },
   "environment": {
-    "code_version": "454fb63",
+    "code_version": "96efa5f",
     "platform": "macOS-15.6.1-arm64-arm-64bit",
     "python": "3.11.5"
   },
@@ -59,6 +59,6 @@
   },
   "status": "unsupported",
   "timing": {
-    "elapsed_seconds": 0.01344233297277242
+    "elapsed_seconds": 0.015337709046434611
   }
 }

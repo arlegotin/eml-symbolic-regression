@@ -27,7 +27,7 @@ PYTHONPATH=src python -m eml_symbolic_regression.cli campaign smoke --output-roo
 | Failed | 1 (33.3%) |
 | Median best soft loss | 3.297 |
 | Median post-snap loss | 3.325 |
-| Median runtime seconds | 0.272 |
+| Median runtime seconds | 0.2741 |
 
 ## Figures
 

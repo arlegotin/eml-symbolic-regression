@@ -9,7 +9,7 @@
     "verifier_recovered": 1,
     "verifier_recovery_rate": 0.3333333333333333
   },
-  "generated_at": "2026-04-15T11:34:50.054377+00:00",
+  "generated_at": "2026-04-15T11:41:48.122490+00:00",
   "output": {
     "aggregate_json": "artifacts/campaigns/v1.3-smoke/aggregate.json",
     "aggregate_markdown": "artifacts/campaigns/v1.3-smoke/aggregate.md",
@@ -45,7 +45,7 @@
     "tier": "ci"
   },
   "reproducibility": {
-    "code_version": "454fb63",
+    "code_version": "96efa5f",
     "command": "PYTHONPATH=src python -m eml_symbolic_regression.cli campaign smoke --output-root artifacts/campaigns --label v1.3-smoke --overwrite",
     "overwrite": true,
     "platform": "macOS-15.6.1-arm64-arm-64bit",

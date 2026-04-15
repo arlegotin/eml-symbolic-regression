@@ -188,7 +188,7 @@
     "tolerance": 1e-08
   },
   "environment": {
-    "code_version": "454fb63",
+    "code_version": "96efa5f",
     "platform": "macOS-15.6.1-arm64-arm-64bit",
     "python": "3.11.5"
   },
@@ -242,7 +242,7 @@
   },
   "status": "same_ast_return",
   "timing": {
-    "elapsed_seconds": 0.2719551249756478
+    "elapsed_seconds": 0.2740509169525467
   },
   "warm_start_eml": {
     "compiler_metadata": {
