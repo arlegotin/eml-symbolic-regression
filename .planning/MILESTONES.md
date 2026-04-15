@@ -1,5 +1,19 @@
 # Milestones
 
+## v1.4 Recovery Performance Improvements (Shipped: 2026-04-15)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added v1.3 baseline triage, representative failure rows, immutable baseline locks, and focused diagnostic reruns.
+- Improved shallow blind recovery with conservative `exp` and `log` scaffold initializers while preserving verifier-owned recovery semantics.
+- Added warm-start perturbation diagnosis fields and campaign metrics that identify active-slot perturbation as the dominant Beer-Lambert high-noise failure mechanism.
+- Added compiler diagnostics and a validated Shockley `c*exp(a)-c` template, moving Shockley into verified compiled coverage.
+- Generated v1.4 standard/showcase campaign evidence and a before/after comparison report showing overall recovery improved from 18/45 to 27/45 against v1.3 baselines.
+
+---
+
 ## v1.3 Benchmark Campaign and Evidence Report (Shipped: 2026-04-15)
 
 **Phases completed:** 5 phases, 5 plans, 0 tasks

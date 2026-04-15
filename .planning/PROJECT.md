@@ -10,33 +10,31 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.3 Shipped
+## Current State: v1.4 Shipped
 
-The project now includes a compiler-driven warm-start pipeline, repeatable benchmark evidence system, and campaign reporting layer. Supported SymPy formulas can compile into exact EML ASTs, validate against ordinary evaluation, embed into soft master trees with literal constant catalogs, perturb/train through the existing optimizer, snap, and delegate recovery claims to the verifier.
+The project now includes a compiler-driven warm-start pipeline, repeatable benchmark evidence system, campaign reporting layer, targeted recovery improvements, and before/after comparison reports. Supported SymPy formulas can compile into exact EML ASTs, validate against ordinary evaluation, embed into soft master trees with literal constant catalogs, perturb/train through the existing optimizer, snap, and delegate recovery claims to the verifier.
 
-v1.3 added named campaign presets, guarded campaign folders, tidy CSV exports, deterministic SVG figures, and self-contained Markdown reports. The committed v1.3 smoke evidence bundle shows the current honest performance: one same-AST warm-start recovery, one blind snapped-but-failed run, and one unsupported Planck depth gate.
+v1.4 used the committed v1.3 standard/showcase campaigns as the scoreboard. It added failure triage, blind `exp`/`log` scaffold initializers, warm-start failure mechanisms, compiler diagnostics, a validated Shockley template, and a generated before/after comparison. The combined standard/showcase comparison improved verifier-owned recovery from 18/45 to 27/45.
 
-## Last Completed Milestone: v1.3 Benchmark Campaign and Evidence Report
+## Last Completed Milestone: v1.4 Recovery Performance Improvements
 
-**Goal shipped:** Showcase how the paper's EML symbolic-regression idea performs in practice by running a real benchmark campaign and producing crisp numbers, tables, graphs, and a polished evidence report.
+**Goal shipped:** Improve real end-to-end recovery performance against committed v1.3 standard/showcase baselines, then rerun the same campaigns to produce before/after evidence.
 
 **Shipped features:**
-- Campaign presets for smoke, standard, and showcase runs.
-- Versioned or labeled campaign folders with raw run JSON, aggregate evidence, CSV tables, SVG figures, manifests, and `report.md`.
-- CSV schemas for run-level metrics, grouped recovery summaries, headline metrics, and failed/unsupported cases with reason codes.
-- Deterministic SVG charts for recovery, loss, Beer-Lambert perturbation behavior, runtime/budget, and failure taxonomy.
-- Documentation and committed smoke evidence that present same-AST warm-start return, blind recovery, unsupported gates, and failed fits separately.
+- Baseline triage reports and immutable locks for v1.3 standard/showcase campaign evidence.
+- Generic blind scaffold initializers for paper primitive families, improving shallow blind recovery without changing the recovery contract.
+- Warm-start perturbation diagnosis that distinguishes same-AST return, verified equivalent ASTs, active-slot perturbation, non-finite snaps, soft-fit-only, and verifier mismatch.
+- Compiler diagnostics and a lower-depth Shockley `c*exp(a)-c` template validated before acceptance.
+- v1.4 standard/showcase campaign folders plus a comparison report showing overall recovery improved from 18/45 to 27/45.
 
-## Current Milestone: v1.4 Recovery Performance Improvements
+## Next Milestone
 
-**Goal:** Improve real end-to-end recovery performance against the committed v1.3 standard/showcase baselines, then rerun the same campaigns to produce before/after evidence.
+No active milestone is currently defined. Candidate directions for the next milestone are listed in Active requirements below; start the next cycle with `/gsd-new-milestone`.
 
-**Target features:**
-- Diagnose v1.3 baseline failures from `artifacts/campaigns/v1.3-standard/` and `artifacts/campaigns/v1.3-showcase/`.
-- Improve blind optimizer robustness for shallow formulas where current training snaps but fails verification.
-- Improve Beer-Lambert warm-start robustness at stronger perturbation levels.
-- Reduce compiler depth/operator blockers for selected FOR_DEMO formulas.
-- Generate a before/after campaign comparison report using the same standard/showcase campaign contracts.
+**Candidate directions:**
+- Repair Beer-Lambert high-perturbation warm-start failures now that active-slot perturbation is identified.
+- Add lower-depth compiler templates or simplification passes for Planck, logistic, Michaelis-Menten, and damped oscillator.
+- Add external noisy datasets and external symbolic-regression baselines after synthetic/source-document campaigns remain reproducible and interpretable.
 
 ## Requirements
 
@@ -63,14 +61,18 @@ v1.3 added named campaign presets, guarded campaign folders, tidy CSV exports, d
 - ✓ Deterministic SVG figures for recovery, loss, perturbation, runtime, and failure taxonomy — v1.3
 - ✓ Self-contained campaign reports with exact commands, figures, tables, limitations, and next experiments — v1.3
 - ✓ Campaign CLI/docs coverage and committed v1.3 smoke evidence artifact — v1.3
+- ✓ Baseline failure triage, representative run links, diagnostic subsets, and baseline locks — v1.4
+- ✓ Blind optimizer scaffold initializers and diagnostics for remaining shallow blind failures — v1.4
+- ✓ Warm-start perturbation mechanism reporting with campaign-level metrics — v1.4
+- ✓ Compiler diagnostics and validated Shockley compiled recovery under the v1.4 gate — v1.4
+- ✓ Before/after v1.4 standard/showcase campaigns and comparison report — v1.4
 
 ### Active
 
-- [ ] Improve blind optimizer robustness using v1.3 snapped-but-failed cases as a baseline.
-- [ ] Reduce compiled arithmetic tree depth or add templates for formulas currently blocked by depth gates.
-- [ ] Improve high-perturbation Beer-Lambert warm-start recovery without weakening verifier-owned recovery semantics.
-- [ ] Rerun standard/showcase campaigns after optimizer/compiler changes to produce before/after evidence.
+- [ ] Repair high-perturbation Beer-Lambert warm-start failures now that active-slot perturbation is identified.
+- [ ] Reduce compiled arithmetic tree depth or add templates for Planck, logistic, Michaelis-Menten, and damped oscillator cases still blocked by compiler gates.
 - [ ] Add external noisy datasets after synthetic/source-document campaigns remain reproducible and interpretable.
+- [ ] Compare EML recovery against external symbolic-regression baselines.
 
 ### Out of Scope
 
@@ -112,7 +114,11 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 | Same-AST warm-start return is not blind discovery | Benchmark reports count same-AST return separately from verifier-owned recovery rate and unsupported cases. | ✓ Good |
 | v1.3 prioritizes showcase evidence over optimizer changes | The user wants crisp numbers, graphs, and a real-life performance narrative before tuning the algorithm. | ✓ Good |
 | Static reports before dashboards | CSV, SVG, and Markdown evidence proved the metrics before adding an interactive dashboard. | ✓ Good |
-| v1.4 uses committed campaigns as the scoreboard | More baseline runs would mostly confirm the same weaknesses; the useful next step is targeted improvement followed by identical reruns. | - Pending |
+| v1.4 uses committed campaigns as the scoreboard | More baseline runs would mostly confirm the same weaknesses; the useful next step is targeted improvement followed by identical reruns. | ✓ Good |
+| Primitive scaffolds are acceptable blind defaults | They encode paper-grounded primitive families and preserve verifier-owned recovery semantics. | ✓ Good |
+| Diagnose Beer-Lambert before repairing it | High-perturbation failures needed mechanism-level evidence before deeper discrete repair work. | ✓ Good |
+| Shockley template must validate before acceptance | Compiler expansion remains fail-closed and cannot emit invalid EML trees. | ✓ Good |
+| Before/after comparison is the milestone gate | Recovery improvements are only credible when rerun through the same standard/showcase campaign contracts. | ✓ Good |
 
 ## Evolution
 
@@ -132,4 +138,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after starting milestone v1.4*
+*Last updated: 2026-04-15 after shipping milestone v1.4*
