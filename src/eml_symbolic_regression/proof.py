@@ -26,6 +26,7 @@ EVIDENCE_CLASSES = {
     "catalog_verified": "catalog_verified",
     "compile_only_verified": "compile_only_verified",
     "blind_training_recovered": "blind_training_recovered",
+    "scaffolded_blind_training_recovered": "scaffolded_blind_training_recovered",
     "compiler_warm_start_recovered": "compiler_warm_start_recovered",
     "perturbed_true_tree_recovered": "perturbed_true_tree_recovered",
     "repaired_candidate": "repaired_candidate",
@@ -169,6 +170,7 @@ def threshold_policies() -> dict[str, ThresholdPolicy]:
             required_rate=None,
             allowed_evidence_classes=(
                 EVIDENCE_CLASSES["blind_training_recovered"],
+                EVIDENCE_CLASSES["scaffolded_blind_training_recovered"],
                 EVIDENCE_CLASSES["compiler_warm_start_recovered"],
                 EVIDENCE_CLASSES["perturbed_true_tree_recovered"],
                 EVIDENCE_CLASSES["repaired_candidate"],

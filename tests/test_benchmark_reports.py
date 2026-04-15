@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from eml_symbolic_regression.benchmark import (
     BenchmarkCase,
     BenchmarkRun,
@@ -117,6 +119,12 @@ def test_shallow_bounded_threshold_counts_only_blind_training_recovery():
         suite=suite,
         results=(
             _synthetic_result(case_id="blind", start_mode="blind", training_mode="blind_training", evidence_class="blind_training_recovered"),
+            _synthetic_result(
+                case_id="scaffolded-blind",
+                start_mode="blind",
+                training_mode="blind_training",
+                evidence_class="scaffolded_blind_training_recovered",
+            ),
             _synthetic_result(case_id="compile", start_mode="compile", training_mode="compile_only_verification", evidence_class="compile_only_verified"),
             _synthetic_result(case_id="catalog", start_mode="catalog", training_mode="catalog_verification", evidence_class="catalog_verified"),
             _synthetic_result(
@@ -170,15 +178,16 @@ def test_shallow_bounded_threshold_counts_only_blind_training_recovery():
         "compiler_warm_start_recovered": 1,
         "repaired_candidate": 1,
         "same_ast": 1,
+        "scaffolded_blind_training_recovered": 1,
         "soft_fit_only": 1,
         "verified_equivalent": 1,
     }
     assert threshold["claim_id"] == "paper-shallow-blind-recovery"
     assert threshold["threshold_policy_id"] == "bounded_100_percent"
-    assert threshold["eligible"] == 8
+    assert threshold["eligible"] == 9
     assert threshold["passed"] == 1
-    assert threshold["failed"] == 7
-    assert threshold["rate"] == 0.125
+    assert threshold["failed"] == 8
+    assert threshold["rate"] == pytest.approx(1.0 / 9.0)
     assert threshold["required_rate"] == 1.0
     assert threshold["status"] == "failed"
     assert threshold["evidence_classes"] == aggregate["counts"]["evidence_classes"]

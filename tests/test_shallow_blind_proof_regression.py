@@ -29,7 +29,7 @@ def shallow_proof_result(tmp_path_factory):
     return result, aggregate_evidence(result)
 
 
-def test_v15_shallow_blind_proof_suite_recovers_only_with_blind_training(shallow_proof_result):
+def test_v15_shallow_suite_recovers_but_uses_scaffolded_blind_training(shallow_proof_result):
     result, aggregate = shallow_proof_result
 
     assert [case.id for case in result.suite.cases] == list(EXPECTED_SHALLOW_CASE_IDS)
@@ -51,7 +51,7 @@ def test_v15_shallow_blind_proof_suite_recovers_only_with_blind_training(shallow
         assert artifact["claim_status"] == "recovered"
         assert artifact["run"]["start_mode"] == "blind"
         assert artifact["training_mode"] == "blind_training"
-        assert artifact["evidence_class"] == "blind_training_recovered"
+        assert artifact["evidence_class"] == "scaffolded_blind_training_recovered"
         assert artifact["evidence_class"] not in FORBIDDEN_PROOF_EVIDENCE
         assert "compiled_eml" not in artifact
         assert "compiled_eml_verification" not in artifact
@@ -59,23 +59,23 @@ def test_v15_shallow_blind_proof_suite_recovers_only_with_blind_training(shallow
         assert "verification" not in artifact
 
 
-def test_v15_shallow_blind_proof_aggregate_threshold_and_diagnostics(shallow_proof_result):
+def test_v15_shallow_blind_threshold_rejects_scaffolded_recovery(shallow_proof_result):
     _, aggregate = shallow_proof_result
     threshold = aggregate["thresholds"][0]
 
     assert threshold["claim_id"] == "paper-shallow-blind-recovery"
     assert threshold["threshold_policy_id"] == "bounded_100_percent"
     assert threshold["eligible"] == 18
-    assert threshold["passed"] == 18
-    assert threshold["failed"] == 0
-    assert threshold["rate"] == 1.0
-    assert threshold["status"] == "passed"
-    assert threshold["evidence_classes"] == {"blind_training_recovered": 18}
+    assert threshold["passed"] == 0
+    assert threshold["failed"] == 18
+    assert threshold["rate"] == 0.0
+    assert threshold["status"] == "failed"
+    assert threshold["evidence_classes"] == {"scaffolded_blind_training_recovered": 18}
 
     for run in aggregate["runs"]:
         metrics = run["metrics"]
 
-        assert run["evidence_class"] == "blind_training_recovered"
+        assert run["evidence_class"] == "scaffolded_blind_training_recovered"
         assert metrics["best_loss"] is not None
         assert metrics["post_snap_loss"] is not None
         assert metrics["snap_min_margin"] is not None

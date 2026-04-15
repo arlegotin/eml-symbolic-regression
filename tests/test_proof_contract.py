@@ -33,6 +33,7 @@ def test_claims_keep_catalog_compile_and_training_classes_distinct():
     assert CLAIM_CLASSES["catalog_verification"] != CLAIM_CLASSES["compile_only_verification"]
     assert EVIDENCE_CLASSES["catalog_verified"] != EVIDENCE_CLASSES["compile_only_verified"]
     assert EVIDENCE_CLASSES["blind_training_recovered"] != EVIDENCE_CLASSES["soft_fit_only"]
+    assert EVIDENCE_CLASSES["blind_training_recovered"] != EVIDENCE_CLASSES["scaffolded_blind_training_recovered"]
 
     shallow_claim = paper_claim("paper-shallow-blind-recovery")
     assert shallow_claim.claim_class == CLAIM_CLASSES["bounded_training_proof"]
@@ -42,6 +43,8 @@ def test_claims_keep_catalog_compile_and_training_classes_distinct():
         "shallow-log-blind",
         "shallow-radioactive-decay-blind",
         "shallow-beer-lambert-blind",
+        "shallow-scaled-exp-growth-blind",
+        "shallow-scaled-exp-fast-decay-blind",
     )
     assert "sources/paper.pdf" in shallow_claim.source_refs
     assert ".planning/REQUIREMENTS.md" in shallow_claim.source_refs
@@ -63,6 +66,7 @@ def test_bounded_100_percent_policy_allows_only_verifier_owned_training_evidence
     }
     assert EVIDENCE_CLASSES["catalog_verified"] not in policy.allowed_evidence_classes
     assert EVIDENCE_CLASSES["compile_only_verified"] not in policy.allowed_evidence_classes
+    assert EVIDENCE_CLASSES["scaffolded_blind_training_recovered"] not in policy.allowed_evidence_classes
     assert EVIDENCE_CLASSES["same_ast"] not in policy.allowed_evidence_classes
 
 

@@ -1234,6 +1234,8 @@ def classify_run(payload: Mapping[str, Any]) -> str:
     if status == "execution_error":
         return "execution_failure"
     if start_mode == "blind" and claim_status == "recovered":
+        if _blind_payload_used_scaffold(payload):
+            return "scaffolded_blind_recovery"
         return "blind_recovery"
     if status == "same_ast_return":
         return "same_ast_warm_start_return"
@@ -1277,6 +1279,8 @@ def evidence_class_for_payload(payload: Mapping[str, Any]) -> str:
     if start_mode == "compile" and recovered:
         return EVIDENCE_CLASSES["compile_only_verified"]
     if training_mode == TRAINING_MODES["blind_training"] and recovered:
+        if _blind_payload_used_scaffold(payload):
+            return EVIDENCE_CLASSES["scaffolded_blind_training_recovered"]
         return EVIDENCE_CLASSES["blind_training_recovered"]
     if training_mode == TRAINING_MODES["compiler_warm_start_training"]:
         if status == "same_ast_return" or claim_status == "same_ast_return":
@@ -1288,6 +1292,17 @@ def evidence_class_for_payload(payload: Mapping[str, Any]) -> str:
     if training_mode == TRAINING_MODES["perturbed_true_tree_training"] and recovered:
         return EVIDENCE_CLASSES["perturbed_true_tree_recovered"]
     return str(status or "unknown")
+
+
+def _blind_payload_used_scaffold(payload: Mapping[str, Any]) -> bool:
+    candidate = payload.get("trained_eml_candidate")
+    if not isinstance(candidate, Mapping):
+        return False
+    best_restart = candidate.get("best_restart")
+    if not isinstance(best_restart, Mapping):
+        return False
+    attempt_kind = best_restart.get("attempt_kind")
+    return isinstance(attempt_kind, str) and attempt_kind.startswith("scaffold_")
 
 
 def _aggregate_counts(runs: list[Mapping[str, Any]]) -> dict[str, Any]:

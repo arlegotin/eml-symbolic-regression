@@ -114,7 +114,7 @@ def test_shallow_beer_lambert_blind_run_artifact_exposes_scaled_scaffold_diagnos
     assert result.results[0].status == "recovered"
     assert artifact["status"] == "recovered"
     assert artifact["budget"]["constants"] == ["-0.8"]
-    assert artifact["evidence_class"] == "blind_training_recovered"
+    assert artifact["evidence_class"] == "scaffolded_blind_training_recovered"
     assert initialization["kind"] == "scaffold_scaled_exp"
     assert initialization["strategy"] == "paper_scaled_exponential_family"
     assert initialization["coefficient"] == "-0.8"
@@ -170,6 +170,18 @@ def test_evidence_class_for_payload_is_derived_and_covers_reserved_repair():
             }
         )
         == "blind_training_recovered"
+    )
+    assert (
+        evidence_class_for_payload(
+            {
+                "status": "recovered",
+                "claim_status": "recovered",
+                "training_mode": "blind_training",
+                "run": {"start_mode": "blind"},
+                "trained_eml_candidate": {"best_restart": {"attempt_kind": "scaffold_scaled_exp"}},
+            }
+        )
+        == "scaffolded_blind_training_recovered"
     )
     assert (
         evidence_class_for_payload(
