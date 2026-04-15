@@ -98,6 +98,37 @@ def test_proof_aware_run_artifact_includes_threshold_dataset_and_provenance(tmp_
     assert artifact["evidence_class"] == evidence_class_for_payload(artifact)
 
 
+def test_shallow_beer_lambert_blind_run_artifact_exposes_scaled_scaffold_diagnostics(tmp_path):
+    base = builtin_suite("v1.5-shallow-proof")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(
+        suite,
+        run_filter=RunFilter(case_ids=("shallow-beer-lambert-blind",), seeds=(0,)),
+    )
+    artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
+    candidate = artifact["trained_eml_candidate"]
+    initialization = candidate["best_restart"]["initialization"]
+    metrics = artifact["metrics"]
+
+    assert result.results[0].status == "recovered"
+    assert artifact["status"] == "recovered"
+    assert artifact["budget"]["constants"] == ["-0.8"]
+    assert artifact["evidence_class"] == "blind_training_recovered"
+    assert initialization["kind"] == "scaffold_scaled_exp"
+    assert initialization["strategy"] == "paper_scaled_exponential_family"
+    assert initialization["coefficient"] == "-0.8"
+    assert initialization["constant_label"] == "const:-0.8"
+    assert metrics["scaffold_source"] == "scaffold_scaled_exp"
+    assert metrics["scaffold_strategy"] == "paper_scaled_exponential_family"
+    assert metrics["scaffold_coefficient"] == "-0.8"
+    assert metrics["best_loss"] is not None
+    assert metrics["post_snap_loss"] <= 1e-20
+    assert metrics["snap_min_margin"] > 0.99
+    assert metrics["snap_active_node_count"] == 19
+    assert metrics["verifier_status"] == "recovered"
+
+
 def test_runner_writes_execution_error_if_payload_construction_fails(tmp_path):
     run = BenchmarkRun(
         suite_id="direct",
