@@ -39,6 +39,8 @@ BUILTIN_SUITES = (
     "v1.3-standard",
     "v1.3-showcase",
     "v1.5-shallow-proof",
+    "proof-perturbed-basin",
+    "proof-perturbed-basin-beer-probes",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 
@@ -237,13 +239,18 @@ class BenchmarkCase:
             raise BenchmarkValidationError(
                 "invalid_perturbation", "perturbation noise values must be non-negative", path=f"{path}.perturbation_noise"
             )
+        proof_contract_validated = False
+        if self.claim_id == "paper-perturbed-true-tree-basin":
+            self._validate_proof_contract(path)
+            proof_contract_validated = True
         if self.start_mode not in {"warm_start", "perturbed_tree"} and any(noise != 0.0 for noise in self.perturbation_noise):
             raise BenchmarkValidationError(
                 "invalid_perturbation",
                 "only warm_start and perturbed_tree cases may use nonzero perturbation noise",
                 path=f"{path}.perturbation_noise",
             )
-        self._validate_proof_contract(path)
+        if not proof_contract_validated:
+            self._validate_proof_contract(path)
         self.dataset.validate(f"{path}.dataset")
         self.optimizer.validate(f"{path}.optimizer")
 
@@ -292,6 +299,31 @@ class BenchmarkCase:
                     "invalid_proof_contract",
                     "paper-shallow-blind-recovery cases must use bounded_100_percent threshold",
                     path=f"{path}.threshold_policy_id",
+                )
+        if claim.id == "paper-perturbed-true-tree-basin":
+            if self.start_mode != "perturbed_tree":
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-perturbed-true-tree-basin cases must use perturbed_tree start_mode",
+                    path=f"{path}.start_mode",
+                )
+            if self.training_mode != TRAINING_MODES["perturbed_true_tree_training"]:
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-perturbed-true-tree-basin cases must use perturbed_true_tree_training mode",
+                    path=f"{path}.training_mode",
+                )
+            if self.threshold_policy_id != "bounded_100_percent":
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-perturbed-true-tree-basin cases must use bounded_100_percent threshold",
+                    path=f"{path}.threshold_policy_id",
+                )
+            if any(noise == 0.0 for noise in self.perturbation_noise):
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-perturbed-true-tree-basin cases require declared nonzero perturbation noise",
+                    path=f"{path}.perturbation_noise",
                 )
 
     def as_dict(self) -> dict[str, Any]:
@@ -608,6 +640,7 @@ def _case(
     depth: int = 2,
     constants: Iterable[complex] = (1.0,),
     warm_restarts: int = 1,
+    max_warm_depth: int = 10,
     tags: Iterable[str] = (),
     expect_recovery: bool = False,
     claim_id: str | None = None,
@@ -628,6 +661,7 @@ def _case(
             restarts=restarts,
             warm_steps=warm_steps,
             warm_restarts=warm_restarts,
+            max_warm_depth=max_warm_depth,
         ),
         tags=tuple(tags),
         expect_recovery=expect_recovery,
@@ -779,6 +813,81 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 _case("shallow-beer-lambert-blind", "beer_lambert", "blind", depth=9, constants=(-0.8,), **proof_kwargs),
                 _case("shallow-scaled-exp-growth-blind", "scaled_exp_growth", "blind", depth=9, constants=(0.4,), **proof_kwargs),
                 _case("shallow-scaled-exp-fast-decay-blind", "scaled_exp_fast_decay", "blind", depth=9, constants=(-1.2,), **proof_kwargs),
+            ),
+        )
+    if name == "proof-perturbed-basin":
+        proof_kwargs = {
+            "points": 12,
+            "tags": ("v1.5", "proof", "bounded", "perturbed_tree"),
+            "expect_recovery": True,
+            "claim_id": "paper-perturbed-true-tree-basin",
+            "threshold_policy_id": "bounded_100_percent",
+            "training_mode": "perturbed_true_tree_training",
+        }
+        return BenchmarkSuite(
+            id="proof-perturbed-basin",
+            description="Bounded v1.5 perturbed true-tree basin proof suite with declared nonzero perturbation envelopes.",
+            cases=(
+                _case(
+                    "basin-depth1-perturbed",
+                    "basin_depth1_exp",
+                    "perturbed_tree",
+                    seeds=(0, 1),
+                    perturbation_noise=(0.05, 0.25),
+                    depth=1,
+                    warm_steps=12,
+                    **proof_kwargs,
+                ),
+                _case(
+                    "basin-depth2-perturbed",
+                    "basin_depth2_exp_exp",
+                    "perturbed_tree",
+                    seeds=(0,),
+                    perturbation_noise=(0.05, 0.10),
+                    depth=2,
+                    warm_steps=16,
+                    **proof_kwargs,
+                ),
+                _case(
+                    "basin-depth3-perturbed",
+                    "basin_depth3_exp_exp_exp",
+                    "perturbed_tree",
+                    seeds=(0,),
+                    perturbation_noise=(0.05,),
+                    depth=3,
+                    warm_steps=20,
+                    **proof_kwargs,
+                ),
+                _case(
+                    "basin-beer-lambert-bound",
+                    "beer_lambert",
+                    "perturbed_tree",
+                    seeds=(0, 1),
+                    perturbation_noise=(5.0,),
+                    warm_steps=40,
+                    warm_restarts=1,
+                    max_warm_depth=10,
+                    **proof_kwargs,
+                ),
+            ),
+        )
+    if name == "proof-perturbed-basin-beer-probes":
+        return BenchmarkSuite(
+            id="proof-perturbed-basin-beer-probes",
+            description="Visible Beer-Lambert high-noise perturbed true-tree probe rows outside the bounded proof denominator.",
+            cases=(
+                _case(
+                    "basin-beer-lambert-bound-probes",
+                    "beer_lambert",
+                    "perturbed_tree",
+                    seeds=(0, 1),
+                    perturbation_noise=(15.0, 35.0),
+                    points=12,
+                    warm_steps=40,
+                    warm_restarts=1,
+                    max_warm_depth=10,
+                    tags=("bound_probe", "beer_lambert", "high_noise"),
+                ),
             ),
         )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")

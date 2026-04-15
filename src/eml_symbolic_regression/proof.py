@@ -263,10 +263,16 @@ def claim_matrix() -> dict[str, PaperClaim]:
             source_refs=("sources/paper.pdf", "sources/NORTH_STAR.md", ".planning/REQUIREMENTS.md", ".planning/ROADMAP.md"),
             claim_class=CLAIM_CLASSES["bounded_training_proof"],
             suite_ids=("proof-perturbed-basin",),
-            case_ids=("synthetic_true_tree_depths", "beer_lambert_perturbation"),
+            case_ids=(
+                "basin-depth1-perturbed",
+                "basin-depth2-perturbed",
+                "basin-depth3-perturbed",
+                "basin-beer-lambert-bound",
+            ),
             threshold_policy_id="bounded_100_percent",
             notes=(
-                "Same-AST return is tracked separately and is not by itself bounded training proof.",
+                "Same-AST return after a declared nonzero perturbation may count only under the perturbed_tree proof path.",
+                "The return_kind field remains separate from top-level status and threshold evidence class.",
                 "Phase 31 owns the exact perturbation inventory and noise bounds.",
             ),
         ),

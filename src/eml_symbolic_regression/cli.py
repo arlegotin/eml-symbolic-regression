@@ -9,7 +9,7 @@ from typing import Any
 
 import numpy as np
 
-from .benchmark import RunFilter, list_builtin_suites, load_suite, run_benchmark_suite, write_aggregate_reports
+from .benchmark import START_MODES, RunFilter, list_builtin_suites, load_suite, run_benchmark_suite, write_aggregate_reports
 from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_presets, run_campaign
 from .cleanup import cleanup_candidate
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
@@ -332,7 +332,7 @@ def build_parser() -> argparse.ArgumentParser:
     bench.add_argument("suite", help="Built-in suite name or path to a suite JSON file.")
     bench.add_argument("--output-dir", help="Override artifact root.")
     bench.add_argument("--formula", action="append", help="Only run this formula ID. Repeatable.")
-    bench.add_argument("--start-mode", choices=("catalog", "compile", "blind", "warm_start"), action="append")
+    bench.add_argument("--start-mode", choices=START_MODES, action="append")
     bench.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")
     bench.add_argument("--seed", type=int, action="append", help="Only run this seed. Repeatable.")
     bench.add_argument("--perturbation-noise", type=float, action="append", help="Only run this perturbation noise. Repeatable.")
@@ -347,7 +347,7 @@ def build_parser() -> argparse.ArgumentParser:
     campaign.add_argument("--label", help="Stable campaign folder name. Defaults to <preset>-<UTC timestamp>.")
     campaign.add_argument("--overwrite", action="store_true", help="Allow writing into an existing campaign folder.")
     campaign.add_argument("--formula", action="append", help="Only run this formula ID. Repeatable.")
-    campaign.add_argument("--start-mode", choices=("catalog", "compile", "blind", "warm_start"), action="append")
+    campaign.add_argument("--start-mode", choices=START_MODES, action="append")
     campaign.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")
     campaign.add_argument("--seed", type=int, action="append", help="Only run this seed. Repeatable.")
     campaign.add_argument("--perturbation-noise", type=float, action="append", help="Only run this perturbation noise. Repeatable.")
