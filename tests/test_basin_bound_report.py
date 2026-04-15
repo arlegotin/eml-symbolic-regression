@@ -334,13 +334,14 @@ def test_cli_diagnostics_basin_bound_writes_reports(tmp_path):
 
 
 @pytest.mark.integration
-def test_beer_lambert_bound_and_probe_evidence_generates_stable_report(tmp_path):
+def test_beer_lambert_bound_and_probe_evidence_generates_stable_report():
+    artifact_root = Path("/tmp") / "eml-phase31-basin-bound"
     bounded_suite = load_suite("proof-perturbed-basin")
     bounded_suite = type(bounded_suite)(
         bounded_suite.id,
         bounded_suite.description,
         bounded_suite.cases,
-        tmp_path / "bounded-runs",
+        artifact_root / "bounded",
         bounded_suite.schema,
     )
     bounded_result = run_benchmark_suite(
@@ -354,7 +355,7 @@ def test_beer_lambert_bound_and_probe_evidence_generates_stable_report(tmp_path)
         probe_suite.id,
         probe_suite.description,
         probe_suite.cases,
-        tmp_path / "probe-runs",
+        artifact_root / "probe",
         probe_suite.schema,
     )
     probe_result = run_benchmark_suite(

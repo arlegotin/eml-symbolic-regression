@@ -97,7 +97,6 @@ def build_perturbed_basin_bound_report(
 
     return {
         "schema": "eml.perturbed_basin_bound_report.v1",
-        "generated_at": datetime.now(timezone.utc).isoformat(),
         "formula": formula,
         "declared_noise_grid": list(grid),
         "bounded_noise_values": _noise_values(bounded_rows),

@@ -10,7 +10,6 @@
     35.0
   ],
   "formula": "beer_lambert",
-  "generated_at": "2026-04-15T19:27:04.747733+00:00",
   "probe_noise_values": [
     15.0,
     35.0
