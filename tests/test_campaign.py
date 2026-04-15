@@ -110,6 +110,7 @@ def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
         "recovery_class",
         "runtime_seconds",
         "changed_slot_count",
+        "warm_start_mechanism",
         "artifact_path",
     } <= set(run_rows[0])
 

@@ -169,5 +169,56 @@ def fit_warm_started_eml_tree(
         "perturbation_config": perturbation_config.__dict__,
         "optimizer": fit.manifest,
         "verification": verification.as_dict() if verification else None,
+        "diagnosis": _diagnose_warm_start(status, fit, verification),
     }
     return WarmStartResult(status, fit, embedding, verification, manifest)
+
+
+def _diagnose_warm_start(status: str, fit: FitResult, verification: VerificationReport | None) -> dict[str, Any]:
+    initialization = fit.manifest.get("best_restart", {}).get("initialization") or {}
+    perturbation = initialization.get("perturbation") or {}
+    changes = perturbation.get("active_slot_changes") or []
+    active_slot_count = len(changes) if isinstance(changes, list) else None
+    changed_slot_count = sum(1 for item in changes if item.get("changed")) if isinstance(changes, list) else None
+    verifier_status = verification.status if verification is not None else None
+
+    mechanism = _warm_start_mechanism(
+        status,
+        changed_slot_count=changed_slot_count,
+        post_snap_loss=fit.post_snap_loss,
+        snap_min_margin=fit.snap.min_margin,
+        verifier_status=verifier_status,
+    )
+    return {
+        "status": status,
+        "mechanism": mechanism,
+        "active_slot_count": active_slot_count,
+        "changed_slot_count": changed_slot_count,
+        "snap_min_margin": fit.snap.min_margin,
+        "best_loss": fit.best_loss,
+        "post_snap_loss": fit.post_snap_loss,
+        "verifier_status": verifier_status,
+    }
+
+
+def _warm_start_mechanism(
+    status: str,
+    *,
+    changed_slot_count: int | None,
+    post_snap_loss: float,
+    snap_min_margin: float,
+    verifier_status: str | None,
+) -> str:
+    if status in {"same_ast_return", "verified_equivalent_ast"}:
+        return status
+    if changed_slot_count is not None and changed_slot_count > 0:
+        return "active_slot_perturbation"
+    if not np.isfinite(post_snap_loss):
+        return "non_finite_snap"
+    if snap_min_margin < 0.1:
+        return "snap_instability"
+    if status == "soft_fit_only":
+        return "soft_fit_only"
+    if verifier_status == "failed":
+        return "verifier_mismatch"
+    return status or "failed"

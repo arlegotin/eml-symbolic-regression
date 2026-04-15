@@ -782,6 +782,11 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     if not verification:
         verification = payload.get("compiled_eml_verification") or payload.get("verification")
 
+    diagnosis = {}
+    warm_start = payload.get("warm_start_eml")
+    if isinstance(warm_start, Mapping):
+        diagnosis = warm_start.get("diagnosis") or {}
+
     active_slot_changes = None
     changed_slots = None
     if isinstance(candidate, Mapping):
@@ -801,6 +806,8 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "changed_slot_count": changed_slots,
         "verifier_status": verification.get("status") if isinstance(verification, Mapping) else None,
         "high_precision_max_error": verification.get("high_precision_max_error") if isinstance(verification, Mapping) else None,
+        "warm_start_mechanism": diagnosis.get("mechanism"),
+        "warm_start_status": diagnosis.get("status"),
     }
 
 

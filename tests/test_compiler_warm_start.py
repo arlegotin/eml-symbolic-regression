@@ -109,6 +109,8 @@ def test_warm_start_manifest_returns_same_ast_and_verifies():
     assert result.verification.status == "recovered"
     assert result.manifest["optimizer"]["status"] == "snapped_candidate"
     assert result.manifest["status"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["mechanism"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["changed_slot_count"] == 0
 
 
 def test_perturbation_is_seeded_and_reports_active_slots():
@@ -128,6 +130,31 @@ def test_perturbation_is_seeded_and_reports_active_slots():
     assert {"slot", "embedded_choice", "pre_choice", "post_choice", "changed"} <= set(
         reports[0].active_slot_changes[0]
     )
+
+
+def test_high_noise_warm_start_records_failure_mechanism():
+    spec = get_demo("beer_lambert")
+    splits = spec.make_splits(points=24, seed=0)
+    compiled = compile_and_validate(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=12, max_nodes=128),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+    result = fit_warm_started_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(depth=compiled.metadata.depth, variables=(spec.variable,), steps=1, restarts=1, seed=0),
+        compiled.expression,
+        perturbation_config=PerturbationConfig(seed=0, noise_scale=35.0),
+        verification_splits=splits,
+        compiler_metadata=compiled.metadata.as_dict(),
+    )
+    diagnosis = result.manifest["diagnosis"]
+
+    assert diagnosis["active_slot_count"] > 0
+    assert diagnosis["changed_slot_count"] > 0
+    assert diagnosis["mechanism"] == "active_slot_perturbation"
+    assert diagnosis["verifier_status"] in {"failed", "recovered"}
 
 
 def test_cli_warm_start_promotes_beer_lambert_only_after_verification(tmp_path):

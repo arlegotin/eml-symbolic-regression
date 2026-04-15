@@ -467,6 +467,7 @@ _RUN_COLUMNS = [
     "runtime_seconds",
     "active_slot_count",
     "changed_slot_count",
+    "warm_start_mechanism",
     "reason",
     "artifact_path",
 ]
@@ -515,6 +516,7 @@ def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
         "runtime_seconds": _runtime_seconds(run),
         "active_slot_count": metrics.get("active_slot_count"),
         "changed_slot_count": metrics.get("changed_slot_count"),
+        "warm_start_mechanism": metrics.get("warm_start_mechanism"),
         "reason": run.get("reason"),
         "artifact_path": run.get("artifact_path"),
     }
