@@ -53,6 +53,67 @@ def test_optimizer_custom_initializer_does_not_add_scaffold_provenance():
     assert kinds == ["custom_initializer"]
 
 
+def test_optimizer_scaled_exp_scaffold_recovers_radioactive_decay_with_manifest():
+    spec = get_demo("radioactive_decay")
+    splits = spec.make_splits(points=12, seed=0)
+
+    result = fit_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(
+            depth=9,
+            variables=("t",),
+            constants=(-0.4,),
+            steps=2,
+            restarts=1,
+            seed=0,
+            scaffold_initializers=("scaled_exp",),
+        ),
+    )
+    report = verify_candidate(result.snap.expression, splits)
+    best_restart = result.manifest["best_restart"]
+    initialization = best_restart["initialization"]
+
+    assert report.status == "recovered"
+    assert best_restart["attempt_kind"] == "scaffold_scaled_exp"
+    assert initialization["kind"] == "scaffold_scaled_exp"
+    assert initialization["variable"] == "t"
+    assert initialization["coefficient"] == "-0.4"
+    assert initialization["constant_label"] == "const:-0.4"
+    assert initialization["strategy"] == "paper_scaled_exponential_family"
+    assert initialization["seed"] == 0
+    assert initialization["embedding"]["success"] is True
+    assert initialization["embedding"]["snap"]["active_node_count"] == 19
+
+
+def test_optimizer_scaled_exp_scaffold_recovers_beer_lambert_and_positive_growth():
+    cases = (
+        ("beer_lambert", "x", -0.8),
+        ("scaled_exp_growth", "x", 0.4),
+    )
+
+    for formula, variable, coefficient in cases:
+        spec = get_demo(formula)
+        splits = spec.make_splits(points=12, seed=0)
+        result = fit_eml_tree(
+            splits[0].inputs,
+            splits[0].target,
+            TrainingConfig(
+                depth=9,
+                variables=(variable,),
+                constants=(coefficient,),
+                steps=2,
+                restarts=1,
+                seed=0,
+                scaffold_initializers=("scaled_exp",),
+            ),
+        )
+        report = verify_candidate(result.snap.expression, splits)
+
+        assert report.status == "recovered"
+        assert result.manifest["best_restart"]["attempt_kind"] == "scaffold_scaled_exp"
+
+
 def test_cleanup_report_verifies_candidate():
     spec = get_demo("log")
     splits = spec.make_splits(points=24)
