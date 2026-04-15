@@ -1,0 +1,1241 @@
+{
+  "counts": {
+    "execution_error": 0,
+    "failed": 7,
+    "same_ast_return": 4,
+    "total": 16,
+    "unsupported": 4,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 5,
+    "verifier_recovery_rate": 0.3125
+  },
+  "environment": {
+    "code_version": "0b054d0",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-15T11:44:24.102483+00:00",
+  "groups": {
+    "depth": [
+      {
+        "execution_error": 0,
+        "failed": 1,
+        "key": "1",
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 0.5
+      },
+      {
+        "execution_error": 0,
+        "failed": 2,
+        "key": "2",
+        "same_ast_return": 4,
+        "total": 10,
+        "unsupported": 4,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 4,
+        "verifier_recovery_rate": 0.4
+      },
+      {
+        "execution_error": 0,
+        "failed": 2,
+        "key": "3",
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 2,
+        "key": "4",
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "formula": [
+      {
+        "execution_error": 0,
+        "failed": 2,
+        "key": "beer_lambert",
+        "same_ast_return": 4,
+        "total": 6,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 4,
+        "verifier_recovery_rate": 0.6666666666666666
+      },
+      {
+        "execution_error": 0,
+        "failed": 1,
+        "key": "exp",
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 0.5
+      },
+      {
+        "execution_error": 0,
+        "failed": 2,
+        "key": "log",
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "logistic",
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "michaelis_menten",
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "planck",
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 2,
+        "key": "radioactive_decay",
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "shockley",
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "execution_error": 0,
+        "failed": 5,
+        "key": "0.0",
+        "same_ast_return": 2,
+        "total": 12,
+        "unsupported": 4,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 3,
+        "verifier_recovery_rate": 0.25
+      },
+      {
+        "execution_error": 0,
+        "failed": 2,
+        "key": "35.0",
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "5.0",
+        "same_ast_return": 2,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "seed_group": [
+      {
+        "execution_error": 0,
+        "failed": 7,
+        "key": "all",
+        "same_ast_return": 4,
+        "total": 16,
+        "unsupported": 4,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 5,
+        "verifier_recovery_rate": 0.3125
+      }
+    ],
+    "start_mode": [
+      {
+        "execution_error": 0,
+        "failed": 5,
+        "key": "blind",
+        "same_ast_return": 0,
+        "total": 6,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 0.16666666666666666
+      },
+      {
+        "execution_error": 0,
+        "failed": 0,
+        "key": "compile",
+        "same_ast_return": 0,
+        "total": 3,
+        "unsupported": 3,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "execution_error": 0,
+        "failed": 2,
+        "key": "warm_start",
+        "same_ast_return": 4,
+        "total": 7,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 4,
+        "verifier_recovery_rate": 0.5714285714285714
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-exp-blind-a5022d6098c7.json",
+      "case_id": "exp-blind",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "exp",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": 4.276312640712871,
+        "changed_slot_count": null,
+        "high_precision_max_error": 3.626994328701647,
+        "post_snap_loss": 6.65026006217893,
+        "snap_active_node_count": 3,
+        "snap_min_margin": 0.4618253617907166,
+        "verifier_status": "failed"
+      },
+      "optimizer": {
+        "depth": 1,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "mpmath_failed",
+      "run_id": "v1-3-standard-exp-blind-a5022d6098c7",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-exp-blind-f5720b502dfe.json",
+      "case_id": "exp-blind",
+      "claim_status": "recovered",
+      "classification": "blind_recovery",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "exp",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": 0.004462506622418204,
+        "changed_slot_count": null,
+        "high_precision_max_error": 0.0,
+        "post_snap_loss": 0.0,
+        "snap_active_node_count": 3,
+        "snap_min_margin": 0.3533736054875897,
+        "verifier_status": "recovered"
+      },
+      "optimizer": {
+        "depth": 1,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "verified",
+      "run_id": "v1-3-standard-exp-blind-f5720b502dfe",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "recovered"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-log-blind-194180dc5df0.json",
+      "case_id": "log-blind",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "log",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": 1.6346277048832631,
+        "changed_slot_count": null,
+        "high_precision_max_error": 65.46133421647787,
+        "post_snap_loss": 57.11453695040577,
+        "snap_active_node_count": 7,
+        "snap_min_margin": 0.06559763555479026,
+        "verifier_status": "failed"
+      },
+      "optimizer": {
+        "depth": 3,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "mpmath_failed",
+      "run_id": "v1-3-standard-log-blind-194180dc5df0",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-log-blind-99aa5ff393ee.json",
+      "case_id": "log-blind",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "log",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": 0.9828604315865963,
+        "changed_slot_count": null,
+        "high_precision_max_error": 65.24551554978073,
+        "post_snap_loss": 57.2736718817892,
+        "snap_active_node_count": 7,
+        "snap_min_margin": 0.040214261504050275,
+        "verifier_status": "failed"
+      },
+      "optimizer": {
+        "depth": 3,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "mpmath_failed",
+      "run_id": "v1-3-standard-log-blind-99aa5ff393ee",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "failed"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-radioactive-decay-blind-20f83222d0db.json",
+      "case_id": "radioactive-decay-blind",
+      "claim_status": "failed",
+      "classification": "failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "radioactive_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": 662.4053453501712,
+        "changed_slot_count": null,
+        "high_precision_max_error": Infinity,
+        "post_snap_loss": Infinity,
+        "snap_active_node_count": 9,
+        "snap_min_margin": 0.016389018309306447,
+        "verifier_status": "failed"
+      },
+      "optimizer": {
+        "depth": 4,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "mpmath_failed",
+      "run_id": "v1-3-standard-radioactive-decay-blind-20f83222d0db",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed"
+      },
+      "start_mode": "blind",
+      "status": "failed",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-radioactive-decay-blind-83660c5b4b25.json",
+      "case_id": "radioactive-decay-blind",
+      "claim_status": "failed",
+      "classification": "failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "radioactive_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": 605.0998472184481,
+        "changed_slot_count": null,
+        "high_precision_max_error": Infinity,
+        "post_snap_loss": Infinity,
+        "snap_active_node_count": 9,
+        "snap_min_margin": 0.051373298683507373,
+        "verifier_status": "failed"
+      },
+      "optimizer": {
+        "depth": 4,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "mpmath_failed",
+      "run_id": "v1-3-standard-radioactive-decay-blind-83660c5b4b25",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "failed"
+      },
+      "start_mode": "blind",
+      "status": "failed",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-beer-perturbation-sweep-583f8b4d1958.json",
+      "case_id": "beer-perturbation-sweep",
+      "claim_status": "recovered",
+      "classification": "same_ast_warm_start_return",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "best_loss": 3.719786715409145e-33,
+        "changed_slot_count": 0,
+        "high_precision_max_error": 4.787995130595557e-81,
+        "post_snap_loss": 4.496499888230497e-32,
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered"
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 60
+      },
+      "perturbation_noise": 0.0,
+      "reason": "verified",
+      "run_id": "v1-3-standard-beer-perturbation-sweep-583f8b4d1958",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "trained_exact_recovery": "recovered",
+        "warm_start_attempt": "same_ast_return"
+      },
+      "start_mode": "warm_start",
+      "status": "same_ast_return",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-beer-perturbation-sweep-1fd0469252df.json",
+      "case_id": "beer-perturbation-sweep",
+      "claim_status": "recovered",
+      "classification": "same_ast_warm_start_return",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "best_loss": 3.7231435830923e-33,
+        "changed_slot_count": 0,
+        "high_precision_max_error": 4.787995130595557e-81,
+        "post_snap_loss": 4.496499888230497e-32,
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered"
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 60
+      },
+      "perturbation_noise": 5.0,
+      "reason": "verified",
+      "run_id": "v1-3-standard-beer-perturbation-sweep-1fd0469252df",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "trained_exact_recovery": "recovered",
+        "warm_start_attempt": "same_ast_return"
+      },
+      "start_mode": "warm_start",
+      "status": "same_ast_return",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-beer-perturbation-sweep-348eebff7ed4.json",
+      "case_id": "beer-perturbation-sweep",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "best_loss": 6.97217942933663,
+        "changed_slot_count": 5,
+        "high_precision_max_error": 20.445903912747927,
+        "post_snap_loss": 7.2250695723031635,
+        "snap_active_node_count": 19,
+        "snap_min_margin": 0.9725785021131478,
+        "verifier_status": "failed"
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 60
+      },
+      "perturbation_noise": 35.0,
+      "reason": "verified",
+      "run_id": "v1-3-standard-beer-perturbation-sweep-348eebff7ed4",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "trained_exact_recovery": "failed",
+        "warm_start_attempt": "snapped_but_failed"
+      },
+      "start_mode": "warm_start",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-beer-perturbation-sweep-30add2b53d7d.json",
+      "case_id": "beer-perturbation-sweep",
+      "claim_status": "recovered",
+      "classification": "same_ast_warm_start_return",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "best_loss": 5.246927403816514e-33,
+        "changed_slot_count": 0,
+        "high_precision_max_error": 4.982807703235232e-81,
+        "post_snap_loss": 4.542698990054559e-32,
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered"
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 60
+      },
+      "perturbation_noise": 0.0,
+      "reason": "verified",
+      "run_id": "v1-3-standard-beer-perturbation-sweep-30add2b53d7d",
+      "seed": 1,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "trained_exact_recovery": "recovered",
+        "warm_start_attempt": "same_ast_return"
+      },
+      "start_mode": "warm_start",
+      "status": "same_ast_return",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-beer-perturbation-sweep-3538303249fd.json",
+      "case_id": "beer-perturbation-sweep",
+      "claim_status": "recovered",
+      "classification": "same_ast_warm_start_return",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "best_loss": 5.2469273702861774e-33,
+        "changed_slot_count": 0,
+        "high_precision_max_error": 4.982807703235232e-81,
+        "post_snap_loss": 4.542698990054559e-32,
+        "snap_active_node_count": 19,
+        "snap_min_margin": 0.9999999999999996,
+        "verifier_status": "recovered"
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 60
+      },
+      "perturbation_noise": 5.0,
+      "reason": "verified",
+      "run_id": "v1-3-standard-beer-perturbation-sweep-3538303249fd",
+      "seed": 1,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "trained_exact_recovery": "recovered",
+        "warm_start_attempt": "same_ast_return"
+      },
+      "start_mode": "warm_start",
+      "status": "same_ast_return",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-beer-perturbation-sweep-68c818aed370.json",
+      "case_id": "beer-perturbation-sweep",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "best_loss": 0.21927529113730626,
+        "changed_slot_count": 3,
+        "high_precision_max_error": 0.9983425650007712,
+        "post_snap_loss": 0.21927561010523208,
+        "snap_active_node_count": 7,
+        "snap_min_margin": 0.99999767229955,
+        "verifier_status": "failed"
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 60
+      },
+      "perturbation_noise": 35.0,
+      "reason": "verified",
+      "run_id": "v1-3-standard-beer-perturbation-sweep-68c818aed370",
+      "seed": 1,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "trained_exact_recovery": "failed",
+        "warm_start_attempt": "snapped_but_failed"
+      },
+      "start_mode": "warm_start",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-michaelis-warm-diagnostic-37a57673a2e2.json",
+      "case_id": "michaelis-warm-diagnostic",
+      "claim_status": "unsupported",
+      "classification": "unsupported",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "michaelis_menten",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": null,
+        "changed_slot_count": null,
+        "high_precision_max_error": null,
+        "post_snap_loss": null,
+        "snap_active_node_count": null,
+        "snap_min_margin": null,
+        "verifier_status": null
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "depth_exceeded",
+      "run_id": "v1-3-standard-michaelis-warm-diagnostic-37a57673a2e2",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "unsupported",
+        "warm_start_attempt": "unsupported"
+      },
+      "start_mode": "warm_start",
+      "status": "unsupported",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-logistic-compile-820d90103856.json",
+      "case_id": "logistic-compile",
+      "claim_status": "unsupported",
+      "classification": "unsupported",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "logistic",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": null,
+        "changed_slot_count": null,
+        "high_precision_max_error": null,
+        "post_snap_loss": null,
+        "snap_active_node_count": null,
+        "snap_min_margin": null,
+        "verifier_status": null
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "depth_exceeded",
+      "run_id": "v1-3-standard-logistic-compile-820d90103856",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "unsupported"
+      },
+      "start_mode": "compile",
+      "status": "unsupported",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-shockley-compile-e410a7c053d4.json",
+      "case_id": "shockley-compile",
+      "claim_status": "unsupported",
+      "classification": "unsupported",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "shockley",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": null,
+        "changed_slot_count": null,
+        "high_precision_max_error": null,
+        "post_snap_loss": null,
+        "snap_active_node_count": null,
+        "snap_min_margin": null,
+        "verifier_status": null
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "depth_exceeded",
+      "run_id": "v1-3-standard-shockley-compile-e410a7c053d4",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "unsupported"
+      },
+      "start_mode": "compile",
+      "status": "unsupported",
+      "suite_id": "v1.3-standard"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.3-standard/runs/v1.3-standard/v1-3-standard-planck-diagnostic-837e17c92c48.json",
+      "case_id": "planck-diagnostic",
+      "claim_status": "unsupported",
+      "classification": "unsupported",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "formula": "planck",
+      "metrics": {
+        "active_slot_count": null,
+        "best_loss": null,
+        "changed_slot_count": null,
+        "high_precision_max_error": null,
+        "post_snap_loss": null,
+        "snap_active_node_count": null,
+        "snap_min_margin": null,
+        "verifier_status": null
+      },
+      "optimizer": {
+        "depth": 2,
+        "lr": 0.05,
+        "max_compile_depth": 12,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 10,
+        "restarts": 1,
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "reason": "depth_exceeded",
+      "run_id": "v1-3-standard-planck-diagnostic-837e17c92c48",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "unsupported"
+      },
+      "start_mode": "compile",
+      "status": "unsupported",
+      "suite_id": "v1.3-standard"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/campaigns/v1.3-standard/runs",
+    "cases": [
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "exp",
+        "id": "exp-blind",
+        "optimizer": {
+          "depth": 1,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 80,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "blind",
+          "shallow"
+        ]
+      },
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "log",
+        "id": "log-blind",
+        "optimizer": {
+          "depth": 3,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 80,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "blind",
+          "shallow"
+        ]
+      },
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "radioactive_decay",
+        "id": "radioactive-decay-blind",
+        "optimizer": {
+          "depth": 4,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 80,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "blind",
+          "shallow",
+          "for_demo"
+        ]
+      },
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "beer_lambert",
+        "id": "beer-perturbation-sweep",
+        "optimizer": {
+          "depth": 2,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 60
+        },
+        "perturbation_noise": [
+          0.0,
+          5.0,
+          35.0
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "warm_start",
+        "tags": [
+          "warm_start",
+          "perturbation",
+          "for_demo"
+        ]
+      },
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "michaelis_menten",
+        "id": "michaelis-warm-diagnostic",
+        "optimizer": {
+          "depth": 2,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "warm_start",
+        "tags": [
+          "diagnostic",
+          "depth_gate",
+          "for_demo"
+        ]
+      },
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "logistic",
+        "id": "logistic-compile",
+        "optimizer": {
+          "depth": 2,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "compile",
+        "tags": [
+          "diagnostic",
+          "for_demo"
+        ]
+      },
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "shockley",
+        "id": "shockley-compile",
+        "optimizer": {
+          "depth": 2,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "compile",
+        "tags": [
+          "diagnostic",
+          "for_demo"
+        ]
+      },
+      {
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "planck",
+        "id": "planck-diagnostic",
+        "optimizer": {
+          "depth": 2,
+          "lr": 0.05,
+          "max_compile_depth": 12,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 10,
+          "restarts": 1,
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "compile",
+        "tags": [
+          "stretch",
+          "depth_gate",
+          "for_demo"
+        ]
+      }
+    ],
+    "description": "Standard v1.3 campaign matrix with shallow blind baselines, perturbation sweeps, and FOR_DEMO diagnostics.",
+    "id": "v1.3-standard",
+    "schema": "eml.benchmark_suite.v1"
+  }
+}
