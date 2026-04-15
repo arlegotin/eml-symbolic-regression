@@ -4,11 +4,19 @@ from __future__ import annotations
 
 import hashlib
 import json
+import platform
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+import numpy as np
+
+from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
 from .datasets import demo_specs
+from .optimize import TrainingConfig, fit_eml_tree
+from .verify import verify_candidate
+from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
 
 START_MODES = ("catalog", "compile", "blind", "warm_start")
@@ -246,6 +254,69 @@ class BenchmarkRun:
 
 
 @dataclass(frozen=True)
+class RunFilter:
+    formulas: tuple[str, ...] = ()
+    start_modes: tuple[str, ...] = ()
+    case_ids: tuple[str, ...] = ()
+    seeds: tuple[int, ...] = ()
+
+    def includes(self, run: BenchmarkRun) -> bool:
+        return (
+            (not self.formulas or run.formula in self.formulas)
+            and (not self.start_modes or run.start_mode in self.start_modes)
+            and (not self.case_ids or run.case_id in self.case_ids)
+            and (not self.seeds or run.seed in self.seeds)
+        )
+
+
+@dataclass(frozen=True)
+class BenchmarkRunResult:
+    run: BenchmarkRun
+    status: str
+    artifact_path: Path
+    payload: dict[str, Any]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "run": self.run.as_dict(),
+            "status": self.status,
+            "artifact_path": str(self.artifact_path),
+            "payload": self.payload,
+        }
+
+
+@dataclass(frozen=True)
+class BenchmarkSuiteResult:
+    suite: BenchmarkSuite
+    results: tuple[BenchmarkRunResult, ...]
+
+    @property
+    def completed(self) -> int:
+        return sum(result.status not in {"execution_error"} for result in self.results)
+
+    @property
+    def failed(self) -> int:
+        return sum(result.status in {"failed", "snapped_but_failed", "soft_fit_only", "execution_error"} for result in self.results)
+
+    @property
+    def unsupported(self) -> int:
+        return sum(result.status == "unsupported" for result in self.results)
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "schema": "eml.benchmark_suite_result.v1",
+            "suite": self.suite.as_dict(),
+            "counts": {
+                "total": len(self.results),
+                "completed": self.completed,
+                "failed": self.failed,
+                "unsupported": self.unsupported,
+            },
+            "results": [result.as_dict() for result in self.results],
+        }
+
+
+@dataclass(frozen=True)
 class BenchmarkSuite:
     id: str
     description: str
@@ -425,3 +496,179 @@ def load_suite(path_or_name: str | Path) -> BenchmarkSuite:
         suite = BenchmarkSuite.from_mapping(json.loads(path.read_text(encoding="utf-8")))
     suite.validate()
     return suite
+
+
+def filter_runs(runs: Iterable[BenchmarkRun], run_filter: RunFilter | None = None) -> tuple[BenchmarkRun, ...]:
+    run_filter = run_filter or RunFilter()
+    return tuple(run for run in runs if run_filter.includes(run))
+
+
+def run_benchmark_suite(suite: BenchmarkSuite, *, run_filter: RunFilter | None = None) -> BenchmarkSuiteResult:
+    results = tuple(execute_benchmark_run(run) for run in filter_runs(suite.expanded_runs(), run_filter))
+    return BenchmarkSuiteResult(suite, results)
+
+
+def execute_benchmark_run(run: BenchmarkRun) -> BenchmarkRunResult:
+    started = time.perf_counter()
+    payload = _base_run_payload(run)
+    try:
+        payload.update(_execute_benchmark_run_inner(run))
+    except Exception as exc:  # noqa: BLE001 - benchmark suites must preserve unexpected run failures.
+        payload["status"] = "execution_error"
+        payload["error"] = {"type": type(exc).__name__, "message": str(exc)}
+    payload.pop("_compiled", None)
+    payload["timing"] = {"elapsed_seconds": time.perf_counter() - started}
+    _write_json(run.artifact_path, payload)
+    return BenchmarkRunResult(run, str(payload["status"]), run.artifact_path, payload)
+
+
+def _base_run_payload(run: BenchmarkRun) -> dict[str, Any]:
+    return {
+        "schema": "eml.benchmark_run.v1",
+        "run": run.as_dict(),
+        "environment": {
+            "python": platform.python_version(),
+            "platform": platform.platform(),
+        },
+        "status": "pending",
+        "stage_statuses": {},
+    }
+
+
+def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
+    spec = demo_specs()[run.formula]
+    splits = spec.make_splits(points=run.dataset.points, seed=run.seed)
+    stage_statuses: dict[str, str] = {}
+
+    if run.start_mode == "catalog":
+        report = verify_candidate(spec.candidate, splits, tolerance=run.dataset.tolerance, recovered_requires_exact_eml=True)
+        stage_statuses["catalog_showcase"] = report.status
+        return {
+            "status": report.status,
+            "stage_statuses": stage_statuses,
+            "verification": report.as_dict(),
+            "claim_status": report.status,
+        }
+
+    if run.start_mode == "compile":
+        compiled_payload = _compile_demo(run, splits)
+        stage_statuses.update(compiled_payload.pop("stage_statuses"))
+        return {"status": stage_statuses["compiled_seed"], "stage_statuses": stage_statuses, **compiled_payload}
+
+    if run.start_mode == "blind":
+        train = splits[0]
+        config = TrainingConfig(
+            depth=run.optimizer.depth,
+            variables=(spec.variable,),
+            steps=run.optimizer.steps,
+            restarts=run.optimizer.restarts,
+            seed=run.seed,
+            lr=run.optimizer.lr,
+        )
+        fit = fit_eml_tree(train.inputs, train.target, config)
+        report = verify_candidate(fit.snap.expression, splits, tolerance=run.dataset.tolerance)
+        stage_statuses["blind_baseline"] = report.status
+        return {
+            "status": report.status if report.status == "recovered" else fit.status,
+            "stage_statuses": stage_statuses,
+            "trained_eml_candidate": fit.manifest,
+            "trained_eml_verification": report.as_dict(),
+            "claim_status": report.status,
+        }
+
+    if run.start_mode == "warm_start":
+        compiled_payload = _compile_demo(run, splits)
+        stage_statuses.update(compiled_payload.pop("stage_statuses"))
+        if stage_statuses["compiled_seed"] == "unsupported":
+            return {
+                "status": "unsupported",
+                "stage_statuses": {**stage_statuses, "warm_start_attempt": "unsupported"},
+                **compiled_payload,
+                "warm_start_eml": {
+                    "status": "unsupported",
+                    "reason": "compile_failed",
+                    "detail": "warm-start requires a validated compiled EML seed",
+                },
+            }
+
+        compiled = compiled_payload.pop("_compiled")
+        if compiled.metadata.depth > run.optimizer.max_warm_depth:
+            return {
+                "status": "unsupported",
+                "stage_statuses": {**stage_statuses, "warm_start_attempt": "unsupported"},
+                **compiled_payload,
+                "warm_start_eml": {
+                    "status": "unsupported",
+                    "reason": "depth_too_large_for_warm_start",
+                    "compiled_depth": compiled.metadata.depth,
+                    "max_warm_depth": run.optimizer.max_warm_depth,
+                },
+            }
+
+        train = splits[0]
+        warm_depth = run.optimizer.warm_depth or compiled.metadata.depth
+        config = TrainingConfig(
+            depth=warm_depth,
+            variables=(spec.variable,),
+            steps=run.optimizer.warm_steps,
+            restarts=run.optimizer.warm_restarts,
+            seed=run.seed,
+            lr=run.optimizer.lr,
+        )
+        warm = fit_warm_started_eml_tree(
+            train.inputs,
+            train.target,
+            config,
+            compiled.expression,
+            perturbation_config=PerturbationConfig(seed=run.seed, noise_scale=run.perturbation_noise),
+            verification_splits=splits,
+            tolerance=run.dataset.tolerance,
+            compiler_metadata=compiled.metadata.as_dict(),
+        )
+        stage_statuses["warm_start_attempt"] = warm.status
+        if warm.verification is not None:
+            stage_statuses["trained_exact_recovery"] = warm.verification.status
+        return {
+            "status": warm.status,
+            "stage_statuses": stage_statuses,
+            **compiled_payload,
+            "warm_start_eml": warm.manifest,
+            "claim_status": warm.verification.status if warm.verification else warm.status,
+        }
+
+    raise BenchmarkValidationError("invalid_start_mode", f"unsupported start mode {run.start_mode!r}")
+
+
+def _compile_demo(run: BenchmarkRun, splits: Any) -> dict[str, Any]:
+    spec = demo_specs()[run.formula]
+    validation_inputs = {spec.variable: np.concatenate([split.inputs[spec.variable] for split in splits])}
+    compiler_config = CompilerConfig(
+        variables=(spec.variable,),
+        constant_policy="literal_constants",
+        max_depth=run.optimizer.max_compile_depth,
+        max_nodes=run.optimizer.max_compile_nodes,
+        max_power=run.optimizer.max_power,
+        validation_tolerance=run.dataset.tolerance,
+    )
+    try:
+        compiled = compile_and_validate(spec.candidate.to_sympy(), compiler_config, validation_inputs)
+        report = verify_candidate(compiled.expression, splits, tolerance=run.dataset.tolerance)
+        return {
+            "stage_statuses": {"compiled_seed": report.status},
+            "compiled_eml": compiled.as_dict(),
+            "compiled_eml_verification": report.as_dict(),
+            "_compiled": compiled,
+            "claim_status": report.status,
+        }
+    except UnsupportedExpression as exc:
+        return {
+            "stage_statuses": {"compiled_seed": "unsupported"},
+            "compiled_eml": {"status": "unsupported", **exc.as_dict()},
+            "claim_status": "unsupported",
+        }
+
+
+def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
+    serializable = {key: value for key, value in payload.items() if key != "_compiled"}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(serializable, indent=2, sort_keys=True) + "\n", encoding="utf-8")

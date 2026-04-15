@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Training Benchmark and Recovery Evidence
-current_phase: 15
+current_phase: 16
 status: ready_for_phase_planning
-stopped_at: phase 14 complete; ready for phase 15
+stopped_at: phase 15 complete; ready for phase 16
 last_updated: "2026-04-15T10:42:56Z"
 last_activity: 2026-04-15
 progress:
   total_phases: 5
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 20
+  completed_phases: 2
+  total_plans: 2
+  completed_plans: 2
+  percent: 40
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 15
+**Current phase:** 16
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,17 +30,17 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 ## Current Position
 
-Phase: 15 of 18 (Benchmark Runner and Training Modes)
+Phase: 16 of 18 (Experiment Matrix and Formula Coverage)
 Plan: Not started
-Status: Ready to plan phase 15
+Status: Ready to plan phase 16
 Last activity: 2026-04-15
-Progress: [##--------] 20% by completed phases (v1.2: 1/5)
+Progress: [####------] 40% by completed phases (v1.2: 2/5)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1 and v1.1 phases complete; v1.2 phase 14 complete
+- Total plans completed: Historical v1 and v1.1 phases complete; v1.2 phases 14-15 complete
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
@@ -89,7 +89,7 @@ Target features:
 | 12 | Demo Promotion and Claim Reporting | Complete | DEMO-05, DEMO-06, DEMO-07, DEMO-08 |
 | 13 | Regression Tests and Documentation Lockdown | Complete | TEST-03, TEST-04 |
 | 14 | Benchmark Contract and Suite Registry | Complete | BENC-01, BENC-02, BENC-03, BENC-04 |
-| 15 | Benchmark Runner and Training Modes | Pending | RUN-01, RUN-02, RUN-03, RUN-04 |
+| 15 | Benchmark Runner and Training Modes | Complete | RUN-01, RUN-02, RUN-03, RUN-04 |
 | 16 | Experiment Matrix and Formula Coverage | Pending | MATR-01, MATR-02, MATR-03, MATR-04 |
 | 17 | Evidence Aggregation and Report Contracts | Pending | EVID-01, EVID-02, EVID-03, EVID-04 |
 | 18 | Smoke Tests, Docs, and Evidence Lockdown | Pending | TEST-05, TEST-06, TEST-07 |
@@ -106,6 +106,7 @@ Target features:
 - The immediate evidence gap is robustness: strong Beer-Lambert perturbation failed once active slots changed, so v1.2 must measure recovery rates instead of relying on single success cases.
 - v1.2 continues phase numbering from v1.1 and maps 19 requirements across phases 14-18.
 - Phase 14 established benchmark contracts, built-in suite registry, validation, stable run IDs, and deterministic artifact paths.
+- Phase 15 added benchmark suite execution, CLI commands, filtered runs, and structured unsupported/failure artifacts.
 
 ### Pending Todos
 
@@ -118,8 +119,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Phase 14 complete; ready for Phase 15 planning
+Stopped at: Phase 15 complete; ready for Phase 16 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after completing phase 14*
+*Last updated: 2026-04-15 after completing phase 15*

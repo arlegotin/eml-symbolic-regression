@@ -17,10 +17,10 @@ Requirements for this milestone only. Completed v1 and v1.1 requirements are rec
 
 ### Run Execution
 
-- [ ] **RUN-01**: User can run a full benchmark suite or filtered subset from the CLI without hand-writing per-demo commands.
-- [ ] **RUN-02**: User can execute blind-start training through the existing optimizer across multiple seeds for shallow supported formulas.
-- [ ] **RUN-03**: User can execute compiler warm-start training with perturbation sweeps through the existing compile, embed, train, snap, and verify path.
-- [ ] **RUN-04**: User can run suites that contain unsupported, skipped, or failed cases without aborting the entire suite, while preserving those outcomes in artifacts.
+- [x] **RUN-01**: User can run a full benchmark suite or filtered subset from the CLI without hand-writing per-demo commands.
+- [x] **RUN-02**: User can execute blind-start training through the existing optimizer across multiple seeds for shallow supported formulas.
+- [x] **RUN-03**: User can execute compiler warm-start training with perturbation sweeps through the existing compile, embed, train, snap, and verify path.
+- [x] **RUN-04**: User can run suites that contain unsupported, skipped, or failed cases without aborting the entire suite, while preserving those outcomes in artifacts.
 
 ### Experiment Matrix
 
@@ -73,10 +73,10 @@ Deferred to later milestones.
 | BENC-02 | Phase 14 | Complete |
 | BENC-03 | Phase 14 | Complete |
 | BENC-04 | Phase 14 | Complete |
-| RUN-01 | Phase 15 | Pending |
-| RUN-02 | Phase 15 | Pending |
-| RUN-03 | Phase 15 | Pending |
-| RUN-04 | Phase 15 | Pending |
+| RUN-01 | Phase 15 | Complete |
+| RUN-02 | Phase 15 | Complete |
+| RUN-03 | Phase 15 | Complete |
+| RUN-04 | Phase 15 | Complete |
 | MATR-01 | Phase 16 | Pending |
 | MATR-02 | Phase 16 | Pending |
 | MATR-03 | Phase 16 | Pending |

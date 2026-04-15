@@ -45,7 +45,7 @@ v1.2 turns the current training evidence into a repeatable benchmark system. The
 - v1.2 continues from completed Phase 13 and starts at Phase 14
 
 - [x] **Phase 14: Benchmark Contract and Suite Registry** - Define deterministic benchmark suite schemas, built-in suite registry, validation, and artifact identity. (completed 2026-04-15)
-- [ ] **Phase 15: Benchmark Runner and Training Modes** - Run suites and filtered subsets through existing blind-start and compiler warm-start paths while preserving failures. (requirements: RUN-01, RUN-02, RUN-03, RUN-04)
+- [x] **Phase 15: Benchmark Runner and Training Modes** - Run suites and filtered subsets through existing blind-start and compiler warm-start paths while preserving failures. (completed 2026-04-15)
 - [ ] **Phase 16: Experiment Matrix and Formula Coverage** - Add the actual v1.2 formula/start/seed/perturbation matrix for shallow baselines, Beer-Lambert, Michaelis-Menten, Planck, and selected demo diagnostics. (requirements: MATR-01, MATR-02, MATR-03, MATR-04)
 - [ ] **Phase 17: Evidence Aggregation and Report Contracts** - Aggregate run artifacts into JSON and Markdown reports with recovery rates, failure classes, and provenance. (requirements: EVID-01, EVID-02, EVID-03, EVID-04)
 - [ ] **Phase 18: Smoke Tests, Docs, and Evidence Lockdown** - Lock benchmark parsing, smoke execution, aggregation math, claim taxonomy, and user-facing interpretation docs. (requirements: TEST-05, TEST-06, TEST-07)
@@ -123,10 +123,10 @@ The order is intentionally linear. Suite contracts and run identity must exist b
 | BENC-02 | Phase 14 | Complete |
 | BENC-03 | Phase 14 | Complete |
 | BENC-04 | Phase 14 | Complete |
-| RUN-01 | Phase 15 | Pending |
-| RUN-02 | Phase 15 | Pending |
-| RUN-03 | Phase 15 | Pending |
-| RUN-04 | Phase 15 | Pending |
+| RUN-01 | Phase 15 | Complete |
+| RUN-02 | Phase 15 | Complete |
+| RUN-03 | Phase 15 | Complete |
+| RUN-04 | Phase 15 | Complete |
 | MATR-01 | Phase 16 | Pending |
 | MATR-02 | Phase 16 | Pending |
 | MATR-03 | Phase 16 | Pending |
@@ -161,7 +161,7 @@ The order is intentionally linear. Suite contracts and run identity must exist b
 | 12. Demo Promotion and Claim Reporting | Complete | Complete | 2026-04-15 |
 | 13. Regression Tests and Documentation Lockdown | Complete | Complete | 2026-04-15 |
 | 14. Benchmark Contract and Suite Registry | 1/1 | Complete | 2026-04-15 |
-| 15. Benchmark Runner and Training Modes | 0/1 | Pending | - |
+| 15. Benchmark Runner and Training Modes | 1/1 | Complete | 2026-04-15 |
 | 16. Experiment Matrix and Formula Coverage | 0/1 | Pending | - |
 | 17. Evidence Aggregation and Report Contracts | 0/1 | Pending | - |
 | 18. Smoke Tests, Docs, and Evidence Lockdown | 0/1 | Pending | - |

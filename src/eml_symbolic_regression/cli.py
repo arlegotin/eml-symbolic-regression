@@ -10,6 +10,7 @@ from typing import Any
 import numpy as np
 
 from .cleanup import cleanup_candidate
+from .benchmark import RunFilter, list_builtin_suites, load_suite, run_benchmark_suite
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
 from .datasets import demo_specs, get_demo
 from .optimize import TrainingConfig, fit_eml_tree
@@ -161,6 +162,34 @@ def verify_paper(args: argparse.Namespace) -> int:
     return 0
 
 
+def list_benchmarks(args: argparse.Namespace | None = None) -> int:
+    for name in list_builtin_suites():
+        suite = load_suite(name)
+        print(f"{name}: {suite.description}")
+    return 0
+
+
+def run_benchmark(args: argparse.Namespace) -> int:
+    suite = load_suite(args.suite)
+    if args.output_dir:
+        suite = type(suite)(suite.id, suite.description, suite.cases, Path(args.output_dir), suite.schema)
+    run_filter = RunFilter(
+        formulas=tuple(args.formula or ()),
+        start_modes=tuple(args.start_mode or ()),
+        case_ids=tuple(args.case or ()),
+        seeds=tuple(args.seed or ()),
+    )
+    result = run_benchmark_suite(suite, run_filter=run_filter)
+    summary_path = suite.artifact_root / suite.id / "suite-result.json"
+    _write_json(summary_path, result.as_dict())
+    counts = result.as_dict()["counts"]
+    print(
+        f"{suite.id}: {counts['total']} runs, {counts['unsupported']} unsupported, "
+        f"{counts['failed']} failed -> {summary_path}"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="eml-sr")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -201,6 +230,18 @@ def build_parser() -> argparse.ArgumentParser:
     paper.add_argument("--seed", type=int, default=0)
     paper.add_argument("--tolerance", type=float, default=1e-8)
     paper.set_defaults(func=verify_paper)
+
+    list_bench = sub.add_parser("list-benchmarks", help="List built-in benchmark suites.")
+    list_bench.set_defaults(func=list_benchmarks)
+
+    bench = sub.add_parser("benchmark", help="Run a benchmark suite or filtered subset.")
+    bench.add_argument("suite", help="Built-in suite name or path to a suite JSON file.")
+    bench.add_argument("--output-dir", help="Override artifact root.")
+    bench.add_argument("--formula", action="append", help="Only run this formula ID. Repeatable.")
+    bench.add_argument("--start-mode", choices=("catalog", "compile", "blind", "warm_start"), action="append")
+    bench.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")
+    bench.add_argument("--seed", type=int, action="append", help="Only run this seed. Repeatable.")
+    bench.set_defaults(func=run_benchmark)
     return parser
 
 
