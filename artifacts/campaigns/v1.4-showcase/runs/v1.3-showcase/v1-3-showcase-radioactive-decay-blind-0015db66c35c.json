@@ -1,0 +1,719 @@
+{
+  "claim_status": "failed",
+  "environment": {
+    "code_version": "09a3989",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "metrics": {
+    "active_slot_count": null,
+    "best_loss": 3.330303591503784,
+    "changed_slot_count": null,
+    "high_precision_max_error": 7.2701401187683885,
+    "post_snap_loss": 3.330303591503784,
+    "snap_active_node_count": 7,
+    "snap_min_margin": 1.0,
+    "verifier_status": "failed",
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.4-showcase/runs/v1.3-showcase/v1-3-showcase-radioactive-decay-blind-0015db66c35c.json",
+    "case_id": "radioactive-decay-blind",
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "radioactive_decay",
+    "optimizer": {
+      "depth": 4,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 10,
+      "restarts": 1,
+      "steps": 120,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-3-showcase-radioactive-decay-blind-0015db66c35c",
+    "seed": 2,
+    "start_mode": "blind",
+    "suite_id": "v1.3-showcase",
+    "tags": [
+      "blind",
+      "shallow",
+      "for_demo"
+    ]
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "blind_baseline": "failed"
+  },
+  "status": "snapped_but_failed",
+  "timing": {
+    "elapsed_seconds": 1.2839712919667363
+  },
+  "trained_eml_candidate": {
+    "best_loss": 3.330303591503784,
+    "best_restart": {
+      "attempt_kind": "scaffold_log",
+      "best_fit_loss": 3.330303591503784,
+      "final_anomalies": {
+        "by_node": {
+          "root": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 6.270896046438175,
+            "max_exp_real": 1.0,
+            "nan_count": 0
+          },
+          "root.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 26.322767062572446,
+            "max_exp_real": 2.996817224935588,
+            "nan_count": 0
+          },
+          "root.L.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 16.52454448031099,
+            "max_exp_real": 3.0559051260205683,
+            "nan_count": 0
+          },
+          "root.L.L.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 5.776661701705669,
+            "max_exp_real": 1.0244675751843109,
+            "nan_count": 0
+          },
+          "root.L.L.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 114.85209187040918,
+            "max_exp_real": 4.744342262499167,
+            "nan_count": 0
+          },
+          "root.L.R": {
+            "clamp_count": 5,
+            "inf_count": 0,
+            "max_abs": 2.3538526683702e+17,
+            "max_exp_real": 40.0,
+            "nan_count": 0
+          },
+          "root.L.R.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 147.9508525889248,
+            "max_exp_real": 4.996912041031832,
+            "nan_count": 0
+          },
+          "root.L.R.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 147.3950726879998,
+            "max_exp_real": 5.003982085650433,
+            "nan_count": 0
+          },
+          "root.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 8015.864142557036,
+            "max_exp_real": 8.98917787489722,
+            "nan_count": 0
+          },
+          "root.R.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 8.98917787489722,
+            "max_exp_real": 1.0,
+            "nan_count": 0
+          },
+          "root.R.L.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 148.90997676257058,
+            "max_exp_real": 5.0033555829875365,
+            "nan_count": 0
+          },
+          "root.R.L.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 8.741592786286663,
+            "max_exp_real": 1.0438514761853885,
+            "nan_count": 0
+          },
+          "root.R.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 2.3789781567741723,
+            "max_exp_real": 1.607617500777884,
+            "nan_count": 0
+          },
+          "root.R.R.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 7.871664556169115,
+            "max_exp_real": 1.4640250596659512,
+            "nan_count": 0
+          },
+          "root.R.R.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 148.27345316163908,
+            "max_exp_real": 4.999094428176391,
+            "nan_count": 0
+          }
+        },
+        "clamp_count": 5,
+        "inf_count": 0,
+        "max_abs": 2.3538526683702e+17,
+        "max_exp_real": 40.0,
+        "nan_count": 0
+      },
+      "initialization": {
+        "kind": "scaffold_log",
+        "seed": 2,
+        "strategy": "generic_paper_primitive",
+        "variable": "t"
+      },
+      "random_restart": null,
+      "restart": 1,
+      "seed": 2,
+      "steps_completed": 120
+    },
+    "config": {
+      "constants": [
+        "1"
+      ],
+      "depth": 4,
+      "entropy_weight": 0.001,
+      "lr": 0.05,
+      "restarts": 1,
+      "scaffold_initializers": [
+        "exp",
+        "log"
+      ],
+      "seed": 2,
+      "size_weight": 0.0001,
+      "steps": 120,
+      "temperature_end": 0.25,
+      "temperature_start": 2.0,
+      "variables": [
+        "t"
+      ]
+    },
+    "post_snap_loss": 3.330303591503784,
+    "restarts": [
+      {
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 2278.939251900622,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 149.02365312167035,
+              "max_exp_real": 5.004105039129703,
+              "nan_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 28.410893132919675,
+              "max_exp_real": 2.9967415939247246,
+              "nan_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 16.519647083105326,
+              "max_exp_real": 3.0557034161054633,
+              "nan_count": 0
+            },
+            "root.L.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 5.778604248364381,
+              "max_exp_real": 1.024412194436055,
+              "nan_count": 0
+            },
+            "root.L.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 114.91551543011248,
+              "max_exp_real": 4.744892701822757,
+              "nan_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 6,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.L.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 145.6429836470547,
+              "max_exp_real": 4.9812217579671305,
+              "nan_count": 0
+            },
+            "root.L.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 114.65865910400478,
+              "max_exp_real": 4.75590572753742,
+              "nan_count": 0
+            },
+            "root.R": {
+              "clamp_count": 17,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 6,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.R.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 148.91092456886193,
+              "max_exp_real": 5.003350008048943,
+              "nan_count": 0
+            },
+            "root.R.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 8.984765075304663,
+              "max_exp_real": 1.0055800239922943,
+              "nan_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 2.634056476005015,
+              "max_exp_real": 1.1243466504241952,
+              "nan_count": 0
+            },
+            "root.R.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 8.976716987508194,
+              "max_exp_real": 1.0063402446717695,
+              "nan_count": 0
+            },
+            "root.R.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 149.02364198146205,
+              "max_exp_real": 5.004104964375101,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 29,
+          "inf_count": 0,
+          "max_abs": 2.3538526683702e+17,
+          "max_exp_real": 40.0,
+          "nan_count": 0
+        },
+        "initialization": {
+          "kind": "scaffold_exp",
+          "seed": 2,
+          "strategy": "generic_paper_primitive",
+          "variable": "t"
+        },
+        "random_restart": null,
+        "restart": 0,
+        "seed": 2,
+        "steps_completed": 120
+      },
+      {
+        "attempt_kind": "scaffold_log",
+        "best_fit_loss": 3.330303591503784,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 6.270896046438175,
+              "max_exp_real": 1.0,
+              "nan_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 26.322767062572446,
+              "max_exp_real": 2.996817224935588,
+              "nan_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 16.52454448031099,
+              "max_exp_real": 3.0559051260205683,
+              "nan_count": 0
+            },
+            "root.L.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 5.776661701705669,
+              "max_exp_real": 1.0244675751843109,
+              "nan_count": 0
+            },
+            "root.L.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 114.85209187040918,
+              "max_exp_real": 4.744342262499167,
+              "nan_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 5,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.L.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 147.9508525889248,
+              "max_exp_real": 4.996912041031832,
+              "nan_count": 0
+            },
+            "root.L.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 147.3950726879998,
+              "max_exp_real": 5.003982085650433,
+              "nan_count": 0
+            },
+            "root.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 8015.864142557036,
+              "max_exp_real": 8.98917787489722,
+              "nan_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 8.98917787489722,
+              "max_exp_real": 1.0,
+              "nan_count": 0
+            },
+            "root.R.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 148.90997676257058,
+              "max_exp_real": 5.0033555829875365,
+              "nan_count": 0
+            },
+            "root.R.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 8.741592786286663,
+              "max_exp_real": 1.0438514761853885,
+              "nan_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 2.3789781567741723,
+              "max_exp_real": 1.607617500777884,
+              "nan_count": 0
+            },
+            "root.R.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 7.871664556169115,
+              "max_exp_real": 1.4640250596659512,
+              "nan_count": 0
+            },
+            "root.R.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 148.27345316163908,
+              "max_exp_real": 4.999094428176391,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 5,
+          "inf_count": 0,
+          "max_abs": 2.3538526683702e+17,
+          "max_exp_real": 40.0,
+          "nan_count": 0
+        },
+        "initialization": {
+          "kind": "scaffold_log",
+          "seed": 2,
+          "strategy": "generic_paper_primitive",
+          "variable": "t"
+        },
+        "random_restart": null,
+        "restart": 1,
+        "seed": 2,
+        "steps_completed": 120
+      },
+      {
+        "attempt_kind": "random",
+        "best_fit_loss": 780.5039556439684,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 36.75536757998064,
+              "max_exp_real": 2.3321077012452966,
+              "nan_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 32.92970339426769,
+              "max_exp_real": 2.4214753190280174,
+              "nan_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 2.7513712589209383,
+              "max_exp_real": 1.0536711617023533,
+              "nan_count": 0
+            },
+            "root.L.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 7.000863179252623,
+              "max_exp_real": 1.0022598094563058,
+              "nan_count": 0
+            },
+            "root.L.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 145.47328338381612,
+              "max_exp_real": 4.980303673687208,
+              "nan_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 7,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.L.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 148.97568160775404,
+              "max_exp_real": 5.003797453882577,
+              "nan_count": 0
+            },
+            "root.L.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 8.259245699728499,
+              "max_exp_real": 2.2881700658523645,
+              "nan_count": 0
+            },
+            "root.R": {
+              "clamp_count": 17,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 6,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.R.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 148.81559161973854,
+              "max_exp_real": 5.002718783273442,
+              "nan_count": 0
+            },
+            "root.R.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 8.870761419279976,
+              "max_exp_real": 1.0228014377797126,
+              "nan_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 2.451576053904606,
+              "max_exp_real": 1.6905407649104165,
+              "nan_count": 0
+            },
+            "root.R.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 7.10925237090356,
+              "max_exp_real": 2.1648000351129317,
+              "nan_count": 0
+            },
+            "root.R.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 131.81415328360023,
+              "max_exp_real": 4.882053419504992,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 30,
+          "inf_count": 0,
+          "max_abs": 2.3538526683702e+17,
+          "max_exp_real": 40.0,
+          "nan_count": 0
+        },
+        "initialization": null,
+        "random_restart": 0,
+        "restart": 2,
+        "seed": 2,
+        "steps_completed": 120
+      }
+    ],
+    "schema": "eml.run_manifest.v1",
+    "snap": {
+      "active_node_count": 7,
+      "ast": {
+        "metadata": {
+          "depth": 3,
+          "node_count": 7,
+          "source": "exact_ast"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "const",
+            "value": "1"
+          },
+          "right": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "var",
+                "name": "t"
+              }
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "t"
+        ]
+      },
+      "decisions": [
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "path": "root",
+          "probability": 1.0,
+          "side": "left"
+        },
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "path": "root",
+          "probability": 1.0,
+          "side": "right"
+        },
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "path": "root.R",
+          "probability": 1.0,
+          "side": "left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "path": "root.R.L",
+          "probability": 1.0,
+          "side": "left"
+        },
+        {
+          "choice": "var:t",
+          "margin": 1.0,
+          "path": "root.R.L",
+          "probability": 1.0,
+          "side": "right"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "path": "root.R",
+          "probability": 1.0,
+          "side": "right"
+        }
+      ],
+      "min_margin": 1.0
+    },
+    "status": "snapped_candidate"
+  },
+  "trained_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": 7.2701401187683885,
+    "reason": "mpmath_failed",
+    "split_results": [
+      {
+        "max_abs_error": 7.2701401187683885,
+        "max_imag_residue": 0.0,
+        "mse": 3.330303591503784,
+        "name": "train",
+        "passed": false
+      },
+      {
+        "max_abs_error": 2.905635687890299,
+        "max_imag_residue": 0.0,
+        "mse": 1.3587615037375962,
+        "name": "heldout",
+        "passed": false
+      },
+      {
+        "max_abs_error": 1.8857349678090864,
+        "max_imag_residue": 0.0,
+        "mse": 2.918079213676953,
+        "name": "extrapolation",
+        "passed": false
+      }
+    ],
+    "status": "failed",
+    "tolerance": 1e-08
+  }
+}

@@ -1,0 +1,302 @@
+{
+  "claim_status": "recovered",
+  "compiled_eml": {
+    "ast": {
+      "metadata": {
+        "constant_policy": "literal_constants",
+        "depth": 13,
+        "node_count": 35,
+        "source": "compiled_sympy"
+      },
+      "root": {
+        "kind": "eml",
+        "left": {
+          "kind": "eml",
+          "left": {
+            "kind": "const",
+            "value": "1"
+          },
+          "right": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "const",
+                  "value": "1"
+                },
+                "right": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "const",
+                      "value": "1"
+                    },
+                    "right": {
+                      "kind": "eml",
+                      "left": {
+                        "kind": "const",
+                        "value": "1"
+                      },
+                      "right": {
+                        "kind": "const",
+                        "value": "0.2"
+                      }
+                    }
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                }
+              },
+              "right": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "const",
+                      "value": "1"
+                    },
+                    "right": {
+                      "kind": "eml",
+                      "left": {
+                        "kind": "eml",
+                        "left": {
+                          "kind": "eml",
+                          "left": {
+                            "kind": "const",
+                            "value": "1"
+                          },
+                          "right": {
+                            "kind": "eml",
+                            "left": {
+                              "kind": "eml",
+                              "left": {
+                                "kind": "const",
+                                "value": "1"
+                              },
+                              "right": {
+                                "kind": "eml",
+                                "left": {
+                                  "kind": "const",
+                                  "value": "1"
+                                },
+                                "right": {
+                                  "kind": "const",
+                                  "value": "1.4"
+                                }
+                              }
+                            },
+                            "right": {
+                              "kind": "const",
+                              "value": "1"
+                            }
+                          }
+                        },
+                        "right": {
+                          "kind": "var",
+                          "name": "x"
+                        }
+                      },
+                      "right": {
+                        "kind": "const",
+                        "value": "1"
+                      }
+                    }
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "2.718281828459045"
+                }
+              }
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          }
+        },
+        "right": {
+          "kind": "const",
+          "value": "1"
+        }
+      },
+      "schema": "eml.ast.v1",
+      "semantics": {
+        "constant_basis": [
+          "0.2",
+          "1",
+          "1.4",
+          "2.718281828459045"
+        ],
+        "log_branch": "principal",
+        "operator": "exp(x)-log(y)",
+        "verification_mode": "canonical"
+      },
+      "variables": [
+        "x"
+      ]
+    },
+    "metadata": {
+      "assumptions": [
+        "multiplication uses verified EML arithmetic identity",
+        "scale*(exp(a)-1) compiled with lower-depth EML template"
+      ],
+      "constant_policy": "literal_constants",
+      "constants": [
+        "0.2",
+        "1",
+        "1.4",
+        "2.718281828459045"
+      ],
+      "depth": 13,
+      "node_count": 35,
+      "normalized_expression": "0.2*(exp(1.4*x) - 1)",
+      "source_expression": "0.2*exp(1.4*x) - 0.2",
+      "trace": [
+        {
+          "assumptions": [],
+          "output_depth": 0,
+          "output_nodes": 1,
+          "rule": "constant",
+          "source": "1.40000000000000"
+        },
+        {
+          "assumptions": [],
+          "output_depth": 0,
+          "output_nodes": 1,
+          "rule": "variable",
+          "source": "x"
+        },
+        {
+          "assumptions": [
+            "multiplication uses verified EML arithmetic identity"
+          ],
+          "output_depth": 8,
+          "output_nodes": 17,
+          "rule": "multiplication",
+          "source": "1.4*x"
+        },
+        {
+          "assumptions": [
+            "multiplication uses verified EML arithmetic identity",
+            "scale*(exp(a)-1) compiled with lower-depth EML template"
+          ],
+          "output_depth": 13,
+          "output_nodes": 35,
+          "rule": "scaled_exp_minus_one_template",
+          "source": "0.2*exp(1.4*x) - 0.2"
+        }
+      ],
+      "unsupported_reason": null,
+      "variables": [
+        "x"
+      ]
+    },
+    "schema": "eml.compiler_result.v1",
+    "validation": {
+      "max_abs_error": 8.881784197001252e-15,
+      "mse": 8.525256182735939e-30,
+      "passed": true,
+      "reason": "validated",
+      "tolerance": 1e-08
+    }
+  },
+  "compiled_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": 1.0636475413211783e-17,
+    "reason": "verified",
+    "split_results": [
+      {
+        "max_abs_error": 3.552713678800501e-15,
+        "max_imag_residue": 0.0,
+        "mse": 1.1979866060425772e-30,
+        "name": "train",
+        "passed": true
+      },
+      {
+        "max_abs_error": 2.4424906541753444e-15,
+        "max_imag_residue": 0.0,
+        "mse": 7.5526715746547214e-31,
+        "name": "heldout",
+        "passed": true
+      },
+      {
+        "max_abs_error": 9.769962616701378e-15,
+        "max_imag_residue": 0.0,
+        "mse": 3.0445100560873424e-29,
+        "name": "extrapolation",
+        "passed": true
+      }
+    ],
+    "status": "recovered",
+    "tolerance": 1e-08
+  },
+  "environment": {
+    "code_version": "09a3989",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "metrics": {
+    "active_slot_count": null,
+    "best_loss": null,
+    "changed_slot_count": null,
+    "high_precision_max_error": 1.0636475413211783e-17,
+    "post_snap_loss": null,
+    "snap_active_node_count": null,
+    "snap_min_margin": null,
+    "verifier_status": "recovered",
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.4-standard/runs/v1.3-standard/v1-3-standard-shockley-compile-18bebde5cc6f.json",
+    "case_id": "shockley-compile",
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "shockley",
+    "optimizer": {
+      "depth": 2,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 10,
+      "restarts": 1,
+      "steps": 8,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-3-standard-shockley-compile-18bebde5cc6f",
+    "seed": 0,
+    "start_mode": "compile",
+    "suite_id": "v1.3-standard",
+    "tags": [
+      "diagnostic",
+      "for_demo"
+    ]
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "compiled_seed": "recovered"
+  },
+  "status": "recovered",
+  "timing": {
+    "elapsed_seconds": 0.023473709006793797
+  }
+}

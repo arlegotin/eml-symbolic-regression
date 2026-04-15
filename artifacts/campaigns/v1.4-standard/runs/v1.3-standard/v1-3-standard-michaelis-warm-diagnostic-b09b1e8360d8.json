@@ -1,0 +1,171 @@
+{
+  "claim_status": "unsupported",
+  "compiled_eml": {
+    "detail": "compiled depth 18 exceeds max_depth=13",
+    "diagnostic": {
+      "relaxed": {
+        "metadata": {
+          "assumptions": [
+            "addition compiled as a - (-b) with principal-branch intermediates",
+            "negative integer power compiled through reciprocal; denominator must be nonzero",
+            "multiplication uses verified EML arithmetic identity"
+          ],
+          "constant_policy": "literal_constants",
+          "constants": [
+            "0.5",
+            "1",
+            "2"
+          ],
+          "depth": 18,
+          "node_count": 75,
+          "normalized_expression": "2.0*x/(1.0*x + 0.5)",
+          "source_expression": "2*x/(x + 0.5)",
+          "trace": [
+            {
+              "assumptions": [],
+              "output_depth": 0,
+              "output_nodes": 1,
+              "rule": "constant",
+              "source": "2"
+            },
+            {
+              "assumptions": [],
+              "output_depth": 0,
+              "output_nodes": 1,
+              "rule": "variable",
+              "source": "x"
+            },
+            {
+              "assumptions": [],
+              "output_depth": 0,
+              "output_nodes": 1,
+              "rule": "constant",
+              "source": "0.500000000000000"
+            },
+            {
+              "assumptions": [],
+              "output_depth": 0,
+              "output_nodes": 1,
+              "rule": "variable",
+              "source": "x"
+            },
+            {
+              "assumptions": [
+                "addition compiled as a - (-b) with principal-branch intermediates"
+              ],
+              "output_depth": 8,
+              "output_nodes": 27,
+              "rule": "addition",
+              "source": "x + 0.5"
+            },
+            {
+              "assumptions": [
+                "addition compiled as a - (-b) with principal-branch intermediates",
+                "negative integer power compiled through reciprocal; denominator must be nonzero"
+              ],
+              "output_depth": 14,
+              "output_nodes": 43,
+              "rule": "negative_power",
+              "source": "1/(x + 0.5)"
+            },
+            {
+              "assumptions": [
+                "negative integer power compiled through reciprocal; denominator must be nonzero",
+                "multiplication uses verified EML arithmetic identity"
+              ],
+              "output_depth": 18,
+              "output_nodes": 75,
+              "rule": "multiplication",
+              "source": "2*x/(x + 0.5)"
+            }
+          ],
+          "unsupported_reason": null,
+          "variables": [
+            "x"
+          ]
+        },
+        "validation": {
+          "max_abs_error": 2.220446049250313e-15,
+          "mse": 3.534393018394996e-31,
+          "passed": true,
+          "reason": "validated",
+          "tolerance": 1e-08
+        }
+      },
+      "schema": "eml.compiler_diagnostic.v1",
+      "status": "unsupported",
+      "strict": {
+        "detail": "compiled depth 18 exceeds max_depth=13",
+        "expression": "2*x/(x + 0.5)",
+        "reason": "depth_exceeded"
+      }
+    },
+    "expression": "2*x/(x + 0.5)",
+    "reason": "depth_exceeded",
+    "status": "unsupported"
+  },
+  "environment": {
+    "code_version": "09a3989",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "metrics": {
+    "active_slot_count": null,
+    "best_loss": null,
+    "changed_slot_count": null,
+    "high_precision_max_error": null,
+    "post_snap_loss": null,
+    "snap_active_node_count": null,
+    "snap_min_margin": null,
+    "verifier_status": null,
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.4-standard/runs/v1.3-standard/v1-3-standard-michaelis-warm-diagnostic-b09b1e8360d8.json",
+    "case_id": "michaelis-warm-diagnostic",
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "michaelis_menten",
+    "optimizer": {
+      "depth": 2,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 10,
+      "restarts": 1,
+      "steps": 8,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-3-standard-michaelis-warm-diagnostic-b09b1e8360d8",
+    "seed": 0,
+    "start_mode": "warm_start",
+    "suite_id": "v1.3-standard",
+    "tags": [
+      "diagnostic",
+      "depth_gate",
+      "for_demo"
+    ]
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "compiled_seed": "unsupported",
+    "warm_start_attempt": "unsupported"
+  },
+  "status": "unsupported",
+  "timing": {
+    "elapsed_seconds": 0.02032733301166445
+  },
+  "warm_start_eml": {
+    "detail": "warm-start requires a validated compiled EML seed",
+    "reason": "compile_failed",
+    "status": "unsupported"
+  }
+}

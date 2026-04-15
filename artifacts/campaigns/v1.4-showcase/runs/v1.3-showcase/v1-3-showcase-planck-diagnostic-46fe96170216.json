@@ -1,0 +1,157 @@
+{
+  "claim_status": "unsupported",
+  "compiled_eml": {
+    "detail": "compiled depth 24 exceeds max_depth=13",
+    "diagnostic": {
+      "relaxed": {
+        "metadata": {
+          "assumptions": [
+            "scale*(exp(a)-1) compiled with lower-depth EML template",
+            "negative integer power compiled through reciprocal; denominator must be nonzero",
+            "multiplication uses verified EML arithmetic identity"
+          ],
+          "constant_policy": "literal_constants",
+          "constants": [
+            "1",
+            "2.718281828459045"
+          ],
+          "depth": 24,
+          "node_count": 83,
+          "normalized_expression": "x**3/(exp(x) - 1)",
+          "source_expression": "x**3/(exp(x) - 1)",
+          "trace": [
+            {
+              "assumptions": [],
+              "output_depth": 0,
+              "output_nodes": 1,
+              "rule": "variable",
+              "source": "x"
+            },
+            {
+              "assumptions": [],
+              "output_depth": 16,
+              "output_nodes": 33,
+              "rule": "positive_power",
+              "source": "x**3"
+            },
+            {
+              "assumptions": [],
+              "output_depth": 0,
+              "output_nodes": 1,
+              "rule": "variable",
+              "source": "x"
+            },
+            {
+              "assumptions": [
+                "scale*(exp(a)-1) compiled with lower-depth EML template"
+              ],
+              "output_depth": 8,
+              "output_nodes": 19,
+              "rule": "scaled_exp_minus_one_template",
+              "source": "exp(x) - 1"
+            },
+            {
+              "assumptions": [
+                "scale*(exp(a)-1) compiled with lower-depth EML template",
+                "negative integer power compiled through reciprocal; denominator must be nonzero"
+              ],
+              "output_depth": 14,
+              "output_nodes": 35,
+              "rule": "negative_power",
+              "source": "1/(exp(x) - 1)"
+            },
+            {
+              "assumptions": [
+                "negative integer power compiled through reciprocal; denominator must be nonzero",
+                "multiplication uses verified EML arithmetic identity"
+              ],
+              "output_depth": 24,
+              "output_nodes": 83,
+              "rule": "multiplication",
+              "source": "x**3/(exp(x) - 1)"
+            }
+          ],
+          "unsupported_reason": null,
+          "variables": [
+            "x"
+          ]
+        },
+        "validation": {
+          "max_abs_error": 1.1102230246251565e-15,
+          "mse": 1.2395081319376146e-31,
+          "passed": true,
+          "reason": "validated",
+          "tolerance": 1e-08
+        }
+      },
+      "schema": "eml.compiler_diagnostic.v1",
+      "status": "unsupported",
+      "strict": {
+        "detail": "compiled depth 24 exceeds max_depth=13",
+        "expression": "x**3/(exp(x) - 1)",
+        "reason": "depth_exceeded"
+      }
+    },
+    "expression": "x**3/(exp(x) - 1)",
+    "reason": "depth_exceeded",
+    "status": "unsupported"
+  },
+  "environment": {
+    "code_version": "09a3989",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "metrics": {
+    "active_slot_count": null,
+    "best_loss": null,
+    "changed_slot_count": null,
+    "high_precision_max_error": null,
+    "post_snap_loss": null,
+    "snap_active_node_count": null,
+    "snap_min_margin": null,
+    "verifier_status": null,
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.4-showcase/runs/v1.3-showcase/v1-3-showcase-planck-diagnostic-46fe96170216.json",
+    "case_id": "planck-diagnostic",
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "planck",
+    "optimizer": {
+      "depth": 2,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 10,
+      "restarts": 1,
+      "steps": 8,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-3-showcase-planck-diagnostic-46fe96170216",
+    "seed": 0,
+    "start_mode": "compile",
+    "suite_id": "v1.3-showcase",
+    "tags": [
+      "stretch",
+      "depth_gate",
+      "for_demo"
+    ]
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "compiled_seed": "unsupported"
+  },
+  "status": "unsupported",
+  "timing": {
+    "elapsed_seconds": 0.01119704102165997
+  }
+}
