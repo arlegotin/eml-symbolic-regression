@@ -210,6 +210,13 @@ def _array_sha256(values: np.ndarray) -> str:
 
 
 def proof_dataset_manifest(formula_id: str, *, points: int = 80, seed: int = 0, tolerance: float = 1e-8) -> dict[str, Any]:
+    points = int(points)
+    tolerance = float(tolerance)
+    if points <= 0:
+        raise ValueError("points must be positive")
+    if tolerance <= 0:
+        raise ValueError("tolerance must be positive")
+
     spec = get_demo(formula_id)
     splits = spec.make_splits(points=points, seed=seed)
     domains = {
@@ -235,8 +242,8 @@ def proof_dataset_manifest(formula_id: str, *, points: int = 80, seed: int = 0, 
         "formula_id": spec.name,
         "variable": spec.variable,
         "seed": int(seed),
-        "points": int(points),
-        "tolerance": float(tolerance),
+        "points": points,
+        "tolerance": tolerance,
         "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
         "splits": split_metadata,
         "provenance": spec.formula_provenance(),

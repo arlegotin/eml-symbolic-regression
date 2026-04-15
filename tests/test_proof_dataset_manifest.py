@@ -1,3 +1,5 @@
+import pytest
+
 from eml_symbolic_regression.datasets import demo_specs, get_demo, proof_dataset_manifest
 
 
@@ -68,6 +70,20 @@ def test_manifest_contains_split_domains_and_no_raw_arrays():
         "extrapolation": [1.05, 1.5],
     }
     assert not (FORBIDDEN_RAW_KEYS & set(_walk_keys(manifest)))
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    [
+        ({"points": 0}, "points must be positive"),
+        ({"points": -1}, "points must be positive"),
+        ({"tolerance": 0.0}, "tolerance must be positive"),
+        ({"tolerance": -1e-8}, "tolerance must be positive"),
+    ],
+)
+def test_proof_dataset_manifest_rejects_invalid_sampling_contracts(kwargs, message):
+    with pytest.raises(ValueError, match=message):
+        proof_dataset_manifest("exp", **kwargs)
 
 
 def test_formula_provenance_is_explicit_for_all_demo_specs():

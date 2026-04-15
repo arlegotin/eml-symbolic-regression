@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from eml_symbolic_regression.benchmark import (
     BenchmarkCase,
     BenchmarkRun,
@@ -235,6 +237,37 @@ def test_cli_proof_dataset_writes_manifest_without_raw_arrays(tmp_path):
     assert '"inputs"' not in encoded
     assert '"target"' not in encoded
     assert '"values"' not in encoded
+
+
+@pytest.mark.parametrize(
+    ("extra_args", "message"),
+    [
+        (["--points", "0"], "points must be positive"),
+        (["--tolerance=-1e-8"], "tolerance must be positive"),
+    ],
+)
+def test_cli_proof_dataset_rejects_invalid_sampling_contracts(tmp_path, extra_args, message):
+    output = tmp_path / "bad-proof-manifest.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "proof-dataset",
+            "exp",
+            "--output",
+            str(output),
+            *extra_args,
+        ],
+        check=False,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+
+    assert result.returncode != 0
+    assert message in result.stderr
+    assert not output.exists()
 
 
 def test_cli_campaign_writes_report(tmp_path):
