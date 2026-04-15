@@ -17,10 +17,10 @@ Requirements for this milestone only. Completed v1, v1.1, v1.2, and v1.3 require
 
 ### Blind Optimizer Robustness
 
-- [ ] **BLIND-01**: User can run reproducible blind optimizer experiments over `exp`, `log`, and `radioactive_decay` with explicit seeds, budgets, losses, snap metrics, and verifier statuses.
-- [ ] **BLIND-02**: User can compare optimizer variants against the v1.3 blind baseline using the same verifier-owned recovery contract.
-- [ ] **BLIND-03**: User receives an improved default blind optimizer or benchmark budget that increases verifier recovery or materially improves post-snap loss on at least one v1.3 blind failure family without regressing existing recovered cases.
-- [ ] **BLIND-04**: User can read diagnostics explaining remaining blind failures, including whether the issue is soft loss, snap instability, expression depth, or verifier mismatch.
+- [x] **BLIND-01**: User can run reproducible blind optimizer experiments over `exp`, `log`, and `radioactive_decay` with explicit seeds, budgets, losses, snap metrics, and verifier statuses.
+- [x] **BLIND-02**: User can compare optimizer variants against the v1.3 blind baseline using the same verifier-owned recovery contract.
+- [x] **BLIND-03**: User receives an improved default blind optimizer or benchmark budget that increases verifier recovery or materially improves post-snap loss on at least one v1.3 blind failure family without regressing existing recovered cases.
+- [x] **BLIND-04**: User can read diagnostics explaining remaining blind failures, including whether the issue is soft loss, snap instability, expression depth, or verifier mismatch.
 
 ### Warm-Start Perturbation Robustness
 
@@ -74,10 +74,10 @@ Deferred to later milestones.
 | DIAG-02 | Phase 24 | Complete |
 | DIAG-03 | Phase 24 | Complete |
 | DIAG-04 | Phase 24 | Complete |
-| BLIND-01 | Phase 25 | Pending |
-| BLIND-02 | Phase 25 | Pending |
-| BLIND-03 | Phase 25 | Pending |
-| BLIND-04 | Phase 25 | Pending |
+| BLIND-01 | Phase 25 | Complete |
+| BLIND-02 | Phase 25 | Complete |
+| BLIND-03 | Phase 25 | Complete |
+| BLIND-04 | Phase 25 | Complete |
 | PERT-01 | Phase 26 | Pending |
 | PERT-02 | Phase 26 | Pending |
 | PERT-03 | Phase 26 | Pending |
@@ -99,4 +99,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after completing Phase 24 diagnostics*
+*Last updated: 2026-04-15 after completing Phase 25 blind optimizer improvements*
