@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-current_phase: 29
-status: executing
-stopped_at: Milestone v1.5 roadmap created; ready for Phase 29 planning
-last_updated: "2026-04-15T13:21:43.485Z"
-last_activity: 2026-04-15 -- Phase 29 execution started
+current_phase: 30
+status: ready_for_phase_planning
+stopped_at: Phase 29 complete; ready for Phase 30 planning
+last_updated: "2026-04-15T14:32:54.124Z"
+last_activity: 2026-04-15
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 3
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 5
+  completed_plans: 1
+  percent: 20
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 29
+**Current phase:** 30
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 29 — Paper Claim Contract and Proof Dataset Harness
+**Current focus:** Phase 30 — Bounded Shallow Blind Training Recovery
 
 ## Current Position
 
-Phase: 29 (Paper Claim Contract and Proof Dataset Harness) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 29
-Last activity: 2026-04-15 -- Phase 29 execution started
-Progress: [----------] 0% by completed phases (v1.5: 0/5 planned)
+Phase: 30 (Bounded Shallow Blind Training Recovery) — Not started
+Plan: Not started
+Status: Phase 29 complete; ready to plan Phase 30
+Last activity: 2026-04-15 - Phase 29 completed and verified
+Progress: [##--------] 20% by completed phases (v1.5: 1/5 planned)
 
 ## Performance Metrics
 
@@ -80,7 +80,7 @@ Target features:
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 29 | Paper Claim Contract and Proof Dataset Harness | Pending | CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04 |
+| 29 | Paper Claim Contract and Proof Dataset Harness | Complete | CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04 |
 | 30 | Bounded Shallow Blind Training Recovery | Pending | SHAL-01, SHAL-02, SHAL-03, SHAL-04 |
 | 31 | Perturbed Basin Training and Local Repair | Pending | BASN-01, BASN-02, BASN-03, BASN-04, BASN-05 |
 | 32 | Paper Depth-Curve Training Evidence | Pending | CURV-01, CURV-02, CURV-03, CURV-04 |
@@ -97,6 +97,7 @@ Target features:
 - Phase 27 compiler expansion remains fail-closed and validates Shockley before accepting it.
 - Phase 28 comparison shows overall v1.4 recovery improved from 18/45 to 27/45 across standard and showcase campaigns.
 - v1.5 interprets "100% fully functional training" as 100% recovery over explicitly declared bounded proof suites, plus honest measured failure boundaries for deeper blind recovery.
+- Phase 29 established the v1.5 proof contract: stable paper claim matrix, deterministic proof dataset manifests, proof-aware benchmark artifacts, derived evidence classes, claim-level threshold summaries, CLI inspection commands, and campaign proof metadata/reporting.
 
 ### Pending Todos
 
@@ -109,8 +110,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Milestone v1.5 roadmap created; ready for Phase 29 planning
+Stopped at: Phase 29 complete; ready for Phase 30 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after creating milestone v1.5 roadmap*
+*Last updated: 2026-04-15 after completing Phase 29*
