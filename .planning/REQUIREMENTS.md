@@ -10,10 +10,10 @@ Requirements for this milestone only. Completed v1, v1.1, v1.2, and v1.3 require
 
 ### Baseline Diagnostics
 
-- [ ] **DIAG-01**: User can inspect a baseline triage summary that compares v1.3 `standard` and `showcase` failures by formula, mode, perturbation level, and recovery class.
-- [ ] **DIAG-02**: User can trace each target failure class back to representative raw run artifacts and optimizer/verifier metrics.
-- [ ] **DIAG-03**: User can run focused diagnostic subsets for blind failures, Beer-Lambert perturbation failures, and compiler/depth gates without rerunning the full campaigns.
-- [ ] **DIAG-04**: User can preserve the committed v1.3 baseline metrics as immutable before/after comparison inputs.
+- [x] **DIAG-01**: User can inspect a baseline triage summary that compares v1.3 `standard` and `showcase` failures by formula, mode, perturbation level, and recovery class.
+- [x] **DIAG-02**: User can trace each target failure class back to representative raw run artifacts and optimizer/verifier metrics.
+- [x] **DIAG-03**: User can run focused diagnostic subsets for blind failures, Beer-Lambert perturbation failures, and compiler/depth gates without rerunning the full campaigns.
+- [x] **DIAG-04**: User can preserve the committed v1.3 baseline metrics as immutable before/after comparison inputs.
 
 ### Blind Optimizer Robustness
 
@@ -70,10 +70,10 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DIAG-01 | Phase 24 | Pending |
-| DIAG-02 | Phase 24 | Pending |
-| DIAG-03 | Phase 24 | Pending |
-| DIAG-04 | Phase 24 | Pending |
+| DIAG-01 | Phase 24 | Complete |
+| DIAG-02 | Phase 24 | Complete |
+| DIAG-03 | Phase 24 | Complete |
+| DIAG-04 | Phase 24 | Complete |
 | BLIND-01 | Phase 25 | Pending |
 | BLIND-02 | Phase 25 | Pending |
 | BLIND-03 | Phase 25 | Pending |
@@ -99,4 +99,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after defining milestone v1.4 requirements*
+*Last updated: 2026-04-15 after completing Phase 24 diagnostics*
