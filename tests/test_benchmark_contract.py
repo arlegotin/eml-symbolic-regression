@@ -10,6 +10,7 @@ from eml_symbolic_regression.benchmark import (
     list_builtin_suites,
     load_suite,
 )
+from eml_symbolic_regression.proof import paper_claim
 
 
 def test_builtin_suite_registry_expands_stable_run_ids():
@@ -238,6 +239,19 @@ def test_proof_contract_validation_fails_closed(override, path_suffix):
 
     assert exc.value.reason == "invalid_proof_contract"
     assert exc.value.path == f"cases[0].{path_suffix}"
+
+
+def test_shallow_blind_claim_declares_signed_scaled_case_inventory():
+    claim = paper_claim("paper-shallow-blind-recovery")
+
+    assert claim.case_ids == (
+        "shallow-exp-blind",
+        "shallow-log-blind",
+        "shallow-radioactive-decay-blind",
+        "shallow-beer-lambert-blind",
+        "shallow-scaled-exp-growth-blind",
+        "shallow-scaled-exp-fast-decay-blind",
+    )
 
 
 def test_v15_shallow_proof_suite_expands_fixed_proof_contract_runs():
