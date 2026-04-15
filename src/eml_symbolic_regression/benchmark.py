@@ -15,9 +15,10 @@ from typing import Any, Iterable, Mapping
 import numpy as np
 
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
-from .datasets import demo_specs
+from .datasets import demo_specs, proof_dataset_manifest
 from .optimize import TrainingConfig, fit_eml_tree
 from .proof import (
+    EVIDENCE_CLASSES,
     TRAINING_MODES,
     ProofContractError,
     paper_claim,
@@ -745,6 +746,7 @@ def execute_benchmark_run(run: BenchmarkRun) -> BenchmarkRunResult:
         payload["status"] = "execution_error"
         payload["error"] = {"type": type(exc).__name__, "message": str(exc)}
     payload.pop("_compiled", None)
+    payload["evidence_class"] = evidence_class_for_payload(payload)
     payload["metrics"] = _extract_run_metrics(payload)
     payload["timing"] = {"elapsed_seconds": time.perf_counter() - started}
     _write_json(run.artifact_path, payload)
@@ -752,9 +754,20 @@ def execute_benchmark_run(run: BenchmarkRun) -> BenchmarkRunResult:
 
 
 def _base_run_payload(run: BenchmarkRun) -> dict[str, Any]:
+    manifest = proof_dataset_manifest(run.formula, points=run.dataset.points, seed=run.seed, tolerance=run.dataset.tolerance)
+    claim = paper_claim(run.claim_id) if run.claim_id is not None else None
+    threshold = threshold_policy(run.threshold_policy_id).as_dict() if run.threshold_policy_id is not None else None
     return {
         "schema": "eml.benchmark_run.v1",
         "run": run.as_dict(),
+        "claim_id": run.claim_id,
+        "claim_class": claim.claim_class if claim is not None else None,
+        "training_mode": run.training_mode,
+        "threshold": threshold,
+        "dataset": run.dataset.as_dict(),
+        "dataset_manifest": manifest,
+        "budget": run.optimizer.as_dict(),
+        "provenance": manifest["provenance"],
         "environment": {
             "python": platform.python_version(),
             "platform": platform.platform(),
@@ -1052,6 +1065,7 @@ def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
         "status": result.status,
         "claim_status": payload.get("claim_status"),
         "classification": classify_run(payload),
+        "evidence_class": payload.get("evidence_class") or evidence_class_for_payload(payload),
         "reason": _run_reason(payload),
         "metrics": payload.get("metrics", {}),
         "stage_statuses": payload.get("stage_statuses", {}),
@@ -1110,6 +1124,44 @@ def classify_run(payload: Mapping[str, Any]) -> str:
         return "failed"
     if claim_status == "recovered":
         return "verifier_recovered"
+    return str(status or "unknown")
+
+
+def evidence_class_for_payload(payload: Mapping[str, Any]) -> str:
+    status = payload.get("status")
+    claim_status = payload.get("claim_status")
+    run = payload.get("run") if isinstance(payload.get("run"), Mapping) else {}
+    start_mode = run.get("start_mode")
+    training_mode = payload.get("training_mode") or run.get("training_mode")
+    recovered = status in {"recovered", "verified_showcase"} or claim_status in {"recovered", "verified_showcase"}
+
+    if status == "unsupported":
+        return EVIDENCE_CLASSES["unsupported"]
+    if status == "execution_error":
+        return EVIDENCE_CLASSES["execution_failure"]
+    if status == "repaired_candidate" or payload.get("repair_status") == "repaired":
+        return EVIDENCE_CLASSES["repaired_candidate"]
+    if status == "snapped_but_failed":
+        return EVIDENCE_CLASSES["snapped_but_failed"]
+    if status == "soft_fit_only":
+        return EVIDENCE_CLASSES["soft_fit_only"]
+    if status == "failed":
+        return EVIDENCE_CLASSES["failed"]
+    if start_mode == "catalog" and recovered:
+        return EVIDENCE_CLASSES["catalog_verified"]
+    if start_mode == "compile" and recovered:
+        return EVIDENCE_CLASSES["compile_only_verified"]
+    if training_mode == TRAINING_MODES["blind_training"] and recovered:
+        return EVIDENCE_CLASSES["blind_training_recovered"]
+    if training_mode == TRAINING_MODES["compiler_warm_start_training"]:
+        if status == "same_ast_return" or claim_status == "same_ast_return":
+            return EVIDENCE_CLASSES["same_ast"]
+        if status == "verified_equivalent_ast" or claim_status == "verified_equivalent_ast":
+            return EVIDENCE_CLASSES["verified_equivalent"]
+        if recovered:
+            return EVIDENCE_CLASSES["compiler_warm_start_recovered"]
+    if training_mode == TRAINING_MODES["perturbed_true_tree_training"] and recovered:
+        return EVIDENCE_CLASSES["perturbed_true_tree_recovered"]
     return str(status or "unknown")
 
 
