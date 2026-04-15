@@ -1,5 +1,19 @@
 # Milestones
 
+## v1.3 Benchmark Campaign and Evidence Report (Shipped: 2026-04-15)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added `smoke`, `standard`, and `showcase` campaign presets with guarded output folders and reproducibility manifests.
+- Added tidy CSV exports for run-level metrics, grouped recovery summaries, headline metrics, and failed/unsupported reason tables.
+- Generated deterministic SVG figures for recovery rates, losses, Beer-Lambert perturbations, runtime/budget, and failure taxonomy.
+- Assembled campaign-root `report.md` files with headline metrics, figure/table links, raw artifact links, exact commands, limitations, and next experiments.
+- Committed the v1.3 smoke campaign evidence bundle in `artifacts/campaigns/v1.3-smoke/` and verified the workflow with 45 passing tests.
+
+---
+
 ## v1.2 Training Benchmark and Recovery Evidence (Shipped: 2026-04-15)
 
 **Phases completed:** 5 phases, 5 plans, 0 tasks
