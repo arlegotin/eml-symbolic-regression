@@ -10,10 +10,10 @@ Requirements for this milestone only. Completed v1 and v1.1 requirements are rec
 
 ### Benchmark Contract
 
-- [ ] **BENC-01**: User can define deterministic benchmark suite files containing formula IDs, dataset specs, variable ranges, sample counts, start modes, seeds, perturbation levels, optimizer budgets, verifier settings, and artifact paths.
-- [ ] **BENC-02**: User can select built-in suites for fast smoke checks, the full v1.2 evidence matrix, and `sources/FOR_DEMO.md` diagnostics.
-- [ ] **BENC-03**: User receives fail-closed validation errors for unknown formulas, invalid start modes, unsafe budgets, missing constants, unsupported compiler gates, or malformed suite files.
-- [ ] **BENC-04**: User gets stable run IDs and deterministic artifact locations for every formula/start-mode/seed/perturbation combination.
+- [x] **BENC-01**: User can define deterministic benchmark suite files containing formula IDs, dataset specs, variable ranges, sample counts, start modes, seeds, perturbation levels, optimizer budgets, verifier settings, and artifact paths.
+- [x] **BENC-02**: User can select built-in suites for fast smoke checks, the full v1.2 evidence matrix, and `sources/FOR_DEMO.md` diagnostics.
+- [x] **BENC-03**: User receives fail-closed validation errors for unknown formulas, invalid start modes, unsafe budgets, missing constants, unsupported compiler gates, or malformed suite files.
+- [x] **BENC-04**: User gets stable run IDs and deterministic artifact locations for every formula/start-mode/seed/perturbation combination.
 
 ### Run Execution
 
@@ -69,10 +69,10 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BENC-01 | Phase 14 | Pending |
-| BENC-02 | Phase 14 | Pending |
-| BENC-03 | Phase 14 | Pending |
-| BENC-04 | Phase 14 | Pending |
+| BENC-01 | Phase 14 | Complete |
+| BENC-02 | Phase 14 | Complete |
+| BENC-03 | Phase 14 | Complete |
+| BENC-04 | Phase 14 | Complete |
 | RUN-01 | Phase 15 | Pending |
 | RUN-02 | Phase 15 | Pending |
 | RUN-03 | Phase 15 | Pending |
