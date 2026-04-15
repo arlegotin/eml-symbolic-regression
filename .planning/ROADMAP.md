@@ -52,7 +52,7 @@ v1.3 turns the benchmark harness into a polished showcase: run a real campaign, 
 
 - [x] **Phase 19: Campaign Presets and Run Manifests** - Add named campaign presets, budget tiers, output-folder guardrails, and manifest metadata. (requirements: CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05)
 - [x] **Phase 20: Tidy CSV Export and Derived Metrics** - Export run-level and grouped CSV tables plus headline metrics for analysis and plotting. (requirements: DATA-01, DATA-02, DATA-03, DATA-04)
-- [ ] **Phase 21: Static Plot Generation** - Generate deterministic static figures for recovery, losses, perturbation sensitivity, runtime/depth, and failure taxonomy. (requirements: PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06)
+- [x] **Phase 21: Static Plot Generation** - Generate deterministic static figures for recovery, losses, perturbation sensitivity, runtime/depth, and failure taxonomy. (requirements: PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06)
 - [ ] **Phase 22: Evidence Report Assembly** - Assemble a self-contained campaign report with figures, tables, commands, narrative, limitations, and next experiments. (requirements: REPT-01, REPT-02, REPT-03, REPT-04, REPT-05)
 - [ ] **Phase 23: Campaign Smoke, Docs, and Report Lockdown** - Lock campaign presets, CSV export, plots, report assembly, and documentation with CI-scale tests. (requirements: TEST-11, TEST-12, TEST-13)
 
@@ -94,7 +94,8 @@ v1.3 turns the benchmark harness into a polished showcase: run a real campaign, 
   4. Runtime and depth/budget plots make practical cost visible.
   5. Failure-taxonomy plots show unsupported and failed cases by formula and class.
   6. Figure filenames are stable and suitable for Markdown linking.
-**Plans**: TBD
+**Plans**: `.planning/phases/21-static-plot-generation/21-PLAN.md`
+**Completed:** 2026-04-15
 
 ### Phase 22: Evidence Report Assembly
 **Goal**: Users receive a self-contained benchmark evidence report suitable for explaining the original paper's practical performance.
@@ -140,12 +141,12 @@ The order is intentionally linear. Campaign presets define where evidence lives;
 | DATA-02 | Phase 20 | Complete |
 | DATA-03 | Phase 20 | Complete |
 | DATA-04 | Phase 20 | Complete |
-| PLOT-01 | Phase 21 | Pending |
-| PLOT-02 | Phase 21 | Pending |
-| PLOT-03 | Phase 21 | Pending |
-| PLOT-04 | Phase 21 | Pending |
-| PLOT-05 | Phase 21 | Pending |
-| PLOT-06 | Phase 21 | Pending |
+| PLOT-01 | Phase 21 | Complete |
+| PLOT-02 | Phase 21 | Complete |
+| PLOT-03 | Phase 21 | Complete |
+| PLOT-04 | Phase 21 | Complete |
+| PLOT-05 | Phase 21 | Complete |
+| PLOT-06 | Phase 21 | Complete |
 | REPT-01 | Phase 22 | Pending |
 | REPT-02 | Phase 22 | Pending |
 | REPT-03 | Phase 22 | Pending |
@@ -183,7 +184,7 @@ The order is intentionally linear. Campaign presets define where evidence lives;
 | 18. Smoke Tests, Docs, and Evidence Lockdown | Complete | Complete | 2026-04-15 |
 | 19. Campaign Presets and Run Manifests | 1/1 | Complete | 2026-04-15 |
 | 20. Tidy CSV Export and Derived Metrics | 1/1 | Complete | 2026-04-15 |
-| 21. Static Plot Generation | 0/1 | Pending | - |
+| 21. Static Plot Generation | 1/1 | Complete | 2026-04-15 |
 | 22. Evidence Report Assembly | 0/1 | Pending | - |
 | 23. Campaign Smoke, Docs, and Report Lockdown | 0/1 | Pending | - |
 

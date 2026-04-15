@@ -123,3 +123,29 @@ def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
     assert len(failures) == 1
     assert failures[0]["classification"] == "unsupported"
     assert failures[0]["reason"]
+
+
+def test_campaign_writes_stable_svg_figures(tmp_path):
+    result = run_campaign("smoke", output_root=tmp_path, label="figures-smoke")
+
+    assert {
+        "recovery_by_formula",
+        "recovery_by_start_mode",
+        "loss_before_after_snap",
+        "beer_perturbation",
+        "runtime_depth_budget",
+        "failure_taxonomy",
+    } <= set(result.figure_paths)
+
+    for path in result.figure_paths.values():
+        assert path.exists()
+        text = path.read_text(encoding="utf-8")
+        assert text.startswith("<svg ")
+        assert "</svg>" in text
+
+    assert result.figure_paths["recovery_by_formula"].name == "recovery-by-formula.svg"
+    assert "-log10(loss)" in result.figure_paths["loss_before_after_snap"].read_text(encoding="utf-8")
+
+    manifest = json.loads(result.manifest_path.read_text())
+    assert "figures" in manifest["output"]
+    assert manifest["output"]["figures"]["failure_taxonomy"].endswith("failure-taxonomy.svg")

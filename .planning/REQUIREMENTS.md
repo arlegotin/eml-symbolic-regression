@@ -25,12 +25,12 @@ Requirements for this milestone only. Completed v1, v1.1, and v1.2 requirements 
 
 ### Plot Generation
 
-- [ ] **PLOT-01**: User can generate a recovery-rate chart by formula and start mode.
-- [ ] **PLOT-02**: User can generate a loss comparison chart showing best soft loss versus post-snap loss on a log scale where appropriate.
-- [ ] **PLOT-03**: User can generate a Beer-Lambert perturbation chart showing recovery class and changed-slot behavior by perturbation noise.
-- [ ] **PLOT-04**: User can generate runtime and depth/budget charts that make practical cost visible.
-- [ ] **PLOT-05**: User can generate an unsupported/failure taxonomy chart by formula and recovery class.
-- [ ] **PLOT-06**: User receives deterministic figure files with stable names suitable for linking from a Markdown report.
+- [x] **PLOT-01**: User can generate a recovery-rate chart by formula and start mode.
+- [x] **PLOT-02**: User can generate a loss comparison chart showing best soft loss versus post-snap loss on a log scale where appropriate.
+- [x] **PLOT-03**: User can generate a Beer-Lambert perturbation chart showing recovery class and changed-slot behavior by perturbation noise.
+- [x] **PLOT-04**: User can generate runtime and depth/budget charts that make practical cost visible.
+- [x] **PLOT-05**: User can generate an unsupported/failure taxonomy chart by formula and recovery class.
+- [x] **PLOT-06**: User receives deterministic figure files with stable names suitable for linking from a Markdown report.
 
 ### Evidence Report
 
@@ -82,12 +82,12 @@ Deferred to later milestones.
 | DATA-02 | Phase 20 | Complete |
 | DATA-03 | Phase 20 | Complete |
 | DATA-04 | Phase 20 | Complete |
-| PLOT-01 | Phase 21 | Pending |
-| PLOT-02 | Phase 21 | Pending |
-| PLOT-03 | Phase 21 | Pending |
-| PLOT-04 | Phase 21 | Pending |
-| PLOT-05 | Phase 21 | Pending |
-| PLOT-06 | Phase 21 | Pending |
+| PLOT-01 | Phase 21 | Complete |
+| PLOT-02 | Phase 21 | Complete |
+| PLOT-03 | Phase 21 | Complete |
+| PLOT-04 | Phase 21 | Complete |
+| PLOT-05 | Phase 21 | Complete |
+| PLOT-06 | Phase 21 | Complete |
 | REPT-01 | Phase 22 | Pending |
 | REPT-02 | Phase 22 | Pending |
 | REPT-03 | Phase 22 | Pending |

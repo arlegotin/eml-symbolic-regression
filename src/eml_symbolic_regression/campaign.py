@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-import json
-import platform
 import csv
+import json
+import math
+import platform
 import statistics
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from html import escape
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -55,6 +57,7 @@ class CampaignResult:
     suite_result_path: Path
     aggregate_paths: Mapping[str, Path]
     table_paths: Mapping[str, Path] = field(default_factory=dict)
+    figure_paths: Mapping[str, Path] = field(default_factory=dict)
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -64,6 +67,7 @@ class CampaignResult:
             "suite_result_path": str(self.suite_result_path),
             "aggregate_paths": {key: str(value) for key, value in self.aggregate_paths.items()},
             "table_paths": {key: str(value) for key, value in self.table_paths.items()},
+            "figure_paths": {key: str(value) for key, value in self.figure_paths.items()},
         }
 
 
@@ -133,6 +137,7 @@ def run_campaign(
     aggregate_paths = write_aggregate_reports(result, campaign_dir)
     aggregate = aggregate_evidence(result)
     table_paths = write_campaign_tables(aggregate, campaign_dir / "tables")
+    figure_paths = write_campaign_plots(aggregate, campaign_dir / "figures")
 
     manifest = _manifest_payload(
         preset=preset,
@@ -145,6 +150,7 @@ def run_campaign(
         suite_result_path=suite_result_path,
         aggregate_paths=aggregate_paths,
         table_paths=table_paths,
+        figure_paths=figure_paths,
     )
     manifest_path = campaign_dir / "campaign-manifest.json"
     _write_json(manifest_path, manifest)
@@ -155,6 +161,7 @@ def run_campaign(
         suite_result_path=suite_result_path,
         aggregate_paths=aggregate_paths,
         table_paths=table_paths,
+        figure_paths=figure_paths,
     )
 
 
@@ -204,6 +211,43 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
     return paths
 
 
+def write_campaign_plots(aggregate: Mapping[str, Any], output_dir: Path) -> dict[str, Path]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    runs = list(aggregate.get("runs", ()))
+    paths = {
+        "recovery_by_formula": output_dir / "recovery-by-formula.svg",
+        "recovery_by_start_mode": output_dir / "recovery-by-start-mode.svg",
+        "loss_before_after_snap": output_dir / "loss-before-after-snap.svg",
+        "beer_perturbation": output_dir / "beer-perturbation.svg",
+        "runtime_depth_budget": output_dir / "runtime-depth-budget.svg",
+        "failure_taxonomy": output_dir / "failure-taxonomy.svg",
+    }
+
+    _write_svg(
+        paths["recovery_by_formula"],
+        _bar_chart_svg(
+            "Verifier Recovery Rate by Formula",
+            _rate_bars(_group_rows(runs, "formula"), "group", "verifier_recovery_rate", percent=True),
+            y_label="recovered / total",
+            max_value=1.0,
+        ),
+    )
+    _write_svg(
+        paths["recovery_by_start_mode"],
+        _bar_chart_svg(
+            "Verifier Recovery Rate by Start Mode",
+            _rate_bars(_group_rows(runs, "start_mode"), "group", "verifier_recovery_rate", percent=True),
+            y_label="recovered / total",
+            max_value=1.0,
+        ),
+    )
+    _write_svg(paths["loss_before_after_snap"], _loss_chart_svg(runs))
+    _write_svg(paths["beer_perturbation"], _beer_perturbation_svg(runs))
+    _write_svg(paths["runtime_depth_budget"], _runtime_depth_svg(runs))
+    _write_svg(paths["failure_taxonomy"], _failure_taxonomy_svg(runs))
+    return paths
+
+
 def _campaign_dir(output_root: Path, preset_name: str, label: str | None) -> Path:
     folder = label or f"{preset_name}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
     return output_root / folder
@@ -221,6 +265,7 @@ def _manifest_payload(
     suite_result_path: Path,
     aggregate_paths: Mapping[str, Path],
     table_paths: Mapping[str, Path],
+    figure_paths: Mapping[str, Path],
 ) -> dict[str, Any]:
     filter_payload = _filter_payload(run_filter)
     command = _reproduction_command(preset.name, campaign_dir.parent, label, overwrite, filter_payload)
@@ -238,6 +283,7 @@ def _manifest_payload(
             "aggregate_json": str(aggregate_paths["json"]),
             "aggregate_markdown": str(aggregate_paths["markdown"]),
             "tables": {key: str(value) for key, value in table_paths.items()},
+            "figures": {key: str(value) for key, value in figure_paths.items()},
         },
         "reproducibility": {
             "python": platform.python_version(),
@@ -464,3 +510,172 @@ def _write_csv(path: Path, rows: list[Mapping[str, Any]], fieldnames: list[str])
         writer.writeheader()
         for row in rows:
             writer.writerow({key: "" if row.get(key) is None else row.get(key) for key in fieldnames})
+
+
+def _write_svg(path: Path, svg: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(svg, encoding="utf-8")
+
+
+def _rate_bars(rows: list[Mapping[str, Any]], label_key: str, value_key: str, *, percent: bool) -> list[dict[str, Any]]:
+    bars = []
+    for row in rows:
+        value = float(row.get(value_key) or 0.0)
+        bars.append(
+            {
+                "label": str(row.get(label_key)),
+                "value": value,
+                "display": f"{value:.0%}" if percent else f"{value:.3g}",
+            }
+        )
+    return bars
+
+
+def _bar_chart_svg(
+    title: str,
+    bars: list[Mapping[str, Any]],
+    *,
+    y_label: str,
+    max_value: float | None = None,
+    width: int = 960,
+    height: int = 520,
+) -> str:
+    if not bars:
+        return _empty_svg(title, "No data available.", width=width, height=height)
+
+    left = 86
+    right = 36
+    top = 76
+    bottom = 130
+    plot_width = width - left - right
+    plot_height = height - top - bottom
+    baseline = top + plot_height
+    max_seen = max(float(bar.get("value") or 0.0) for bar in bars)
+    scale_max = max(max_value or max_seen, max_seen, 1e-12)
+    slot = plot_width / len(bars)
+    bar_width = max(12, min(64, slot * 0.58))
+    palette = ["#2f6f8f", "#d1495b", "#4f8a3a", "#7a5195", "#a5673f", "#1f8a70"]
+
+    parts = [_svg_header(width, height), f'<text x="{left}" y="38" class="title">{escape(title)}</text>']
+    parts.append(f'<text x="{left}" y="60" class="subtitle">{escape(y_label)}</text>')
+    parts.append(f'<line x1="{left}" y1="{baseline}" x2="{width - right}" y2="{baseline}" class="axis" />')
+    parts.append(f'<line x1="{left}" y1="{top}" x2="{left}" y2="{baseline}" class="axis" />')
+    for tick in range(5):
+        value = scale_max * tick / 4
+        y = baseline - (value / scale_max * plot_height)
+        parts.append(f'<line x1="{left - 5}" y1="{y:.2f}" x2="{width - right}" y2="{y:.2f}" class="grid" />')
+        parts.append(f'<text x="{left - 12}" y="{y + 4:.2f}" class="tick" text-anchor="end">{value:.2g}</text>')
+
+    for index, bar in enumerate(bars):
+        value = float(bar.get("value") or 0.0)
+        h = value / scale_max * plot_height if scale_max else 0.0
+        x = left + index * slot + (slot - bar_width) / 2
+        y = baseline - h
+        color = palette[index % len(palette)]
+        label = escape(str(bar.get("label", "")))
+        display = escape(str(bar.get("display", f"{value:.3g}")))
+        parts.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{bar_width:.2f}" height="{h:.2f}" fill="{color}" rx="3" />')
+        parts.append(f'<text x="{x + bar_width / 2:.2f}" y="{max(y - 8, top - 8):.2f}" class="value" text-anchor="middle">{display}</text>')
+        parts.append(
+            f'<text x="{x + bar_width / 2:.2f}" y="{baseline + 22}" class="label" text-anchor="end" '
+            f'transform="rotate(-35 {x + bar_width / 2:.2f} {baseline + 22})">{label}</text>'
+        )
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
+def _loss_chart_svg(runs: list[Mapping[str, Any]]) -> str:
+    bars: list[dict[str, Any]] = []
+    for run in runs:
+        best = _metric(run, "best_loss")
+        snapped = _metric(run, "post_snap_loss")
+        if best is None and snapped is None:
+            continue
+        label = f"{run.get('formula')} s{run.get('seed')}"
+        if best is not None:
+            bars.append({"label": f"{label} best", "value": _loss_score(best), "display": _sci(best)})
+        if snapped is not None:
+            bars.append({"label": f"{label} snap", "value": _loss_score(snapped), "display": _sci(snapped)})
+    return _bar_chart_svg(
+        "Training Loss Before and After Snap",
+        bars,
+        y_label="-log10(loss), higher is lower loss",
+        max_value=max((float(bar["value"]) for bar in bars), default=1.0),
+    )
+
+
+def _beer_perturbation_svg(runs: list[Mapping[str, Any]]) -> str:
+    beer_runs = [run for run in runs if run.get("formula") == "beer_lambert"]
+    groups = _group_rows(beer_runs, "perturbation_noise")
+    bars = []
+    for group in groups:
+        noise_runs = [run for run in beer_runs if str(run.get("perturbation_noise")) == group["group"]]
+        changed = [_number_or_none(run.get("metrics", {}).get("changed_slot_count")) for run in noise_runs]
+        changed = [value for value in changed if value is not None]
+        changed_label = f", slots {statistics.median(changed):.1f}" if changed else ""
+        bars.append(
+            {
+                "label": f"noise {group['group']}",
+                "value": group["verifier_recovery_rate"],
+                "display": f"{group['verifier_recovery_rate']:.0%}{changed_label}",
+            }
+        )
+    return _bar_chart_svg("Beer-Lambert Perturbation Recovery", bars, y_label="recovered / total", max_value=1.0)
+
+
+def _runtime_depth_svg(runs: list[Mapping[str, Any]]) -> str:
+    grouped: dict[str, list[float]] = {}
+    for run in runs:
+        runtime = _runtime_seconds(run)
+        if runtime is None:
+            continue
+        optimizer = run.get("optimizer", {})
+        label = f"d{optimizer.get('depth')} / ws{optimizer.get('warm_steps')}"
+        grouped.setdefault(label, []).append(runtime)
+    bars = [
+        {"label": label, "value": statistics.mean(values), "display": f"{statistics.mean(values):.2f}s"}
+        for label, values in sorted(grouped.items())
+    ]
+    return _bar_chart_svg("Runtime by Depth and Warm Budget", bars, y_label="mean elapsed seconds")
+
+
+def _failure_taxonomy_svg(runs: list[Mapping[str, Any]]) -> str:
+    rows = [
+        row
+        for row in _group_rows(runs, "classification")
+        if row["group"] in {"unsupported", "failed", "snapped_but_failed", "soft_fit_only", "execution_failure"}
+    ]
+    bars = [{"label": row["group"], "value": row["total"], "display": str(row["total"])} for row in rows]
+    return _bar_chart_svg("Unsupported and Failure Taxonomy", bars, y_label="run count")
+
+
+def _loss_score(loss: float) -> float:
+    return max(0.0, -math.log10(max(float(loss), 1e-16)))
+
+
+def _sci(value: float) -> str:
+    return f"{float(value):.1e}"
+
+
+def _empty_svg(title: str, message: str, *, width: int, height: int) -> str:
+    return "\n".join(
+        [
+            _svg_header(width, height),
+            f'<text x="64" y="48" class="title">{escape(title)}</text>',
+            f'<text x="64" y="92" class="subtitle">{escape(message)}</text>',
+            "</svg>",
+        ]
+    )
+
+
+def _svg_header(width: int, height: int) -> str:
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">
+<style>
+  .title {{ font: 700 24px sans-serif; fill: #1d252c; }}
+  .subtitle {{ font: 400 14px sans-serif; fill: #4b5563; }}
+  .axis {{ stroke: #28343d; stroke-width: 1.3; }}
+  .grid {{ stroke: #d7dde3; stroke-width: 1; }}
+  .tick {{ font: 12px sans-serif; fill: #51606d; }}
+  .label {{ font: 12px sans-serif; fill: #1d252c; }}
+  .value {{ font: 700 11px sans-serif; fill: #1d252c; }}
+</style>'''
