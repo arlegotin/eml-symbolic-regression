@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Training Benchmark and Recovery Evidence
-current_phase: Not started
-status: defining_requirements
-stopped_at: defining v1.2 requirements and roadmap
+current_phase: 14
+status: ready_for_phase_planning
+stopped_at: roadmap created for v1.2
 last_updated: "2026-04-15T10:42:56Z"
 last_activity: 2026-04-15
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -18,7 +18,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Complete
+**Current phase:** 14
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,17 +30,17 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: -
-Status: Defining requirements
+Phase: 14 of 18 (Benchmark Contract and Suite Registry)
+Plan: Not started
+Status: Ready to plan phase 14
 Last activity: 2026-04-15
-Progress: [----------] 0% by completed phases
+Progress: [----------] 0% by completed phases (v1.2: 0/5)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1 phases complete; plan counts were not tracked in this v1.1 roadmap
+- Total plans completed: Historical v1 and v1.1 phases complete; v1.2 not started
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
@@ -55,8 +55,8 @@ Progress: [----------] 0% by completed phases
 | Project context | `.planning/PROJECT.md` | Complete |
 | Workflow config | `.planning/config.json` | Complete |
 | Research summary | `.planning/research/SUMMARY.md` | Skipped for v1.2; local evidence milestone |
-| Requirements | `.planning/REQUIREMENTS.md` | In progress |
-| Roadmap | `.planning/ROADMAP.md` | Pending |
+| Requirements | `.planning/REQUIREMENTS.md` | Complete |
+| Roadmap | `.planning/ROADMAP.md` | Complete |
 
 ## Current Milestone
 
@@ -88,7 +88,11 @@ Target features:
 | 11 | Perturbed Warm-Start Training | Complete | WARM-01, WARM-02, WARM-03, WARM-04 |
 | 12 | Demo Promotion and Claim Reporting | Complete | DEMO-05, DEMO-06, DEMO-07, DEMO-08 |
 | 13 | Regression Tests and Documentation Lockdown | Complete | TEST-03, TEST-04 |
-| 14 | TBD | Pending | TBD |
+| 14 | Benchmark Contract and Suite Registry | Pending | BENC-01, BENC-02, BENC-03, BENC-04 |
+| 15 | Benchmark Runner and Training Modes | Pending | RUN-01, RUN-02, RUN-03, RUN-04 |
+| 16 | Experiment Matrix and Formula Coverage | Pending | MATR-01, MATR-02, MATR-03, MATR-04 |
+| 17 | Evidence Aggregation and Report Contracts | Pending | EVID-01, EVID-02, EVID-03, EVID-04 |
+| 18 | Smoke Tests, Docs, and Evidence Lockdown | Pending | TEST-05, TEST-06, TEST-07 |
 
 ## Accumulated Context
 
@@ -100,6 +104,7 @@ Target features:
 - Literal constants are explicit warm-start/demo provenance, not pure `{1, eml}` recovery claims.
 - Normalized Planck is stretch reporting only, not a trained-recovery milestone guarantee.
 - The immediate evidence gap is robustness: strong Beer-Lambert perturbation failed once active slots changed, so v1.2 must measure recovery rates instead of relying on single success cases.
+- v1.2 continues phase numbering from v1.1 and maps 19 requirements across phases 14-18.
 
 ### Pending Todos
 
@@ -112,8 +117,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: v1.2 milestone initialized
+Stopped at: v1.2 roadmap created; ready for Phase 14 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after starting milestone v1.2*
+*Last updated: 2026-04-15 after creating milestone v1.2 roadmap*

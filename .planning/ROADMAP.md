@@ -4,17 +4,20 @@
 **Updated:** 2026-04-15
 **Granularity:** Coarse
 **Mode:** YOLO
-**Current milestone:** v1.1 EML Compiler and Warm Starts
-**Coverage:** 22 v1.1 requirements mapped, 0 unmapped
+**Current milestone:** v1.2 Training Benchmark and Recovery Evidence
+**Coverage:** 19 v1.2 requirements mapped, 0 unmapped
 
 ## Overview
 
-v1.0 established the exact EML semantics, soft master trees, optimizer, verifier, cleanup, demos, tests, and documentation. v1.1 turns those verified reference capabilities into compiler-driven warm-start recovery workflows: compile supported SymPy expressions into exact EML ASTs, validate them independently, embed them into compatible soft trees, perturb and train through the existing optimizer, and let the verifier decide which demos can be promoted as trained exact recoveries.
+v1.0 established exact EML semantics, soft master trees, optimizer, verifier, cleanup, demos, tests, and documentation. v1.1 added compiler-driven warm starts, exact AST embedding, deterministic perturbation manifests, and honest demo claim reporting.
+
+v1.2 turns the current training evidence into a repeatable benchmark system. The milestone measures blind starts, compiler warm starts, perturbation sweeps, unsupported/stretch diagnostics, and verifier-owned recovery rates so future optimizer work is guided by aggregate evidence rather than individual success cases.
 
 ## Milestones
 
 - **v1.0 MVP** - Phases 1-7 complete (completed 2026-04-15)
 - **v1.1 EML Compiler and Warm Starts** - Phases 8-13 complete (completed 2026-04-15)
+- **v1.2 Training Benchmark and Recovery Evidence** - Phases 14-18 planned
 
 ## Completed Milestone Context
 
@@ -27,130 +30,120 @@ v1.0 established the exact EML semantics, soft master trees, optimizer, verifier
 | 5 | Local Cleanup, SymPy Export, and Reports | Complete |
 | 6 | Demo Harness and Public Showcase | Complete |
 | 7 | Tests and Documentation | Complete |
+| 8 | Compiler Contract and Direct Rules | Complete |
+| 9 | Constant Catalog and AST Embedding | Complete |
+| 10 | Arithmetic Rule Corpus and Depth Gates | Complete |
+| 11 | Perturbed Warm-Start Training | Complete |
+| 12 | Demo Promotion and Claim Reporting | Complete |
+| 13 | Regression Tests and Documentation Lockdown | Complete |
 
 ## Phases
 
 **Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (8.1, 8.2): Urgent insertions, if needed later
-- v1.1 continues from completed Phase 7 and starts at Phase 8
+- Integer phases (14, 15, 16): Planned milestone work
+- Decimal phases (14.1, 14.2): Urgent insertions, if needed later
+- v1.2 continues from completed Phase 13 and starts at Phase 14
 
-- [x] **Phase 8: Compiler Contract and Direct Rules** - Establish a fail-closed compiler contract that emits exact EML ASTs, metadata, and validation evidence. (completed 2026-04-15)
-- [x] **Phase 9: Constant Catalog and AST Embedding** - Make compiled literal constants representable in soft trees and prove compiled ASTs can embed and snap back safely. (completed 2026-04-15)
-- [x] **Phase 10: Arithmetic Rule Corpus and Depth Gates** - Add the arithmetic rule subset needed for Beer-Lambert and Michaelis-Menten under explicit budgets and assumptions. (completed 2026-04-15)
-- [x] **Phase 11: Perturbed Warm-Start Training** - Perturb compiled embeddings, train through the existing optimizer, and classify post-snap outcomes honestly. (completed 2026-04-15)
-- [x] **Phase 12: Demo Promotion and Claim Reporting** - Promote Beer-Lambert and conditionally Michaelis-Menten through verifier-gated reports while keeping Planck as stretch evidence. (completed 2026-04-15)
-- [x] **Phase 13: Regression Tests and Documentation Lockdown** - Lock the compiler, warm-start, demo-claim, and documentation contracts with tests and public wording. (completed 2026-04-15)
+- [ ] **Phase 14: Benchmark Contract and Suite Registry** - Define deterministic benchmark suite schemas, built-in suite registry, validation, and artifact identity. (requirements: BENC-01, BENC-02, BENC-03, BENC-04)
+- [ ] **Phase 15: Benchmark Runner and Training Modes** - Run suites and filtered subsets through existing blind-start and compiler warm-start paths while preserving failures. (requirements: RUN-01, RUN-02, RUN-03, RUN-04)
+- [ ] **Phase 16: Experiment Matrix and Formula Coverage** - Add the actual v1.2 formula/start/seed/perturbation matrix for shallow baselines, Beer-Lambert, Michaelis-Menten, Planck, and selected demo diagnostics. (requirements: MATR-01, MATR-02, MATR-03, MATR-04)
+- [ ] **Phase 17: Evidence Aggregation and Report Contracts** - Aggregate run artifacts into JSON and Markdown reports with recovery rates, failure classes, and provenance. (requirements: EVID-01, EVID-02, EVID-03, EVID-04)
+- [ ] **Phase 18: Smoke Tests, Docs, and Evidence Lockdown** - Lock benchmark parsing, smoke execution, aggregation math, claim taxonomy, and user-facing interpretation docs. (requirements: TEST-05, TEST-06, TEST-07)
 
 ## Phase Details
 
-### Phase 8: Compiler Contract and Direct Rules
-**Goal**: Users can compile a trusted SymPy subset into exact EML ASTs and know when compilation is unsupported.
-**Depends on**: Phase 7
-**Requirements**: COMP-01, COMP-02, COMP-03, COMP-04
+### Phase 14: Benchmark Contract and Suite Registry
+**Goal**: Users can define, validate, and select deterministic benchmark suites before any training runs.
+**Depends on**: Phase 13
+**Requirements**: BENC-01, BENC-02, BENC-03, BENC-04
 **Success Criteria** (what must be TRUE):
-  1. User can compile a whitelisted SymPy expression into the existing exact EML `Expr` AST type without creating a parallel tree representation.
-  2. User receives structured compiler metadata containing source expression, normalized expression, rule trace, variables, constants, depth, node count, domain assumptions, and unsupported reason codes.
-  3. User can validate compiled AST output against independent ordinary-expression evaluation before the result becomes eligible for warm-start training.
-  4. Unsupported operators, unsupported powers, unknown variables, unsafe constants, and depth or node budget excesses fail closed with machine-readable errors.
+  1. User can define suite files with formula IDs, datasets, ranges, sample counts, start modes, seeds, perturbation levels, optimizer budgets, verifier settings, and artifact paths.
+  2. User can select built-in suites for smoke checks, the full v1.2 evidence matrix, and `sources/FOR_DEMO.md` diagnostics.
+  3. Invalid suite files fail closed with actionable validation errors before training starts.
+  4. Every planned run has a stable run ID and deterministic artifact location.
 **Plans**: TBD
 
-### Phase 9: Constant Catalog and AST Embedding
-**Goal**: Users can represent compiled literal constants in soft master trees and embed compiled ASTs safely before training.
-**Depends on**: Phase 8
-**Requirements**: CONST-01, CONST-02, EMBED-01, EMBED-02, EMBED-03
+### Phase 15: Benchmark Runner and Training Modes
+**Goal**: Users can execute benchmark suites through existing training paths without hand-writing demo commands.
+**Depends on**: Phase 14
+**Requirements**: RUN-01, RUN-02, RUN-03, RUN-04
 **Success Criteria** (what must be TRUE):
-  1. User can choose an explicit constant policy, with `literal_constants` available while the default pure `const:1` behavior remains unchanged.
-  2. User can construct `SoftEMLTree` instances with a finite constant catalog derived from a compiled expression.
-  3. User can embed a compiled exact EML AST into a compatible soft master tree by mapping AST nodes to slot logits.
-  4. User sees immediate embed-to-snap validation proving a high-strength warm start snaps back to the compiled AST before perturbation.
-  5. User receives actionable diagnostics for depth-too-small, missing-constant, missing-variable, and incompatible-tree failures before training starts.
+  1. User can run a full suite or filtered subset from the CLI.
+  2. Blind-start runs call the existing optimizer across multiple seeds for shallow supported formulas.
+  3. Compiler warm-start runs use the existing compile, embed, perturb, train, snap, and verify path.
+  4. Unsupported, skipped, failed, and errored cases are recorded as run outcomes without aborting the whole suite.
 **Plans**: TBD
 
-### Phase 10: Arithmetic Rule Corpus and Depth Gates
-**Goal**: Users can compile the arithmetic needed for v1.1 demo formulas under explicit assumptions, max-power limits, and depth budgets.
-**Depends on**: Phase 9
-**Requirements**: ARITH-01, ARITH-02, ARITH-03
+### Phase 16: Experiment Matrix and Formula Coverage
+**Goal**: Users can run the v1.2 evidence matrix that tests shallow blind recovery, Beer-Lambert perturbation robustness, and honest diagnostics for harder demos.
+**Depends on**: Phase 15
+**Requirements**: MATR-01, MATR-02, MATR-03, MATR-04
 **Success Criteria** (what must be TRUE):
-  1. User can compile direct `exp` and `log` rules over arbitrary supported subexpressions.
-  2. User can compile unary negation, subtraction, addition, multiplication, reciprocal, and division through tested EML rule templates or receive explicit unsupported/depth failure reasons.
-  3. User can compile small integer powers only when explicit max-power and depth gates allow them.
-  4. User can inspect rule-level domain assumptions, depth, and node counts before arithmetic compiler output is embedded or trained.
+  1. The matrix includes blind-start baselines for shallow formulas such as `exp`, `log`, radioactive decay, and other low-depth formulas supported by current gates.
+  2. Beer-Lambert runs include same-basin, mild perturbation, and stronger slot-changing perturbation settings.
+  3. Michaelis-Menten runs record compiler depth, embedding eligibility, unsupported reasons, and training attempts only when current gates allow them.
+  4. Normalized Planck and selected `sources/FOR_DEMO.md` formulas appear as stretch or diagnostic cases without requiring recovery.
 **Plans**: TBD
 
-### Phase 11: Perturbed Warm-Start Training
-**Goal**: Users can perturb compiled warm-start logits, train through the existing optimizer path, and understand the exact post-training outcome.
-**Depends on**: Phase 10
-**Requirements**: WARM-01, WARM-02, WARM-03, WARM-04
+### Phase 17: Evidence Aggregation and Report Contracts
+**Goal**: Users can understand benchmark performance through aggregate evidence rather than isolated run artifacts.
+**Depends on**: Phase 16
+**Requirements**: EVID-01, EVID-02, EVID-03, EVID-04
 **Success Criteria** (what must be TRUE):
-  1. User can run deterministic perturbation of compiled warm-start logits with recorded strength, noise scale, seed, active slot changes, and pre/post perturbation snap summaries.
-  2. User can train from compiled warm starts through the existing optimizer path without allowing the optimizer to label a result `recovered`.
-  3. User receives a warm-start manifest containing compiler metadata, terminal bank, embedding assignments, perturbation config, optimizer config, snap decisions, anomaly stats, and verification outcome.
-  4. User can distinguish same-AST return, verified-equivalent AST, snapped-but-failed candidate, soft-fit-only, and failed warm-start attempts.
+  1. Each run JSON includes suite ID, run ID, formula, dataset spec, start mode, seed, perturbation config, optimizer config, losses, snap outcome, active slot changes, verifier status, timing, and errors.
+  2. Aggregate JSON and Markdown reports compute recovery rates by formula, start mode, perturbation level, depth, and seed group.
+  3. Reports separate blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, snapped-but-failed candidates, soft-fit-only attempts, unsupported cases, and execution failures.
+  4. Reports preserve provenance for suite config, code version, environment summary, and artifact paths.
 **Plans**: TBD
 
-### Phase 12: Demo Promotion and Claim Reporting
-**Goal**: Users can run v1.1 compiler/warm-start demos and see claim statuses separated by evidence stage.
-**Depends on**: Phase 11
-**Requirements**: DEMO-05, DEMO-06, DEMO-07, DEMO-08
+### Phase 18: Smoke Tests, Docs, and Evidence Lockdown
+**Goal**: Users can trust the benchmark contract and interpret evidence without confusing failures or same-AST returns for discovery.
+**Depends on**: Phase 17
+**Requirements**: TEST-05, TEST-06, TEST-07
 **Success Criteria** (what must be TRUE):
-  1. User can run Beer-Lambert as a compiler-driven warm-start recovery demo and see it promoted only when the final trained exact EML AST verifies.
-  2. User can run Michaelis-Menten as a compiler-driven warm-start recovery demo when arithmetic rules and depth gates pass, or receive honest unsupported/depth diagnostics otherwise.
-  3. User can run normalized Planck as a stretch compile/warm-start report without a milestone guarantee of trained recovery.
-  4. User-facing reports separate catalog showcase, compiled seed, warm-start attempt, trained exact recovery, blind baseline, stretch, unsupported, and failed statuses.
-**Plans**: TBD
-
-### Phase 13: Regression Tests and Documentation Lockdown
-**Goal**: Users can rely on tests and documentation that protect compiler correctness, warm-start provenance, and public recovery claims.
-**Depends on**: Phase 12
-**Requirements**: TEST-03, TEST-04
-**Success Criteria** (what must be TRUE):
-  1. User can run pytest coverage for compiler rules, negative compiler cases, constant policy, constant catalog labels, embedding round trips, perturbation determinism, warm-start manifests, and demo promotion gates.
-  2. User can read documentation explaining fixed literal constants, compile-only versus warm-start recovery, demo claim statuses, depth limits, and why v1.1 is not blind symbolic discovery.
-  3. User can see regression coverage that keeps `recovered` verifier-owned across CLI and report outputs.
-  4. User can identify unsupported and failed cases from docs and reports without mistaking them for catalog fallback success.
+  1. Pytest coverage locks suite parsing, validation, stable run IDs, aggregation math, and claim taxonomy.
+  2. A CI-scale benchmark smoke test exercises one blind-start run, one warm-start run, one unsupported/stretch diagnostic, and one aggregate report.
+  3. Documentation explains how to run suites, read recovery evidence, and interpret limitations.
+  4. Documentation and tests prevent any report from labeling a candidate `recovered` without verifier-owned recovery evidence.
 **Plans**: TBD
 
 ## Dependency Order
 
 ```text
-Phase 8 -> Phase 9 -> Phase 10 -> Phase 11 -> Phase 12 -> Phase 13
+Phase 14 -> Phase 15 -> Phase 16 -> Phase 17 -> Phase 18
 ```
 
-The order is intentionally linear. The compiler contract is the trust boundary; constants and embedding must be representable before perturbation; arithmetic rules determine which scientific demos are feasible; warm-start training produces post-snap candidates; demo reporting translates verifier outcomes into public claims; tests and docs lock the contract.
+The order is intentionally linear. Suite contracts and run identity must exist before execution; execution must exist before the full experiment matrix; aggregation needs real artifacts; tests and docs lock the resulting evidence contract.
 
 ## Requirement Coverage
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COMP-01 | Phase 8 | Complete |
-| COMP-02 | Phase 8 | Complete |
-| COMP-03 | Phase 8 | Complete |
-| COMP-04 | Phase 8 | Complete |
-| CONST-01 | Phase 9 | Complete |
-| CONST-02 | Phase 9 | Complete |
-| EMBED-01 | Phase 9 | Complete |
-| EMBED-02 | Phase 9 | Complete |
-| EMBED-03 | Phase 9 | Complete |
-| ARITH-01 | Phase 10 | Complete |
-| ARITH-02 | Phase 10 | Complete |
-| ARITH-03 | Phase 10 | Complete |
-| WARM-01 | Phase 11 | Complete |
-| WARM-02 | Phase 11 | Complete |
-| WARM-03 | Phase 11 | Complete |
-| WARM-04 | Phase 11 | Complete |
-| DEMO-05 | Phase 12 | Complete |
-| DEMO-06 | Phase 12 | Complete |
-| DEMO-07 | Phase 12 | Complete |
-| DEMO-08 | Phase 12 | Complete |
-| TEST-03 | Phase 13 | Complete |
-| TEST-04 | Phase 13 | Complete |
+| BENC-01 | Phase 14 | Pending |
+| BENC-02 | Phase 14 | Pending |
+| BENC-03 | Phase 14 | Pending |
+| BENC-04 | Phase 14 | Pending |
+| RUN-01 | Phase 15 | Pending |
+| RUN-02 | Phase 15 | Pending |
+| RUN-03 | Phase 15 | Pending |
+| RUN-04 | Phase 15 | Pending |
+| MATR-01 | Phase 16 | Pending |
+| MATR-02 | Phase 16 | Pending |
+| MATR-03 | Phase 16 | Pending |
+| MATR-04 | Phase 16 | Pending |
+| EVID-01 | Phase 17 | Pending |
+| EVID-02 | Phase 17 | Pending |
+| EVID-03 | Phase 17 | Pending |
+| EVID-04 | Phase 17 | Pending |
+| TEST-05 | Phase 18 | Pending |
+| TEST-06 | Phase 18 | Pending |
+| TEST-07 | Phase 18 | Pending |
 
-**Coverage:** 22/22 v1.1 requirements mapped. No orphaned requirements. No duplicate phase assignments.
+**Coverage:** 19/19 v1.2 requirements mapped. No orphaned requirements. No duplicate phase assignments.
 
 ## Progress
 
-**Execution Order:** Phase 8 -> Phase 9 -> Phase 10 -> Phase 11 -> Phase 12 -> Phase 13
+**Execution Order:** Phase 14 -> Phase 15 -> Phase 16 -> Phase 17 -> Phase 18
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -161,12 +154,17 @@ The order is intentionally linear. The compiler contract is the trust boundary; 
 | 5. Local Cleanup, SymPy Export, and Reports | Complete | Complete | 2026-04-15 |
 | 6. Demo Harness and Public Showcase | Complete | Complete | 2026-04-15 |
 | 7. Tests and Documentation | Complete | Complete | 2026-04-15 |
-| 8. Compiler Contract and Direct Rules | 1/1 | Complete    | 2026-04-15 |
-| 9. Constant Catalog and AST Embedding | 1/1 | Complete    | 2026-04-15 |
-| 10. Arithmetic Rule Corpus and Depth Gates | 1/1 | Complete    | 2026-04-15 |
-| 11. Perturbed Warm-Start Training | 1/1 | Complete    | 2026-04-15 |
-| 12. Demo Promotion and Claim Reporting | 1/1 | Complete    | 2026-04-15 |
-| 13. Regression Tests and Documentation Lockdown | 1/1 | Complete    | 2026-04-15 |
+| 8. Compiler Contract and Direct Rules | Complete | Complete | 2026-04-15 |
+| 9. Constant Catalog and AST Embedding | Complete | Complete | 2026-04-15 |
+| 10. Arithmetic Rule Corpus and Depth Gates | Complete | Complete | 2026-04-15 |
+| 11. Perturbed Warm-Start Training | Complete | Complete | 2026-04-15 |
+| 12. Demo Promotion and Claim Reporting | Complete | Complete | 2026-04-15 |
+| 13. Regression Tests and Documentation Lockdown | Complete | Complete | 2026-04-15 |
+| 14. Benchmark Contract and Suite Registry | 0/1 | Pending | - |
+| 15. Benchmark Runner and Training Modes | 0/1 | Pending | - |
+| 16. Experiment Matrix and Formula Coverage | 0/1 | Pending | - |
+| 17. Evidence Aggregation and Report Contracts | 0/1 | Pending | - |
+| 18. Smoke Tests, Docs, and Evidence Lockdown | 0/1 | Pending | - |
 
 ---
-*Roadmap updated: 2026-04-15 for milestone v1.1*
+*Roadmap updated: 2026-04-15 for milestone v1.2*

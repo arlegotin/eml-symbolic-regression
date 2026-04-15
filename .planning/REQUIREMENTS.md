@@ -67,35 +67,33 @@ Deferred to later milestones.
 
 ## Traceability
 
-Traceability is filled when the v1.2 roadmap is created.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BENC-01 | TBD | Pending |
-| BENC-02 | TBD | Pending |
-| BENC-03 | TBD | Pending |
-| BENC-04 | TBD | Pending |
-| RUN-01 | TBD | Pending |
-| RUN-02 | TBD | Pending |
-| RUN-03 | TBD | Pending |
-| RUN-04 | TBD | Pending |
-| MATR-01 | TBD | Pending |
-| MATR-02 | TBD | Pending |
-| MATR-03 | TBD | Pending |
-| MATR-04 | TBD | Pending |
-| EVID-01 | TBD | Pending |
-| EVID-02 | TBD | Pending |
-| EVID-03 | TBD | Pending |
-| EVID-04 | TBD | Pending |
-| TEST-05 | TBD | Pending |
-| TEST-06 | TBD | Pending |
-| TEST-07 | TBD | Pending |
+| BENC-01 | Phase 14 | Pending |
+| BENC-02 | Phase 14 | Pending |
+| BENC-03 | Phase 14 | Pending |
+| BENC-04 | Phase 14 | Pending |
+| RUN-01 | Phase 15 | Pending |
+| RUN-02 | Phase 15 | Pending |
+| RUN-03 | Phase 15 | Pending |
+| RUN-04 | Phase 15 | Pending |
+| MATR-01 | Phase 16 | Pending |
+| MATR-02 | Phase 16 | Pending |
+| MATR-03 | Phase 16 | Pending |
+| MATR-04 | Phase 16 | Pending |
+| EVID-01 | Phase 17 | Pending |
+| EVID-02 | Phase 17 | Pending |
+| EVID-03 | Phase 17 | Pending |
+| EVID-04 | Phase 17 | Pending |
+| TEST-05 | Phase 18 | Pending |
+| TEST-06 | Phase 18 | Pending |
+| TEST-07 | Phase 18 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 19 total
-- Mapped to phases: 0
-- Unmapped: 19
+- Mapped to phases: 19
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after milestone v1.2 definition*
+*Last updated: 2026-04-15 after milestone v1.2 roadmap creation*
