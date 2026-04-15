@@ -231,6 +231,35 @@ def test_campaign_writes_self_contained_report(tmp_path):
     assert "figures/recovery-by-formula.svg" in report
     assert "tables/runs.csv" in report
     assert "unsupported" in report
+    assert "## Proof Contract" not in report
+    assert "universal blind recovery" not in report
+    assert "all elementary functions recovered" not in report
 
     manifest = json.loads(result.manifest_path.read_text())
     assert manifest["output"]["report_markdown"].endswith("report.md")
+
+
+def test_proof_campaign_report_separates_threshold_status(tmp_path):
+    result = run_campaign(
+        "proof-shallow",
+        output_root=tmp_path,
+        label="proof-report",
+        run_filter=RunFilter(case_ids=("shallow-exp-blind",), seeds=(0,)),
+    )
+
+    report = result.report_path.read_text(encoding="utf-8")
+    manifest = json.loads(result.manifest_path.read_text())
+    threshold = manifest["thresholds"][0]
+
+    assert "## Proof Contract" in report
+    assert "| Claim | Threshold | Status | Passed | Eligible | Rate |" in report
+    assert (
+        f"| {threshold['claim_id']} | {threshold['threshold_policy_id']} | {threshold['status']} | "
+        f"{threshold['passed']} | {threshold['eligible']} | {threshold['rate']:.3f} |"
+    ) in report
+    assert (
+        "Bounded proof thresholds count only allowed verifier-owned training evidence classes; "
+        "catalog and compile-only verification remain separate evidence classes."
+    ) in report
+    assert "universal blind recovery" not in report
+    assert "all elementary functions recovered" not in report
