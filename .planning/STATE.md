@@ -1,7 +1,7 @@
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Not started (defining requirements)
+**Current phase:** Phase 8 - Compiler Contract and Direct Rules
 **Mode:** YOLO
 
 ## Project Reference
@@ -13,10 +13,21 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 8 of 13 (Compiler Contract and Direct Rules)
 Plan: -
-Status: Defining requirements
-Last activity: 2026-04-15 - Milestone v1.1 started
+Status: Ready to plan
+Last activity: 2026-04-15 - v1.1 roadmap created with 22/22 requirements mapped
+Progress: [#####-----] 54% by completed phases (v1.1: 0/6)
+
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: Historical v1 phases complete; plan counts were not tracked in this v1.1 roadmap
+- Average duration: Not tracked
+- Total execution time: Not tracked
+
+**Recent Trend:**
+- Trend: Unknown
 
 ## Artifacts
 
@@ -52,15 +63,37 @@ Target features:
 | 5 | Local Cleanup, SymPy Export, and Reports | Complete | CLEAN-01, CLEAN-02, CLEAN-03 |
 | 6 | Demo Harness and Public Showcase | Complete | DEMO-01, DEMO-02, DEMO-03, DEMO-04 |
 | 7 | Tests and Documentation | Complete | TEST-01, TEST-02 |
+| 8 | Compiler Contract and Direct Rules | Not started | COMP-01, COMP-02, COMP-03, COMP-04 |
+| 9 | Constant Catalog and AST Embedding | Not started | CONST-01, CONST-02, EMBED-01, EMBED-02, EMBED-03 |
+| 10 | Arithmetic Rule Corpus and Depth Gates | Not started | ARITH-01, ARITH-02, ARITH-03 |
+| 11 | Perturbed Warm-Start Training | Not started | WARM-01, WARM-02, WARM-03, WARM-04 |
+| 12 | Demo Promotion and Claim Reporting | Not started | DEMO-05, DEMO-06, DEMO-07, DEMO-08 |
+| 13 | Regression Tests and Documentation Lockdown | Not started | TEST-03, TEST-04 |
 
-## Notes
+## Accumulated Context
 
-- The roadmapper subagent failed before writing files, so roadmap and state were written directly from the research synthesis.
-- The initial implementation should stay Python/PyTorch-first and dependency-light.
-- Recovery claims must be verifier-owned and post-snap.
-- Demos should follow `sources/FOR_DEMO.md` and report feasibility honestly.
-- Verification completed with `python -m pytest` passing 15 tests.
-- Demo reports generated under `artifacts/` for exact EML `exp`, Michaelis-Menten, and normalized Planck.
+### Decisions
+
+- v1.1 uses the research-recommended six-phase structure, renumbered from Phase 8 through Phase 13.
+- Requirement traceability is complete: 22/22 v1.1 requirements mapped exactly once.
+- `recovered` remains verifier-owned and post-snap; compiler output and training loss cannot promote a candidate alone.
+- Literal constants are explicit warm-start/demo provenance, not pure `{1, eml}` recovery claims.
+- Normalized Planck is stretch reporting only, not a trained-recovery milestone guarantee.
+
+### Pending Todos
+
+None recorded.
+
+### Blockers/Concerns
+
+- Phase 10 arithmetic identities and depth budgets need careful proof during planning.
+- Phase 11 perturbation strength/noise settings need empirical tuning.
+
+## Session Continuity
+
+Last session: 2026-04-15
+Stopped at: v1.1 roadmap creation; next action is `/gsd-plan-phase 8`
+Resume file: None
 
 ---
-*Last updated: 2026-04-15 after starting milestone v1.1*
+*Last updated: 2026-04-15 after creating milestone v1.1 roadmap*
