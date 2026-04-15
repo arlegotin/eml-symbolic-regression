@@ -14,7 +14,13 @@ from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_pres
 from .cleanup import cleanup_candidate
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
 from .datasets import demo_specs, get_demo, proof_dataset_manifest
-from .diagnostics import DEFAULT_BASELINE_CAMPAIGNS, run_diagnostic_subset, write_baseline_triage, write_campaign_comparison
+from .diagnostics import (
+    DEFAULT_BASELINE_CAMPAIGNS,
+    run_diagnostic_subset,
+    write_baseline_triage,
+    write_campaign_comparison,
+    write_perturbed_basin_bound_report,
+)
 from .optimize import TrainingConfig, fit_eml_tree
 from .proof import list_claims
 from .verify import verify_candidate
@@ -273,6 +279,16 @@ def diagnostics_compare_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def diagnostics_basin_bound_command(args: argparse.Namespace) -> int:
+    paths = write_perturbed_basin_bound_report(
+        Path(args.bounded_aggregate),
+        Path(args.probe_aggregate) if args.probe_aggregate else None,
+        Path(args.output_dir),
+    )
+    print(f"diagnostics basin-bound: json -> {paths['json']}; markdown -> {paths['markdown']}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="eml-sr")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -379,6 +395,16 @@ def build_parser() -> argparse.ArgumentParser:
     compare.add_argument("--candidate", action="append", required=True, help="Candidate campaign folder. Repeat with matching --baseline.")
     compare.add_argument("--output-dir", default="artifacts/campaigns/v1.4-comparison", help="Directory for comparison outputs.")
     compare.set_defaults(func=diagnostics_compare_command)
+
+    basin_bound = diagnostics_sub.add_parser("basin-bound", help="Write Beer-Lambert perturbed-basin bound evidence reports.")
+    basin_bound.add_argument("--bounded-aggregate", required=True, help="Aggregate JSON from the bounded proof-perturbed-basin suite.")
+    basin_bound.add_argument("--probe-aggregate", help="Optional aggregate JSON from the proof-perturbed-basin-beer-probes suite.")
+    basin_bound.add_argument(
+        "--output-dir",
+        default="artifacts/diagnostics/phase31-basin-bound",
+        help="Directory for basin-bound.json and basin-bound.md.",
+    )
+    basin_bound.set_defaults(func=diagnostics_basin_bound_command)
     return parser
 
 

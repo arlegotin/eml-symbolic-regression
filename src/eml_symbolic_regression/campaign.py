@@ -40,6 +40,10 @@ class CampaignPreset:
     description: str
     budget_guardrail: str
 
+    @property
+    def benchmark_suite(self) -> str:
+        return self.suite
+
     def as_dict(self) -> dict[str, str]:
         return {
             "name": self.name,
@@ -102,6 +106,13 @@ _PRESETS = {
         tier="proof-contract",
         description="Bounded v1.5 shallow proof campaign for claim-aware blind training evidence.",
         budget_guardrail="12 runs; declared shallow blind proof suite with bounded threshold metadata.",
+    ),
+    "proof-basin": CampaignPreset(
+        name="proof-basin",
+        suite="proof-perturbed-basin",
+        tier="proof-contract",
+        description="Bounded v1.5 perturbed basin proof campaign with Beer-Lambert probe evidence reported separately.",
+        budget_guardrail="CI-scale perturbed basin proof suite; high-noise probes are reported separately",
     ),
 }
 
@@ -214,17 +225,9 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
     _write_csv(paths["headline_csv"], [headline], list(headline))
 
     failures = [
-        {
-            "run_id": run.get("run_id"),
-            "formula": run.get("formula"),
-            "start_mode": run.get("start_mode"),
-            "classification": run.get("classification"),
-            "status": run.get("status"),
-            "reason": run.get("reason"),
-            "artifact_path": run.get("artifact_path"),
-        }
+        _failure_csv_row(run)
         for run in runs
-        if run.get("classification") in {"unsupported", "failed", "snapped_but_failed", "soft_fit_only", "execution_failure"}
+        if run.get("classification") in {"unsupported", "failed", "snapped_but_failed", "soft_fit_only", "execution_failure", "repaired_candidate"}
     ]
     _write_csv(paths["failures_csv"], failures, _FAILURE_COLUMNS)
     return paths
@@ -488,6 +491,11 @@ _RUN_COLUMNS = [
     "claim_class",
     "training_mode",
     "evidence_class",
+    "return_kind",
+    "raw_status",
+    "repair_status",
+    "repair_verifier_status",
+    "repair_accepted_move_count",
     "threshold_policy",
     "dataset_manifest_sha256",
     "provenance_source",
@@ -514,7 +522,20 @@ _GROUP_COLUMNS = [
     "failure_rate",
 ]
 
-_FAILURE_COLUMNS = ["run_id", "formula", "start_mode", "classification", "status", "reason", "artifact_path"]
+_FAILURE_COLUMNS = [
+    "run_id",
+    "formula",
+    "start_mode",
+    "classification",
+    "status",
+    "return_kind",
+    "raw_status",
+    "repair_status",
+    "repair_verifier_status",
+    "repair_accepted_move_count",
+    "reason",
+    "artifact_path",
+]
 
 
 def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
@@ -548,6 +569,11 @@ def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
         "claim_class": run.get("claim_class"),
         "training_mode": run.get("training_mode"),
         "evidence_class": run.get("evidence_class"),
+        "return_kind": run.get("return_kind"),
+        "raw_status": run.get("raw_status"),
+        "repair_status": run.get("repair_status") or metrics.get("repair_status"),
+        "repair_verifier_status": metrics.get("repair_verifier_status"),
+        "repair_accepted_move_count": metrics.get("repair_accepted_move_count"),
         "threshold_policy": threshold.get("id"),
         "dataset_manifest_sha256": dataset_manifest.get("manifest_sha256"),
         "provenance_source": provenance.get("source_document"),
@@ -559,6 +585,12 @@ def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
         "reason": run.get("reason"),
         "artifact_path": run.get("artifact_path"),
     }
+
+
+def _failure_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
+    row = _run_csv_row(run)
+    row["classification"] = run.get("classification")
+    return row
 
 
 def _group_rows(runs: list[Mapping[str, Any]], key: str | Any) -> list[dict[str, Any]]:
@@ -681,6 +713,7 @@ def _strengths_paragraph(counts: Mapping[str, Any]) -> str:
 def _proof_contract_section(runs: list[Mapping[str, Any]], aggregate: Mapping[str, Any]) -> list[str]:
     if not any(run.get("claim_id") for run in runs):
         return []
+    proof_basin = _is_proof_basin_report(runs, aggregate)
     lines = [
         "## Proof Contract",
         "",
@@ -699,7 +732,28 @@ def _proof_contract_section(runs: list[Mapping[str, Any]], aggregate: Mapping[st
             "",
         ]
     )
+    if proof_basin:
+        lines.extend(
+            [
+                "Beer-Lambert high-noise probe rows are reported by the separate `proof-perturbed-basin-beer-probes` suite; they remain outside the bounded proof threshold table.",
+                "",
+                "### Perturbed Basin Status Taxonomy",
+                "",
+                "| Field | Meaning |",
+                "|-------|---------|",
+                "| `return_kind` | Raw perturbed-tree return path such as `same_ast_return`, `verified_equivalent_ast`, `snapped_but_failed`, or `soft_fit_only`. |",
+                "| `raw_status` | Status before local repair, preserved even when a repair succeeds. |",
+                "| `repair_status` | Local repair outcome; repaired candidates remain `repaired_candidate` rather than raw perturbed recovery. |",
+                "",
+            ]
+        )
     return lines
+
+
+def _is_proof_basin_report(runs: list[Mapping[str, Any]], aggregate: Mapping[str, Any]) -> bool:
+    if any(run.get("suite_id") == "proof-perturbed-basin" for run in runs):
+        return True
+    return any(row.get("claim_id") == "paper-perturbed-true-tree-basin" for row in aggregate.get("thresholds", ()))
 
 
 def _limitations_section(runs: list[Mapping[str, Any]]) -> str:
