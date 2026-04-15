@@ -1,99 +1,109 @@
-# Requirements: EML Symbolic Regression Milestone v1.2
+# Requirements: EML Symbolic Regression Milestone v1.3
 
 **Defined:** 2026-04-15
-**Milestone:** v1.2 Training Benchmark and Recovery Evidence
+**Milestone:** v1.3 Benchmark Campaign and Evidence Report
 **Core Value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Milestone v1.2 Requirements
+## Milestone v1.3 Requirements
 
-Requirements for this milestone only. Completed v1 and v1.1 requirements are recorded as validated capabilities in `.planning/PROJECT.md`.
+Requirements for this milestone only. Completed v1, v1.1, and v1.2 requirements are recorded as validated capabilities in `.planning/PROJECT.md`.
 
-### Benchmark Contract
+### Campaign Execution
 
-- [x] **BENC-01**: User can define deterministic benchmark suite files containing formula IDs, dataset specs, variable ranges, sample counts, start modes, seeds, perturbation levels, optimizer budgets, verifier settings, and artifact paths.
-- [x] **BENC-02**: User can select built-in suites for fast smoke checks, the full v1.2 evidence matrix, and `sources/FOR_DEMO.md` diagnostics.
-- [x] **BENC-03**: User receives fail-closed validation errors for unknown formulas, invalid start modes, unsafe budgets, missing constants, unsupported compiler gates, or malformed suite files.
-- [x] **BENC-04**: User gets stable run IDs and deterministic artifact locations for every formula/start-mode/seed/perturbation combination.
+- [ ] **CAMP-01**: User can run named campaign presets (`smoke`, `standard`, `showcase`) that select benchmark suites, budget tiers, seeds, and output folders without hand-writing filters.
+- [ ] **CAMP-02**: User can generate a versioned campaign output directory containing raw run artifacts, suite results, aggregate reports, a campaign manifest, and reproducibility metadata.
+- [ ] **CAMP-03**: User can run a standard campaign that includes shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten diagnostics, Planck diagnostics, and selected FOR_DEMO cases.
+- [ ] **CAMP-04**: User can rerun a campaign without silently overwriting prior evidence, either by creating a new timestamped/versioned folder or explicitly allowing overwrite.
+- [ ] **CAMP-05**: User receives clear runtime/budget guardrails so smoke tests stay fast while showcase campaigns can be larger and explicit.
 
-### Run Execution
+### Data Export
 
-- [x] **RUN-01**: User can run a full benchmark suite or filtered subset from the CLI without hand-writing per-demo commands.
-- [x] **RUN-02**: User can execute blind-start training through the existing optimizer across multiple seeds for shallow supported formulas.
-- [x] **RUN-03**: User can execute compiler warm-start training with perturbation sweeps through the existing compile, embed, train, snap, and verify path.
-- [x] **RUN-04**: User can run suites that contain unsupported, skipped, or failed cases without aborting the entire suite, while preserving those outcomes in artifacts.
+- [ ] **DATA-01**: User receives a tidy run-level CSV containing formula, start mode, seed, depth, steps, perturbation noise, best loss, post-snap loss, verifier status, recovery class, runtime, changed slots, and artifact path.
+- [ ] **DATA-02**: User receives grouped CSV summaries for recovery rate by formula, start mode, perturbation level, depth, and failure class.
+- [ ] **DATA-03**: User receives a headline metrics JSON/CSV table with total runs, verifier recovery rate, unsupported rate, failure rate, same-AST return rate, median losses, and runtime summaries.
+- [ ] **DATA-04**: User can export unsupported and failed cases with reason codes and links back to the source run artifacts.
 
-### Experiment Matrix
+### Plot Generation
 
-- [x] **MATR-01**: User can run blind-start baselines for shallow formulas such as `exp`, `log`, radioactive decay, and other low-depth formulas supported by current gates.
-- [x] **MATR-02**: User can run Beer-Lambert perturbation sweeps that include same-basin, mild perturbation, and stronger slot-changing perturbation settings.
-- [x] **MATR-03**: User can run Michaelis-Menten diagnostics that record compiler depth, embedding eligibility, unsupported reasons, and training attempts only when current gates allow them.
-- [x] **MATR-04**: User can run normalized Planck and selected `sources/FOR_DEMO.md` formulas as honest stretch or diagnostic cases without requiring recovery.
+- [ ] **PLOT-01**: User can generate a recovery-rate chart by formula and start mode.
+- [ ] **PLOT-02**: User can generate a loss comparison chart showing best soft loss versus post-snap loss on a log scale where appropriate.
+- [ ] **PLOT-03**: User can generate a Beer-Lambert perturbation chart showing recovery class and changed-slot behavior by perturbation noise.
+- [ ] **PLOT-04**: User can generate runtime and depth/budget charts that make practical cost visible.
+- [ ] **PLOT-05**: User can generate an unsupported/failure taxonomy chart by formula and recovery class.
+- [ ] **PLOT-06**: User receives deterministic figure files with stable names suitable for linking from a Markdown report.
 
-### Evidence Reporting
+### Evidence Report
 
-- [x] **EVID-01**: User receives a per-run JSON artifact containing suite ID, run ID, formula, dataset spec, start mode, seed, perturbation config, optimizer config, losses, snap outcome, active slot changes, verifier status, timing, and errors.
-- [x] **EVID-02**: User receives aggregate JSON and Markdown reports with recovery rates by formula, start mode, perturbation level, depth, and seed group.
-- [x] **EVID-03**: User can distinguish blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, snapped-but-failed candidates, soft-fit-only attempts, unsupported cases, and execution failures.
-- [x] **EVID-04**: User can compare benchmark runs without losing provenance for suite config, code version, environment summary, and artifact paths.
+- [ ] **REPT-01**: User receives a self-contained `report.md` in the campaign folder with headline metrics, tables, figures, commands, and links to raw artifacts.
+- [ ] **REPT-02**: User can read a concise narrative explaining what the paper's EML idea demonstrates well in this implementation.
+- [ ] **REPT-03**: User can read limitations that separate blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, unsupported depth/compiler gates, and failed fits.
+- [ ] **REPT-04**: User receives a short "next experiments" section that turns measured failures into optimizer or compiler improvement priorities.
+- [ ] **REPT-05**: User can reproduce the report by rerunning one documented CLI command from a clean checkout.
 
 ### Tests and Documentation
 
-- [x] **TEST-05**: User can run focused pytest coverage for suite parsing, validation, run ID stability, aggregation math, and claim taxonomy.
-- [x] **TEST-06**: User can run a small benchmark smoke test in CI-scale time that exercises at least one blind-start run, one warm-start run, one unsupported/stretch diagnostic, and one aggregate report.
-- [x] **TEST-07**: User can read documentation that explains how to run benchmark suites, how to interpret recovery evidence, and why failures or same-AST returns are not hidden.
+- [ ] **TEST-11**: User can run focused tests for campaign preset expansion, output folder creation, overwrite protection, CSV export, and headline metrics.
+- [ ] **TEST-12**: User can run focused tests for plot file generation and report assembly using CI-scale benchmark fixtures.
+- [ ] **TEST-13**: User can read documentation describing campaign commands, output structure, CSV schemas, plot meanings, and how to present results honestly.
 
 ## Future Requirements
 
 Deferred to later milestones.
 
-### Optimization and Scaling
+### Optimization and Showcase Expansion
 
-- **FUT-06**: User can improve optimizer robustness for slot-changing perturbations after v1.2 measures the failure modes.
-- **FUT-07**: User can reduce compiled arithmetic tree depth so Michaelis-Menten can promote under practical warm-start gates.
-- **FUT-08**: User can synthesize or fit numeric constants instead of relying on fixed literal constant catalogs.
-- **FUT-09**: User can add richer plots or dashboards for benchmark results after the JSON/Markdown evidence contract stabilizes.
-- **FUT-10**: User can run long benchmark campaigns with parallel workers, caching, and resumable distributed execution.
+- **FUT-11**: User can improve optimizer robustness for slot-changing perturbations using the v1.3 scoreboard as a before/after baseline.
+- **FUT-12**: User can reduce compiled arithmetic tree depth or improve compiler templates to promote Michaelis-Menten beyond diagnostics.
+- **FUT-13**: User can add interactive dashboards after static reports prove the right metrics and plots.
+- **FUT-14**: User can add external real-world datasets after synthetic/source-document campaign reporting is stable.
+- **FUT-15**: User can compare EML recovery against other symbolic-regression baselines.
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Claiming general symbolic-regression success | v1.2 measures current behavior; it does not solve robust deep blind recovery. |
-| Hiding failed or unsupported cases | The milestone value is honest evidence, including failures. |
-| Optimizer redesign | Algorithm changes should follow measured failure modes, not precede them. |
-| Large external real-world datasets | The milestone focuses on reproducible synthetic and source-document demos first. |
-| Guaranteed Michaelis-Menten or Planck recovery | Current evidence says these remain gated/stretch until depth and optimizer behavior improve. |
-| Heavy visualization stack | JSON and Markdown reports are enough until the evidence schema stabilizes. |
+| Optimizer redesign | v1.3 should create the scoreboard before changing the algorithm. |
+| Hiding weak results | The milestone exists to show both promise and limitations clearly. |
+| Interactive dashboard | Static CSV, PNG/SVG, and Markdown reports are enough for a crisp showcase. |
+| External noisy datasets | First showcase the paper-derived demos and current synthetic benchmarks reproducibly. |
+| Claiming general real-world symbolic-regression superiority | The report should describe current evidence, not overgeneralize. |
+| Manually edited figures | Plots must be generated from campaign artifacts so future runs are comparable. |
 
 ## Traceability
 
+Traceability is filled when the v1.3 roadmap is created.
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BENC-01 | Phase 14 | Complete |
-| BENC-02 | Phase 14 | Complete |
-| BENC-03 | Phase 14 | Complete |
-| BENC-04 | Phase 14 | Complete |
-| RUN-01 | Phase 15 | Complete |
-| RUN-02 | Phase 15 | Complete |
-| RUN-03 | Phase 15 | Complete |
-| RUN-04 | Phase 15 | Complete |
-| MATR-01 | Phase 16 | Complete |
-| MATR-02 | Phase 16 | Complete |
-| MATR-03 | Phase 16 | Complete |
-| MATR-04 | Phase 16 | Complete |
-| EVID-01 | Phase 17 | Complete |
-| EVID-02 | Phase 17 | Complete |
-| EVID-03 | Phase 17 | Complete |
-| EVID-04 | Phase 17 | Complete |
-| TEST-05 | Phase 18 | Complete |
-| TEST-06 | Phase 18 | Complete |
-| TEST-07 | Phase 18 | Complete |
+| CAMP-01 | TBD | Pending |
+| CAMP-02 | TBD | Pending |
+| CAMP-03 | TBD | Pending |
+| CAMP-04 | TBD | Pending |
+| CAMP-05 | TBD | Pending |
+| DATA-01 | TBD | Pending |
+| DATA-02 | TBD | Pending |
+| DATA-03 | TBD | Pending |
+| DATA-04 | TBD | Pending |
+| PLOT-01 | TBD | Pending |
+| PLOT-02 | TBD | Pending |
+| PLOT-03 | TBD | Pending |
+| PLOT-04 | TBD | Pending |
+| PLOT-05 | TBD | Pending |
+| PLOT-06 | TBD | Pending |
+| REPT-01 | TBD | Pending |
+| REPT-02 | TBD | Pending |
+| REPT-03 | TBD | Pending |
+| REPT-04 | TBD | Pending |
+| REPT-05 | TBD | Pending |
+| TEST-11 | TBD | Pending |
+| TEST-12 | TBD | Pending |
+| TEST-13 | TBD | Pending |
 
 **Coverage:**
-- v1.2 requirements: 19 total
-- Mapped to phases: 19
-- Unmapped: 0
+- v1.3 requirements: 23 total
+- Mapped to phases: 0
+- Unmapped: 23
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after milestone v1.2 roadmap creation*
+*Last updated: 2026-04-15 after milestone v1.3 definition*
