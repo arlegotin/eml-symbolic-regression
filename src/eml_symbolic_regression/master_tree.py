@@ -368,6 +368,12 @@ class SoftEMLTree(torch.nn.Module):
         self.set_slot("root.R.L", "left", constant_label(1.0))
         self.set_slot("root.R.L", "right", f"var:{variable}")
 
+    def force_scaled_exp(self, variable: str, coefficient: complex, strength: float = 30.0) -> EmbeddingResult:
+        from .compiler import scaled_exponential_expr
+
+        expression = scaled_exponential_expr(variable, coefficient)
+        return self.embed_expr(expression, EmbeddingConfig(strength=strength))
+
     def embed_expr(self, expression: Expr, config: EmbeddingConfig | None = None) -> EmbeddingResult:
         return embed_expr_into_tree(self, expression, config=config)
 
