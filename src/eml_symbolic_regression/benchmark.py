@@ -40,6 +40,7 @@ BUILTIN_SUITES = (
     "for-demo-diagnostics",
     "v1.3-standard",
     "v1.3-showcase",
+    "v1.5-shallow-pure-blind",
     "v1.5-shallow-proof",
     "proof-perturbed-basin",
     "proof-perturbed-basin-beer-probes",
@@ -101,6 +102,7 @@ class OptimizerBudget:
     max_compile_nodes: int = 256
     max_warm_depth: int = 10
     max_power: int = 3
+    scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any] | None, *, path: str = "optimizer") -> "OptimizerBudget":
@@ -124,6 +126,14 @@ class OptimizerBudget:
         values["max_warm_depth"] = int(values["max_warm_depth"])
         values["max_power"] = int(values["max_power"])
         values["lr"] = float(values["lr"])
+        scaffold_initializers = values["scaffold_initializers"]
+        if not isinstance(scaffold_initializers, (list, tuple)):
+            raise BenchmarkValidationError(
+                "malformed_budget",
+                "scaffold_initializers must be a list",
+                path=f"{path}.scaffold_initializers",
+            )
+        values["scaffold_initializers"] = tuple(str(value) for value in scaffold_initializers)
         return cls(**values)
 
     def validate(self, path: str) -> None:
@@ -150,6 +160,14 @@ class OptimizerBudget:
         for index, value in enumerate(self.constants):
             if not (np.isfinite(value.real) and np.isfinite(value.imag)):
                 raise BenchmarkValidationError("invalid_budget", "constants must be finite", path=f"{path}.constants[{index}]")
+        allowed_scaffolds = {"exp", "log", "scaled_exp"}
+        unknown_scaffolds = sorted(set(self.scaffold_initializers) - allowed_scaffolds)
+        if unknown_scaffolds:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                f"unknown scaffold initializers: {', '.join(unknown_scaffolds)}",
+                path=f"{path}.scaffold_initializers",
+            )
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -165,6 +183,7 @@ class OptimizerBudget:
             "max_compile_nodes": self.max_compile_nodes,
             "max_warm_depth": self.max_warm_depth,
             "max_power": self.max_power,
+            "scaffold_initializers": list(self.scaffold_initializers),
         }
 
 
@@ -286,6 +305,7 @@ class BenchmarkCase:
             claim = validate_claim_reference(self.claim_id, self.threshold_policy_id, path=path)
         except ProofContractError as exc:
             raise _benchmark_proof_error(exc, path) from exc
+
         if claim.id == "paper-shallow-blind-recovery":
             if self.start_mode != "blind":
                 raise BenchmarkValidationError(
@@ -299,11 +319,42 @@ class BenchmarkCase:
                     "paper-shallow-blind-recovery cases must use blind_training mode",
                     path=f"{path}.training_mode",
                 )
-            if self.threshold_policy_id != "bounded_100_percent":
+            if self.threshold_policy_id != "measured_pure_blind_recovery":
                 raise BenchmarkValidationError(
                     "invalid_proof_contract",
-                    "paper-shallow-blind-recovery cases must use bounded_100_percent threshold",
+                    "paper-shallow-blind-recovery cases must use measured_pure_blind_recovery threshold",
                     path=f"{path}.threshold_policy_id",
+                )
+            if self.optimizer.scaffold_initializers:
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-shallow-blind-recovery cases must disable scaffold_initializers",
+                    path=f"{path}.optimizer.scaffold_initializers",
+                )
+        if claim.id == "paper-shallow-scaffolded-recovery":
+            if self.start_mode != "blind":
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-shallow-scaffolded-recovery cases must use blind start_mode",
+                    path=f"{path}.start_mode",
+                )
+            if self.training_mode != TRAINING_MODES["blind_training"]:
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-shallow-scaffolded-recovery cases must use blind_training mode",
+                    path=f"{path}.training_mode",
+                )
+            if self.threshold_policy_id != "scaffolded_bounded_100_percent":
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-shallow-scaffolded-recovery cases must use scaffolded_bounded_100_percent threshold",
+                    path=f"{path}.threshold_policy_id",
+                )
+            if not self.optimizer.scaffold_initializers:
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-shallow-scaffolded-recovery cases require scaffold_initializers",
+                    path=f"{path}.optimizer.scaffold_initializers",
                 )
         if claim.id == "paper-perturbed-true-tree-basin":
             if self.start_mode != "perturbed_tree":
@@ -646,6 +697,7 @@ def _case(
     constants: Iterable[complex] = (1.0,),
     warm_restarts: int = 1,
     max_warm_depth: int = 10,
+    scaffold_initializers: Iterable[str] = ("exp", "log", "scaled_exp"),
     tags: Iterable[str] = (),
     expect_recovery: bool = False,
     claim_id: str | None = None,
@@ -667,6 +719,7 @@ def _case(
             warm_steps=warm_steps,
             warm_restarts=warm_restarts,
             max_warm_depth=max_warm_depth,
+            scaffold_initializers=tuple(scaffold_initializers),
         ),
         tags=tuple(tags),
         expect_recovery=expect_recovery,
@@ -796,21 +849,46 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 _case("planck-diagnostic", "planck", "compile", tags=("stretch", "depth_gate", "for_demo")),
             ),
         )
+    if name == "v1.5-shallow-pure-blind":
+        proof_kwargs = {
+            "seeds": (0, 1, 2),
+            "steps": 120,
+            "restarts": 2,
+            "points": 32,
+            "tags": ("v1.5", "proof", "measured", "pure_blind"),
+            "expect_recovery": False,
+            "claim_id": "paper-shallow-blind-recovery",
+            "threshold_policy_id": "measured_pure_blind_recovery",
+            "training_mode": "blind_training",
+            "scaffold_initializers": (),
+        }
+        return BenchmarkSuite(
+            id="v1.5-shallow-pure-blind",
+            description="Measured v1.5 pure random-initialized shallow blind suite with scaffold initializers disabled.",
+            cases=(
+                _case("shallow-exp-pure-blind", "exp", "blind", depth=1, **proof_kwargs),
+                _case("shallow-log-pure-blind", "log", "blind", depth=3, **proof_kwargs),
+                _case("shallow-radioactive-decay-pure-blind", "radioactive_decay", "blind", depth=9, constants=(-0.4,), **proof_kwargs),
+                _case("shallow-beer-lambert-pure-blind", "beer_lambert", "blind", depth=9, constants=(-0.8,), **proof_kwargs),
+                _case("shallow-scaled-exp-growth-pure-blind", "scaled_exp_growth", "blind", depth=9, constants=(0.4,), **proof_kwargs),
+                _case("shallow-scaled-exp-fast-decay-pure-blind", "scaled_exp_fast_decay", "blind", depth=9, constants=(-1.2,), **proof_kwargs),
+            ),
+        )
     if name == "v1.5-shallow-proof":
         proof_kwargs = {
             "seeds": (0, 1, 2),
             "steps": 120,
             "restarts": 2,
             "points": 32,
-            "tags": ("v1.5", "proof", "bounded", "blind"),
+            "tags": ("v1.5", "proof", "bounded", "scaffolded_blind"),
             "expect_recovery": True,
-            "claim_id": "paper-shallow-blind-recovery",
-            "threshold_policy_id": "bounded_100_percent",
+            "claim_id": "paper-shallow-scaffolded-recovery",
+            "threshold_policy_id": "scaffolded_bounded_100_percent",
             "training_mode": "blind_training",
         }
         return BenchmarkSuite(
             id="v1.5-shallow-proof",
-            description="Bounded v1.5 shallow blind proof contract suite with fixed proof constants and evidenced scaled-exponential depth.",
+            description="Bounded v1.5 shallow scaffolded-training proof suite with fixed proof constants and evidenced scaled-exponential depth.",
             cases=(
                 _case("shallow-exp-blind", "exp", "blind", depth=1, **proof_kwargs),
                 _case("shallow-log-blind", "log", "blind", depth=3, **proof_kwargs),
@@ -1014,6 +1092,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             restarts=run.optimizer.restarts,
             seed=run.seed,
             lr=run.optimizer.lr,
+            scaffold_initializers=run.optimizer.scaffold_initializers,
         )
         fit = fit_eml_tree(train.inputs, train.target, config)
         report = verify_candidate(fit.snap.expression, splits, tolerance=run.dataset.tolerance)
@@ -1685,6 +1764,8 @@ def _threshold_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
 def _counted_evidence_classes_for_claim(claim_id: str, policy_classes: tuple[str, ...]) -> tuple[str, ...]:
     if claim_id == "paper-shallow-blind-recovery":
         return (EVIDENCE_CLASSES["blind_training_recovered"],)
+    if claim_id == "paper-shallow-scaffolded-recovery":
+        return (EVIDENCE_CLASSES["scaffolded_blind_training_recovered"],)
     if claim_id == "paper-perturbed-true-tree-basin":
         return (
             EVIDENCE_CLASSES["perturbed_true_tree_recovered"],

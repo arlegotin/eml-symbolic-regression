@@ -106,8 +106,8 @@ def test_proof_aware_run_artifact_includes_threshold_dataset_and_provenance(tmp_
             "seeds": [0],
             "dataset": {"points": 12},
             "optimizer": {"depth": 1, "steps": 6, "restarts": 1},
-            "claim_id": "paper-shallow-blind-recovery",
-            "threshold_policy_id": "bounded_100_percent",
+            "claim_id": "paper-shallow-scaffolded-recovery",
+            "threshold_policy_id": "scaffolded_bounded_100_percent",
             "training_mode": "blind_training",
         },
         path="cases[0]",
@@ -117,10 +117,10 @@ def test_proof_aware_run_artifact_includes_threshold_dataset_and_provenance(tmp_
     result = run_benchmark_suite(suite)
     artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
 
-    assert artifact["claim_id"] == "paper-shallow-blind-recovery"
-    assert artifact["claim_class"] == "bounded_training_proof"
+    assert artifact["claim_id"] == "paper-shallow-scaffolded-recovery"
+    assert artifact["claim_class"] == "scaffolded_training_proof"
     assert artifact["training_mode"] == "blind_training"
-    assert artifact["threshold"]["id"] == "bounded_100_percent"
+    assert artifact["threshold"]["id"] == "scaffolded_bounded_100_percent"
     assert artifact["dataset_manifest"]["schema"] == "eml.proof_dataset_manifest.v1"
     assert artifact["dataset_manifest"]["formula_id"] == "exp"
     assert artifact["dataset_manifest"]["points"] == 12
@@ -390,7 +390,13 @@ def test_cli_list_claims_prints_claim_matrix():
     lines = result.stdout.strip().splitlines()
     assert lines == sorted(lines)
     assert any(
-        line.startswith("paper-shallow-blind-recovery: bounded_training_proof threshold=bounded_100_percent suites=")
+        line.startswith("paper-shallow-blind-recovery: measured_training_boundary threshold=measured_pure_blind_recovery suites=")
+        for line in lines
+    )
+    assert any(
+        line.startswith(
+            "paper-shallow-scaffolded-recovery: scaffolded_training_proof threshold=scaffolded_bounded_100_percent suites="
+        )
         for line in lines
     )
     assert any(line.endswith("suites=proof-depth-curve") for line in lines)

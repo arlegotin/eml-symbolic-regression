@@ -33,8 +33,8 @@ def _synthetic_result(
     raw_status: str | None = None,
     repair_status: str | None = None,
     claim_id: str | None = "paper-shallow-blind-recovery",
-    claim_class: str | None = "bounded_training_proof",
-    threshold_policy_id: str | None = "bounded_100_percent",
+    claim_class: str | None = "measured_training_boundary",
+    threshold_policy_id: str | None = "measured_pure_blind_recovery",
 ) -> BenchmarkRunResult:
     run = BenchmarkRun(
         suite_id="synthetic-proof",
@@ -120,7 +120,7 @@ def test_warm_start_depth_gate_overrides_compiled_seed_claim_status(tmp_path):
     assert aggregate["runs"][0]["claim_status"] == "unsupported"
 
 
-def test_shallow_bounded_threshold_counts_only_blind_training_recovery():
+def test_shallow_pure_blind_threshold_reports_only_random_initialized_recovery():
     suite = BenchmarkSuite("synthetic-proof", "synthetic proof aggregate", ())
     result = SimpleNamespace(
         suite=suite,
@@ -190,14 +190,66 @@ def test_shallow_bounded_threshold_counts_only_blind_training_recovery():
         "verified_equivalent": 1,
     }
     assert threshold["claim_id"] == "paper-shallow-blind-recovery"
-    assert threshold["threshold_policy_id"] == "bounded_100_percent"
+    assert threshold["threshold_policy_id"] == "measured_pure_blind_recovery"
     assert threshold["eligible"] == 9
     assert threshold["passed"] == 1
     assert threshold["failed"] == 8
     assert threshold["rate"] == pytest.approx(1.0 / 9.0)
+    assert threshold["required_rate"] is None
+    assert threshold["status"] == "reported"
+    assert threshold["evidence_classes"] == aggregate["counts"]["evidence_classes"]
+
+
+def test_shallow_scaffolded_threshold_counts_only_scaffolded_training_recovery():
+    suite = BenchmarkSuite("synthetic-proof", "synthetic scaffolded proof aggregate", ())
+    result = SimpleNamespace(
+        suite=suite,
+        results=(
+            _synthetic_result(
+                case_id="scaffolded-blind",
+                start_mode="blind",
+                training_mode="blind_training",
+                evidence_class="scaffolded_blind_training_recovered",
+                claim_id="paper-shallow-scaffolded-recovery",
+                claim_class="scaffolded_training_proof",
+                threshold_policy_id="scaffolded_bounded_100_percent",
+            ),
+            _synthetic_result(
+                case_id="random-blind",
+                start_mode="blind",
+                training_mode="blind_training",
+                evidence_class="blind_training_recovered",
+                claim_id="paper-shallow-scaffolded-recovery",
+                claim_class="scaffolded_training_proof",
+                threshold_policy_id="scaffolded_bounded_100_percent",
+            ),
+            _synthetic_result(
+                case_id="compile",
+                start_mode="compile",
+                training_mode="compile_only_verification",
+                evidence_class="compile_only_verified",
+                claim_id="paper-shallow-scaffolded-recovery",
+                claim_class="scaffolded_training_proof",
+                threshold_policy_id="scaffolded_bounded_100_percent",
+            ),
+        ),
+    )
+
+    threshold = aggregate_evidence(result)["thresholds"][0]
+
+    assert threshold["claim_id"] == "paper-shallow-scaffolded-recovery"
+    assert threshold["threshold_policy_id"] == "scaffolded_bounded_100_percent"
+    assert threshold["eligible"] == 3
+    assert threshold["passed"] == 1
+    assert threshold["failed"] == 2
+    assert threshold["rate"] == pytest.approx(1.0 / 3.0)
     assert threshold["required_rate"] == 1.0
     assert threshold["status"] == "failed"
-    assert threshold["evidence_classes"] == aggregate["counts"]["evidence_classes"]
+    assert threshold["evidence_classes"] == {
+        "blind_training_recovered": 1,
+        "compile_only_verified": 1,
+        "scaffolded_blind_training_recovered": 1,
+    }
 
 
 def test_perturbed_bounded_threshold_counts_repaired_candidates():

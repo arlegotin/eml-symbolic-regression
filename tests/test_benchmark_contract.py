@@ -20,6 +20,7 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "smoke",
         "v1.2-evidence",
         "for-demo-diagnostics",
+        "v1.5-shallow-pure-blind",
         "v1.5-shallow-proof",
         "proof-perturbed-basin",
         "proof-perturbed-basin-beer-probes",
@@ -182,8 +183,8 @@ def test_case_accepts_and_serializes_proof_metadata():
             "id": "shallow-exp-blind",
             "formula": "exp",
             "start_mode": "blind",
-            "claim_id": "paper-shallow-blind-recovery",
-            "threshold_policy_id": "bounded_100_percent",
+            "claim_id": "paper-shallow-scaffolded-recovery",
+            "threshold_policy_id": "scaffolded_bounded_100_percent",
             "training_mode": "blind_training",
         },
         path="cases[0]",
@@ -192,11 +193,11 @@ def test_case_accepts_and_serializes_proof_metadata():
     suite.validate()
     runs = suite.expanded_runs()
 
-    assert case.as_dict()["claim_id"] == "paper-shallow-blind-recovery"
-    assert runs[0].claim_id == "paper-shallow-blind-recovery"
-    assert runs[0].threshold_policy_id == "bounded_100_percent"
+    assert case.as_dict()["claim_id"] == "paper-shallow-scaffolded-recovery"
+    assert runs[0].claim_id == "paper-shallow-scaffolded-recovery"
+    assert runs[0].threshold_policy_id == "scaffolded_bounded_100_percent"
     assert runs[0].training_mode == "blind_training"
-    assert runs[0].as_dict()["threshold_policy_id"] == "bounded_100_percent"
+    assert runs[0].as_dict()["threshold_policy_id"] == "scaffolded_bounded_100_percent"
     assert runs[0].run_id != type(runs[0])(
         suite_id=runs[0].suite_id,
         case_id=runs[0].case_id,
@@ -216,16 +217,32 @@ def test_case_accepts_and_serializes_proof_metadata():
 
 
 def test_optimizer_budget_parses_and_serializes_constants():
-    budget = OptimizerBudget.from_mapping({"depth": 9, "constants": ["-0.8", {"real": "0.4", "imag": "0"}]})
+    budget = OptimizerBudget.from_mapping(
+        {"depth": 9, "constants": ["-0.8", {"real": "0.4", "imag": "0"}], "scaffold_initializers": ["scaled_exp"]}
+    )
 
     assert budget.constants == (complex(-0.8), complex(0.4))
+    assert budget.scaffold_initializers == ("scaled_exp",)
     assert budget.as_dict()["constants"] == ["-0.8", "0.4"]
+    assert budget.as_dict()["scaffold_initializers"] == ["scaled_exp"]
 
     with pytest.raises(BenchmarkValidationError) as exc:
         OptimizerBudget.from_mapping({"constants": ["nan"]}).validate("optimizer")
 
     assert exc.value.reason == "invalid_budget"
     assert exc.value.path == "optimizer.constants[0]"
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"scaffold_initializers": "scaled_exp"}).validate("optimizer")
+
+    assert exc.value.reason == "malformed_budget"
+    assert exc.value.path == "optimizer.scaffold_initializers"
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"scaffold_initializers": ["bad"]}).validate("optimizer")
+
+    assert exc.value.reason == "invalid_budget"
+    assert exc.value.path == "optimizer.scaffold_initializers"
 
 
 @pytest.mark.parametrize(
@@ -241,8 +258,8 @@ def test_proof_contract_validation_enforces_claim_suite_and_case_scope(suite_id,
             "id": case_id,
             "formula": "exp",
             "start_mode": "blind",
-            "claim_id": "paper-shallow-blind-recovery",
-            "threshold_policy_id": "bounded_100_percent",
+            "claim_id": "paper-shallow-scaffolded-recovery",
+            "threshold_policy_id": "scaffolded_bounded_100_percent",
             "training_mode": "blind_training",
         },
         path="cases[0]",
@@ -260,11 +277,26 @@ def test_proof_contract_validation_enforces_claim_suite_and_case_scope(suite_id,
     ("override", "path_suffix"),
     [
         ({"threshold_policy_id": "missing-policy"}, "threshold_policy_id"),
-        ({"claim_id": "missing-claim", "threshold_policy_id": "bounded_100_percent", "training_mode": "blind_training"}, "claim_id"),
+        ({"claim_id": "missing-claim", "threshold_policy_id": "measured_pure_blind_recovery", "training_mode": "blind_training"}, "claim_id"),
         ({"claim_id": "paper-shallow-blind-recovery", "training_mode": "blind_training"}, "threshold_policy_id"),
         ({"claim_id": "paper-shallow-blind-recovery", "threshold_policy_id": "missing-policy", "training_mode": "blind_training"}, "threshold_policy_id"),
-        ({"claim_id": "paper-shallow-blind-recovery", "threshold_policy_id": "bounded_100_percent", "training_mode": "catalog_verification"}, "training_mode"),
-        ({"claim_id": "paper-shallow-blind-recovery", "threshold_policy_id": "bounded_100_percent", "training_mode": "perturbed_true_tree_training"}, "training_mode"),
+        ({"claim_id": "paper-shallow-blind-recovery", "threshold_policy_id": "measured_pure_blind_recovery", "training_mode": "catalog_verification"}, "training_mode"),
+        (
+            {
+                "claim_id": "paper-shallow-blind-recovery",
+                "threshold_policy_id": "measured_pure_blind_recovery",
+                "training_mode": "perturbed_true_tree_training",
+            },
+            "training_mode",
+        ),
+        (
+            {
+                "claim_id": "paper-shallow-blind-recovery",
+                "threshold_policy_id": "measured_pure_blind_recovery",
+                "training_mode": "blind_training",
+            },
+            "optimizer.scaffold_initializers",
+        ),
     ],
 )
 def test_proof_contract_validation_fails_closed(override, path_suffix):
@@ -285,6 +317,19 @@ def test_proof_contract_validation_fails_closed(override, path_suffix):
 
 def test_shallow_blind_claim_declares_signed_scaled_case_inventory():
     claim = paper_claim("paper-shallow-blind-recovery")
+
+    assert claim.case_ids == (
+        "shallow-exp-pure-blind",
+        "shallow-log-pure-blind",
+        "shallow-radioactive-decay-pure-blind",
+        "shallow-beer-lambert-pure-blind",
+        "shallow-scaled-exp-growth-pure-blind",
+        "shallow-scaled-exp-fast-decay-pure-blind",
+    )
+
+
+def test_shallow_scaffolded_claim_declares_signed_scaled_case_inventory():
+    claim = paper_claim("paper-shallow-scaffolded-recovery")
 
     assert claim.case_ids == (
         "shallow-exp-blind",
@@ -311,13 +356,14 @@ def test_v15_shallow_proof_suite_expands_fixed_proof_contract_runs():
     ]
     assert len(runs) == 18
     assert {run.seed for run in runs} == {0, 1, 2}
-    assert {run.claim_id for run in runs} == {"paper-shallow-blind-recovery"}
-    assert {run.threshold_policy_id for run in runs} == {"bounded_100_percent"}
+    assert {run.claim_id for run in runs} == {"paper-shallow-scaffolded-recovery"}
+    assert {run.threshold_policy_id for run in runs} == {"scaffolded_bounded_100_percent"}
     assert {run.training_mode for run in runs} == {"blind_training"}
     assert {run.start_mode for run in runs} == {"blind"}
-    assert all({"v1.5", "proof", "bounded", "blind"} <= set(run.tags) for run in runs)
+    assert all({"v1.5", "proof", "bounded", "scaffolded_blind"} <= set(run.tags) for run in runs)
     assert all(run.optimizer.steps > 0 and run.optimizer.restarts > 0 for run in runs)
     assert all(run.optimizer.as_dict()["constants"] for run in runs)
+    assert all(run.optimizer.scaffold_initializers for run in runs)
     assert all(run.threshold_policy_id == paper_claim(run.claim_id).threshold_policy_id for run in runs)
     assert cases_by_id["shallow-exp-blind"].optimizer.depth == 1
     assert cases_by_id["shallow-log-blind"].optimizer.depth == 3
@@ -327,6 +373,44 @@ def test_v15_shallow_proof_suite_expands_fixed_proof_contract_runs():
         "shallow-beer-lambert-blind": -0.8,
         "shallow-scaled-exp-growth-blind": 0.4,
         "shallow-scaled-exp-fast-decay-blind": -1.2,
+    }
+    for case_id, coefficient in coefficient_cases.items():
+        case = cases_by_id[case_id]
+        assert case.optimizer.depth == 9
+        assert case.optimizer.constants == (complex(coefficient),)
+        assert case.optimizer.as_dict()["constants"] == [repr(float(coefficient))]
+
+
+def test_v15_shallow_pure_blind_suite_expands_measured_random_only_runs():
+    suite = load_suite("v1.5-shallow-pure-blind")
+    runs = suite.expanded_runs()
+    cases_by_id = {case.id: case for case in suite.cases}
+
+    assert [case.id for case in suite.cases] == [
+        "shallow-exp-pure-blind",
+        "shallow-log-pure-blind",
+        "shallow-radioactive-decay-pure-blind",
+        "shallow-beer-lambert-pure-blind",
+        "shallow-scaled-exp-growth-pure-blind",
+        "shallow-scaled-exp-fast-decay-pure-blind",
+    ]
+    assert len(runs) == 18
+    assert {run.seed for run in runs} == {0, 1, 2}
+    assert {run.claim_id for run in runs} == {"paper-shallow-blind-recovery"}
+    assert {run.threshold_policy_id for run in runs} == {"measured_pure_blind_recovery"}
+    assert {run.training_mode for run in runs} == {"blind_training"}
+    assert {run.start_mode for run in runs} == {"blind"}
+    assert all({"v1.5", "proof", "measured", "pure_blind"} <= set(run.tags) for run in runs)
+    assert all(run.optimizer.scaffold_initializers == () for run in runs)
+    assert all(run.threshold_policy_id == paper_claim(run.claim_id).threshold_policy_id for run in runs)
+    assert cases_by_id["shallow-exp-pure-blind"].optimizer.depth == 1
+    assert cases_by_id["shallow-log-pure-blind"].optimizer.depth == 3
+
+    coefficient_cases = {
+        "shallow-radioactive-decay-pure-blind": -0.4,
+        "shallow-beer-lambert-pure-blind": -0.8,
+        "shallow-scaled-exp-growth-pure-blind": 0.4,
+        "shallow-scaled-exp-fast-decay-pure-blind": -1.2,
     }
     for case_id, coefficient in coefficient_cases.items():
         case = cases_by_id[case_id]
@@ -447,15 +531,16 @@ def test_perturbed_basin_proof_cases_reject_caller_supplied_evidence_class():
         {"start_mode": "compile", "training_mode": "compile_only_verification"},
         {"start_mode": "warm_start", "training_mode": "compiler_warm_start_training"},
         {"threshold_policy_id": "measured_depth_curve"},
+        {"threshold_policy_id": "bounded_100_percent"},
     ],
 )
-def test_shallow_proof_suite_rejects_non_blind_or_unbounded_case_metadata(override):
+def test_shallow_scaffolded_proof_suite_rejects_non_blind_or_wrong_threshold_metadata(override):
     payload = {
         "id": "shallow-exp-blind",
         "formula": "exp",
         "start_mode": "blind",
-        "claim_id": "paper-shallow-blind-recovery",
-        "threshold_policy_id": "bounded_100_percent",
+        "claim_id": "paper-shallow-scaffolded-recovery",
+        "threshold_policy_id": "scaffolded_bounded_100_percent",
         "training_mode": "blind_training",
         **override,
     }

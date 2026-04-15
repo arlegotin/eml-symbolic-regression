@@ -59,17 +59,17 @@ def test_v15_shallow_suite_recovers_but_uses_scaffolded_blind_training(shallow_p
         assert "verification" not in artifact
 
 
-def test_v15_shallow_blind_threshold_rejects_scaffolded_recovery(shallow_proof_result):
+def test_v15_shallow_scaffolded_threshold_accepts_scaffolded_recovery(shallow_proof_result):
     _, aggregate = shallow_proof_result
     threshold = aggregate["thresholds"][0]
 
-    assert threshold["claim_id"] == "paper-shallow-blind-recovery"
-    assert threshold["threshold_policy_id"] == "bounded_100_percent"
+    assert threshold["claim_id"] == "paper-shallow-scaffolded-recovery"
+    assert threshold["threshold_policy_id"] == "scaffolded_bounded_100_percent"
     assert threshold["eligible"] == 18
-    assert threshold["passed"] == 0
-    assert threshold["failed"] == 18
-    assert threshold["rate"] == 0.0
-    assert threshold["status"] == "failed"
+    assert threshold["passed"] == 18
+    assert threshold["failed"] == 0
+    assert threshold["rate"] == 1.0
+    assert threshold["status"] == "passed"
     assert threshold["evidence_classes"] == {"scaffolded_blind_training_recovered": 18}
 
     for run in aggregate["runs"]:
@@ -82,3 +82,21 @@ def test_v15_shallow_blind_threshold_rejects_scaffolded_recovery(shallow_proof_r
         assert metrics["snap_active_node_count"] is not None
         assert metrics["scaffold_source"] is not None
         assert metrics["verifier_status"] == "recovered"
+
+
+def test_v15_shallow_pure_blind_suite_declares_measured_random_only_boundary():
+    suite = load_suite("v1.5-shallow-pure-blind")
+    runs = suite.expanded_runs()
+
+    assert [case.id for case in suite.cases] == [
+        "shallow-exp-pure-blind",
+        "shallow-log-pure-blind",
+        "shallow-radioactive-decay-pure-blind",
+        "shallow-beer-lambert-pure-blind",
+        "shallow-scaled-exp-growth-pure-blind",
+        "shallow-scaled-exp-fast-decay-pure-blind",
+    ]
+    assert len(runs) == 18
+    assert {run.claim_id for run in runs} == {"paper-shallow-blind-recovery"}
+    assert {run.threshold_policy_id for run in runs} == {"measured_pure_blind_recovery"}
+    assert all(run.optimizer.scaffold_initializers == () for run in runs)

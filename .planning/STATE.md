@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
 current_phase: 32
-status: blocked
-stopped_at: Phase 31 complete; Phase 32 blocked by Phase 30 review blocker
-last_updated: "2026-04-15T20:44:21.323Z"
-last_activity: 2026-04-15 -- Phase 31 verified complete; Phase 32 blocked by Phase 30
+status: ready
+stopped_at: Phase 30 claim split and Phase 31 complete; Phase 32 ready to plan
+last_updated: "2026-04-15T21:31:00.000Z"
+last_activity: 2026-04-15 -- Phase 30 resolved with measured pure-blind and bounded scaffolded claims
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 9
   completed_plans: 9
-  percent: 40
+  percent: 60
 ---
 
 # GSD State: EML Symbolic Regression
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 32 — Paper Depth-Curve Training Evidence (blocked by Phase 30)
+**Current focus:** Phase 32 — Paper Depth-Curve Training Evidence
 
 ## Current Position
 
-Phase: 32 (Paper Depth-Curve Training Evidence) — BLOCKED
+Phase: 32 (Paper Depth-Curve Training Evidence) — READY
 Plan: Not started
-Status: Blocked until Phase 30 claim semantics are resolved
-Last activity: 2026-04-15 -- Phase 31 verified complete; Phase 32 blocked by Phase 30
-Progress: [####------] 40% by completed phases (v1.5: 2/5 complete; Phase 30 review-blocked)
+Status: Ready to plan now that Phase 30 and Phase 31 are complete
+Last activity: 2026-04-15 -- Phase 30 resolved with measured pure-blind and bounded scaffolded claims
+Progress: [######----] 60% by completed phases (v1.5: 3/5 complete)
 
 ## Performance Metrics
 
@@ -70,7 +70,7 @@ Goal: Prove paper-grounded EML training claims with real training runs, bounded 
 Target features:
 
 - Executable paper claim suites and datasets.
-- 100% verifier-owned training recovery on a declared bounded shallow proof suite.
+- Separate measured pure-blind shallow recovery and 100% verifier-owned scaffolded recovery on a declared bounded shallow proof suite.
 - Repair for current `radioactive_decay` blind failures and scaled/signed exponential families.
 - Perturbed true-tree basin recovery metrics and Beer-Lambert high-noise repair or a defensible narrowed bound.
 - Depth-curve experiments that reproduce the paper's qualitative blind-vs-perturbed behavior.
@@ -81,9 +81,9 @@ Target features:
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
 | 29 | Paper Claim Contract and Proof Dataset Harness | Complete | CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04 |
-| 30 | Bounded Shallow Blind Training Recovery | Review Blocked | SHAL-01, SHAL-02, SHAL-03, SHAL-04 |
+| 30 | Shallow Training Claim Split and Scaffolded Recovery | Complete | SHAL-01, SHAL-02, SHAL-03, SHAL-04 |
 | 31 | Perturbed Basin Training and Local Repair | Complete | BASN-01, BASN-02, BASN-03, BASN-04, BASN-05 |
-| 32 | Paper Depth-Curve Training Evidence | Blocked | CURV-01, CURV-02, CURV-03, CURV-04 |
+| 32 | Paper Depth-Curve Training Evidence | Ready | CURV-01, CURV-02, CURV-03, CURV-04 |
 | 33 | Proof Campaign Report and Evidence Lockdown | Pending | EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
 
 ## Accumulated Context
@@ -98,7 +98,7 @@ Target features:
 - Phase 28 comparison shows overall v1.4 recovery improved from 18/45 to 27/45 across standard and showcase campaigns.
 - v1.5 interprets "100% fully functional training" as 100% recovery over explicitly declared bounded proof suites, plus honest measured failure boundaries for deeper blind recovery.
 - Phase 29 established the v1.5 proof contract: stable paper claim matrix, deterministic proof dataset manifests, proof-aware benchmark artifacts, derived evidence classes, claim-level threshold summaries, CLI inspection commands, and campaign proof metadata/reporting.
-- Phase 30 implemented a six-case shallow suite and scaffolded scaled-exponential recovery, but code review found this cannot honestly satisfy the pure blind proof claim. The current code distinguishes `scaffolded_blind_training_recovered` from `blind_training_recovered`, leaving SHAL-02 unresolved.
+- Phase 30 review CR-01 is resolved by splitting the shallow claim contract: `paper-shallow-blind-recovery` is now a measured pure random-initialized blind boundary with scaffold initializers disabled, and `paper-shallow-scaffolded-recovery` owns the bounded 100% scaffolded proof suite.
 - Phase 31 completed and verified perturbed true-tree basin recovery, verifier-gated local repair, and durable Beer-Lambert bound evidence. BASN-01 through BASN-05 are complete.
 
 ### Pending Todos
@@ -109,15 +109,13 @@ None recorded.
 
 The milestone must not claim universal blind recovery of arbitrary deep elementary expressions, because the source paper reports rapid blind recovery degradation beyond shallow depths.
 
-Phase 30 is blocked on claim semantics: current scaled-exponential successes come from exact scaffold initializers, not random-initialized blind recovery. Decide whether to narrow the blind proof suite or introduce a separate scaffolded-training proof claim.
-
-Phase 32 depends on Phase 30, Phase 31, and Phase 29. Phase 31 is complete, but Phase 32 must not start while Phase 30's blind-recovery claim semantics remain unresolved.
+Phase 32 depends on Phase 30, Phase 31, and Phase 29. Those dependencies are complete; Phase 32 should use the pure-blind measured boundary and scaffolded proof claim as inputs.
 
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Phase 31 complete; Phase 32 blocked by Phase 30 review blocker
+Stopped at: Phase 30 claim split and Phase 31 complete; Phase 32 ready to plan
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after completing Phase 31 and recording the Phase 32 blocker*
+*Last updated: 2026-04-15 after resolving Phase 30 and unblocking Phase 32*

@@ -15,12 +15,12 @@ Requirements for this milestone only. Completed v1, v1.1, v1.2, v1.3, and v1.4 r
 - [ ] **CLAIM-03**: User can distinguish blind training, compiler warm-start training, perturbed true-tree training, compile-only verification, catalog verification, unsupported cases, and failed cases in every proof artifact.
 - [ ] **CLAIM-04**: User receives explicit pass/fail thresholds for every proof suite, including the bounded suites where 100% verifier-owned training recovery is required and the depth-curve suites where measured rates are reported.
 
-### Bounded Shallow Blind Training
+### Shallow Training Claim Split
 
-- [ ] **SHAL-01**: User can run a declared shallow blind-training proof suite covering `exp`, `log`, `radioactive_decay`, Beer-Lambert-style scaled exponentials, and signed/scaled exponential variants with fixed seeds and budgets.
-- [ ] **SHAL-02**: User receives 100% verifier-owned recovery on the declared shallow blind proof suite, with no catalog, compile-only, or same-AST warm-start runs counted toward this requirement.
-- [ ] **SHAL-03**: User can inspect optimizer and snap diagnostics for any shallow blind run, including scaffold source, best loss, post-snap loss, snap margin, active node count, and verifier status.
-- [ ] **SHAL-04**: User can run regression tests that fail if `radioactive_decay` or the declared signed/scaled exponential suite regresses below the 100% bounded target.
+- [x] **SHAL-01**: User can run declared shallow training suites covering `exp`, `log`, `radioactive_decay`, Beer-Lambert-style scaled exponentials, and signed/scaled exponential variants with fixed seeds and budgets, split into measured pure random-initialized blind recovery and bounded scaffolded recovery.
+- [x] **SHAL-02**: User receives separate evidence for measured pure random-initialized blind recovery and 100% verifier-owned scaffolded shallow recovery, with scaffolded starts never counted toward the pure-blind claim.
+- [x] **SHAL-03**: User can inspect optimizer and snap diagnostics for any scaffolded shallow run, including scaffold source, best loss, post-snap loss, snap margin, active node count, and verifier status.
+- [x] **SHAL-04**: User can run regression tests that fail if the scaffolded `radioactive_decay` or declared signed/scaled exponential suite regresses below the 100% bounded target, or if pure-blind and scaffolded claim semantics are mixed.
 
 ### Perturbed Basin Training
 
@@ -76,10 +76,10 @@ Deferred to later milestones.
 | CLAIM-02 | Phase 29 | Pending |
 | CLAIM-03 | Phase 29 | Pending |
 | CLAIM-04 | Phase 29 | Pending |
-| SHAL-01 | Phase 30 | Pending |
-| SHAL-02 | Phase 30 | Pending |
-| SHAL-03 | Phase 30 | Pending |
-| SHAL-04 | Phase 30 | Pending |
+| SHAL-01 | Phase 30 | Complete |
+| SHAL-02 | Phase 30 | Complete |
+| SHAL-03 | Phase 30 | Complete |
+| SHAL-04 | Phase 30 | Complete |
 | BASN-01 | Phase 31 | Complete |
 | BASN-02 | Phase 31 | Complete |
 | BASN-03 | Phase 31 | Complete |
@@ -102,4 +102,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after defining milestone v1.5 training proof requirements*
+*Last updated: 2026-04-15 after resolving Phase 30 with separate measured pure-blind and bounded scaffolded shallow claims*

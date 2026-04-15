@@ -69,7 +69,14 @@ def _proof_basin_run(
 
 
 def test_campaign_presets_map_to_budgeted_suites():
-    assert list_campaign_presets() == ("smoke", "standard", "showcase", "proof-shallow", "proof-basin")
+    assert list_campaign_presets() == (
+        "smoke",
+        "standard",
+        "showcase",
+        "proof-shallow",
+        "proof-shallow-pure-blind",
+        "proof-basin",
+    )
 
     standard = campaign_preset("standard")
     suite = load_suite(standard.suite)
@@ -84,7 +91,11 @@ def test_campaign_presets_map_to_budgeted_suites():
 
     proof = campaign_preset("proof-shallow")
     assert proof.suite == "v1.5-shallow-proof"
-    assert any(run.claim_id == "paper-shallow-blind-recovery" for run in load_suite(proof.suite).expanded_runs())
+    assert any(run.claim_id == "paper-shallow-scaffolded-recovery" for run in load_suite(proof.suite).expanded_runs())
+
+    pure_blind = campaign_preset("proof-shallow-pure-blind")
+    assert pure_blind.suite == "v1.5-shallow-pure-blind"
+    assert any(run.claim_id == "paper-shallow-blind-recovery" for run in load_suite(pure_blind.suite).expanded_runs())
 
     proof_basin = campaign_preset("proof-basin")
     assert proof_basin.benchmark_suite == "proof-perturbed-basin"
@@ -308,25 +319,25 @@ def test_proof_campaign_tables_and_manifest_preserve_claim_metadata(tmp_path):
     run_rows = list(csv.DictReader(result.table_paths["runs_csv"].open(encoding="utf-8")))
     assert len(run_rows) == 1
     row = run_rows[0]
-    assert row["claim_id"] == "paper-shallow-blind-recovery"
-    assert row["claim_class"] == "bounded_training_proof"
+    assert row["claim_id"] == "paper-shallow-scaffolded-recovery"
+    assert row["claim_class"] == "scaffolded_training_proof"
     assert row["training_mode"] == "blind_training"
     assert row["evidence_class"]
-    assert row["threshold_policy"] == "bounded_100_percent"
+    assert row["threshold_policy"] == "scaffolded_bounded_100_percent"
     assert row["dataset_manifest_sha256"]
     assert row["provenance_source"] == "sources/paper.pdf"
     assert row["provenance_expression"] == "exp(x)"
     assert "threshold_status" not in row
 
     claim_groups = list(csv.DictReader(result.table_paths["group_claim_csv"].open(encoding="utf-8")))
-    assert claim_groups[0]["group"] == "paper-shallow-blind-recovery"
+    assert claim_groups[0]["group"] == "paper-shallow-scaffolded-recovery"
 
     manifest = json.loads(result.manifest_path.read_text())
     assert manifest["counts"]["evidence_classes"]
     assert manifest["thresholds"]
     threshold = manifest["thresholds"][0]
-    assert threshold["claim_id"] == "paper-shallow-blind-recovery"
-    assert threshold["threshold_policy_id"] == "bounded_100_percent"
+    assert threshold["claim_id"] == "paper-shallow-scaffolded-recovery"
+    assert threshold["threshold_policy_id"] == "scaffolded_bounded_100_percent"
     assert threshold["status"] in {"passed", "failed"}
     assert {"claim_id", "threshold_policy_id", "status", "passed", "eligible", "rate"} <= set(threshold)
     assert manifest["output"]["tables"]["group_evidence_class_csv"].endswith("group-evidence-class.csv")

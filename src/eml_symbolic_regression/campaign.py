@@ -104,8 +104,15 @@ _PRESETS = {
         name="proof-shallow",
         suite="v1.5-shallow-proof",
         tier="proof-contract",
-        description="Bounded v1.5 shallow proof campaign for claim-aware blind training evidence.",
-        budget_guardrail="12 runs; declared shallow blind proof suite with bounded threshold metadata.",
+        description="Bounded v1.5 shallow proof campaign for scaffolded training evidence.",
+        budget_guardrail="18 runs; declared shallow scaffolded-training proof suite with bounded threshold metadata.",
+    ),
+    "proof-shallow-pure-blind": CampaignPreset(
+        name="proof-shallow-pure-blind",
+        suite="v1.5-shallow-pure-blind",
+        tier="proof-contract",
+        description="Measured v1.5 shallow pure-blind campaign with scaffold initializers disabled.",
+        budget_guardrail="18 runs; declared shallow pure-blind suite with measured recovery metadata.",
     ),
     "proof-basin": CampaignPreset(
         name="proof-basin",

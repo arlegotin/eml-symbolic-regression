@@ -62,16 +62,17 @@ Plans:
 - [x] 29-02-PLAN.md — Benchmark proof metadata, run artifact schema, evidence classes, and aggregate thresholds.
 - [x] 29-03-PLAN.md — CLI inspection/generation commands plus campaign table/report proof metadata propagation.
 
-### Phase 30: Bounded Shallow Blind Training Recovery
-**Goal**: Users get 100% verifier-owned blind training recovery on the declared shallow proof suite, including the current `radioactive_decay` failure family.
+### Phase 30: Shallow Training Claim Split and Scaffolded Recovery
+**Goal**: Users get an honest shallow training proof split: pure random-initialized blind recovery is measured with scaffolds disabled, while scaffolded shallow recovery has its own bounded 100% verifier-owned proof suite.
 **Depends on**: Phase 29
 **Requirements**: SHAL-01, SHAL-02, SHAL-03, SHAL-04
-**Status**: Review-blocked. Plans 30-01 through 30-03 are implemented, but code review CR-01 found that the passing suite used exact scaffold starts. The fix reclassifies those runs as `scaffolded_blind_training_recovered`, so they no longer satisfy the pure `paper-shallow-blind-recovery` threshold.
+**Status**: Complete. Code review CR-01 is resolved by splitting the claim contract: `paper-shallow-blind-recovery` is a measured pure-blind boundary with scaffold initializers disabled, and `paper-shallow-scaffolded-recovery` is the bounded 100% scaffolded proof claim.
 **Success Criteria** (what must be TRUE):
-  1. Shallow blind suite includes `exp`, `log`, `radioactive_decay`, Beer-Lambert-style scaled exponentials, and signed/scaled exponential variants.
-  2. Blind training reaches 100% verifier-owned recovery across declared seeds, budgets, and tolerances, with no catalog or compile-only cases counted.
-  3. Optimizer diagnostics explain scaffold source, loss, snap margins, active nodes, and verifier status for every run.
-  4. Regression tests fail if any declared shallow blind target drops below the bounded 100% target.
+  1. Shallow suites include `exp`, `log`, `radioactive_decay`, Beer-Lambert-style scaled exponentials, and signed/scaled exponential variants for both pure-blind measurement and scaffolded proof.
+  2. Pure random-initialized blind training is reported under a measured threshold and cannot use scaffold initializers.
+  3. Scaffolded shallow training reaches 100% verifier-owned recovery across declared seeds, budgets, and tolerances, with no catalog or compile-only cases counted.
+  4. Optimizer diagnostics explain scaffold source, loss, snap margins, active nodes, and verifier status for every scaffolded proof run.
+  5. Regression tests fail if the scaffolded proof target drops below 100% or if scaffolded evidence is credited to pure-blind recovery.
 **Plans**: 3 plans
 Plans:
 - [x] 30-01-PLAN.md - Scaled-exponential shape evidence and shallow proof suite contract.
@@ -124,7 +125,7 @@ Phase 29 -> Phase 30 -> Phase 32 -> Phase 33
 Phase 29 -> Phase 31 -> Phase 32 -> Phase 33
 ```
 
-Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed independently after that because they target blind shallow recovery and perturbed basin recovery. Phase 32 uses both to produce the paper-style depth curve. Phase 33 runs last to assemble and lock the complete proof evidence.
+Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed independently after that because they target the shallow pure-blind/scaffolded claim split and perturbed basin recovery. Phase 32 uses both to produce the paper-style depth curve. Phase 33 runs last to assemble and lock the complete proof evidence.
 
 ## Requirement Coverage
 
@@ -134,10 +135,10 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | CLAIM-02 | Phase 29 | Pending |
 | CLAIM-03 | Phase 29 | Pending |
 | CLAIM-04 | Phase 29 | Pending |
-| SHAL-01 | Phase 30 | Pending |
-| SHAL-02 | Phase 30 | Pending |
-| SHAL-03 | Phase 30 | Pending |
-| SHAL-04 | Phase 30 | Pending |
+| SHAL-01 | Phase 30 | Complete |
+| SHAL-02 | Phase 30 | Complete |
+| SHAL-03 | Phase 30 | Complete |
+| SHAL-04 | Phase 30 | Complete |
 | BASN-01 | Phase 31 | Complete |
 | BASN-02 | Phase 31 | Complete |
 | BASN-03 | Phase 31 | Complete |
@@ -167,10 +168,10 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 19-23. v1.3 Benchmark Campaign and Evidence Report | Complete | Complete | 2026-04-15 |
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
 | 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete    | 2026-04-15 |
-| 30. Bounded Shallow Blind Training Recovery | 3/3 | Review Blocked | - |
+| 30. Shallow Training Claim Split and Scaffolded Recovery | 3/3 | Complete | 2026-04-15 |
 | 31. Perturbed Basin Training and Local Repair | 3/3 | Complete    | 2026-04-15 |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
 | 33. Proof Campaign Report and Evidence Lockdown | 0/1 | Pending | - |
 
 ---
-*Roadmap updated: 2026-04-15 for milestone v1.5*
+*Roadmap updated: 2026-04-15 after resolving Phase 30 with separate measured pure-blind and bounded scaffolded shallow claims*

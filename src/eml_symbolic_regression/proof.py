@@ -9,6 +9,8 @@ from typing import Any
 CLAIM_CLASSES = {
     "contract_context": "contract_context",
     "bounded_training_proof": "bounded_training_proof",
+    "scaffolded_training_proof": "scaffolded_training_proof",
+    "measured_training_boundary": "measured_training_boundary",
     "measured_depth_curve": "measured_depth_curve",
     "catalog_verification": "catalog_verification",
     "compile_only_verification": "compile_only_verification",
@@ -163,6 +165,28 @@ def threshold_policies() -> dict[str, ThresholdPolicy]:
             fail_on_unsupported=True,
             fail_on_execution_error=True,
         ),
+        "scaffolded_bounded_100_percent": ThresholdPolicy(
+            id="scaffolded_bounded_100_percent",
+            description="Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+            policy_type="bounded_rate",
+            required_rate=1.0,
+            allowed_evidence_classes=(
+                EVIDENCE_CLASSES["scaffolded_blind_training_recovered"],
+            ),
+            fail_on_unsupported=True,
+            fail_on_execution_error=True,
+        ),
+        "measured_pure_blind_recovery": ThresholdPolicy(
+            id="measured_pure_blind_recovery",
+            description="Pure random-initialized blind suites report measured recovery without a 100% pass target.",
+            policy_type="measured_rate",
+            required_rate=None,
+            allowed_evidence_classes=(
+                EVIDENCE_CLASSES["blind_training_recovered"],
+            ),
+            fail_on_unsupported=False,
+            fail_on_execution_error=False,
+        ),
         "measured_depth_curve": ThresholdPolicy(
             id="measured_depth_curve",
             description="Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
@@ -223,7 +247,7 @@ def claim_matrix() -> dict[str, PaperClaim]:
             ),
             source_refs=("sources/paper.pdf", "sources/NORTH_STAR.md", ".planning/REQUIREMENTS.md", ".planning/ROADMAP.md"),
             claim_class=CLAIM_CLASSES["contract_context"],
-            suite_ids=("proof-shallow-blind", "proof-perturbed-basin", "proof-depth-curve"),
+            suite_ids=("v1.5-shallow-pure-blind", "v1.5-shallow-proof", "proof-perturbed-basin", "proof-depth-curve"),
             case_ids=(),
             threshold_policy_id="contract_context",
             notes=(
@@ -234,11 +258,35 @@ def claim_matrix() -> dict[str, PaperClaim]:
         "paper-shallow-blind-recovery": PaperClaim(
             id="paper-shallow-blind-recovery",
             statement=(
-                "For a declared shallow suite, blind training must recover all formulas through verifier-owned held-out, "
-                "extrapolation, and high-precision checks."
+                "For a declared shallow suite, pure random-initialized blind training is measured separately from scaffolded "
+                "or initialized recovery and must never count scaffolded starts as blind-discovery evidence."
             ),
             source_refs=("sources/paper.pdf", "sources/NORTH_STAR.md", ".planning/REQUIREMENTS.md", ".planning/ROADMAP.md"),
-            claim_class=CLAIM_CLASSES["bounded_training_proof"],
+            claim_class=CLAIM_CLASSES["measured_training_boundary"],
+            suite_ids=("v1.5-shallow-pure-blind",),
+            case_ids=(
+                "shallow-exp-pure-blind",
+                "shallow-log-pure-blind",
+                "shallow-radioactive-decay-pure-blind",
+                "shallow-beer-lambert-pure-blind",
+                "shallow-scaled-exp-growth-pure-blind",
+                "shallow-scaled-exp-fast-decay-pure-blind",
+            ),
+            threshold_policy_id="measured_pure_blind_recovery",
+            notes=(
+                "This claim is deliberately measured, not bounded, because Phase 30 proved the current successes use scaffold initializers.",
+                "Rows for this claim must disable optimizer scaffold initializers and count only blind_training_recovered evidence.",
+                "Expected shallow blind failures remain visible evidence for Phase 32 depth-curve and failure-boundary reporting.",
+            ),
+        ),
+        "paper-shallow-scaffolded-recovery": PaperClaim(
+            id="paper-shallow-scaffolded-recovery",
+            statement=(
+                "For a declared shallow suite, paper-grounded scaffold initializers plus training and snapping recover all "
+                "formulas through verifier-owned held-out, extrapolation, and high-precision checks."
+            ),
+            source_refs=("sources/paper.pdf", "sources/NORTH_STAR.md", ".planning/REQUIREMENTS.md", ".planning/ROADMAP.md"),
+            claim_class=CLAIM_CLASSES["scaffolded_training_proof"],
             suite_ids=("v1.5-shallow-proof",),
             case_ids=(
                 "shallow-exp-blind",
@@ -248,10 +296,11 @@ def claim_matrix() -> dict[str, PaperClaim]:
                 "shallow-scaled-exp-growth-blind",
                 "shallow-scaled-exp-fast-decay-blind",
             ),
-            threshold_policy_id="bounded_100_percent",
+            threshold_policy_id="scaffolded_bounded_100_percent",
             notes=(
-                "The bounded suite target is 100% recovery over declared cases only.",
-                "The current radioactive_decay, Beer-Lambert, and signed/scaled exponential blind targets remain visible for Phase 30 repair.",
+                "This is a scaffolded/initialized training claim, not pure random-initialized blind recovery.",
+                "The bounded target is 100% scaffolded recovery over declared cases only.",
+                "Artifacts must preserve scaffold source, losses, snap metrics, and verifier status.",
             ),
         ),
         "paper-perturbed-true-tree-basin": PaperClaim(
