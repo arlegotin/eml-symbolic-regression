@@ -13,7 +13,7 @@ from eml_symbolic_regression.campaign import (
 
 
 def test_campaign_presets_map_to_budgeted_suites():
-    assert list_campaign_presets() == ("smoke", "standard", "showcase")
+    assert list_campaign_presets() == ("smoke", "standard", "showcase", "proof-shallow")
 
     standard = campaign_preset("standard")
     suite = load_suite(standard.suite)
@@ -25,6 +25,10 @@ def test_campaign_presets_map_to_budgeted_suites():
     assert any(run.formula == "michaelis_menten" for run in runs)
     assert any(run.formula == "planck" for run in runs)
     assert {"radioactive_decay", "logistic", "shockley"} <= {run.formula for run in runs}
+
+    proof = campaign_preset("proof-shallow")
+    assert proof.suite == "v1.5-shallow-proof"
+    assert any(run.claim_id == "paper-shallow-blind-recovery" for run in load_suite(proof.suite).expanded_runs())
 
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
@@ -113,6 +117,19 @@ def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
         "warm_start_mechanism",
         "artifact_path",
     } <= set(run_rows[0])
+    assert {
+        "claim_id",
+        "claim_class",
+        "training_mode",
+        "evidence_class",
+        "threshold_policy",
+        "dataset_manifest_sha256",
+        "provenance_source",
+        "provenance_expression",
+    } <= set(run_rows[0])
+    assert "threshold_status" not in set(run_rows[0])
+    assert run_rows[0]["training_mode"]
+    assert run_rows[0]["claim_id"] == ""
 
     headline = json.loads(result.table_paths["headline_json"].read_text())
     assert headline["total_runs"] == 2
@@ -124,6 +141,47 @@ def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
     assert len(failures) == 1
     assert failures[0]["classification"] == "unsupported"
     assert failures[0]["reason"]
+
+
+def test_proof_campaign_tables_and_manifest_preserve_claim_metadata(tmp_path):
+    result = run_campaign(
+        "proof-shallow",
+        output_root=tmp_path,
+        label="proof-exp",
+        run_filter=RunFilter(case_ids=("shallow-exp-blind",), seeds=(0,)),
+    )
+
+    assert result.table_paths["group_evidence_class_csv"].exists()
+    assert result.table_paths["group_claim_csv"].exists()
+    assert result.table_paths["group_threshold_policy_csv"].exists()
+
+    run_rows = list(csv.DictReader(result.table_paths["runs_csv"].open(encoding="utf-8")))
+    assert len(run_rows) == 1
+    row = run_rows[0]
+    assert row["claim_id"] == "paper-shallow-blind-recovery"
+    assert row["claim_class"] == "bounded_training_proof"
+    assert row["training_mode"] == "blind_training"
+    assert row["evidence_class"]
+    assert row["threshold_policy"] == "bounded_100_percent"
+    assert row["dataset_manifest_sha256"]
+    assert row["provenance_source"] == "sources/paper.pdf"
+    assert row["provenance_expression"] == "exp(x)"
+    assert "threshold_status" not in row
+
+    claim_groups = list(csv.DictReader(result.table_paths["group_claim_csv"].open(encoding="utf-8")))
+    assert claim_groups[0]["group"] == "paper-shallow-blind-recovery"
+
+    manifest = json.loads(result.manifest_path.read_text())
+    assert manifest["counts"]["evidence_classes"]
+    assert manifest["thresholds"]
+    threshold = manifest["thresholds"][0]
+    assert threshold["claim_id"] == "paper-shallow-blind-recovery"
+    assert threshold["threshold_policy_id"] == "bounded_100_percent"
+    assert threshold["status"] in {"passed", "failed"}
+    assert {"claim_id", "threshold_policy_id", "status", "passed", "eligible", "rate"} <= set(threshold)
+    assert manifest["output"]["tables"]["group_evidence_class_csv"].endswith("group-evidence-class.csv")
+    assert manifest["output"]["tables"]["group_claim_csv"].endswith("group-claim.csv")
+    assert manifest["output"]["tables"]["group_threshold_policy_csv"].endswith("group-threshold-policy.csv")
 
 
 def test_campaign_writes_stable_svg_figures(tmp_path):
