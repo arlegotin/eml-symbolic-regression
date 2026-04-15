@@ -318,17 +318,17 @@ All factual claims in this research were verified against local project files, l
 |---|-------|---------|---------------|
 | none | No assumed factual claims. [VERIFIED: this research pass] | All sections | None |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Exact Phase 30 signed/scaled exponential inventory**
+1. **RESOLVED: Exact Phase 30 signed/scaled exponential inventory**
    - What we know: Phase 30 must cover `exp`, `log`, `radioactive_decay`, Beer-Lambert-style scaled exponentials, and signed/scaled exponential variants. [VERIFIED: .planning/REQUIREMENTS.md]
-   - What's unclear: The exact signed/scaled formula IDs and budgets are not specified in current Phase 29 context. [VERIFIED: .planning/phases/29-paper-claim-contract-and-proof-dataset-harness/29-CONTEXT.md]
-   - Recommendation: Phase 29 should define claim and threshold slots for the family, while Phase 30 fills the exact recovery suite inventory. [VERIFIED: .planning/ROADMAP.md]
+   - Resolution: This is not open for Phase 29. Phase 29 defines claim and threshold slots for the family, while Phase 30 fills the exact signed/scaled formula IDs, budgets, and recovery suite inventory. [VERIFIED: .planning/ROADMAP.md]
+   - Planning impact: Phase 29 plans must not invent Phase 30-only formula inventory, but must leave claim/threshold contracts ready for those later cases. [VERIFIED: .planning/phases/29-paper-claim-contract-and-proof-dataset-harness/29-CONTEXT.md]
 
-2. **Perturbed true-tree training mode execution path**
+2. **RESOLVED: Perturbed true-tree training mode execution path**
    - What we know: Current execution modes are `catalog`, `compile`, `blind`, and `warm_start`. [VERIFIED: src/eml_symbolic_regression/benchmark.py:24]
-   - What's unclear: Phase 31 owns exact EML target-tree generation and perturbed true-tree execution. [VERIFIED: .planning/ROADMAP.md]
-   - Recommendation: Phase 29 should define the `perturbed_true_tree_training` contract/evidence class now, but not implement full target-tree generation. [VERIFIED: .planning/phases/29-paper-claim-contract-and-proof-dataset-harness/29-CONTEXT.md]
+   - Resolution: This is not open for Phase 29. Phase 29 defines the reserved `perturbed_true_tree_training` contract/evidence class and rejects it for executable benchmark cases until Phase 31 adds the actual runner path. [VERIFIED: .planning/phases/29-paper-claim-contract-and-proof-dataset-harness/29-CONTEXT.md] [VERIFIED: .planning/ROADMAP.md]
+   - Planning impact: Phase 29 validation and aggregation must preserve the distinct reserved evidence class without implementing target-tree generation. [VERIFIED: .planning/REQUIREMENTS.md]
 
 ## Sources
 
