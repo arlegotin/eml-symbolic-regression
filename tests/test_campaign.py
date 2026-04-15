@@ -149,3 +149,29 @@ def test_campaign_writes_stable_svg_figures(tmp_path):
     manifest = json.loads(result.manifest_path.read_text())
     assert "figures" in manifest["output"]
     assert manifest["output"]["figures"]["failure_taxonomy"].endswith("failure-taxonomy.svg")
+
+
+def test_campaign_writes_self_contained_report(tmp_path):
+    result = run_campaign(
+        "smoke",
+        output_root=tmp_path,
+        label="report-smoke",
+        run_filter=RunFilter(case_ids=("beer-warm", "planck-diagnostic")),
+    )
+
+    assert result.report_path is not None
+    assert result.report_path.exists()
+    report = result.report_path.read_text(encoding="utf-8")
+
+    assert "# EML Benchmark Campaign Report: smoke" in report
+    assert "## Headline Metrics" in report
+    assert "## What EML Demonstrates Well" in report
+    assert "## Limitations" in report
+    assert "## Next Experiments" in report
+    assert "campaign smoke --output-root" in report
+    assert "figures/recovery-by-formula.svg" in report
+    assert "tables/runs.csv" in report
+    assert "unsupported" in report
+
+    manifest = json.loads(result.manifest_path.read_text())
+    assert manifest["output"]["report_markdown"].endswith("report.md")

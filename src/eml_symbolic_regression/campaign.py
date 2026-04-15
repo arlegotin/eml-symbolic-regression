@@ -58,6 +58,7 @@ class CampaignResult:
     aggregate_paths: Mapping[str, Path]
     table_paths: Mapping[str, Path] = field(default_factory=dict)
     figure_paths: Mapping[str, Path] = field(default_factory=dict)
+    report_path: Path | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -68,6 +69,7 @@ class CampaignResult:
             "aggregate_paths": {key: str(value) for key, value in self.aggregate_paths.items()},
             "table_paths": {key: str(value) for key, value in self.table_paths.items()},
             "figure_paths": {key: str(value) for key, value in self.figure_paths.items()},
+            "report_path": str(self.report_path) if self.report_path is not None else None,
         }
 
 
@@ -152,6 +154,8 @@ def run_campaign(
         table_paths=table_paths,
         figure_paths=figure_paths,
     )
+    report_path = write_campaign_report(campaign_dir, manifest, aggregate, table_paths, figure_paths)
+    manifest["output"]["report_markdown"] = str(report_path)
     manifest_path = campaign_dir / "campaign-manifest.json"
     _write_json(manifest_path, manifest)
     return CampaignResult(
@@ -162,6 +166,7 @@ def run_campaign(
         aggregate_paths=aggregate_paths,
         table_paths=table_paths,
         figure_paths=figure_paths,
+        report_path=report_path,
     )
 
 
@@ -246,6 +251,100 @@ def write_campaign_plots(aggregate: Mapping[str, Any], output_dir: Path) -> dict
     _write_svg(paths["runtime_depth_budget"], _runtime_depth_svg(runs))
     _write_svg(paths["failure_taxonomy"], _failure_taxonomy_svg(runs))
     return paths
+
+
+def write_campaign_report(
+    campaign_dir: Path,
+    manifest: Mapping[str, Any],
+    aggregate: Mapping[str, Any],
+    table_paths: Mapping[str, Path],
+    figure_paths: Mapping[str, Path],
+) -> Path:
+    report_path = campaign_dir / "report.md"
+    runs = list(aggregate.get("runs", ()))
+    headline = _headline_metrics(runs)
+    counts = aggregate.get("counts", {})
+    preset = manifest.get("preset", {})
+    suite = manifest.get("suite", {})
+    command = manifest.get("reproducibility", {}).get("command", "")
+
+    lines = [
+        f"# EML Benchmark Campaign Report: {preset.get('name', 'campaign')}",
+        "",
+        str(preset.get("description", "")),
+        "",
+        "## Reproduce",
+        "",
+        "Run this command from a clean checkout:",
+        "",
+        "```bash",
+        str(command),
+        "```",
+        "",
+        f"- Suite: `{suite.get('id', '')}`",
+        f"- Budget tier: `{preset.get('tier', '')}`",
+        f"- Guardrail: {preset.get('budget_guardrail', '')}",
+        f"- Raw run artifacts: [{_relative_link(manifest['output']['raw_run_root'], campaign_dir)}]({_relative_link(manifest['output']['raw_run_root'], campaign_dir)})",
+        "",
+        "## Headline Metrics",
+        "",
+        "| Metric | Value |",
+        "|--------|-------|",
+        f"| Total runs | {headline['total_runs']} |",
+        f"| Verifier recovered | {headline['verifier_recovered']} ({headline['verifier_recovery_rate']:.1%}) |",
+        f"| Same-AST warm-start returns | {headline['same_ast_return']} ({headline['same_ast_return_rate']:.1%}) |",
+        f"| Verified equivalent warm-start recoveries | {headline['verified_equivalent_ast']} |",
+        f"| Unsupported | {headline['unsupported']} ({headline['unsupported_rate']:.1%}) |",
+        f"| Failed | {headline['failed']} ({headline['failure_rate']:.1%}) |",
+        f"| Median best soft loss | {_format_optional(headline['median_best_loss'])} |",
+        f"| Median post-snap loss | {_format_optional(headline['median_post_snap_loss'])} |",
+        f"| Median runtime seconds | {_format_optional(headline['median_runtime_seconds'])} |",
+        "",
+        "## Figures",
+        "",
+    ]
+    for key, path in figure_paths.items():
+        rel = _relative_link(path, campaign_dir)
+        lines.append(f"- [{key.replace('_', ' ')}]({rel})")
+
+    lines.extend(
+        [
+            "",
+            "## Tables",
+            "",
+        ]
+    )
+    for key, path in table_paths.items():
+        rel = _relative_link(path, campaign_dir)
+        lines.append(f"- [{key.replace('_', ' ')}]({rel})")
+
+    lines.extend(
+        [
+            "",
+            "## What EML Demonstrates Well",
+            "",
+            _strengths_paragraph(counts),
+            "",
+            "## Limitations",
+            "",
+            _limitations_section(runs),
+            "",
+            "## Failed and Unsupported Cases",
+            "",
+            _failure_table(runs, campaign_dir),
+            "",
+            "## Next Experiments",
+            "",
+            "- Improve blind optimizer robustness and compare against this campaign's `snapped_but_failed` cases.",
+            "- Reduce compiled arithmetic tree depth for formulas gated as unsupported, especially Michaelis-Menten and Planck-style expressions.",
+            "- Expand perturbation sweeps after optimizer changes so same-AST returns and verified-equivalent recoveries can be compared over time.",
+            "- Add external noisy datasets only after the synthetic/source-document campaign remains reproducible and interpretable.",
+            "",
+        ]
+    )
+
+    report_path.write_text("\n".join(lines), encoding="utf-8")
+    return report_path
 
 
 def _campaign_dir(output_root: Path, preset_name: str, label: str | None) -> Path:
@@ -510,6 +609,72 @@ def _write_csv(path: Path, rows: list[Mapping[str, Any]], fieldnames: list[str])
         writer.writeheader()
         for row in rows:
             writer.writerow({key: "" if row.get(key) is None else row.get(key) for key in fieldnames})
+
+
+def _strengths_paragraph(counts: Mapping[str, Any]) -> str:
+    recovered = int(counts.get("verifier_recovered", 0))
+    same_ast = int(counts.get("same_ast_return", 0))
+    equivalent = int(counts.get("verified_equivalent_ast", 0))
+    total = int(counts.get("total", 0))
+    return (
+        f"This campaign shows the strongest current behavior when the EML representation is verified after snapping: "
+        f"{recovered}/{total} runs passed verifier-owned recovery. Warm-start runs are especially useful evidence: "
+        f"{same_ast} returned to the same compiled EML AST and {equivalent} produced a different verified-equivalent AST. "
+        "Those are not blind-discovery claims, but they are practical evidence that the paper's uniform EML tree can be "
+        "compiled, embedded, perturbed, optimized, snapped, and independently verified."
+    )
+
+
+def _limitations_section(runs: list[Mapping[str, Any]]) -> str:
+    blind_total = sum(1 for run in runs if run.get("start_mode") == "blind")
+    blind_recovered = sum(1 for run in runs if run.get("classification") == "blind_recovery")
+    same_ast = sum(1 for run in runs if run.get("classification") == "same_ast_warm_start_return")
+    equivalent = sum(1 for run in runs if run.get("classification") == "verified_equivalent_warm_start_recovery")
+    unsupported = sum(1 for run in runs if run.get("classification") == "unsupported")
+    failed = sum(1 for run in runs if run.get("classification") in {"failed", "snapped_but_failed", "soft_fit_only", "execution_failure"})
+    return "\n".join(
+        [
+            f"- Blind recovery: {blind_recovered}/{blind_total} blind runs recovered. Treat this separately from compiler-assisted paths.",
+            f"- Same-AST warm-start return: {same_ast} runs snapped back to the compiled seed; useful basin evidence, not discovery.",
+            f"- Verified-equivalent warm-start recovery: {equivalent} runs snapped to a different exact AST that verified.",
+            f"- Unsupported gates: {unsupported} runs were blocked by compiler/depth/operator limits and remain in the denominator.",
+            f"- Failed fits: {failed} runs did not pass verifier-owned recovery after training or execution.",
+        ]
+    )
+
+
+def _failure_table(runs: list[Mapping[str, Any]], campaign_dir: Path) -> str:
+    failures = [
+        run
+        for run in runs
+        if run.get("classification") in {"unsupported", "failed", "snapped_but_failed", "soft_fit_only", "execution_failure"}
+    ]
+    if not failures:
+        return "No failed or unsupported cases in this campaign."
+    lines = [
+        "| Formula | Mode | Class | Reason | Artifact |",
+        "|---------|------|-------|--------|----------|",
+    ]
+    for run in failures:
+        artifact = _relative_link(run.get("artifact_path", ""), campaign_dir)
+        lines.append(
+            f"| {run.get('formula')} | {run.get('start_mode')} | {run.get('classification')} | "
+            f"{run.get('reason')} | [{run.get('run_id')}]({artifact}) |"
+        )
+    return "\n".join(lines)
+
+
+def _relative_link(path: str | Path, base: Path) -> str:
+    path_obj = Path(str(path))
+    try:
+        return path_obj.relative_to(base).as_posix()
+    except ValueError:
+        return path_obj.as_posix()
+
+
+def _format_optional(value: Any) -> str:
+    number = _number_or_none(value)
+    return "n/a" if number is None else f"{number:.4g}"
 
 
 def _write_svg(path: Path, svg: str) -> None:

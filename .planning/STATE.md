@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Benchmark Campaign and Evidence Report
-current_phase: 22
+current_phase: 23
 status: ready_for_phase_planning
-stopped_at: phase 21 complete
+stopped_at: phase 22 complete
 last_updated: "2026-04-15T11:15:22Z"
 last_activity: 2026-04-15
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
-  percent: 60
+  completed_phases: 4
+  total_plans: 4
+  completed_plans: 4
+  percent: 80
 ---
 
 # GSD State: EML Symbolic Regression
@@ -30,17 +30,17 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 ## Current Position
 
-Phase: 22 of 23 (Evidence Report Assembly)
+Phase: 23 of 23 (Campaign Smoke, Docs, and Report Lockdown)
 Plan: Not started
-Status: Ready to plan phase 22
+Status: Ready to plan phase 23
 Last activity: 2026-04-15
-Progress: [██████----] 60% by completed phases (v1.3: 3/5)
+Progress: [████████--] 80% by completed phases (v1.3: 4/5)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1, v1.1, and v1.2 phases complete; v1.3 phases 19-21 complete
+- Total plans completed: Historical v1, v1.1, and v1.2 phases complete; v1.3 phases 19-22 complete
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
@@ -96,7 +96,7 @@ Target features:
 | 19 | Campaign Presets and Run Manifests | Complete | CAMP-01, CAMP-02, CAMP-03, CAMP-04, CAMP-05 |
 | 20 | Tidy CSV Export and Derived Metrics | Complete | DATA-01, DATA-02, DATA-03, DATA-04 |
 | 21 | Static Plot Generation | Complete | PLOT-01, PLOT-02, PLOT-03, PLOT-04, PLOT-05, PLOT-06 |
-| 22 | Evidence Report Assembly | Pending | REPT-01, REPT-02, REPT-03, REPT-04, REPT-05 |
+| 22 | Evidence Report Assembly | Complete | REPT-01, REPT-02, REPT-03, REPT-04, REPT-05 |
 | 23 | Campaign Smoke, Docs, and Report Lockdown | Pending | TEST-11, TEST-12, TEST-13 |
 
 ## Accumulated Context
@@ -115,6 +115,7 @@ Target features:
 - Phase 19 added campaign presets, guarded output folders, manifest metadata, and the campaign CLI.
 - Phase 20 added tidy CSV exports, grouped summaries, headline metrics, and failed/unsupported reason tables.
 - Phase 21 added deterministic SVG plots for recovery, loss, perturbation behavior, runtime, and failure taxonomy.
+- Phase 22 added self-contained campaign `report.md` assembly with metrics, links, limitations, and next experiments.
 
 ### Pending Todos
 
@@ -127,8 +128,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: Phase 21 complete; ready for Phase 22 planning
+Stopped at: Phase 22 complete; ready for Phase 23 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after completing Phase 21*
+*Last updated: 2026-04-15 after completing Phase 22*

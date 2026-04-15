@@ -34,11 +34,11 @@ Requirements for this milestone only. Completed v1, v1.1, and v1.2 requirements 
 
 ### Evidence Report
 
-- [ ] **REPT-01**: User receives a self-contained `report.md` in the campaign folder with headline metrics, tables, figures, commands, and links to raw artifacts.
-- [ ] **REPT-02**: User can read a concise narrative explaining what the paper's EML idea demonstrates well in this implementation.
-- [ ] **REPT-03**: User can read limitations that separate blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, unsupported depth/compiler gates, and failed fits.
-- [ ] **REPT-04**: User receives a short "next experiments" section that turns measured failures into optimizer or compiler improvement priorities.
-- [ ] **REPT-05**: User can reproduce the report by rerunning one documented CLI command from a clean checkout.
+- [x] **REPT-01**: User receives a self-contained `report.md` in the campaign folder with headline metrics, tables, figures, commands, and links to raw artifacts.
+- [x] **REPT-02**: User can read a concise narrative explaining what the paper's EML idea demonstrates well in this implementation.
+- [x] **REPT-03**: User can read limitations that separate blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, unsupported depth/compiler gates, and failed fits.
+- [x] **REPT-04**: User receives a short "next experiments" section that turns measured failures into optimizer or compiler improvement priorities.
+- [x] **REPT-05**: User can reproduce the report by rerunning one documented CLI command from a clean checkout.
 
 ### Tests and Documentation
 
@@ -88,11 +88,11 @@ Deferred to later milestones.
 | PLOT-04 | Phase 21 | Complete |
 | PLOT-05 | Phase 21 | Complete |
 | PLOT-06 | Phase 21 | Complete |
-| REPT-01 | Phase 22 | Pending |
-| REPT-02 | Phase 22 | Pending |
-| REPT-03 | Phase 22 | Pending |
-| REPT-04 | Phase 22 | Pending |
-| REPT-05 | Phase 22 | Pending |
+| REPT-01 | Phase 22 | Complete |
+| REPT-02 | Phase 22 | Complete |
+| REPT-03 | Phase 22 | Complete |
+| REPT-04 | Phase 22 | Complete |
+| REPT-05 | Phase 22 | Complete |
 | TEST-11 | Phase 23 | Pending |
 | TEST-12 | Phase 23 | Pending |
 | TEST-13 | Phase 23 | Pending |

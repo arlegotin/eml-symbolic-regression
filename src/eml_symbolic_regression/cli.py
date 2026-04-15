@@ -215,7 +215,7 @@ def run_campaign_command(args: argparse.Namespace) -> int:
     )
     print(
         f"{args.preset}: campaign -> {result.campaign_dir}; "
-        f"manifest -> {result.manifest_path}; aggregate -> {result.aggregate_paths['markdown']}"
+        f"manifest -> {result.manifest_path}; report -> {result.report_path}"
     )
     return 0
 
