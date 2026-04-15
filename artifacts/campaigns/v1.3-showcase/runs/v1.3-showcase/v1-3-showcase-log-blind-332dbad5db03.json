@@ -1,0 +1,335 @@
+{
+  "claim_status": "failed",
+  "environment": {
+    "code_version": "0b054d0",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "metrics": {
+    "active_slot_count": null,
+    "best_loss": 1.5733021643743739,
+    "changed_slot_count": null,
+    "high_precision_max_error": 65.46133421647787,
+    "post_snap_loss": 57.11453695040577,
+    "snap_active_node_count": 7,
+    "snap_min_margin": 0.19548899758933969,
+    "verifier_status": "failed"
+  },
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.3-showcase/runs/v1.3-showcase/v1-3-showcase-log-blind-332dbad5db03.json",
+    "case_id": "log-blind",
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "log",
+    "optimizer": {
+      "depth": 3,
+      "lr": 0.05,
+      "max_compile_depth": 12,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 10,
+      "restarts": 1,
+      "steps": 120,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-3-showcase-log-blind-332dbad5db03",
+    "seed": 0,
+    "start_mode": "blind",
+    "suite_id": "v1.3-showcase",
+    "tags": [
+      "blind",
+      "shallow"
+    ]
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "blind_baseline": "failed"
+  },
+  "status": "snapped_but_failed",
+  "timing": {
+    "elapsed_seconds": 0.21288875001482666
+  },
+  "trained_eml_candidate": {
+    "best_loss": 1.5733021643743739,
+    "best_restart": {
+      "best_fit_loss": 1.5733021643743739,
+      "final_anomalies": {
+        "by_node": {
+          "root": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 15.53972673845443,
+            "max_exp_real": 1.2837513018034532,
+            "nan_count": 0
+          },
+          "root.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 6.481509813413265,
+            "max_exp_real": 2.2353828200057184,
+            "nan_count": 0
+          },
+          "root.L.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 4.568285276838293,
+            "max_exp_real": 1.7318973696862452,
+            "nan_count": 0
+          },
+          "root.L.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 18.87198099175505,
+            "max_exp_real": 2.94185056550059,
+            "nan_count": 0
+          },
+          "root.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 240597703.699214,
+            "max_exp_real": 19.298636821584466,
+            "nan_count": 0
+          },
+          "root.R.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 19.738876457859266,
+            "max_exp_real": 2.9833565043720998,
+            "nan_count": 0
+          },
+          "root.R.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 3.9767499114632265,
+            "max_exp_real": 1.0115092034962736,
+            "nan_count": 0
+          }
+        },
+        "clamp_count": 0,
+        "inf_count": 0,
+        "max_abs": 240597703.699214,
+        "max_exp_real": 19.298636821584466,
+        "nan_count": 0
+      },
+      "initialization": null,
+      "restart": 0,
+      "seed": 0,
+      "steps_completed": 120
+    },
+    "config": {
+      "constants": [
+        "1"
+      ],
+      "depth": 3,
+      "entropy_weight": 0.001,
+      "lr": 0.05,
+      "restarts": 1,
+      "seed": 0,
+      "size_weight": 0.0001,
+      "steps": 120,
+      "temperature_end": 0.25,
+      "temperature_start": 2.0,
+      "variables": [
+        "x"
+      ]
+    },
+    "post_snap_loss": 57.11453695040577,
+    "restarts": [
+      {
+        "best_fit_loss": 1.5733021643743739,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 15.53972673845443,
+              "max_exp_real": 1.2837513018034532,
+              "nan_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 6.481509813413265,
+              "max_exp_real": 2.2353828200057184,
+              "nan_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 4.568285276838293,
+              "max_exp_real": 1.7318973696862452,
+              "nan_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 18.87198099175505,
+              "max_exp_real": 2.94185056550059,
+              "nan_count": 0
+            },
+            "root.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 240597703.699214,
+              "max_exp_real": 19.298636821584466,
+              "nan_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 19.738876457859266,
+              "max_exp_real": 2.9833565043720998,
+              "nan_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 3.9767499114632265,
+              "max_exp_real": 1.0115092034962736,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "inf_count": 0,
+          "max_abs": 240597703.699214,
+          "max_exp_real": 19.298636821584466,
+          "nan_count": 0
+        },
+        "initialization": null,
+        "restart": 0,
+        "seed": 0,
+        "steps_completed": 120
+      }
+    ],
+    "schema": "eml.run_manifest.v1",
+    "snap": {
+      "active_node_count": 7,
+      "ast": {
+        "metadata": {
+          "depth": 3,
+          "node_count": 7,
+          "source": "exact_ast"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "const",
+            "value": "1"
+          },
+          "right": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "var",
+              "name": "x"
+            }
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "decisions": [
+        {
+          "choice": "const:1",
+          "margin": 0.19995074499606852,
+          "path": "root",
+          "probability": 0.5428912243798792,
+          "side": "left"
+        },
+        {
+          "choice": "child",
+          "margin": 0.19548899758933969,
+          "path": "root",
+          "probability": 0.4989995210227765,
+          "side": "right"
+        },
+        {
+          "choice": "child",
+          "margin": 0.3804620802403608,
+          "path": "root.R",
+          "probability": 0.5987867768727867,
+          "side": "left"
+        },
+        {
+          "choice": "var:x",
+          "margin": 0.5247044854656832,
+          "path": "root.R.L",
+          "probability": 0.7623522427328416,
+          "side": "left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 0.5425650839988004,
+          "path": "root.R.L",
+          "probability": 0.7712825419994003,
+          "side": "right"
+        },
+        {
+          "choice": "var:x",
+          "margin": 0.20745696284688786,
+          "path": "root.R",
+          "probability": 0.5358486853089044,
+          "side": "right"
+        }
+      ],
+      "min_margin": 0.19548899758933969
+    },
+    "status": "snapped_candidate"
+  },
+  "trained_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": 65.46133421647787,
+    "reason": "mpmath_failed",
+    "split_results": [
+      {
+        "max_abs_error": 18.505380646422974,
+        "max_imag_residue": 0.0,
+        "mse": 57.11453695040577,
+        "name": "train",
+        "passed": false
+      },
+      {
+        "max_abs_error": 14.051090751418762,
+        "max_imag_residue": 0.0,
+        "mse": 36.57368236892207,
+        "name": "heldout",
+        "passed": false
+      },
+      {
+        "max_abs_error": 65.46133421647787,
+        "max_imag_residue": 0.0,
+        "mse": 1732.912233162786,
+        "name": "extrapolation",
+        "passed": false
+      }
+    ],
+    "status": "failed",
+    "tolerance": 1e-08
+  }
+}

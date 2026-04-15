@@ -1,0 +1,209 @@
+{
+  "claim_status": "recovered",
+  "environment": {
+    "code_version": "0b054d0",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "metrics": {
+    "active_slot_count": null,
+    "best_loss": 0.0001407233664139231,
+    "changed_slot_count": null,
+    "high_precision_max_error": 0.0,
+    "post_snap_loss": 0.0,
+    "snap_active_node_count": 3,
+    "snap_min_margin": 0.5215925097262806,
+    "verifier_status": "recovered"
+  },
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.3-showcase/runs/v1.3-showcase/v1-3-showcase-exp-blind-dcc42f2a76ee.json",
+    "case_id": "exp-blind",
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "exp",
+    "optimizer": {
+      "depth": 1,
+      "lr": 0.05,
+      "max_compile_depth": 12,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 10,
+      "restarts": 1,
+      "steps": 120,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-3-showcase-exp-blind-dcc42f2a76ee",
+    "seed": 1,
+    "start_mode": "blind",
+    "suite_id": "v1.3-showcase",
+    "tags": [
+      "blind",
+      "shallow"
+    ]
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "blind_baseline": "recovered"
+  },
+  "status": "recovered",
+  "timing": {
+    "elapsed_seconds": 0.0488340409938246
+  },
+  "trained_eml_candidate": {
+    "best_loss": 0.0001407233664139231,
+    "best_restart": {
+      "best_fit_loss": 0.0001407233664139231,
+      "final_anomalies": {
+        "by_node": {
+          "root": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 2.729209515270415,
+            "max_exp_real": 1.004026897175895,
+            "nan_count": 0
+          }
+        },
+        "clamp_count": 0,
+        "inf_count": 0,
+        "max_abs": 2.729209515270415,
+        "max_exp_real": 1.004026897175895,
+        "nan_count": 0
+      },
+      "initialization": null,
+      "restart": 0,
+      "seed": 1,
+      "steps_completed": 120
+    },
+    "config": {
+      "constants": [
+        "1"
+      ],
+      "depth": 1,
+      "entropy_weight": 0.001,
+      "lr": 0.05,
+      "restarts": 1,
+      "seed": 1,
+      "size_weight": 0.0001,
+      "steps": 120,
+      "temperature_end": 0.25,
+      "temperature_start": 2.0,
+      "variables": [
+        "x"
+      ]
+    },
+    "post_snap_loss": 0.0,
+    "restarts": [
+      {
+        "best_fit_loss": 0.0001407233664139231,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 2.729209515270415,
+              "max_exp_real": 1.004026897175895,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "inf_count": 0,
+          "max_abs": 2.729209515270415,
+          "max_exp_real": 1.004026897175895,
+          "nan_count": 0
+        },
+        "initialization": null,
+        "restart": 0,
+        "seed": 1,
+        "steps_completed": 120
+      }
+    ],
+    "schema": "eml.run_manifest.v1",
+    "snap": {
+      "active_node_count": 3,
+      "ast": {
+        "metadata": {
+          "depth": 1,
+          "node_count": 3,
+          "source": "exact_ast"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "var",
+            "name": "x"
+          },
+          "right": {
+            "kind": "const",
+            "value": "1"
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "decisions": [
+        {
+          "choice": "var:x",
+          "margin": 0.9761650786409805,
+          "path": "root",
+          "probability": 0.9880825393204902,
+          "side": "left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 0.5215925097262806,
+          "path": "root",
+          "probability": 0.7607962548631403,
+          "side": "right"
+        }
+      ],
+      "min_margin": 0.5215925097262806
+    },
+    "status": "snapped_candidate"
+  },
+  "trained_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": 0.0,
+    "reason": "verified",
+    "split_results": [
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "train",
+        "passed": true
+      },
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "heldout",
+        "passed": true
+      },
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "extrapolation",
+        "passed": true
+      }
+    ],
+    "status": "recovered",
+    "tolerance": 1e-08
+  }
+}

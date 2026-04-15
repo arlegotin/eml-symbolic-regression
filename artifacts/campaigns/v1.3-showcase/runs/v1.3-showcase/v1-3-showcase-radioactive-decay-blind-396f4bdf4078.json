@@ -1,0 +1,469 @@
+{
+  "claim_status": "failed",
+  "environment": {
+    "code_version": "0b054d0",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "metrics": {
+    "active_slot_count": null,
+    "best_loss": 780.5039556439684,
+    "changed_slot_count": null,
+    "high_precision_max_error": Infinity,
+    "post_snap_loss": Infinity,
+    "snap_active_node_count": 9,
+    "snap_min_margin": 0.001516395309574592,
+    "verifier_status": "failed"
+  },
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.3-showcase/runs/v1.3-showcase/v1-3-showcase-radioactive-decay-blind-396f4bdf4078.json",
+    "case_id": "radioactive-decay-blind",
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "radioactive_decay",
+    "optimizer": {
+      "depth": 4,
+      "lr": 0.05,
+      "max_compile_depth": 12,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 10,
+      "restarts": 1,
+      "steps": 120,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-3-showcase-radioactive-decay-blind-396f4bdf4078",
+    "seed": 2,
+    "start_mode": "blind",
+    "suite_id": "v1.3-showcase",
+    "tags": [
+      "blind",
+      "shallow",
+      "for_demo"
+    ]
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "blind_baseline": "failed"
+  },
+  "status": "failed",
+  "timing": {
+    "elapsed_seconds": 0.4531965000205673
+  },
+  "trained_eml_candidate": {
+    "best_loss": 780.5039556439684,
+    "best_restart": {
+      "best_fit_loss": 780.5039556439684,
+      "final_anomalies": {
+        "by_node": {
+          "root": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 36.75536757998064,
+            "max_exp_real": 2.3321077012452966,
+            "nan_count": 0
+          },
+          "root.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 32.92970339426769,
+            "max_exp_real": 2.4214753190280174,
+            "nan_count": 0
+          },
+          "root.L.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 2.7513712589209383,
+            "max_exp_real": 1.0536711617023533,
+            "nan_count": 0
+          },
+          "root.L.L.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 7.000863179252623,
+            "max_exp_real": 1.0022598094563058,
+            "nan_count": 0
+          },
+          "root.L.L.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 145.47328338381612,
+            "max_exp_real": 4.980303673687208,
+            "nan_count": 0
+          },
+          "root.L.R": {
+            "clamp_count": 7,
+            "inf_count": 0,
+            "max_abs": 2.3538526683702e+17,
+            "max_exp_real": 40.0,
+            "nan_count": 0
+          },
+          "root.L.R.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 148.97568160775404,
+            "max_exp_real": 5.003797453882577,
+            "nan_count": 0
+          },
+          "root.L.R.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 8.259245699728499,
+            "max_exp_real": 2.2881700658523645,
+            "nan_count": 0
+          },
+          "root.R": {
+            "clamp_count": 17,
+            "inf_count": 0,
+            "max_abs": 2.3538526683702e+17,
+            "max_exp_real": 40.0,
+            "nan_count": 0
+          },
+          "root.R.L": {
+            "clamp_count": 6,
+            "inf_count": 0,
+            "max_abs": 2.3538526683702e+17,
+            "max_exp_real": 40.0,
+            "nan_count": 0
+          },
+          "root.R.L.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 148.81559161973854,
+            "max_exp_real": 5.002718783273442,
+            "nan_count": 0
+          },
+          "root.R.L.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 8.870761419279976,
+            "max_exp_real": 1.0228014377797126,
+            "nan_count": 0
+          },
+          "root.R.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 2.451576053904606,
+            "max_exp_real": 1.6905407649104165,
+            "nan_count": 0
+          },
+          "root.R.R.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 7.10925237090356,
+            "max_exp_real": 2.1648000351129317,
+            "nan_count": 0
+          },
+          "root.R.R.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 131.81415328360023,
+            "max_exp_real": 4.882053419504992,
+            "nan_count": 0
+          }
+        },
+        "clamp_count": 30,
+        "inf_count": 0,
+        "max_abs": 2.3538526683702e+17,
+        "max_exp_real": 40.0,
+        "nan_count": 0
+      },
+      "initialization": null,
+      "restart": 0,
+      "seed": 2,
+      "steps_completed": 120
+    },
+    "config": {
+      "constants": [
+        "1"
+      ],
+      "depth": 4,
+      "entropy_weight": 0.001,
+      "lr": 0.05,
+      "restarts": 1,
+      "seed": 2,
+      "size_weight": 0.0001,
+      "steps": 120,
+      "temperature_end": 0.25,
+      "temperature_start": 2.0,
+      "variables": [
+        "t"
+      ]
+    },
+    "post_snap_loss": Infinity,
+    "restarts": [
+      {
+        "best_fit_loss": 780.5039556439684,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 36.75536757998064,
+              "max_exp_real": 2.3321077012452966,
+              "nan_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 32.92970339426769,
+              "max_exp_real": 2.4214753190280174,
+              "nan_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 2.7513712589209383,
+              "max_exp_real": 1.0536711617023533,
+              "nan_count": 0
+            },
+            "root.L.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 7.000863179252623,
+              "max_exp_real": 1.0022598094563058,
+              "nan_count": 0
+            },
+            "root.L.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 145.47328338381612,
+              "max_exp_real": 4.980303673687208,
+              "nan_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 7,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.L.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 148.97568160775404,
+              "max_exp_real": 5.003797453882577,
+              "nan_count": 0
+            },
+            "root.L.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 8.259245699728499,
+              "max_exp_real": 2.2881700658523645,
+              "nan_count": 0
+            },
+            "root.R": {
+              "clamp_count": 17,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 6,
+              "inf_count": 0,
+              "max_abs": 2.3538526683702e+17,
+              "max_exp_real": 40.0,
+              "nan_count": 0
+            },
+            "root.R.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 148.81559161973854,
+              "max_exp_real": 5.002718783273442,
+              "nan_count": 0
+            },
+            "root.R.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 8.870761419279976,
+              "max_exp_real": 1.0228014377797126,
+              "nan_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 2.451576053904606,
+              "max_exp_real": 1.6905407649104165,
+              "nan_count": 0
+            },
+            "root.R.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 7.10925237090356,
+              "max_exp_real": 2.1648000351129317,
+              "nan_count": 0
+            },
+            "root.R.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 131.81415328360023,
+              "max_exp_real": 4.882053419504992,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 30,
+          "inf_count": 0,
+          "max_abs": 2.3538526683702e+17,
+          "max_exp_real": 40.0,
+          "nan_count": 0
+        },
+        "initialization": null,
+        "restart": 0,
+        "seed": 2,
+        "steps_completed": 120
+      }
+    ],
+    "schema": "eml.run_manifest.v1",
+    "snap": {
+      "active_node_count": 9,
+      "ast": {
+        "metadata": {
+          "depth": 4,
+          "node_count": 9,
+          "source": "exact_ast"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "const",
+            "value": "1"
+          },
+          "right": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "var",
+                  "name": "t"
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "var",
+              "name": "t"
+            }
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "t"
+        ]
+      },
+      "decisions": [
+        {
+          "choice": "const:1",
+          "margin": 0.07743423475261063,
+          "path": "root",
+          "probability": 0.49693055828156346,
+          "side": "left"
+        },
+        {
+          "choice": "child",
+          "margin": 0.9208467448105018,
+          "path": "root",
+          "probability": 0.9514319828685707,
+          "side": "right"
+        },
+        {
+          "choice": "child",
+          "margin": 0.5740416263778109,
+          "path": "root.R",
+          "probability": 0.7187633189081368,
+          "side": "left"
+        },
+        {
+          "choice": "child",
+          "margin": 0.6489626784942784,
+          "path": "root.R.L",
+          "probability": 0.7760611860173456,
+          "side": "left"
+        },
+        {
+          "choice": "var:t",
+          "margin": 0.7599159517891605,
+          "path": "root.R.L.L",
+          "probability": 0.8799579758945802,
+          "side": "left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 0.7515259986359963,
+          "path": "root.R.L.L",
+          "probability": 0.8757629993179982,
+          "side": "right"
+        },
+        {
+          "choice": "const:1",
+          "margin": 0.09269090752779097,
+          "path": "root.R.L",
+          "probability": 0.4912566716921675,
+          "side": "right"
+        },
+        {
+          "choice": "var:t",
+          "margin": 0.001516395309574592,
+          "path": "root.R",
+          "probability": 0.3694139205148578,
+          "side": "right"
+        }
+      ],
+      "min_margin": 0.001516395309574592
+    },
+    "status": "failed"
+  },
+  "trained_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": Infinity,
+    "reason": "mpmath_failed",
+    "split_results": [
+      {
+        "max_abs_error": Infinity,
+        "max_imag_residue": 0.0,
+        "mse": Infinity,
+        "name": "train",
+        "passed": false
+      },
+      {
+        "max_abs_error": Infinity,
+        "max_imag_residue": 0.0,
+        "mse": Infinity,
+        "name": "heldout",
+        "passed": false
+      },
+      {
+        "max_abs_error": Infinity,
+        "max_imag_residue": 0.0,
+        "mse": Infinity,
+        "name": "extrapolation",
+        "passed": false
+      }
+    ],
+    "status": "failed",
+    "tolerance": 1e-08
+  }
+}
