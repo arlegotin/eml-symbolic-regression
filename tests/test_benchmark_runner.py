@@ -148,6 +148,66 @@ def test_cli_benchmark_writes_suite_result(tmp_path):
     assert payload["results"][0]["status"] == "unsupported"
 
 
+def test_cli_list_claims_prints_claim_matrix():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "list-claims",
+        ],
+        check=True,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+
+    lines = result.stdout.strip().splitlines()
+    assert lines == sorted(lines)
+    assert any(
+        line.startswith("paper-shallow-blind-recovery: bounded_training_proof threshold=bounded_100_percent suites=")
+        for line in lines
+    )
+    assert any(line.endswith("suites=proof-depth-curve") for line in lines)
+
+
+def test_cli_proof_dataset_writes_manifest_without_raw_arrays(tmp_path):
+    output = tmp_path / "exp-proof-manifest.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "proof-dataset",
+            "exp",
+            "--points",
+            "12",
+            "--seed",
+            "7",
+            "--output",
+            str(output),
+        ],
+        check=True,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+
+    assert f"exp: dataset manifest -> {output}" in result.stdout
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload["schema"] == "eml.proof_dataset_manifest.v1"
+    assert payload["formula_id"] == "exp"
+    assert payload["seed"] == 7
+    assert payload["splits"][0]["name"] == "train"
+    assert payload["splits"][0]["count"] == 12
+    assert payload["provenance"]["symbolic_expression"] == "exp(x)"
+    assert payload["manifest_sha256"]
+    encoded = json.dumps(payload)
+    assert '"inputs"' not in encoded
+    assert '"target"' not in encoded
+    assert '"values"' not in encoded
+
+
 def test_cli_campaign_writes_report(tmp_path):
     result = subprocess.run(
         [
