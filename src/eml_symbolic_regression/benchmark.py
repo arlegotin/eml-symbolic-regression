@@ -5,8 +5,10 @@ from __future__ import annotations
 import hashlib
 import json
 import platform
+import subprocess
 import time
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -528,6 +530,7 @@ def execute_benchmark_run(run: BenchmarkRun) -> BenchmarkRunResult:
         payload["status"] = "execution_error"
         payload["error"] = {"type": type(exc).__name__, "message": str(exc)}
     payload.pop("_compiled", None)
+    payload["metrics"] = _extract_run_metrics(payload)
     payload["timing"] = {"elapsed_seconds": time.perf_counter() - started}
     _write_json(run.artifact_path, payload)
     return BenchmarkRunResult(run, str(payload["status"]), run.artifact_path, payload)
@@ -540,6 +543,7 @@ def _base_run_payload(run: BenchmarkRun) -> dict[str, Any]:
         "environment": {
             "python": platform.python_version(),
             "platform": platform.platform(),
+            "code_version": _code_version(),
         },
         "status": "pending",
         "stage_statuses": {},
@@ -683,3 +687,193 @@ def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
     serializable = {key: value for key, value in payload.items() if key != "_compiled"}
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(serializable, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _code_version() -> str:
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=2,
+        )
+        return result.stdout.strip()
+    except Exception:  # noqa: BLE001 - provenance should not make benchmark execution fail.
+        return "unknown"
+
+
+def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
+    candidate = payload.get("trained_eml_candidate")
+    if not candidate and isinstance(payload.get("warm_start_eml"), Mapping):
+        candidate = payload["warm_start_eml"].get("optimizer")
+
+    verification = payload.get("trained_eml_verification")
+    if not verification and isinstance(payload.get("warm_start_eml"), Mapping):
+        verification = payload["warm_start_eml"].get("verification")
+    if not verification:
+        verification = payload.get("compiled_eml_verification") or payload.get("verification")
+
+    active_slot_changes = None
+    changed_slots = None
+    if isinstance(candidate, Mapping):
+        initialization = candidate.get("best_restart", {}).get("initialization") or {}
+        perturbation = initialization.get("perturbation") or {}
+        changes = perturbation.get("active_slot_changes")
+        if isinstance(changes, list):
+            active_slot_changes = len(changes)
+            changed_slots = sum(1 for item in changes if item.get("changed"))
+
+    return {
+        "best_loss": candidate.get("best_loss") if isinstance(candidate, Mapping) else None,
+        "post_snap_loss": candidate.get("post_snap_loss") if isinstance(candidate, Mapping) else None,
+        "snap_min_margin": candidate.get("snap", {}).get("min_margin") if isinstance(candidate, Mapping) else None,
+        "snap_active_node_count": candidate.get("snap", {}).get("active_node_count") if isinstance(candidate, Mapping) else None,
+        "active_slot_count": active_slot_changes,
+        "changed_slot_count": changed_slots,
+        "verifier_status": verification.get("status") if isinstance(verification, Mapping) else None,
+        "high_precision_max_error": verification.get("high_precision_max_error") if isinstance(verification, Mapping) else None,
+    }
+
+
+def write_aggregate_reports(result: BenchmarkSuiteResult, output_dir: Path | None = None) -> dict[str, Path]:
+    output_dir = output_dir or (result.suite.artifact_root / result.suite.id)
+    aggregate = aggregate_evidence(result)
+    json_path = output_dir / "aggregate.json"
+    markdown_path = output_dir / "aggregate.md"
+    _write_json(json_path, aggregate)
+    markdown_path.write_text(render_aggregate_markdown(aggregate), encoding="utf-8")
+    return {"json": json_path, "markdown": markdown_path}
+
+
+def aggregate_evidence(result: BenchmarkSuiteResult) -> dict[str, Any]:
+    runs = [_run_summary(item) for item in result.results]
+    return {
+        "schema": "eml.benchmark_aggregate.v1",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "suite": result.suite.as_dict(),
+        "environment": {
+            "python": platform.python_version(),
+            "platform": platform.platform(),
+            "code_version": _code_version(),
+        },
+        "counts": _aggregate_counts(runs),
+        "groups": {
+            "formula": _group_counts(runs, lambda item: item["formula"]),
+            "start_mode": _group_counts(runs, lambda item: item["start_mode"]),
+            "perturbation_noise": _group_counts(runs, lambda item: str(item["perturbation_noise"])),
+            "depth": _group_counts(runs, lambda item: str(item["optimizer"]["depth"])),
+            "seed_group": _group_counts(runs, lambda item: "all" if item["seed"] is not None else "unknown"),
+        },
+        "runs": runs,
+    }
+
+
+def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
+    lines = [
+        f"# Benchmark Evidence: {aggregate['suite']['id']}",
+        "",
+        aggregate["suite"].get("description", ""),
+        "",
+        "## Summary",
+        "",
+        "| Metric | Value |",
+        "|--------|-------|",
+    ]
+    counts = aggregate["counts"]
+    for key in ("total", "verifier_recovered", "same_ast_return", "verified_equivalent_ast", "unsupported", "failed", "execution_error"):
+        lines.append(f"| {key} | {counts[key]} |")
+    lines.append(f"| verifier_recovery_rate | {counts['verifier_recovery_rate']:.3f} |")
+    lines.extend(["", "## By Formula", "", _markdown_group_table(aggregate["groups"]["formula"])])
+    lines.extend(["", "## By Start Mode", "", _markdown_group_table(aggregate["groups"]["start_mode"])])
+    lines.extend(["", "## Runs", "", "| Run ID | Formula | Mode | Status | Classification | Artifact |", "|--------|---------|------|--------|----------------|----------|"])
+    for run in aggregate["runs"]:
+        lines.append(
+            f"| {run['run_id']} | {run['formula']} | {run['start_mode']} | {run['status']} | "
+            f"{run['classification']} | {run['artifact_path']} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _markdown_group_table(groups: list[Mapping[str, Any]]) -> str:
+    lines = [
+        "| Group | Total | Verifier Recovered | Same AST | Unsupported | Failed | Recovery Rate |",
+        "|-------|-------|--------------------|----------|-------------|--------|---------------|",
+    ]
+    for group in groups:
+        lines.append(
+            f"| {group['key']} | {group['total']} | {group['verifier_recovered']} | {group['same_ast_return']} | "
+            f"{group['unsupported']} | {group['failed']} | {group['verifier_recovery_rate']:.3f} |"
+        )
+    return "\n".join(lines)
+
+
+def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
+    payload = result.payload
+    return {
+        "run_id": result.run.run_id,
+        "artifact_path": str(result.artifact_path),
+        "suite_id": result.run.suite_id,
+        "case_id": result.run.case_id,
+        "formula": result.run.formula,
+        "start_mode": result.run.start_mode,
+        "seed": result.run.seed,
+        "perturbation_noise": result.run.perturbation_noise,
+        "optimizer": result.run.optimizer.as_dict(),
+        "dataset": result.run.dataset.as_dict(),
+        "status": result.status,
+        "claim_status": payload.get("claim_status"),
+        "classification": classify_run(payload),
+        "metrics": payload.get("metrics", {}),
+        "stage_statuses": payload.get("stage_statuses", {}),
+    }
+
+
+def classify_run(payload: Mapping[str, Any]) -> str:
+    status = payload.get("status")
+    claim_status = payload.get("claim_status")
+    start_mode = payload.get("run", {}).get("start_mode") if isinstance(payload.get("run"), Mapping) else None
+    if status == "unsupported":
+        return "unsupported"
+    if status == "execution_error":
+        return "execution_failure"
+    if start_mode == "blind" and claim_status == "recovered":
+        return "blind_recovery"
+    if status == "same_ast_return":
+        return "same_ast_warm_start_return"
+    if status == "verified_equivalent_ast":
+        return "verified_equivalent_warm_start_recovery"
+    if status == "snapped_but_failed":
+        return "snapped_but_failed"
+    if status == "soft_fit_only":
+        return "soft_fit_only"
+    if claim_status == "verified_showcase":
+        return "verified_showcase"
+    if status == "failed":
+        return "failed"
+    if claim_status == "recovered":
+        return "verifier_recovered"
+    return str(status or "unknown")
+
+
+def _aggregate_counts(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
+    total = len(runs)
+    verifier_recovered = sum(1 for run in runs if run.get("claim_status") == "recovered")
+    return {
+        "total": total,
+        "verifier_recovered": verifier_recovered,
+        "same_ast_return": sum(1 for run in runs if run["classification"] == "same_ast_warm_start_return"),
+        "verified_equivalent_ast": sum(1 for run in runs if run["classification"] == "verified_equivalent_warm_start_recovery"),
+        "unsupported": sum(1 for run in runs if run["classification"] == "unsupported"),
+        "failed": sum(1 for run in runs if run["classification"] in {"failed", "snapped_but_failed", "soft_fit_only"}),
+        "execution_error": sum(1 for run in runs if run["classification"] == "execution_failure"),
+        "verifier_recovery_rate": verifier_recovered / total if total else 0.0,
+    }
+
+
+def _group_counts(runs: list[Mapping[str, Any]], key_fn: Any) -> list[dict[str, Any]]:
+    grouped: dict[str, list[Mapping[str, Any]]] = {}
+    for run in runs:
+        grouped.setdefault(str(key_fn(run)), []).append(run)
+    return [{"key": key, **_aggregate_counts(items)} for key, items in sorted(grouped.items())]

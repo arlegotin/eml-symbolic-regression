@@ -47,7 +47,7 @@ v1.2 turns the current training evidence into a repeatable benchmark system. The
 - [x] **Phase 14: Benchmark Contract and Suite Registry** - Define deterministic benchmark suite schemas, built-in suite registry, validation, and artifact identity. (completed 2026-04-15)
 - [x] **Phase 15: Benchmark Runner and Training Modes** - Run suites and filtered subsets through existing blind-start and compiler warm-start paths while preserving failures. (completed 2026-04-15)
 - [x] **Phase 16: Experiment Matrix and Formula Coverage** - Add the actual v1.2 formula/start/seed/perturbation matrix for shallow baselines, Beer-Lambert, Michaelis-Menten, Planck, and selected demo diagnostics. (completed 2026-04-15)
-- [ ] **Phase 17: Evidence Aggregation and Report Contracts** - Aggregate run artifacts into JSON and Markdown reports with recovery rates, failure classes, and provenance. (requirements: EVID-01, EVID-02, EVID-03, EVID-04)
+- [x] **Phase 17: Evidence Aggregation and Report Contracts** - Aggregate run artifacts into JSON and Markdown reports with recovery rates, failure classes, and provenance. (completed 2026-04-15)
 - [ ] **Phase 18: Smoke Tests, Docs, and Evidence Lockdown** - Lock benchmark parsing, smoke execution, aggregation math, claim taxonomy, and user-facing interpretation docs. (requirements: TEST-05, TEST-06, TEST-07)
 
 ## Phase Details
@@ -131,10 +131,10 @@ The order is intentionally linear. Suite contracts and run identity must exist b
 | MATR-02 | Phase 16 | Complete |
 | MATR-03 | Phase 16 | Complete |
 | MATR-04 | Phase 16 | Complete |
-| EVID-01 | Phase 17 | Pending |
-| EVID-02 | Phase 17 | Pending |
-| EVID-03 | Phase 17 | Pending |
-| EVID-04 | Phase 17 | Pending |
+| EVID-01 | Phase 17 | Complete |
+| EVID-02 | Phase 17 | Complete |
+| EVID-03 | Phase 17 | Complete |
+| EVID-04 | Phase 17 | Complete |
 | TEST-05 | Phase 18 | Pending |
 | TEST-06 | Phase 18 | Pending |
 | TEST-07 | Phase 18 | Pending |
@@ -163,7 +163,7 @@ The order is intentionally linear. Suite contracts and run identity must exist b
 | 14. Benchmark Contract and Suite Registry | 1/1 | Complete | 2026-04-15 |
 | 15. Benchmark Runner and Training Modes | 1/1 | Complete | 2026-04-15 |
 | 16. Experiment Matrix and Formula Coverage | 1/1 | Complete | 2026-04-15 |
-| 17. Evidence Aggregation and Report Contracts | 0/1 | Pending | - |
+| 17. Evidence Aggregation and Report Contracts | 1/1 | Complete | 2026-04-15 |
 | 18. Smoke Tests, Docs, and Evidence Lockdown | 0/1 | Pending | - |
 
 ---

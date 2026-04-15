@@ -10,7 +10,7 @@ from typing import Any
 import numpy as np
 
 from .cleanup import cleanup_candidate
-from .benchmark import RunFilter, list_builtin_suites, load_suite, run_benchmark_suite
+from .benchmark import RunFilter, list_builtin_suites, load_suite, run_benchmark_suite, write_aggregate_reports
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
 from .datasets import demo_specs, get_demo
 from .optimize import TrainingConfig, fit_eml_tree
@@ -182,10 +182,11 @@ def run_benchmark(args: argparse.Namespace) -> int:
     result = run_benchmark_suite(suite, run_filter=run_filter)
     summary_path = suite.artifact_root / suite.id / "suite-result.json"
     _write_json(summary_path, result.as_dict())
+    aggregate_paths = write_aggregate_reports(result, suite.artifact_root / suite.id)
     counts = result.as_dict()["counts"]
     print(
         f"{suite.id}: {counts['total']} runs, {counts['unsupported']} unsupported, "
-        f"{counts['failed']} failed -> {summary_path}"
+        f"{counts['failed']} failed -> {summary_path}; aggregate -> {aggregate_paths['markdown']}"
     )
     return 0
 

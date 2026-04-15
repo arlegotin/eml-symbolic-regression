@@ -31,10 +31,10 @@ Requirements for this milestone only. Completed v1 and v1.1 requirements are rec
 
 ### Evidence Reporting
 
-- [ ] **EVID-01**: User receives a per-run JSON artifact containing suite ID, run ID, formula, dataset spec, start mode, seed, perturbation config, optimizer config, losses, snap outcome, active slot changes, verifier status, timing, and errors.
-- [ ] **EVID-02**: User receives aggregate JSON and Markdown reports with recovery rates by formula, start mode, perturbation level, depth, and seed group.
-- [ ] **EVID-03**: User can distinguish blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, snapped-but-failed candidates, soft-fit-only attempts, unsupported cases, and execution failures.
-- [ ] **EVID-04**: User can compare benchmark runs without losing provenance for suite config, code version, environment summary, and artifact paths.
+- [x] **EVID-01**: User receives a per-run JSON artifact containing suite ID, run ID, formula, dataset spec, start mode, seed, perturbation config, optimizer config, losses, snap outcome, active slot changes, verifier status, timing, and errors.
+- [x] **EVID-02**: User receives aggregate JSON and Markdown reports with recovery rates by formula, start mode, perturbation level, depth, and seed group.
+- [x] **EVID-03**: User can distinguish blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, snapped-but-failed candidates, soft-fit-only attempts, unsupported cases, and execution failures.
+- [x] **EVID-04**: User can compare benchmark runs without losing provenance for suite config, code version, environment summary, and artifact paths.
 
 ### Tests and Documentation
 
@@ -81,10 +81,10 @@ Deferred to later milestones.
 | MATR-02 | Phase 16 | Complete |
 | MATR-03 | Phase 16 | Complete |
 | MATR-04 | Phase 16 | Complete |
-| EVID-01 | Phase 17 | Pending |
-| EVID-02 | Phase 17 | Pending |
-| EVID-03 | Phase 17 | Pending |
-| EVID-04 | Phase 17 | Pending |
+| EVID-01 | Phase 17 | Complete |
+| EVID-02 | Phase 17 | Complete |
+| EVID-03 | Phase 17 | Complete |
+| EVID-04 | Phase 17 | Complete |
 | TEST-05 | Phase 18 | Pending |
 | TEST-06 | Phase 18 | Pending |
 | TEST-07 | Phase 18 | Pending |
