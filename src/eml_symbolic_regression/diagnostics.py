@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -115,6 +116,68 @@ def run_diagnostic_subset(
         raise ValueError(f"no baseline rows matched diagnostic target {target!r}")
     run_filter = filter_for_runs(rows)
     return run_campaign(preset_name, output_root=output_root, label=label, overwrite=overwrite, run_filter=run_filter)
+
+
+def classify_blind_failure(run: Mapping[str, Any]) -> str:
+    """Classify a blind run's remaining failure mechanism without changing recovery semantics."""
+
+    if run.get("claim_status") == "recovered" or run.get("classification") == "blind_recovery":
+        return "recovered"
+
+    metrics = run.get("metrics", {})
+    optimizer = run.get("optimizer", {})
+    depth = _number_or_none(optimizer.get("depth"))
+    active_nodes = _number_or_none(metrics.get("snap_active_node_count"))
+    best_loss = _number_or_none(metrics.get("best_loss"))
+    post_snap_loss = _number_or_none(metrics.get("post_snap_loss"))
+    margin = _number_or_none(metrics.get("snap_min_margin"))
+
+    if (depth is not None and depth >= 4) or (active_nodes is not None and active_nodes >= 9):
+        return "expression_depth"
+    if post_snap_loss is None or not math.isfinite(post_snap_loss):
+        return "non_finite_snap"
+    if best_loss is None or not math.isfinite(best_loss) or best_loss > 1.0:
+        return "soft_loss"
+    if (margin is not None and margin < 0.1) or (best_loss > 0 and post_snap_loss > best_loss * 10.0):
+        return "snap_instability"
+    return "verifier_mismatch"
+
+
+def compare_blind_runs(baseline: Mapping[str, Any] | Iterable[Mapping[str, Any]], candidate: Mapping[str, Any] | Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    """Compare blind aggregate rows by formula/case/seed using verifier-owned statuses."""
+
+    baseline_rows = _blind_rows(_rows_from(baseline))
+    candidate_rows = _blind_rows(_rows_from(candidate))
+    candidate_by_key = {_blind_key(row): row for row in candidate_rows}
+    comparisons = []
+    for base in baseline_rows:
+        key = _blind_key(base)
+        cand = candidate_by_key.get(key)
+        if cand is None:
+            continue
+        base_metrics = base.get("metrics", {})
+        cand_metrics = cand.get("metrics", {})
+        best_delta = _delta(cand_metrics.get("best_loss"), base_metrics.get("best_loss"))
+        post_delta = _delta(cand_metrics.get("post_snap_loss"), base_metrics.get("post_snap_loss"))
+        comparisons.append(
+            {
+                "formula": key[0],
+                "case_id": key[1],
+                "seed": key[2],
+                "baseline_status": base.get("claim_status") or base.get("status"),
+                "candidate_status": cand.get("claim_status") or cand.get("status"),
+                "baseline_classification": base.get("classification"),
+                "candidate_classification": cand.get("classification"),
+                "baseline_diagnostic": classify_blind_failure(base),
+                "candidate_diagnostic": classify_blind_failure(cand),
+                "best_loss_delta": best_delta,
+                "post_snap_loss_delta": post_delta,
+                "improved": _blind_improved(base, cand, best_delta, post_delta),
+                "baseline_metrics": base_metrics,
+                "candidate_metrics": cand_metrics,
+            }
+        )
+    return comparisons
 
 
 def render_baseline_triage_markdown(triage: Mapping[str, Any]) -> str:
@@ -319,3 +382,44 @@ def _fmt(value: Any) -> str:
         return f"{float(value):.4g}"
     except (TypeError, ValueError):
         return str(value)
+
+
+def _rows_from(value: Mapping[str, Any] | Iterable[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
+    if isinstance(value, Mapping):
+        return list(value.get("runs", ()))
+    return list(value)
+
+
+def _blind_rows(rows: Iterable[Mapping[str, Any]]) -> list[Mapping[str, Any]]:
+    return [row for row in rows if row.get("start_mode") == "blind"]
+
+
+def _blind_key(row: Mapping[str, Any]) -> tuple[str, str, int]:
+    return (str(row.get("formula")), str(row.get("case_id")), int(row.get("seed") or 0))
+
+
+def _number_or_none(value: Any) -> float | None:
+    if value is None or value == "":
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _delta(candidate: Any, baseline: Any) -> float | None:
+    candidate_number = _number_or_none(candidate)
+    baseline_number = _number_or_none(baseline)
+    if candidate_number is None or baseline_number is None:
+        return None
+    if not math.isfinite(candidate_number) or not math.isfinite(baseline_number):
+        return None
+    return candidate_number - baseline_number
+
+
+def _blind_improved(base: Mapping[str, Any], cand: Mapping[str, Any], best_delta: float | None, post_delta: float | None) -> bool:
+    if base.get("claim_status") != "recovered" and cand.get("claim_status") == "recovered":
+        return True
+    if base.get("claim_status") == "recovered" and cand.get("claim_status") != "recovered":
+        return False
+    return bool((post_delta is not None and post_delta < 0.0) or (best_delta is not None and best_delta < 0.0))

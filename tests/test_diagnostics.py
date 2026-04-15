@@ -3,6 +3,8 @@ from pathlib import Path
 
 from eml_symbolic_regression.benchmark import RunFilter
 from eml_symbolic_regression.diagnostics import (
+    classify_blind_failure,
+    compare_blind_runs,
     filter_for_runs,
     select_diagnostic_runs,
     write_baseline_triage,
@@ -137,3 +139,56 @@ def test_compiler_depth_gate_selection_includes_unsupported_runs(tmp_path):
     rows = select_diagnostic_runs((campaign,), "compiler-depth-gates")
 
     assert [row["formula"] for row in rows] == ["planck"]
+
+
+def test_blind_failure_classifier_separates_soft_loss_and_recovery():
+    failed = {
+        "start_mode": "blind",
+        "claim_status": "failed",
+        "classification": "snapped_but_failed",
+        "optimizer": {"depth": 1},
+        "metrics": {"best_loss": 4.0, "post_snap_loss": 6.0, "snap_min_margin": 0.4},
+    }
+    recovered = {
+        "start_mode": "blind",
+        "claim_status": "recovered",
+        "classification": "blind_recovery",
+        "optimizer": {"depth": 1},
+        "metrics": {"best_loss": 0.0, "post_snap_loss": 0.0, "snap_min_margin": 0.9},
+    }
+
+    assert classify_blind_failure(failed) == "soft_loss"
+    assert classify_blind_failure(recovered) == "recovered"
+
+
+def test_compare_blind_runs_reports_loss_delta_and_improvement():
+    baseline = [
+        {
+            "formula": "exp",
+            "case_id": "exp-blind",
+            "start_mode": "blind",
+            "seed": 0,
+            "claim_status": "failed",
+            "classification": "snapped_but_failed",
+            "optimizer": {"depth": 1},
+            "metrics": {"best_loss": 4.0, "post_snap_loss": 6.0, "snap_min_margin": 0.4},
+        }
+    ]
+    candidate = [
+        {
+            "formula": "exp",
+            "case_id": "exp-blind",
+            "start_mode": "blind",
+            "seed": 0,
+            "claim_status": "recovered",
+            "classification": "blind_recovery",
+            "optimizer": {"depth": 1},
+            "metrics": {"best_loss": 0.0, "post_snap_loss": 0.0, "snap_min_margin": 0.9},
+        }
+    ]
+
+    comparison = compare_blind_runs(baseline, candidate)
+
+    assert comparison[0]["improved"] is True
+    assert comparison[0]["best_loss_delta"] == -4.0
+    assert comparison[0]["candidate_diagnostic"] == "recovered"

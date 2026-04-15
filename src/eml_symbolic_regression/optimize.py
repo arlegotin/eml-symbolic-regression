@@ -26,6 +26,7 @@ class TrainingConfig:
     entropy_weight: float = 1e-3
     size_weight: float = 1e-4
     seed: int = 0
+    scaffold_initializers: tuple[str, ...] = ("exp", "log")
 
 
 @dataclass(frozen=True)
@@ -61,12 +62,20 @@ def fit_eml_tree(
     best: tuple[float, SoftEMLTree, dict[str, Any]] | None = None
     restart_logs: list[dict[str, Any]] = []
 
-    for restart in range(config.restarts):
-        seed = config.seed + restart
+    attempts = _training_attempts(config, initializer is not None)
+
+    for attempt_index, attempt in enumerate(attempts):
+        restart = int(attempt["restart"])
+        seed = int(attempt["seed"])
         torch.manual_seed(seed)
         model = SoftEMLTree(config.depth, config.variables, config.constants)
         model.reset_parameters(seed=seed, scale=0.25)
-        initialization_log = initializer(model, restart, seed) if initializer is not None else None
+        if initializer is not None:
+            initialization_log = initializer(model, restart, seed)
+        elif attempt["kind"].startswith("scaffold_"):
+            initialization_log = _apply_scaffold(model, attempt)
+        else:
+            initialization_log = None
         optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
         losses: list[float] = []
         final_stats = AnomalyStats()
@@ -89,8 +98,10 @@ def fit_eml_tree(
 
         best_loss = min(losses) if losses else float("inf")
         log = {
-            "restart": restart,
+            "restart": attempt_index,
+            "random_restart": restart if attempt["kind"] == "random" else None,
             "seed": seed,
+            "attempt_kind": attempt["kind"],
             "steps_completed": len(losses),
             "best_fit_loss": best_loss,
             "final_anomalies": final_stats.as_dict(),
@@ -119,3 +130,49 @@ def fit_eml_tree(
         "status": status,
     }
     return FitResult(status, best_loss, post_snap_loss, snap, manifest)
+
+
+def _training_attempts(config: TrainingConfig, has_external_initializer: bool) -> list[dict[str, Any]]:
+    attempts: list[dict[str, Any]] = []
+    if not has_external_initializer:
+        for scaffold in config.scaffold_initializers:
+            if scaffold not in {"exp", "log"}:
+                continue
+            if scaffold == "log" and config.depth < 3:
+                continue
+            for variable in config.variables:
+                attempts.append(
+                    {
+                        "kind": f"scaffold_{scaffold}",
+                        "variable": variable,
+                        "restart": -1,
+                        "seed": config.seed,
+                    }
+                )
+    for restart in range(config.restarts):
+        attempts.append(
+            {
+                "kind": "random",
+                "variable": None,
+                "restart": restart,
+                "seed": config.seed + restart,
+            }
+        )
+    return attempts
+
+
+def _apply_scaffold(model: SoftEMLTree, attempt: Mapping[str, Any]) -> dict[str, Any]:
+    kind = str(attempt["kind"])
+    variable = str(attempt["variable"])
+    if kind == "scaffold_exp":
+        model.force_exp(variable)
+    elif kind == "scaffold_log":
+        model.force_log(variable)
+    else:
+        raise ValueError(f"unknown scaffold initializer {kind!r}")
+    return {
+        "kind": kind,
+        "variable": variable,
+        "seed": attempt["seed"],
+        "strategy": "generic_paper_primitive",
+    }
