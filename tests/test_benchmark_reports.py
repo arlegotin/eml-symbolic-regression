@@ -59,8 +59,9 @@ def test_smoke_benchmark_exercises_required_paths_and_aggregate(tmp_path):
     assert {run.start_mode for run in (item.run for item in result.results)} == {"blind", "warm_start", "compile"}
     assert {"recovered", "snapped_but_failed", "same_ast_return", "unsupported"} >= {item.status for item in result.results}
     assert aggregate["counts"]["total"] == 3
+    assert aggregate["counts"]["verifier_recovered"] == 2
     assert aggregate["counts"]["unsupported"] == 1
     assert aggregate["counts"]["same_ast_return"] == 1
-    assert aggregate["counts"]["failed"] == 1
+    assert aggregate["counts"]["failed"] == 0
     assert paths["json"].exists()
     assert paths["markdown"].exists()
