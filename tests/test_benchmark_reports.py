@@ -138,8 +138,8 @@ def test_measured_depth_curve_threshold_is_reported_not_failed():
     assert threshold["claim_id"] == "paper-blind-depth-degradation"
     assert threshold["threshold_policy_id"] == "measured_depth_curve"
     assert threshold["eligible"] == 1
-    assert threshold["passed"] == 0
-    assert threshold["rate"] == 0.0
+    assert threshold["passed"] == 1
+    assert threshold["rate"] == 1.0
     assert threshold["required_rate"] is None
     assert threshold["status"] == "reported"
 

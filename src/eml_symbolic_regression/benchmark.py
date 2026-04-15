@@ -1001,10 +1001,12 @@ def aggregate_evidence(result: BenchmarkSuiteResult) -> dict[str, Any]:
         "groups": {
             "formula": _group_counts(runs, lambda item: item["formula"]),
             "start_mode": _group_counts(runs, lambda item: item["start_mode"]),
+            "evidence_class": _group_counts(runs, lambda item: item["evidence_class"]),
             "perturbation_noise": _group_counts(runs, lambda item: str(item["perturbation_noise"])),
             "depth": _group_counts(runs, lambda item: str(item["optimizer"]["depth"])),
             "seed_group": _group_counts(runs, lambda item: "all" if item["seed"] is not None else "unknown"),
         },
+        "thresholds": _threshold_summary(runs),
         "runs": runs,
     }
 
@@ -1026,6 +1028,8 @@ def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
     lines.append(f"| verifier_recovery_rate | {counts['verifier_recovery_rate']:.3f} |")
     lines.extend(["", "## By Formula", "", _markdown_group_table(aggregate["groups"]["formula"])])
     lines.extend(["", "## By Start Mode", "", _markdown_group_table(aggregate["groups"]["start_mode"])])
+    lines.extend(["", "## By Evidence Class", "", _markdown_group_table(aggregate["groups"]["evidence_class"])])
+    lines.extend(["", "## Thresholds", "", _markdown_threshold_table(aggregate.get("thresholds", []))])
     lines.extend(["", "## Runs", "", "| Run ID | Formula | Mode | Status | Classification | Artifact |", "|--------|---------|------|--------|----------------|----------|"])
     for run in aggregate["runs"]:
         lines.append(
@@ -1049,6 +1053,23 @@ def _markdown_group_table(groups: list[Mapping[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _markdown_threshold_table(thresholds: list[Mapping[str, Any]]) -> str:
+    if not thresholds:
+        return "No proof threshold metadata."
+    lines = [
+        "| Claim | Policy | Eligible | Passed | Failed | Rate | Required | Status |",
+        "|-------|--------|----------|--------|--------|------|----------|--------|",
+    ]
+    for row in thresholds:
+        required = row["required_rate"]
+        required_value = "" if required is None else f"{required:.3f}"
+        lines.append(
+            f"| {row['claim_id']} | {row['threshold_policy_id']} | {row['eligible']} | {row['passed']} | "
+            f"{row['failed']} | {row['rate']:.3f} | {required_value} | {row['status']} |"
+        )
+    return "\n".join(lines)
+
+
 def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
     payload = result.payload
     return {
@@ -1062,6 +1083,13 @@ def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
         "perturbation_noise": result.run.perturbation_noise,
         "optimizer": result.run.optimizer.as_dict(),
         "dataset": result.run.dataset.as_dict(),
+        "claim_id": payload.get("claim_id"),
+        "claim_class": payload.get("claim_class"),
+        "training_mode": payload.get("training_mode") or result.run.training_mode,
+        "threshold_policy_id": result.run.threshold_policy_id,
+        "threshold": payload.get("threshold"),
+        "dataset_manifest": payload.get("dataset_manifest"),
+        "provenance": payload.get("provenance"),
         "status": result.status,
         "claim_status": payload.get("claim_status"),
         "classification": classify_run(payload),
@@ -1168,6 +1196,10 @@ def evidence_class_for_payload(payload: Mapping[str, Any]) -> str:
 def _aggregate_counts(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
     total = len(runs)
     verifier_recovered = sum(1 for run in runs if run.get("claim_status") == "recovered")
+    evidence_classes: dict[str, int] = {}
+    for run in runs:
+        evidence_class = str(run.get("evidence_class") or "unknown")
+        evidence_classes[evidence_class] = evidence_classes.get(evidence_class, 0) + 1
     return {
         "total": total,
         "verifier_recovered": verifier_recovered,
@@ -1177,7 +1209,64 @@ def _aggregate_counts(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
         "failed": sum(1 for run in runs if run["classification"] in {"failed", "snapped_but_failed", "soft_fit_only"}),
         "execution_error": sum(1 for run in runs if run["classification"] == "execution_failure"),
         "verifier_recovery_rate": verifier_recovered / total if total else 0.0,
+        "evidence_classes": dict(sorted(evidence_classes.items())),
     }
+
+
+def _threshold_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[tuple[str, str], list[Mapping[str, Any]]] = {}
+    for run in runs:
+        claim_id = run.get("claim_id")
+        threshold = run.get("threshold")
+        threshold_policy_id = run.get("threshold_policy_id")
+        if threshold_policy_id is None and isinstance(threshold, Mapping):
+            threshold_policy_id = threshold.get("id")
+        if claim_id is None and threshold_policy_id is None:
+            continue
+        if claim_id is None or threshold_policy_id is None:
+            continue
+        grouped.setdefault((str(claim_id), str(threshold_policy_id)), []).append(run)
+
+    rows: list[dict[str, Any]] = []
+    for (claim_id, threshold_policy_id), items in sorted(grouped.items()):
+        claim = paper_claim(claim_id)
+        policy = threshold_policy(threshold_policy_id)
+        evidence_counts: dict[str, int] = {}
+        passed = 0
+        for item in items:
+            evidence_class = str(item.get("evidence_class") or "unknown")
+            evidence_counts[evidence_class] = evidence_counts.get(evidence_class, 0) + 1
+            if evidence_class in policy.allowed_evidence_classes:
+                passed += 1
+
+        eligible = len(items)
+        rate = passed / eligible if eligible else 0.0
+        failed = eligible - passed
+        if policy.policy_type == "bounded_rate":
+            required = policy.required_rate if policy.required_rate is not None else 1.0
+            status = "passed" if eligible > 0 and rate >= required else "failed"
+        elif policy.policy_type == "measured_rate":
+            status = "reported"
+        else:
+            status = "context"
+            failed = 0
+
+        rows.append(
+            {
+                "claim_id": claim_id,
+                "claim_class": claim.claim_class,
+                "threshold_policy_id": threshold_policy_id,
+                "threshold": policy.as_dict(),
+                "eligible": eligible,
+                "passed": passed,
+                "failed": failed,
+                "rate": rate,
+                "required_rate": policy.required_rate,
+                "status": status,
+                "evidence_classes": dict(sorted(evidence_counts.items())),
+            }
+        )
+    return rows
 
 
 def _group_counts(runs: list[Mapping[str, Any]], key_fn: Any) -> list[dict[str, Any]]:
