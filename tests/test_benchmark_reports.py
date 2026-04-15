@@ -111,7 +111,7 @@ def test_warm_start_depth_gate_overrides_compiled_seed_claim_status(tmp_path):
     assert aggregate["runs"][0]["claim_status"] == "unsupported"
 
 
-def test_bounded_threshold_counts_allowed_training_evidence_only():
+def test_shallow_bounded_threshold_counts_only_blind_training_recovery():
     suite = BenchmarkSuite("synthetic-proof", "synthetic proof aggregate", ())
     result = SimpleNamespace(
         suite=suite,
@@ -120,11 +120,42 @@ def test_bounded_threshold_counts_allowed_training_evidence_only():
             _synthetic_result(case_id="compile", start_mode="compile", training_mode="compile_only_verification", evidence_class="compile_only_verified"),
             _synthetic_result(case_id="catalog", start_mode="catalog", training_mode="catalog_verification", evidence_class="catalog_verified"),
             _synthetic_result(
+                case_id="warm",
+                start_mode="warm_start",
+                training_mode="compiler_warm_start_training",
+                evidence_class="compiler_warm_start_recovered",
+            ),
+            _synthetic_result(
                 case_id="repair",
                 start_mode="blind",
                 training_mode="blind_training",
                 evidence_class="repaired_candidate",
                 status="repaired_candidate",
+                claim_status="failed",
+            ),
+            _synthetic_result(
+                case_id="verified-equivalent",
+                start_mode="warm_start",
+                training_mode="compiler_warm_start_training",
+                evidence_class="verified_equivalent",
+                status="verified_equivalent_ast",
+                claim_status="verified_equivalent_ast",
+            ),
+            _synthetic_result(
+                case_id="same-ast",
+                start_mode="warm_start",
+                training_mode="compiler_warm_start_training",
+                evidence_class="same_ast",
+                status="same_ast_return",
+                claim_status="same_ast_return",
+            ),
+            _synthetic_result(
+                case_id="soft-fit",
+                start_mode="blind",
+                training_mode="blind_training",
+                evidence_class="soft_fit_only",
+                status="soft_fit_only",
+                claim_status="failed",
             ),
         ),
     )
@@ -132,18 +163,25 @@ def test_bounded_threshold_counts_allowed_training_evidence_only():
     aggregate = aggregate_evidence(result)
     threshold = aggregate["thresholds"][0]
 
-    assert aggregate["counts"]["evidence_classes"]["compile_only_verified"] == 1
-    assert aggregate["counts"]["evidence_classes"]["catalog_verified"] == 1
-    assert aggregate["counts"]["evidence_classes"]["repaired_candidate"] == 1
+    assert aggregate["counts"]["evidence_classes"] == {
+        "blind_training_recovered": 1,
+        "catalog_verified": 1,
+        "compile_only_verified": 1,
+        "compiler_warm_start_recovered": 1,
+        "repaired_candidate": 1,
+        "same_ast": 1,
+        "soft_fit_only": 1,
+        "verified_equivalent": 1,
+    }
     assert threshold["claim_id"] == "paper-shallow-blind-recovery"
     assert threshold["threshold_policy_id"] == "bounded_100_percent"
-    assert threshold["eligible"] == 4
-    assert threshold["passed"] == 2
-    assert threshold["failed"] == 2
-    assert threshold["rate"] == 0.5
+    assert threshold["eligible"] == 8
+    assert threshold["passed"] == 1
+    assert threshold["failed"] == 7
+    assert threshold["rate"] == 0.125
     assert threshold["required_rate"] == 1.0
     assert threshold["status"] == "failed"
-    assert threshold["evidence_classes"]["compile_only_verified"] == 1
+    assert threshold["evidence_classes"] == aggregate["counts"]["evidence_classes"]
 
 
 def test_measured_depth_curve_threshold_is_reported_not_failed():

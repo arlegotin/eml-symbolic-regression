@@ -58,3 +58,27 @@ def test_v15_shallow_blind_proof_suite_recovers_only_with_blind_training(shallow
         assert "warm_start_eml" not in artifact
         assert "verification" not in artifact
 
+
+def test_v15_shallow_blind_proof_aggregate_threshold_and_diagnostics(shallow_proof_result):
+    _, aggregate = shallow_proof_result
+    threshold = aggregate["thresholds"][0]
+
+    assert threshold["claim_id"] == "paper-shallow-blind-recovery"
+    assert threshold["threshold_policy_id"] == "bounded_100_percent"
+    assert threshold["eligible"] == 18
+    assert threshold["passed"] == 18
+    assert threshold["failed"] == 0
+    assert threshold["rate"] == 1.0
+    assert threshold["status"] == "passed"
+    assert threshold["evidence_classes"] == {"blind_training_recovered": 18}
+
+    for run in aggregate["runs"]:
+        metrics = run["metrics"]
+
+        assert run["evidence_class"] == "blind_training_recovered"
+        assert metrics["best_loss"] is not None
+        assert metrics["post_snap_loss"] is not None
+        assert metrics["snap_min_margin"] is not None
+        assert metrics["snap_active_node_count"] is not None
+        assert metrics["scaffold_source"] is not None
+        assert metrics["verifier_status"] == "recovered"
