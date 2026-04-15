@@ -1,108 +1,108 @@
-# Requirements: EML Symbolic Regression
+# Requirements: EML Symbolic Regression Milestone v1.1
 
 **Defined:** 2026-04-15
+**Milestone:** v1.1 EML Compiler and Warm Starts
 **Core Value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## v1 Requirements
+## Milestone v1.1 Requirements
 
-### Semantics
+Requirements for this milestone only. Completed v1 requirements are recorded as validated capabilities in `.planning/PROJECT.md`.
 
-- [x] **SEM-01**: User can evaluate `eml(x, y) = exp(x) - log(y)` with explicit canonical verification semantics and separate stabilized training semantics.
-- [x] **SEM-02**: User can represent exact EML formulas as immutable AST nodes for constants, variables, and ordered `eml(left, right)` expressions.
-- [x] **SEM-03**: User can serialize and deserialize exact EML ASTs as deterministic JSON with semantics metadata.
-- [x] **SEM-04**: User can reproduce paper-grounded identities such as `exp(x) = eml(x, 1)` and `ln(x) = eml(1, eml(eml(1, x), 1))` on safe domains.
+### Compiler Contract
 
-### Master Trees
+- [ ] **COMP-01**: User can compile a whitelisted SymPy subset into the existing exact EML `Expr` AST type without introducing a parallel AST.
+- [ ] **COMP-02**: User receives structured compiler metadata including source expression, normalized expression, rule trace, variables, constants, depth, node count, domain assumptions, and unsupported reason codes.
+- [ ] **COMP-03**: User can validate compiled AST output against independent ordinary-expression evaluation before the output is eligible for warm-start training.
+- [ ] **COMP-04**: User receives fail-closed errors for unsupported operators, unsupported powers, unknown variables, unsafe constants, or expressions that exceed configured depth/node budgets.
 
-- [x] **TREE-01**: User can create complete depth-bounded EML master-tree specs for univariate and small multivariate inputs.
-- [x] **TREE-02**: User can inspect slot choices where leaf slots choose constants/variables and internal slots may also choose previous subtree outputs.
-- [x] **TREE-03**: User can evaluate master trees in PyTorch `complex128` with soft categorical gates and per-node anomaly diagnostics.
-- [x] **TREE-04**: User can hand-set one-hot gates to prove known formulas are reachable before optimization is attempted.
+### Constants and Embedding
 
-### Optimization and Snapping
+- [ ] **CONST-01**: User can choose an explicit constant policy, with v1.1 supporting `literal_constants` while preserving the default pure `const:1` behavior.
+- [ ] **CONST-02**: User can construct `SoftEMLTree` instances with a finite constant catalog derived from a compiled expression.
+- [ ] **EMBED-01**: User can embed a compiled exact EML AST into a compatible soft master tree by mapping AST nodes to slot logits.
+- [ ] **EMBED-02**: User gets immediate embed-to-snap validation that proves the high-strength warm start snaps back to the compiled AST before perturbation.
+- [ ] **EMBED-03**: User receives actionable diagnostics for depth-too-small, missing-constant, missing-variable, and incompatible-tree failures before training starts.
 
-- [x] **OPT-01**: User can run Adam-based optimization with deterministic seeds, multiple restarts, temperature annealing, entropy regularization, size penalty, and numerical-stability penalty.
-- [x] **OPT-02**: User can harden soft gates into exact one-hot choices with deterministic tie-breaking, snap margins, and post-snap loss reporting.
-- [x] **OPT-03**: User can distinguish result statuses such as `soft_fit`, `snapped_candidate`, `verified`, and `failed` so low loss is not mislabeled as recovery.
-- [x] **OPT-04**: User can write run manifests containing config, seed, depth, losses, anomaly counts, snap decisions, artifacts, and verification status.
+### Arithmetic Rules
 
-### Verification
+- [ ] **ARITH-01**: User can compile direct `exp` and `log` rules over arbitrary supported subexpressions.
+- [ ] **ARITH-02**: User can compile unary negation, subtraction, addition, multiplication, reciprocal, and division through tested EML rule templates or receive explicit unsupported/depth failure reasons.
+- [ ] **ARITH-03**: User can compile small integer powers only when implemented behind explicit max-power and depth gates.
 
-- [x] **VER-01**: User can verify snapped formulas against training, held-out interpolation, extrapolation, and mpmath high-precision point sets.
-- [x] **VER-02**: User receives pass/fail reason codes for failed recovery attempts, including fit failure, unstable snap, held-out failure, extrapolation failure, and high-precision failure.
-- [x] **VER-03**: User can only receive `recovered` status from the verifier after post-snap exact AST evaluation passes configured tolerances.
+### Warm-Start Recovery
 
-### Cleanup and Export
+- [ ] **WARM-01**: User can run deterministic perturbation of compiled warm-start logits with recorded strength, noise scale, seed, active slot changes, and pre/post perturbation snap summaries.
+- [ ] **WARM-02**: User can train from compiled warm starts through the existing optimizer path without allowing the optimizer to label a result `recovered`.
+- [ ] **WARM-03**: User receives a warm-start manifest containing compiler metadata, terminal bank, embedding assignments, perturbation config, optimizer config, snap decisions, anomaly stats, and verification outcome.
+- [ ] **WARM-04**: User can distinguish same-AST return, verified-equivalent AST, snapped-but-failed candidate, soft-fit-only, and failed warm-start attempts.
 
-- [x] **CLEAN-01**: User can export snapped EML ASTs to SymPy expressions and readable strings.
-- [x] **CLEAN-02**: User can run targeted cleanup passes and bounded local candidate checks without relying on generic symbolic simplification as the sole oracle.
-- [x] **CLEAN-03**: User can compare tree size and verification results before and after cleanup.
+### Demo Promotion and Reporting
 
-### Demos and CLI
-
-- [x] **DEMO-01**: User can generate normalized synthetic datasets for the demo ladder in `sources/FOR_DEMO.md`.
-- [x] **DEMO-02**: User can run CLI commands that execute demo experiments, snap candidates, verify formulas, and write JSON reports.
-- [x] **DEMO-03**: User can run reliable smoke demos for paper-like `exp(x)` / `ln(x)` and simple exponential decay.
-- [x] **DEMO-04**: User can run showcase demos for Michaelis-Menten, logistic growth, Shockley diode, damped oscillator, and normalized Planck as feasible targets with honest success/failure diagnostics.
+- [ ] **DEMO-05**: User can run Beer-Lambert as a compiler-driven warm-start recovery demo and promote it only when the final trained exact EML AST verifies.
+- [ ] **DEMO-06**: User can run Michaelis-Menten as a compiler-driven warm-start recovery demo when arithmetic rules and depth gates pass, and otherwise receive honest unsupported/depth diagnostics.
+- [ ] **DEMO-07**: User can run normalized Planck as a stretch compile/warm-start report without making its trained recovery a milestone guarantee.
+- [ ] **DEMO-08**: User-facing reports separate catalog showcase, compiled seed, warm-start attempt, trained exact recovery, blind baseline, stretch, unsupported, and failed statuses.
 
 ### Tests and Documentation
 
-- [x] **TEST-01**: User can run a pytest suite covering EML semantics, AST JSON, master-tree construction, soft evaluation, snapping, verification, cleanup, CLI, and demos.
-- [x] **TEST-02**: User can read documentation explaining the paper grounding, project limits, demo strategy, and how to reproduce tests/showcases.
+- [ ] **TEST-03**: User can run pytest coverage for compiler rules, negative compiler cases, constant policy, constant catalog labels, embedding round trips, perturbation determinism, warm-start manifests, and demo promotion gates.
+- [ ] **TEST-04**: User can read documentation explaining fixed literal constants, compile-only versus warm-start recovery, demo claim statuses, depth limits, and why this is not blind symbolic discovery.
 
-## v2 Requirements
+## Future Requirements
 
-### Scaling
+Deferred to later milestones.
 
-- **SCALE-01**: User can fit symbolic scaffolds with continuous coefficients after the discrete EML structure is discovered.
-- **SCALE-02**: User can run Rust-accelerated local search or verification once Python profiling identifies a bottleneck.
-- **SCALE-03**: User can run custom CUDA kernels for batched candidate scoring when standard PyTorch is insufficient.
-- **SCALE-04**: User can benchmark noisy real-world datasets with priors and compare against conventional symbolic-regression baselines.
+### Compiler and Scaling
+
+- **FUT-01**: User can synthesize common numeric constants from the pure `{1, eml}` basis rather than using fixed literal constants.
+- **FUT-02**: User can fit continuous coefficients around discovered symbolic scaffolds.
+- **FUT-03**: User can compile trig identities and promote damped oscillator to trained EML recovery.
+- **FUT-04**: User can run shortest-form or local-search compression of compiled EML trees.
+- **FUT-05**: User can use Rust or GPU acceleration after profiling proves a bottleneck.
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Blind arbitrary depth-6 recovery | The paper reports no blind depth-6 recovery in 448 attempts; v1 must not overpromise this. |
-| Raw SI-unit Planck law as a first demo | Unit constants and scaling obscure the core EML idea; use normalized Planck instead. |
-| GUI or web application | The north-star MVP is a package, CLI, tests, and reproducible demos. |
-| Formal theorem-prover equivalence | v1 uses numeric, high-precision, and targeted symbolic verification. |
-| Generic heterogeneous operator-menu search | This repo exists to test complete EML-tree search, not conventional operator-set symbolic regression. |
+| Claiming warm-start recovery as blind discovery | Warm starts encode the target scaffold; reports must be explicit about provenance. |
+| Full SymPy-to-EML coverage | v1.1 needs a tested subset, not broad best-effort compilation. |
+| Pure `{1, eml}` synthesis for arbitrary constants | Important later, but v1.1 uses fixed literal constants for practical demos. |
+| Learned coefficients | Would change the problem into semi-parametric fitting and blur recovery claims. |
+| Guaranteed Planck trained recovery | Planck is a useful stretch target but too risky to promise in this milestone. |
+| Trig/oscillator trained recovery | Damped oscillator needs trig identities and phase handling; defer until compiler basics are stable. |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEM-01 | Phase 1 | Complete |
-| SEM-02 | Phase 1 | Complete |
-| SEM-03 | Phase 1 | Complete |
-| SEM-04 | Phase 1 | Complete |
-| TREE-01 | Phase 2 | Complete |
-| TREE-02 | Phase 2 | Complete |
-| TREE-03 | Phase 2 | Complete |
-| TREE-04 | Phase 2 | Complete |
-| OPT-01 | Phase 3 | Complete |
-| OPT-02 | Phase 3 | Complete |
-| OPT-03 | Phase 3 | Complete |
-| OPT-04 | Phase 3 | Complete |
-| VER-01 | Phase 4 | Complete |
-| VER-02 | Phase 4 | Complete |
-| VER-03 | Phase 4 | Complete |
-| CLEAN-01 | Phase 5 | Complete |
-| CLEAN-02 | Phase 5 | Complete |
-| CLEAN-03 | Phase 5 | Complete |
-| DEMO-01 | Phase 6 | Complete |
-| DEMO-02 | Phase 6 | Complete |
-| DEMO-03 | Phase 6 | Complete |
-| DEMO-04 | Phase 6 | Complete |
-| TEST-01 | Phase 7 | Complete |
-| TEST-02 | Phase 7 | Complete |
+| COMP-01 | Phase 8 | Pending |
+| COMP-02 | Phase 8 | Pending |
+| COMP-03 | Phase 8 | Pending |
+| COMP-04 | Phase 8 | Pending |
+| CONST-01 | Phase 9 | Pending |
+| CONST-02 | Phase 9 | Pending |
+| EMBED-01 | Phase 9 | Pending |
+| EMBED-02 | Phase 9 | Pending |
+| EMBED-03 | Phase 9 | Pending |
+| ARITH-01 | Phase 10 | Pending |
+| ARITH-02 | Phase 10 | Pending |
+| ARITH-03 | Phase 10 | Pending |
+| WARM-01 | Phase 11 | Pending |
+| WARM-02 | Phase 11 | Pending |
+| WARM-03 | Phase 11 | Pending |
+| WARM-04 | Phase 11 | Pending |
+| DEMO-05 | Phase 12 | Pending |
+| DEMO-06 | Phase 12 | Pending |
+| DEMO-07 | Phase 12 | Pending |
+| DEMO-08 | Phase 12 | Pending |
+| TEST-03 | Phase 13 | Pending |
+| TEST-04 | Phase 13 | Pending |
 
 **Coverage:**
-- v1 requirements: 24 total
-- Mapped to phases: 24
+- v1.1 requirements: 22 total
+- Mapped to phases: 22
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after implementation and verification*
+*Last updated: 2026-04-15 after milestone v1.1 definition*
