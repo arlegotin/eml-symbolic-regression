@@ -56,7 +56,11 @@ The milestone target is deliberately bounded and measurable. It must achieve 100
   2. Dataset generator produces deterministic train, held-out, and extrapolation splits with formula provenance and normalization metadata.
   3. Artifact schema distinguishes blind training, warm-start training, perturbed true-tree training, compile-only, catalog, unsupported, and failed cases.
   4. Pass/fail thresholds explicitly identify bounded 100% proof suites versus measured depth-curve suites.
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 29-01-PLAN.md — Claim matrix, threshold policies, and deterministic dataset manifests.
+- [ ] 29-02-PLAN.md — Benchmark proof metadata, run artifact schema, evidence classes, and aggregate thresholds.
+- [ ] 29-03-PLAN.md — CLI inspection/generation commands plus campaign table/report proof metadata propagation.
 
 ### Phase 30: Bounded Shallow Blind Training Recovery
 **Goal**: Users get 100% verifier-owned blind training recovery on the declared shallow proof suite, including the current `radioactive_decay` failure family.
@@ -153,7 +157,7 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 14-18. v1.2 Training Benchmark and Recovery Evidence | Complete | Complete | 2026-04-15 |
 | 19-23. v1.3 Benchmark Campaign and Evidence Report | Complete | Complete | 2026-04-15 |
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
-| 29. Paper Claim Contract and Proof Dataset Harness | 0/1 | Pending | - |
+| 29. Paper Claim Contract and Proof Dataset Harness | 0/3 | Pending | - |
 | 30. Bounded Shallow Blind Training Recovery | 0/1 | Pending | - |
 | 31. Perturbed Basin Training and Local Repair | 0/1 | Pending | - |
 | 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
