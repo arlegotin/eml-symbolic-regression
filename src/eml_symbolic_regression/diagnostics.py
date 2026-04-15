@@ -37,6 +37,48 @@ def write_baseline_triage(campaign_dirs: Iterable[Path], output_dir: Path) -> di
     return {"json": json_path, "markdown": markdown_path, "lock_json": lock_path}
 
 
+def write_campaign_comparison(
+    baseline_dirs: Iterable[Path],
+    candidate_dirs: Iterable[Path],
+    output_dir: Path,
+) -> dict[str, Path]:
+    """Write before/after comparison artifacts for campaign directory pairs."""
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    comparison = build_campaign_comparison(tuple(baseline_dirs), tuple(candidate_dirs))
+    json_path = output_dir / "comparison.json"
+    markdown_path = output_dir / "comparison.md"
+    _write_json(json_path, comparison)
+    markdown_path.write_text(render_campaign_comparison_markdown(comparison), encoding="utf-8")
+    return {"json": json_path, "markdown": markdown_path}
+
+
+def build_campaign_comparison(baseline_dirs: tuple[Path, ...], candidate_dirs: tuple[Path, ...]) -> dict[str, Any]:
+    if len(baseline_dirs) != len(candidate_dirs):
+        raise ValueError("baseline and candidate campaign counts must match")
+    baseline_campaigns = [_load_campaign_dir(path) for path in baseline_dirs]
+    candidate_campaigns = [_load_campaign_dir(path) for path in candidate_dirs]
+    baseline_runs = [run for campaign in baseline_campaigns for run in campaign["aggregate"].get("runs", ())]
+    candidate_runs = [run for campaign in candidate_campaigns for run in campaign["aggregate"].get("runs", ())]
+    categories = {
+        name: _compare_category(_category_rows(baseline_runs, name), _category_rows(candidate_runs, name))
+        for name in ("overall", "blind_recovery", "beer_perturbation", "compiler_coverage")
+    }
+    return {
+        "schema": "eml.campaign_comparison.v1",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "campaign_pairs": [
+            {
+                "baseline": _baseline_summary(baseline),
+                "candidate": _baseline_summary(candidate),
+            }
+            for baseline, candidate in zip(baseline_campaigns, candidate_campaigns)
+        ],
+        "categories": categories,
+        "reproduce_command": _comparison_command(baseline_dirs, candidate_dirs),
+    }
+
+
 def build_baseline_triage(campaign_dirs: tuple[Path, ...]) -> dict[str, Any]:
     campaigns = [_load_campaign_dir(path) for path in campaign_dirs]
     failure_rows = [row for campaign in campaigns for row in _failure_rows(campaign)]
@@ -267,6 +309,60 @@ def render_baseline_triage_markdown(triage: Mapping[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def render_campaign_comparison_markdown(comparison: Mapping[str, Any]) -> str:
+    lines = [
+        "# v1.4 Before/After Campaign Comparison",
+        "",
+        "Compares v1.4 campaign outputs against committed v1.3 baselines.",
+        "",
+        "## Reproduce",
+        "",
+        "Run this command from a clean checkout after v1.4 campaign folders exist:",
+        "",
+        "```bash",
+        comparison["reproduce_command"],
+        "```",
+        "",
+        "## Campaign Pairs",
+        "",
+        "| Baseline | Candidate |",
+        "|----------|-----------|",
+    ]
+    for pair in comparison["campaign_pairs"]:
+        lines.append(f"| {pair['baseline']['path']} | {pair['candidate']['path']} |")
+
+    lines.extend(
+        [
+            "",
+            "## Category Deltas",
+            "",
+            "| Category | Verdict | Recovery Rate | Unsupported Rate | Failure Rate | Median Best Loss | Median Post-Snap Loss | Median Runtime |",
+            "|----------|---------|---------------|------------------|--------------|------------------|-----------------------|----------------|",
+        ]
+    )
+    for name, category in comparison["categories"].items():
+        delta = category["delta"]
+        lines.append(
+            f"| {name} | {category['verdict']} | {_fmt_delta(delta['verifier_recovery_rate'])} | "
+            f"{_fmt_delta(delta['unsupported_rate'])} | {_fmt_delta(delta['failure_rate'])} | "
+            f"{_fmt_delta(delta['median_best_loss'])} | {_fmt_delta(delta['median_post_snap_loss'])} | "
+            f"{_fmt_delta(delta['median_runtime_seconds'])} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Interpretation",
+            "",
+            "- `improved` means recovery increased, unsupported rate decreased, or failure rate decreased.",
+            "- `regressed` means the opposite movement dominates.",
+            "- Loss and runtime deltas are supporting diagnostics and do not redefine recovery.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def _load_campaign_dir(path: Path) -> dict[str, Any]:
     aggregate_path = path / "aggregate.json"
     if not aggregate_path.exists():
@@ -382,6 +478,119 @@ def _fmt(value: Any) -> str:
         return f"{float(value):.4g}"
     except (TypeError, ValueError):
         return str(value)
+
+
+def _category_rows(rows: Iterable[Mapping[str, Any]], category: str) -> list[Mapping[str, Any]]:
+    row_list = list(rows)
+    if category == "overall":
+        return row_list
+    if category == "blind_recovery":
+        return [row for row in row_list if row.get("start_mode") == "blind"]
+    if category == "beer_perturbation":
+        return [row for row in row_list if row.get("formula") == "beer_lambert" and row.get("start_mode") == "warm_start"]
+    if category == "compiler_coverage":
+        formulas = {"michaelis_menten", "logistic", "shockley", "damped_oscillator", "planck"}
+        return [row for row in row_list if row.get("formula") in formulas and row.get("start_mode") in {"compile", "warm_start"}]
+    raise ValueError(f"unknown comparison category {category!r}")
+
+
+def _compare_category(baseline_rows: list[Mapping[str, Any]], candidate_rows: list[Mapping[str, Any]]) -> dict[str, Any]:
+    baseline = _category_metrics(baseline_rows)
+    candidate = _category_metrics(candidate_rows)
+    delta = {
+        key: _delta(candidate.get(key), baseline.get(key))
+        for key in (
+            "verifier_recovery_rate",
+            "unsupported_rate",
+            "failure_rate",
+            "median_best_loss",
+            "median_post_snap_loss",
+            "median_runtime_seconds",
+        )
+    }
+    return {
+        "baseline": baseline,
+        "candidate": candidate,
+        "delta": delta,
+        "verdict": _comparison_verdict(delta),
+    }
+
+
+def _category_metrics(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
+    total = len(rows)
+    recovered = sum(1 for row in rows if row.get("claim_status") == "recovered")
+    unsupported = sum(1 for row in rows if row.get("classification") == "unsupported")
+    failed = sum(1 for row in rows if row.get("classification") in {"failed", "snapped_but_failed", "soft_fit_only", "execution_failure"})
+    return {
+        "total": total,
+        "verifier_recovered": recovered,
+        "unsupported": unsupported,
+        "failed": failed,
+        "verifier_recovery_rate": recovered / total if total else 0.0,
+        "unsupported_rate": unsupported / total if total else 0.0,
+        "failure_rate": failed / total if total else 0.0,
+        "median_best_loss": _median(_number_or_none(row.get("metrics", {}).get("best_loss")) for row in rows),
+        "median_post_snap_loss": _median(_number_or_none(row.get("metrics", {}).get("post_snap_loss")) for row in rows),
+        "median_runtime_seconds": _median(_runtime_seconds(row) for row in rows),
+    }
+
+
+def _comparison_verdict(delta: Mapping[str, float | None]) -> str:
+    score = 0
+    if (delta.get("verifier_recovery_rate") or 0.0) > 1e-12:
+        score += 1
+    elif (delta.get("verifier_recovery_rate") or 0.0) < -1e-12:
+        score -= 1
+    for key in ("unsupported_rate", "failure_rate"):
+        value = delta.get(key)
+        if value is None:
+            continue
+        if value < -1e-12:
+            score += 1
+        elif value > 1e-12:
+            score -= 1
+    if score > 0:
+        return "improved"
+    if score < 0:
+        return "regressed"
+    return "unchanged"
+
+
+def _runtime_seconds(row: Mapping[str, Any]) -> float | None:
+    artifact_path = row.get("artifact_path")
+    if not artifact_path:
+        return None
+    try:
+        payload = json.loads(Path(str(artifact_path)).read_text(encoding="utf-8"))
+    except OSError:
+        return None
+    return _number_or_none(payload.get("timing", {}).get("elapsed_seconds"))
+
+
+def _median(values: Iterable[float | None]) -> float | None:
+    numeric = sorted(value for value in values if value is not None and math.isfinite(value))
+    if not numeric:
+        return None
+    midpoint = len(numeric) // 2
+    if len(numeric) % 2:
+        return numeric[midpoint]
+    return (numeric[midpoint - 1] + numeric[midpoint]) / 2
+
+
+def _fmt_delta(value: Any) -> str:
+    number = _number_or_none(value)
+    if number is None:
+        return "n/a"
+    sign = "+" if number > 0 else ""
+    return f"{sign}{number:.4g}"
+
+
+def _comparison_command(baseline_dirs: tuple[Path, ...], candidate_dirs: tuple[Path, ...]) -> str:
+    parts = ["PYTHONPATH=src", "python", "-m", "eml_symbolic_regression.cli", "diagnostics", "compare"]
+    for baseline, candidate in zip(baseline_dirs, candidate_dirs):
+        parts.extend(["--baseline", str(baseline), "--candidate", str(candidate)])
+    parts.extend(["--output-dir", "artifacts/campaigns/v1.4-comparison"])
+    return " ".join(parts)
 
 
 def _rows_from(value: Mapping[str, Any] | Iterable[Mapping[str, Any]]) -> list[Mapping[str, Any]]:

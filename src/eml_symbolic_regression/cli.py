@@ -14,7 +14,7 @@ from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_pres
 from .cleanup import cleanup_candidate
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
 from .datasets import demo_specs, get_demo
-from .diagnostics import DEFAULT_BASELINE_CAMPAIGNS, run_diagnostic_subset, write_baseline_triage
+from .diagnostics import DEFAULT_BASELINE_CAMPAIGNS, run_diagnostic_subset, write_baseline_triage, write_campaign_comparison
 from .optimize import TrainingConfig, fit_eml_tree
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
@@ -247,6 +247,16 @@ def diagnostics_rerun_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def diagnostics_compare_command(args: argparse.Namespace) -> int:
+    paths = write_campaign_comparison(
+        tuple(Path(path) for path in args.baseline),
+        tuple(Path(path) for path in args.candidate),
+        Path(args.output_dir),
+    )
+    print(f"diagnostics compare: report -> {paths['markdown']}; json -> {paths['json']}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="eml-sr")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -336,6 +346,12 @@ def build_parser() -> argparse.ArgumentParser:
     rerun.add_argument("--label", help="Stable campaign folder name.")
     rerun.add_argument("--overwrite", action="store_true", help="Allow writing into an existing diagnostic campaign folder.")
     rerun.set_defaults(func=diagnostics_rerun_command)
+
+    compare = diagnostics_sub.add_parser("compare", help="Compare candidate campaign folders against baselines.")
+    compare.add_argument("--baseline", action="append", required=True, help="Baseline campaign folder. Repeat with matching --candidate.")
+    compare.add_argument("--candidate", action="append", required=True, help="Candidate campaign folder. Repeat with matching --baseline.")
+    compare.add_argument("--output-dir", default="artifacts/campaigns/v1.4-comparison", help="Directory for comparison outputs.")
+    compare.set_defaults(func=diagnostics_compare_command)
     return parser
 
 

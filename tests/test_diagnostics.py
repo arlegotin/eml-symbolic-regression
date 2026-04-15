@@ -8,6 +8,7 @@ from eml_symbolic_regression.diagnostics import (
     filter_for_runs,
     select_diagnostic_runs,
     write_baseline_triage,
+    write_campaign_comparison,
 )
 
 
@@ -192,3 +193,31 @@ def test_compare_blind_runs_reports_loss_delta_and_improvement():
     assert comparison[0]["improved"] is True
     assert comparison[0]["best_loss_delta"] == -4.0
     assert comparison[0]["candidate_diagnostic"] == "recovered"
+
+
+def test_campaign_comparison_writes_deltas_and_verdicts(tmp_path):
+    baseline = tmp_path / "v1.3-standard"
+    candidate = tmp_path / "v1.4-standard"
+    _write_fake_campaign(baseline)
+    _write_fake_campaign(candidate)
+    candidate_aggregate_path = candidate / "aggregate.json"
+    candidate_aggregate = json.loads(candidate_aggregate_path.read_text(encoding="utf-8"))
+    candidate_aggregate["runs"][0]["claim_status"] = "recovered"
+    candidate_aggregate["runs"][0]["classification"] = "blind_recovery"
+    candidate_aggregate["runs"][0]["metrics"]["best_loss"] = 0.0
+    candidate_aggregate["runs"][0]["metrics"]["post_snap_loss"] = 0.0
+    candidate_aggregate["runs"][2]["claim_status"] = "recovered"
+    candidate_aggregate["runs"][2]["classification"] = "verifier_recovered"
+    candidate_aggregate["runs"][2]["status"] = "recovered"
+    candidate_aggregate["counts"] = {"total": 3, "verifier_recovered": 2, "unsupported": 0, "failed": 1}
+    candidate_aggregate_path.write_text(json.dumps(candidate_aggregate), encoding="utf-8")
+
+    paths = write_campaign_comparison((baseline,), (candidate,), tmp_path / "comparison")
+    comparison = json.loads(paths["json"].read_text(encoding="utf-8"))
+    markdown = paths["markdown"].read_text(encoding="utf-8")
+
+    assert comparison["categories"]["overall"]["verdict"] == "improved"
+    assert comparison["categories"]["blind_recovery"]["verdict"] == "improved"
+    assert comparison["categories"]["compiler_coverage"]["verdict"] == "improved"
+    assert comparison["categories"]["overall"]["delta"]["verifier_recovery_rate"] > 0
+    assert "diagnostics compare" in markdown

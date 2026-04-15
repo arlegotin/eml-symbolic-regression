@@ -98,6 +98,12 @@ Reproduce the committed v1.3 smoke report:
 PYTHONPATH=src python -m eml_symbolic_regression.cli campaign smoke --output-root artifacts/campaigns --label v1.3-smoke --overwrite
 ```
 
+Compare v1.4 standard/showcase campaigns against the committed v1.3 baselines:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli diagnostics compare --baseline artifacts/campaigns/v1.3-standard --candidate artifacts/campaigns/v1.4-standard --baseline artifacts/campaigns/v1.3-showcase --candidate artifacts/campaigns/v1.4-showcase --output-dir artifacts/campaigns/v1.4-comparison
+```
+
 Try soft EML training on a shallow demo:
 
 ```bash
