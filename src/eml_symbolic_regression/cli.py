@@ -14,6 +14,7 @@ from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_pres
 from .cleanup import cleanup_candidate
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
 from .datasets import demo_specs, get_demo
+from .diagnostics import DEFAULT_BASELINE_CAMPAIGNS, run_diagnostic_subset, write_baseline_triage
 from .optimize import TrainingConfig, fit_eml_tree
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
@@ -186,6 +187,7 @@ def run_benchmark(args: argparse.Namespace) -> int:
         start_modes=tuple(args.start_mode or ()),
         case_ids=tuple(args.case or ()),
         seeds=tuple(args.seed or ()),
+        perturbation_noises=tuple(args.perturbation_noise or ()),
     )
     result = run_benchmark_suite(suite, run_filter=run_filter)
     summary_path = suite.artifact_root / suite.id / "suite-result.json"
@@ -205,6 +207,7 @@ def run_campaign_command(args: argparse.Namespace) -> int:
         start_modes=tuple(args.start_mode or ()),
         case_ids=tuple(args.case or ()),
         seeds=tuple(args.seed or ()),
+        perturbation_noises=tuple(args.perturbation_noise or ()),
     )
     result = run_campaign(
         args.preset,
@@ -215,6 +218,30 @@ def run_campaign_command(args: argparse.Namespace) -> int:
     )
     print(
         f"{args.preset}: campaign -> {result.campaign_dir}; "
+        f"manifest -> {result.manifest_path}; report -> {result.report_path}"
+    )
+    return 0
+
+
+def diagnostics_triage_command(args: argparse.Namespace) -> int:
+    baselines = tuple(Path(path) for path in (args.baseline or DEFAULT_BASELINE_CAMPAIGNS))
+    paths = write_baseline_triage(baselines, Path(args.output_dir))
+    print(f"diagnostics triage: report -> {paths['markdown']}; lock -> {paths['lock_json']}")
+    return 0
+
+
+def diagnostics_rerun_command(args: argparse.Namespace) -> int:
+    baselines = tuple(Path(path) for path in (args.baseline or DEFAULT_BASELINE_CAMPAIGNS))
+    result = run_diagnostic_subset(
+        args.target,
+        baselines,
+        preset_name=args.preset,
+        output_root=Path(args.output_root),
+        label=args.label,
+        overwrite=args.overwrite,
+    )
+    print(
+        f"diagnostics rerun {args.target}: campaign -> {result.campaign_dir}; "
         f"manifest -> {result.manifest_path}; report -> {result.report_path}"
     )
     return 0
@@ -271,6 +298,7 @@ def build_parser() -> argparse.ArgumentParser:
     bench.add_argument("--start-mode", choices=("catalog", "compile", "blind", "warm_start"), action="append")
     bench.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")
     bench.add_argument("--seed", type=int, action="append", help="Only run this seed. Repeatable.")
+    bench.add_argument("--perturbation-noise", type=float, action="append", help="Only run this perturbation noise. Repeatable.")
     bench.set_defaults(func=run_benchmark)
 
     list_campaign = sub.add_parser("list-campaigns", help="List named benchmark campaign presets.")
@@ -285,7 +313,29 @@ def build_parser() -> argparse.ArgumentParser:
     campaign.add_argument("--start-mode", choices=("catalog", "compile", "blind", "warm_start"), action="append")
     campaign.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")
     campaign.add_argument("--seed", type=int, action="append", help="Only run this seed. Repeatable.")
+    campaign.add_argument("--perturbation-noise", type=float, action="append", help="Only run this perturbation noise. Repeatable.")
     campaign.set_defaults(func=run_campaign_command)
+
+    diagnostics = sub.add_parser("diagnostics", help="Inspect v1.3 baselines and rerun focused diagnostic subsets.")
+    diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)
+
+    triage = diagnostics_sub.add_parser("triage", help="Write baseline failure triage reports.")
+    triage.add_argument("--baseline", action="append", help="Campaign folder to include. Repeatable.")
+    triage.add_argument("--output-dir", default="artifacts/diagnostics/v1.4-baseline", help="Directory for triage outputs.")
+    triage.set_defaults(func=diagnostics_triage_command)
+
+    rerun = diagnostics_sub.add_parser("rerun", help="Run a focused diagnostic subset selected from baselines.")
+    rerun.add_argument(
+        "target",
+        choices=("blind-failures", "beer-perturbation-failures", "compiler-depth-gates"),
+        help="Diagnostic target class.",
+    )
+    rerun.add_argument("--baseline", action="append", help="Campaign folder to inspect. Repeatable.")
+    rerun.add_argument("--preset", choices=list_campaign_presets(), default="standard", help="Campaign preset to rerun with filters.")
+    rerun.add_argument("--output-root", default=str(DEFAULT_CAMPAIGN_ROOT), help="Directory that receives campaign folders.")
+    rerun.add_argument("--label", help="Stable campaign folder name.")
+    rerun.add_argument("--overwrite", action="store_true", help="Allow writing into an existing diagnostic campaign folder.")
+    rerun.set_defaults(func=diagnostics_rerun_command)
     return parser
 
 

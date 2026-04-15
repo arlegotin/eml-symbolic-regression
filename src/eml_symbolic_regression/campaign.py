@@ -401,6 +401,7 @@ def _filter_payload(run_filter: RunFilter | None) -> dict[str, list[Any]]:
         "start_modes": list(run_filter.start_modes),
         "case_ids": list(run_filter.case_ids),
         "seeds": list(run_filter.seeds),
+        "perturbation_noises": list(run_filter.perturbation_noises),
     }
 
 
@@ -425,7 +426,13 @@ def _reproduction_command(
         parts.extend(["--label", label])
     if overwrite:
         parts.append("--overwrite")
-    for key, flag in (("formulas", "--formula"), ("start_modes", "--start-mode"), ("case_ids", "--case"), ("seeds", "--seed")):
+    for key, flag in (
+        ("formulas", "--formula"),
+        ("start_modes", "--start-mode"),
+        ("case_ids", "--case"),
+        ("seeds", "--seed"),
+        ("perturbation_noises", "--perturbation-noise"),
+    ):
         for value in run_filter.get(key, []):
             parts.extend([flag, str(value)])
     return " ".join(parts)

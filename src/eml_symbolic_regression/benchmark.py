@@ -261,6 +261,7 @@ class RunFilter:
     start_modes: tuple[str, ...] = ()
     case_ids: tuple[str, ...] = ()
     seeds: tuple[int, ...] = ()
+    perturbation_noises: tuple[float, ...] = ()
 
     def includes(self, run: BenchmarkRun) -> bool:
         return (
@@ -268,6 +269,7 @@ class RunFilter:
             and (not self.start_modes or run.start_mode in self.start_modes)
             and (not self.case_ids or run.case_id in self.case_ids)
             and (not self.seeds or run.seed in self.seeds)
+            and (not self.perturbation_noises or run.perturbation_noise in self.perturbation_noises)
         )
 
 

@@ -1,0 +1,139 @@
+import json
+from pathlib import Path
+
+from eml_symbolic_regression.benchmark import RunFilter
+from eml_symbolic_regression.diagnostics import (
+    filter_for_runs,
+    select_diagnostic_runs,
+    write_baseline_triage,
+)
+
+
+def _write_fake_campaign(path: Path) -> None:
+    runs = [
+        {
+            "run_id": "blind-exp-0",
+            "artifact_path": str(path / "runs" / "suite" / "blind-exp-0.json"),
+            "suite_id": "suite",
+            "case_id": "exp-blind",
+            "formula": "exp",
+            "start_mode": "blind",
+            "seed": 0,
+            "perturbation_noise": 0.0,
+            "optimizer": {"depth": 1},
+            "dataset": {"points": 24},
+            "status": "snapped_but_failed",
+            "claim_status": "failed",
+            "classification": "snapped_but_failed",
+            "reason": "mpmath_failed",
+            "metrics": {
+                "best_loss": 1.25,
+                "post_snap_loss": 2.5,
+                "snap_min_margin": 0.12,
+                "changed_slot_count": None,
+                "verifier_status": "failed",
+            },
+            "stage_statuses": {"blind_baseline": "failed"},
+        },
+        {
+            "run_id": "beer-35",
+            "artifact_path": str(path / "runs" / "suite" / "beer-35.json"),
+            "suite_id": "suite",
+            "case_id": "beer-perturbation-sweep",
+            "formula": "beer_lambert",
+            "start_mode": "warm_start",
+            "seed": 1,
+            "perturbation_noise": 35.0,
+            "optimizer": {"depth": 2},
+            "dataset": {"points": 24},
+            "status": "snapped_but_failed",
+            "claim_status": "failed",
+            "classification": "snapped_but_failed",
+            "reason": "verified",
+            "metrics": {
+                "best_loss": 0.2,
+                "post_snap_loss": 0.21,
+                "snap_min_margin": 0.99,
+                "changed_slot_count": 3,
+                "verifier_status": "failed",
+            },
+            "stage_statuses": {"warm_start_attempt": "snapped_but_failed"},
+        },
+        {
+            "run_id": "planck-compile",
+            "artifact_path": str(path / "runs" / "suite" / "planck-compile.json"),
+            "suite_id": "suite",
+            "case_id": "planck-diagnostic",
+            "formula": "planck",
+            "start_mode": "compile",
+            "seed": 0,
+            "perturbation_noise": 0.0,
+            "optimizer": {"depth": 2},
+            "dataset": {"points": 24},
+            "status": "unsupported",
+            "claim_status": "unsupported",
+            "classification": "unsupported",
+            "reason": "depth_exceeded",
+            "metrics": {"verifier_status": None},
+            "stage_statuses": {"compiled_seed": "unsupported"},
+        },
+    ]
+    (path / "runs" / "suite").mkdir(parents=True)
+    for run in runs:
+        Path(run["artifact_path"]).write_text(json.dumps({"run": run}), encoding="utf-8")
+    aggregate = {
+        "schema": "eml.benchmark_aggregate.v1",
+        "suite": {"id": "suite"},
+        "counts": {"total": 3, "verifier_recovered": 0, "unsupported": 1, "failed": 2},
+        "runs": runs,
+    }
+    path.mkdir(parents=True, exist_ok=True)
+    (path / "aggregate.json").write_text(json.dumps(aggregate), encoding="utf-8")
+    (path / "suite-result.json").write_text(json.dumps({"counts": aggregate["counts"]}), encoding="utf-8")
+    (path / "campaign-manifest.json").write_text(json.dumps({"preset": {"name": "fake"}}), encoding="utf-8")
+    (path / "tables").mkdir()
+    (path / "tables" / "runs.csv").write_text("run_id\nblind-exp-0\n", encoding="utf-8")
+
+
+def test_baseline_triage_writes_report_and_lock(tmp_path):
+    campaign = tmp_path / "v1.3-standard"
+    _write_fake_campaign(campaign)
+
+    paths = write_baseline_triage((campaign,), tmp_path / "triage")
+
+    triage = json.loads(paths["json"].read_text())
+    report = paths["markdown"].read_text(encoding="utf-8")
+    lock = json.loads(paths["lock_json"].read_text())
+
+    assert triage["schema"] == "eml.baseline_diagnostics.v1"
+    assert triage["failure_group_counts"]
+    assert "blind-exp-0" in report
+    assert "best=1.25" in report
+    assert "Baseline Locks" in report
+    assert lock["baselines"][0]["files"][0]["sha256"]
+
+
+def test_diagnostic_rerun_uses_exact_perturbation_noise_filter(tmp_path):
+    campaign = tmp_path / "v1.3-standard"
+    _write_fake_campaign(campaign)
+
+    rows = select_diagnostic_runs((campaign,), "beer-perturbation-failures")
+    run_filter = filter_for_runs(rows)
+
+    assert len(rows) == 1
+    assert run_filter == RunFilter(
+        formulas=("beer_lambert",),
+        start_modes=("warm_start",),
+        case_ids=("beer-perturbation-sweep",),
+        seeds=(1,),
+        perturbation_noises=(35.0,),
+    )
+
+
+def test_compiler_depth_gate_selection_includes_unsupported_runs(tmp_path):
+    campaign = tmp_path / "v1.3-standard"
+    _write_fake_campaign(campaign)
+
+    rows = select_diagnostic_runs((campaign,), "compiler-depth-gates")
+
+    assert [row["formula"] for row in rows] == ["planck"]
