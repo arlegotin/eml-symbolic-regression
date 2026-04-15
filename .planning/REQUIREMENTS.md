@@ -1,108 +1,101 @@
-# Requirements: EML Symbolic Regression Milestone v1.1
+# Requirements: EML Symbolic Regression Milestone v1.2
 
 **Defined:** 2026-04-15
-**Milestone:** v1.1 EML Compiler and Warm Starts
+**Milestone:** v1.2 Training Benchmark and Recovery Evidence
 **Core Value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Milestone v1.1 Requirements
+## Milestone v1.2 Requirements
 
-Requirements for this milestone only. Completed v1 requirements are recorded as validated capabilities in `.planning/PROJECT.md`.
+Requirements for this milestone only. Completed v1 and v1.1 requirements are recorded as validated capabilities in `.planning/PROJECT.md`.
 
-### Compiler Contract
+### Benchmark Contract
 
-- [x] **COMP-01**: User can compile a whitelisted SymPy subset into the existing exact EML `Expr` AST type without introducing a parallel AST.
-- [x] **COMP-02**: User receives structured compiler metadata including source expression, normalized expression, rule trace, variables, constants, depth, node count, domain assumptions, and unsupported reason codes.
-- [x] **COMP-03**: User can validate compiled AST output against independent ordinary-expression evaluation before the output is eligible for warm-start training.
-- [x] **COMP-04**: User receives fail-closed errors for unsupported operators, unsupported powers, unknown variables, unsafe constants, or expressions that exceed configured depth/node budgets.
+- [ ] **BENC-01**: User can define deterministic benchmark suite files containing formula IDs, dataset specs, variable ranges, sample counts, start modes, seeds, perturbation levels, optimizer budgets, verifier settings, and artifact paths.
+- [ ] **BENC-02**: User can select built-in suites for fast smoke checks, the full v1.2 evidence matrix, and `sources/FOR_DEMO.md` diagnostics.
+- [ ] **BENC-03**: User receives fail-closed validation errors for unknown formulas, invalid start modes, unsafe budgets, missing constants, unsupported compiler gates, or malformed suite files.
+- [ ] **BENC-04**: User gets stable run IDs and deterministic artifact locations for every formula/start-mode/seed/perturbation combination.
 
-### Constants and Embedding
+### Run Execution
 
-- [x] **CONST-01**: User can choose an explicit constant policy, with v1.1 supporting `literal_constants` while preserving the default pure `const:1` behavior.
-- [x] **CONST-02**: User can construct `SoftEMLTree` instances with a finite constant catalog derived from a compiled expression.
-- [x] **EMBED-01**: User can embed a compiled exact EML AST into a compatible soft master tree by mapping AST nodes to slot logits.
-- [x] **EMBED-02**: User gets immediate embed-to-snap validation that proves the high-strength warm start snaps back to the compiled AST before perturbation.
-- [x] **EMBED-03**: User receives actionable diagnostics for depth-too-small, missing-constant, missing-variable, and incompatible-tree failures before training starts.
+- [ ] **RUN-01**: User can run a full benchmark suite or filtered subset from the CLI without hand-writing per-demo commands.
+- [ ] **RUN-02**: User can execute blind-start training through the existing optimizer across multiple seeds for shallow supported formulas.
+- [ ] **RUN-03**: User can execute compiler warm-start training with perturbation sweeps through the existing compile, embed, train, snap, and verify path.
+- [ ] **RUN-04**: User can run suites that contain unsupported, skipped, or failed cases without aborting the entire suite, while preserving those outcomes in artifacts.
 
-### Arithmetic Rules
+### Experiment Matrix
 
-- [x] **ARITH-01**: User can compile direct `exp` and `log` rules over arbitrary supported subexpressions.
-- [x] **ARITH-02**: User can compile unary negation, subtraction, addition, multiplication, reciprocal, and division through tested EML rule templates or receive explicit unsupported/depth failure reasons.
-- [x] **ARITH-03**: User can compile small integer powers only when implemented behind explicit max-power and depth gates.
+- [ ] **MATR-01**: User can run blind-start baselines for shallow formulas such as `exp`, `log`, radioactive decay, and other low-depth formulas supported by current gates.
+- [ ] **MATR-02**: User can run Beer-Lambert perturbation sweeps that include same-basin, mild perturbation, and stronger slot-changing perturbation settings.
+- [ ] **MATR-03**: User can run Michaelis-Menten diagnostics that record compiler depth, embedding eligibility, unsupported reasons, and training attempts only when current gates allow them.
+- [ ] **MATR-04**: User can run normalized Planck and selected `sources/FOR_DEMO.md` formulas as honest stretch or diagnostic cases without requiring recovery.
 
-### Warm-Start Recovery
+### Evidence Reporting
 
-- [x] **WARM-01**: User can run deterministic perturbation of compiled warm-start logits with recorded strength, noise scale, seed, active slot changes, and pre/post perturbation snap summaries.
-- [x] **WARM-02**: User can train from compiled warm starts through the existing optimizer path without allowing the optimizer to label a result `recovered`.
-- [x] **WARM-03**: User receives a warm-start manifest containing compiler metadata, terminal bank, embedding assignments, perturbation config, optimizer config, snap decisions, anomaly stats, and verification outcome.
-- [x] **WARM-04**: User can distinguish same-AST return, verified-equivalent AST, snapped-but-failed candidate, soft-fit-only, and failed warm-start attempts.
-
-### Demo Promotion and Reporting
-
-- [x] **DEMO-05**: User can run Beer-Lambert as a compiler-driven warm-start recovery demo and promote it only when the final trained exact EML AST verifies.
-- [x] **DEMO-06**: User can run Michaelis-Menten as a compiler-driven warm-start recovery demo when arithmetic rules and depth gates pass, and otherwise receive honest unsupported/depth diagnostics.
-- [x] **DEMO-07**: User can run normalized Planck as a stretch compile/warm-start report without making its trained recovery a milestone guarantee.
-- [x] **DEMO-08**: User-facing reports separate catalog showcase, compiled seed, warm-start attempt, trained exact recovery, blind baseline, stretch, unsupported, and failed statuses.
+- [ ] **EVID-01**: User receives a per-run JSON artifact containing suite ID, run ID, formula, dataset spec, start mode, seed, perturbation config, optimizer config, losses, snap outcome, active slot changes, verifier status, timing, and errors.
+- [ ] **EVID-02**: User receives aggregate JSON and Markdown reports with recovery rates by formula, start mode, perturbation level, depth, and seed group.
+- [ ] **EVID-03**: User can distinguish blind recovery, same-AST warm-start return, verified-equivalent warm-start recovery, snapped-but-failed candidates, soft-fit-only attempts, unsupported cases, and execution failures.
+- [ ] **EVID-04**: User can compare benchmark runs without losing provenance for suite config, code version, environment summary, and artifact paths.
 
 ### Tests and Documentation
 
-- [x] **TEST-03**: User can run pytest coverage for compiler rules, negative compiler cases, constant policy, constant catalog labels, embedding round trips, perturbation determinism, warm-start manifests, and demo promotion gates.
-- [x] **TEST-04**: User can read documentation explaining fixed literal constants, compile-only versus warm-start recovery, demo claim statuses, depth limits, and why this is not blind symbolic discovery.
+- [ ] **TEST-05**: User can run focused pytest coverage for suite parsing, validation, run ID stability, aggregation math, and claim taxonomy.
+- [ ] **TEST-06**: User can run a small benchmark smoke test in CI-scale time that exercises at least one blind-start run, one warm-start run, one unsupported/stretch diagnostic, and one aggregate report.
+- [ ] **TEST-07**: User can read documentation that explains how to run benchmark suites, how to interpret recovery evidence, and why failures or same-AST returns are not hidden.
 
 ## Future Requirements
 
 Deferred to later milestones.
 
-### Compiler and Scaling
+### Optimization and Scaling
 
-- **FUT-01**: User can synthesize common numeric constants from the pure `{1, eml}` basis rather than using fixed literal constants.
-- **FUT-02**: User can fit continuous coefficients around discovered symbolic scaffolds.
-- **FUT-03**: User can compile trig identities and promote damped oscillator to trained EML recovery.
-- **FUT-04**: User can run shortest-form or local-search compression of compiled EML trees.
-- **FUT-05**: User can use Rust or GPU acceleration after profiling proves a bottleneck.
+- **FUT-06**: User can improve optimizer robustness for slot-changing perturbations after v1.2 measures the failure modes.
+- **FUT-07**: User can reduce compiled arithmetic tree depth so Michaelis-Menten can promote under practical warm-start gates.
+- **FUT-08**: User can synthesize or fit numeric constants instead of relying on fixed literal constant catalogs.
+- **FUT-09**: User can add richer plots or dashboards for benchmark results after the JSON/Markdown evidence contract stabilizes.
+- **FUT-10**: User can run long benchmark campaigns with parallel workers, caching, and resumable distributed execution.
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Claiming warm-start recovery as blind discovery | Warm starts encode the target scaffold; reports must be explicit about provenance. |
-| Full SymPy-to-EML coverage | v1.1 needs a tested subset, not broad best-effort compilation. |
-| Pure `{1, eml}` synthesis for arbitrary constants | Important later, but v1.1 uses fixed literal constants for practical demos. |
-| Learned coefficients | Would change the problem into semi-parametric fitting and blur recovery claims. |
-| Guaranteed Planck trained recovery | Planck is a useful stretch target but too risky to promise in this milestone. |
-| Trig/oscillator trained recovery | Damped oscillator needs trig identities and phase handling; defer until compiler basics are stable. |
+| Claiming general symbolic-regression success | v1.2 measures current behavior; it does not solve robust deep blind recovery. |
+| Hiding failed or unsupported cases | The milestone value is honest evidence, including failures. |
+| Optimizer redesign | Algorithm changes should follow measured failure modes, not precede them. |
+| Large external real-world datasets | The milestone focuses on reproducible synthetic and source-document demos first. |
+| Guaranteed Michaelis-Menten or Planck recovery | Current evidence says these remain gated/stretch until depth and optimizer behavior improve. |
+| Heavy visualization stack | JSON and Markdown reports are enough until the evidence schema stabilizes. |
 
 ## Traceability
 
+Traceability is filled when the v1.2 roadmap is created.
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COMP-01 | Phase 8 | Complete |
-| COMP-02 | Phase 8 | Complete |
-| COMP-03 | Phase 8 | Complete |
-| COMP-04 | Phase 8 | Complete |
-| CONST-01 | Phase 9 | Complete |
-| CONST-02 | Phase 9 | Complete |
-| EMBED-01 | Phase 9 | Complete |
-| EMBED-02 | Phase 9 | Complete |
-| EMBED-03 | Phase 9 | Complete |
-| ARITH-01 | Phase 10 | Complete |
-| ARITH-02 | Phase 10 | Complete |
-| ARITH-03 | Phase 10 | Complete |
-| WARM-01 | Phase 11 | Complete |
-| WARM-02 | Phase 11 | Complete |
-| WARM-03 | Phase 11 | Complete |
-| WARM-04 | Phase 11 | Complete |
-| DEMO-05 | Phase 12 | Complete |
-| DEMO-06 | Phase 12 | Complete |
-| DEMO-07 | Phase 12 | Complete |
-| DEMO-08 | Phase 12 | Complete |
-| TEST-03 | Phase 13 | Complete |
-| TEST-04 | Phase 13 | Complete |
+| BENC-01 | TBD | Pending |
+| BENC-02 | TBD | Pending |
+| BENC-03 | TBD | Pending |
+| BENC-04 | TBD | Pending |
+| RUN-01 | TBD | Pending |
+| RUN-02 | TBD | Pending |
+| RUN-03 | TBD | Pending |
+| RUN-04 | TBD | Pending |
+| MATR-01 | TBD | Pending |
+| MATR-02 | TBD | Pending |
+| MATR-03 | TBD | Pending |
+| MATR-04 | TBD | Pending |
+| EVID-01 | TBD | Pending |
+| EVID-02 | TBD | Pending |
+| EVID-03 | TBD | Pending |
+| EVID-04 | TBD | Pending |
+| TEST-05 | TBD | Pending |
+| TEST-06 | TBD | Pending |
+| TEST-07 | TBD | Pending |
 
 **Coverage:**
-- v1.1 requirements: 22 total
-- Mapped to phases: 22
-- Unmapped: 0
+- v1.2 requirements: 19 total
+- Mapped to phases: 0
+- Unmapped: 19
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after milestone v1.1 definition*
+*Last updated: 2026-04-15 after milestone v1.2 definition*
