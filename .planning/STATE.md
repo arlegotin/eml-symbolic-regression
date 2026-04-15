@@ -4,7 +4,7 @@ milestone: v1.2
 milestone_name: Training Benchmark and Recovery Evidence
 current_phase: Complete
 status: completed
-stopped_at: v1.2 phases complete; lifecycle pending
+stopped_at: v1.2 archived; cleanup pending
 last_updated: "2026-04-15T10:42:56Z"
 last_activity: 2026-04-15
 progress:
@@ -32,7 +32,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 Phase: 18 of 18 (Smoke Tests, Docs, and Evidence Lockdown)
 Plan: Complete
-Status: Milestone phases complete
+Status: Milestone archived
 Last activity: 2026-04-15
 Progress: [##########] 100% by completed phases (v1.2: 5/5)
 
@@ -57,6 +57,9 @@ Progress: [##########] 100% by completed phases (v1.2: 5/5)
 | Research summary | `.planning/research/SUMMARY.md` | Skipped for v1.2; local evidence milestone |
 | Requirements | `.planning/REQUIREMENTS.md` | Complete |
 | Roadmap | `.planning/ROADMAP.md` | Complete |
+| Milestone archive | `.planning/milestones/v1.2-ROADMAP.md` | Complete |
+| Requirements archive | `.planning/milestones/v1.2-REQUIREMENTS.md` | Complete |
+| Audit archive | `.planning/milestones/v1.2-MILESTONE-AUDIT.md` | Complete |
 
 ## Current Milestone
 
@@ -122,8 +125,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: v1.2 phases complete; lifecycle pending
+Stopped at: v1.2 archived; cleanup pending
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after completing phase 18*
+*Last updated: 2026-04-15 after archiving milestone v1.2*

@@ -1,5 +1,20 @@
 # Milestones
 
+## v1.2 Training Benchmark and Recovery Evidence (Shipped: 2026-04-15)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added deterministic benchmark suite contracts, built-in suite registry, fail-closed validation, stable run IDs, and deterministic artifact paths.
+- Added benchmark CLI execution for catalog verification, compile diagnostics, blind optimizer training, and compiler warm-start training.
+- Expanded formula coverage with `radioactive_decay`, shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten warm diagnostics, Planck stretch diagnostics, and selected FOR_DEMO formulas.
+- Added normalized per-run metrics plus aggregate JSON/Markdown evidence reports with recovery rates, grouping, taxonomy, and code/environment provenance.
+- Added CI-scale benchmark smoke coverage and generated smoke evidence artifacts in `artifacts/benchmarks/smoke/`.
+- Updated documentation to explain benchmark commands, report artifacts, same-AST warm-start return, verifier-owned recovery rates, and unsupported/failure interpretation.
+
+---
+
 ## v1.1 EML Compiler and Warm Starts (Shipped: 2026-04-15)
 
 **Phases completed:** 6 phases, 6 plans, 0 tasks
