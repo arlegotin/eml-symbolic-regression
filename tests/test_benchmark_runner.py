@@ -104,3 +104,17 @@ def test_for_demo_diagnostic_subset_preserves_unsupported_formula(tmp_path):
     assert len(result.results) == 1
     assert result.results[0].status == "unsupported"
     assert result.results[0].payload["compiled_eml"]["reason"] == "unsupported_operator"
+    assert result.results[0].payload["compiled_eml"]["diagnostic"]["strict"]["reason"] == "unsupported_operator"
+
+
+def test_shockley_compile_moves_to_verified_compiled_ast(tmp_path):
+    base = builtin_suite("v1.3-standard")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(suite, run_filter=RunFilter(case_ids=("shockley-compile",)))
+
+    assert len(result.results) == 1
+    assert result.results[0].status == "recovered"
+    compiled = result.results[0].payload["compiled_eml"]
+    assert compiled["metadata"]["depth"] <= 13
+    assert any(entry["rule"] == "scaled_exp_minus_one_template" for entry in compiled["metadata"]["trace"])

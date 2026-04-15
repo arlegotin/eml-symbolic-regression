@@ -14,6 +14,7 @@ from eml_symbolic_regression.compiler import (
     UnsupportedExpression,
     compile_and_validate,
     compile_sympy_expression,
+    diagnose_compile_expression,
 )
 from eml_symbolic_regression.datasets import get_demo
 from eml_symbolic_regression.master_tree import EmbeddingConfig, EmbeddingError, SoftEMLTree
@@ -38,6 +39,21 @@ def test_compile_exp_log_and_beer_lambert_validate_against_sympy():
         assert result.metadata.unsupported_reason is None
 
 
+def test_compile_shockley_uses_lower_depth_template():
+    spec = get_demo("shockley")
+    splits = spec.make_splits(points=24, seed=0)
+    result = compile_and_validate(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=128),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.depth <= 13
+    assert any(entry.rule == "scaled_exp_minus_one_template" for entry in result.metadata.trace)
+
+
 def test_compiler_fail_closed_negative_cases():
     x = sp.Symbol("x")
 
@@ -56,6 +72,33 @@ def test_compiler_fail_closed_negative_cases():
     with pytest.raises(UnsupportedExpression) as depth_error:
         compile_sympy_expression(sp.exp(sp.Float("-0.8") * x), CompilerConfig(variables=("x",), max_depth=3))
     assert depth_error.value.reason == CompileReason.DEPTH_EXCEEDED
+
+
+def test_compiler_diagnostics_include_relaxed_depth_metadata():
+    spec = get_demo("planck")
+    splits = spec.make_splits(points=12, seed=0)
+    diagnostic = diagnose_compile_expression(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+
+    assert diagnostic["status"] == "unsupported"
+    assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
+    assert diagnostic["relaxed"]["metadata"]["depth"] > 13
+    assert diagnostic["relaxed"]["metadata"]["trace"]
+
+
+def test_damped_oscillator_diagnostic_defers_unsupported_cos():
+    spec = get_demo("damped_oscillator")
+    diagnostic = diagnose_compile_expression(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+    )
+
+    assert diagnostic["status"] == "unsupported"
+    assert diagnostic["strict"]["reason"] == CompileReason.UNSUPPORTED_OPERATOR
+    assert diagnostic["relaxed_error"]["reason"] == CompileReason.UNSUPPORTED_OPERATOR
 
 
 def test_constant_catalog_and_embedding_round_trip_for_beer_lambert():

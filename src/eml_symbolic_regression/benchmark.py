@@ -14,7 +14,7 @@ from typing import Any, Iterable, Mapping
 
 import numpy as np
 
-from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
+from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
 from .datasets import demo_specs
 from .optimize import TrainingConfig, fit_eml_tree
 from .verify import verify_candidate
@@ -72,7 +72,7 @@ class OptimizerBudget:
     warm_depth: int = 0
     warm_steps: int = 20
     warm_restarts: int = 1
-    max_compile_depth: int = 12
+    max_compile_depth: int = 13
     max_compile_nodes: int = 256
     max_warm_depth: int = 10
     max_power: int = 3
@@ -746,7 +746,11 @@ def _compile_demo(run: BenchmarkRun, splits: Any) -> dict[str, Any]:
     except UnsupportedExpression as exc:
         return {
             "stage_statuses": {"compiled_seed": "unsupported"},
-            "compiled_eml": {"status": "unsupported", **exc.as_dict()},
+            "compiled_eml": {
+                "status": "unsupported",
+                **exc.as_dict(),
+                "diagnostic": diagnose_compile_expression(spec.candidate.to_sympy(), compiler_config, validation_inputs),
+            },
             "claim_status": "unsupported",
         }
 

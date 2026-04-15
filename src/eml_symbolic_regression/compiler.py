@@ -26,7 +26,7 @@ class CompileReason:
 class CompilerConfig:
     variables: tuple[str, ...] | None = None
     constant_policy: str = "literal_constants"
-    max_depth: int = 12
+    max_depth: int = 13
     max_nodes: int = 256
     max_power: int = 3
     validation_tolerance: float = 1e-8
@@ -187,6 +187,9 @@ class _Compiler:
 
     def compile(self, expr: sp.Expr) -> Expr:
         expr = sp.sympify(expr)
+        special = self._compile_special(expr)
+        if special is not None:
+            return special
 
         if isinstance(expr, sp.Symbol):
             return self._record("variable", expr, Var(self._variable_name(expr)))
@@ -229,6 +232,35 @@ class _Compiler:
             CompileReason.UNSUPPORTED_OPERATOR,
             expr,
             f"operator {expr.func} is not in the v1.1 compiler subset",
+        )
+
+    def _compile_special(self, expr: sp.Expr) -> Expr | None:
+        if isinstance(expr, sp.Add):
+            return self._compile_scaled_exp_minus_one(expr)
+        return None
+
+    def _compile_scaled_exp_minus_one(self, expr: sp.Add) -> Expr | None:
+        terms = list(expr.args)
+        numeric_terms = [term for term in terms if term.is_number]
+        non_numeric_terms = [term for term in terms if not term.is_number]
+        if len(numeric_terms) != 1 or len(non_numeric_terms) != 1:
+            return None
+
+        coeff, rest = non_numeric_terms[0].as_coeff_Mul()
+        if not coeff.is_number or rest.func != sp.exp or len(rest.args) != 1:
+            return None
+
+        scale = self._constant_value(coeff)
+        offset = self._constant_value(numeric_terms[0])
+        if abs(offset + scale) > 1e-12:
+            return None
+
+        compiled_arg = self.compile(rest.args[0])
+        self.assumptions.append("scale*(exp(a)-1) compiled with lower-depth EML template")
+        return self._record(
+            "scaled_exp_minus_one_template",
+            expr,
+            multiply_expr(Const(scale), Eml(compiled_arg, Const(np.e))),
         )
 
     def _compile_power(self, expr: sp.Pow) -> Expr:
@@ -362,3 +394,48 @@ def compile_and_validate(
             f"max_abs_error={validation.max_abs_error:.3e}",
         )
     return CompileResult(result.expression, result.metadata, validation)
+
+
+def diagnose_compile_expression(
+    expression: sp.Expr | str,
+    config: CompilerConfig | None = None,
+    inputs: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Return strict failure details plus relaxed compile metadata when available."""
+
+    config = config or CompilerConfig()
+    try:
+        strict = compile_and_validate(expression, config, inputs)
+        return {
+            "schema": "eml.compiler_diagnostic.v1",
+            "status": "compiled",
+            "strict": {
+                "metadata": strict.metadata.as_dict(),
+                "validation": strict.validation.as_dict() if strict.validation else None,
+            },
+        }
+    except UnsupportedExpression as strict_error:
+        diagnostic: dict[str, Any] = {
+            "schema": "eml.compiler_diagnostic.v1",
+            "status": "unsupported",
+            "strict": strict_error.as_dict(),
+        }
+
+    relaxed_config = CompilerConfig(
+        variables=config.variables,
+        constant_policy=config.constant_policy,
+        max_depth=max(config.max_depth * 4, config.max_depth + 12),
+        max_nodes=max(config.max_nodes * 4, config.max_nodes + 512),
+        max_power=config.max_power,
+        validation_tolerance=config.validation_tolerance,
+    )
+    try:
+        relaxed = compile_sympy_expression(expression, relaxed_config)
+        validation = validate_compiled_expression(relaxed, inputs, tolerance=config.validation_tolerance)
+        diagnostic["relaxed"] = {
+            "metadata": relaxed.metadata.as_dict(),
+            "validation": validation.as_dict(),
+        }
+    except UnsupportedExpression as relaxed_error:
+        diagnostic["relaxed_error"] = relaxed_error.as_dict()
+    return diagnostic
