@@ -19,6 +19,7 @@ from eml_symbolic_regression.datasets import get_demo
 from eml_symbolic_regression.master_tree import EmbeddingConfig, EmbeddingError, SoftEMLTree
 from eml_symbolic_regression.optimize import TrainingConfig
 from eml_symbolic_regression.warm_start import PerturbationConfig, fit_warm_started_eml_tree
+from eml_symbolic_regression.warm_start import perturb_tree_logits
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -110,6 +111,25 @@ def test_warm_start_manifest_returns_same_ast_and_verifies():
     assert result.manifest["status"] == "same_ast_return"
 
 
+def test_perturbation_is_seeded_and_reports_active_slots():
+    spec = get_demo("beer_lambert")
+    compiled = compile_and_validate(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=12, max_nodes=128),
+    )
+    reports = []
+    for _ in range(2):
+        tree = SoftEMLTree(compiled.metadata.depth, (spec.variable,), compiled.metadata.constants)
+        embedding = tree.embed_expr(compiled.expression, EmbeddingConfig(strength=30.0))
+        reports.append(perturb_tree_logits(tree, PerturbationConfig(seed=123, noise_scale=0.01), embedding))
+
+    assert reports[0].as_dict() == reports[1].as_dict()
+    assert reports[0].active_slot_changes
+    assert {"slot", "embedded_choice", "pre_choice", "post_choice", "changed"} <= set(
+        reports[0].active_slot_changes[0]
+    )
+
+
 def test_cli_warm_start_promotes_beer_lambert_only_after_verification(tmp_path):
     output = tmp_path / "beer-warm.json"
     result = subprocess.run(
@@ -160,4 +180,31 @@ def test_cli_reports_michaelis_menten_depth_gate_without_promotion(tmp_path):
     payload = json.loads(output.read_text())
     assert payload["claim_status"] == "verified_showcase"
     assert payload["stage_statuses"]["compiled_seed"] == "unsupported"
+    assert payload["warm_start_eml"]["status"] == "unsupported"
+
+
+def test_cli_reports_planck_as_stretch_without_promotion(tmp_path):
+    output = tmp_path / "planck-warm.json"
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "demo",
+            "planck",
+            "--warm-start-eml",
+            "--points",
+            "24",
+            "--output",
+            str(output),
+        ],
+        check=True,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+    payload = json.loads(output.read_text())
+    assert payload["claim_status"] == "verified_showcase"
+    assert payload["stage_statuses"]["stretch"] == "reported"
+    assert payload["stretch"]["guaranteed_trained_recovery"] is False
     assert payload["warm_start_eml"]["status"] == "unsupported"

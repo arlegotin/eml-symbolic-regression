@@ -51,7 +51,13 @@
   "stage_statuses": {
     "catalog_showcase": "verified_showcase",
     "compiled_seed": "unsupported",
+    "stretch": "reported",
     "warm_start_attempt": "unsupported"
+  },
+  "stretch": {
+    "guaranteed_trained_recovery": false,
+    "reason": "normalized_planck_is_stretch_target",
+    "status": "reported"
   },
   "verification": {
     "candidate_kind": "catalog_sympy",

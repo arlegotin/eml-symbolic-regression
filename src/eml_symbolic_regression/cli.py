@@ -53,6 +53,13 @@ def run_demo(args: argparse.Namespace) -> int:
         "cleanup": cleanup.as_dict(),
         "stage_statuses": stage_statuses,
     }
+    if spec.name == "planck":
+        payload["stretch"] = {
+            "status": "reported",
+            "reason": "normalized_planck_is_stretch_target",
+            "guaranteed_trained_recovery": False,
+        }
+        stage_statuses["stretch"] = "reported"
 
     if args.train_eml:
         train = splits[0]

@@ -5,6 +5,7 @@ subsystem: warm-start
 tags: [training, perturbation, manifests]
 duration: same-session
 completed: 2026-04-15
+requirements-completed: [WARM-01, WARM-02, WARM-03, WARM-04]
 ---
 
 # Phase 11 Summary

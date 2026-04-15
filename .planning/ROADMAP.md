@@ -14,7 +14,7 @@ v1.0 established the exact EML semantics, soft master trees, optimizer, verifier
 ## Milestones
 
 - **v1.0 MVP** - Phases 1-7 complete (completed 2026-04-15)
-- **v1.1 EML Compiler and Warm Starts** - Phases 8-13 planned
+- **v1.1 EML Compiler and Warm Starts** - Phases 8-13 complete (completed 2026-04-15)
 
 ## Completed Milestone Context
 
@@ -123,28 +123,28 @@ The order is intentionally linear. The compiler contract is the trust boundary; 
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COMP-01 | Phase 8 | Pending |
-| COMP-02 | Phase 8 | Pending |
-| COMP-03 | Phase 8 | Pending |
-| COMP-04 | Phase 8 | Pending |
-| CONST-01 | Phase 9 | Pending |
-| CONST-02 | Phase 9 | Pending |
-| EMBED-01 | Phase 9 | Pending |
-| EMBED-02 | Phase 9 | Pending |
-| EMBED-03 | Phase 9 | Pending |
-| ARITH-01 | Phase 10 | Pending |
-| ARITH-02 | Phase 10 | Pending |
-| ARITH-03 | Phase 10 | Pending |
-| WARM-01 | Phase 11 | Pending |
-| WARM-02 | Phase 11 | Pending |
-| WARM-03 | Phase 11 | Pending |
-| WARM-04 | Phase 11 | Pending |
-| DEMO-05 | Phase 12 | Pending |
-| DEMO-06 | Phase 12 | Pending |
-| DEMO-07 | Phase 12 | Pending |
-| DEMO-08 | Phase 12 | Pending |
-| TEST-03 | Phase 13 | Pending |
-| TEST-04 | Phase 13 | Pending |
+| COMP-01 | Phase 8 | Complete |
+| COMP-02 | Phase 8 | Complete |
+| COMP-03 | Phase 8 | Complete |
+| COMP-04 | Phase 8 | Complete |
+| CONST-01 | Phase 9 | Complete |
+| CONST-02 | Phase 9 | Complete |
+| EMBED-01 | Phase 9 | Complete |
+| EMBED-02 | Phase 9 | Complete |
+| EMBED-03 | Phase 9 | Complete |
+| ARITH-01 | Phase 10 | Complete |
+| ARITH-02 | Phase 10 | Complete |
+| ARITH-03 | Phase 10 | Complete |
+| WARM-01 | Phase 11 | Complete |
+| WARM-02 | Phase 11 | Complete |
+| WARM-03 | Phase 11 | Complete |
+| WARM-04 | Phase 11 | Complete |
+| DEMO-05 | Phase 12 | Complete |
+| DEMO-06 | Phase 12 | Complete |
+| DEMO-07 | Phase 12 | Complete |
+| DEMO-08 | Phase 12 | Complete |
+| TEST-03 | Phase 13 | Complete |
+| TEST-04 | Phase 13 | Complete |
 
 **Coverage:** 22/22 v1.1 requirements mapped. No orphaned requirements. No duplicate phase assignments.
 

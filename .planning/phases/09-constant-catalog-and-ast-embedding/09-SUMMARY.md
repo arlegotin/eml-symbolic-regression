@@ -5,6 +5,7 @@ subsystem: master-tree
 tags: [constants, embedding]
 duration: same-session
 completed: 2026-04-15
+requirements-completed: [CONST-01, CONST-02, EMBED-01, EMBED-02, EMBED-03]
 ---
 
 # Phase 9 Summary

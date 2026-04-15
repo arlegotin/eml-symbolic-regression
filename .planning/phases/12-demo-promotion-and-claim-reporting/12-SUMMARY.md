@@ -5,6 +5,7 @@ subsystem: cli
 tags: [demos, reporting, cli]
 duration: same-session
 completed: 2026-04-15
+requirements-completed: [DEMO-05, DEMO-06, DEMO-07, DEMO-08]
 ---
 
 # Phase 12 Summary
