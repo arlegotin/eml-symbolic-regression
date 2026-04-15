@@ -162,6 +162,12 @@ def multiply_expr(left: Expr, right: Expr) -> Expr:
     )
 
 
+def scaled_exponential_expr(variable: str, coefficient: complex) -> Expr:
+    """Exact EML shape evidence for exp(coefficient * variable)."""
+
+    return exp_of(multiply_expr(Const(coefficient), Var(variable)))
+
+
 def divide_expr(left: Expr, right: Expr) -> Expr:
     """Verified EML identity for left / right."""
 
