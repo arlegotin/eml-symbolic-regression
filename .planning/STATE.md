@@ -5,8 +5,8 @@ milestone_name: milestone
 current_phase: 29
 status: executing
 stopped_at: Milestone v1.5 roadmap created; ready for Phase 29 planning
-last_updated: "2026-04-15T13:21:16.157Z"
-last_activity: 2026-04-15 -- Phase 29 planning complete
+last_updated: "2026-04-15T13:21:43.485Z"
+last_activity: 2026-04-15 -- Phase 29 execution started
 progress:
   total_phases: 5
   completed_phases: 0
@@ -26,14 +26,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Milestone v1.5 - Training Proof and Recovery Guarantees
+**Current focus:** Phase 29 — Paper Claim Contract and Proof Dataset Harness
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-04-15 -- Phase 29 planning complete
+Phase: 29 (Paper Claim Contract and Proof Dataset Harness) — EXECUTING
+Plan: 1 of 3
+Status: Executing Phase 29
+Last activity: 2026-04-15 -- Phase 29 execution started
 Progress: [----------] 0% by completed phases (v1.5: 0/5 planned)
 
 ## Performance Metrics
