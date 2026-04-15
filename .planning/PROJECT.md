@@ -10,16 +10,11 @@ The first release is a research-grade Python package and CLI for recovering comp
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current Milestone: v1.1 EML Compiler and Warm Starts
+## Current State: v1.1 Shipped
 
-**Goal:** Turn verified reference demos into actual EML-tree recovery workflows by compiling ordinary formulas into exact EML ASTs and using those trees as warm starts for training.
+The project now includes a compiler-driven warm-start pipeline. Supported SymPy formulas can compile into exact EML ASTs, validate against ordinary evaluation, embed into soft master trees with literal constant catalogs, perturb/train through the existing optimizer, snap, and delegate recovery claims to the verifier.
 
-**Target features:**
-- Implement a practical ordinary-expression-to-EML compiler subset for constants, variables, `exp`, `log`, negation/subtraction, addition, multiplication, and division where feasible.
-- Embed compiled exact EML trees into compatible soft master trees and initialize logits near the compiled structure.
-- Add perturbation/warm-start training that demonstrates recovery from near-correct EML trees.
-- Promote Beer-Lambert and Michaelis-Menten from catalog showcase formulas to trained EML recovery demos when verification passes.
-- Keep normalized Planck as a stretch showcase with honest success/failure reporting.
+v1.1 shipped Beer-Lambert as a verified compiler warm-start recovery. Michaelis-Menten and normalized Planck remain honest catalog/stretch reports under the default depth gates.
 
 ## Requirements
 
@@ -30,15 +25,18 @@ Recover verified, human-readable elementary formulas from data using the paper's
 - ✓ Verifier-owned recovery contract with train, held-out, extrapolation, and mpmath checks — v1 implementation
 - ✓ Demo CLI and reports for examples from `sources/FOR_DEMO.md` — v1 implementation
 - ✓ Pytest coverage and documentation for the MVP pipeline — v1 implementation
+- ✓ Defined SymPy subset compiler into exact EML ASTs with metadata and validation — v1.1
+- ✓ Literal constant catalogs and AST embedding into soft master trees — v1.1
+- ✓ Deterministic perturbation and compiler warm-start training manifests — v1.1
+- ✓ Beer-Lambert trained exact EML recovery via compiler warm start — v1.1
+- ✓ Michaelis-Menten and Planck honest unsupported/stretch reporting under default gates — v1.1
+- ✓ Regression tests and documentation for compiler/warm-start claim taxonomy — v1.1
 
 ### Active
 
-- [ ] Compile a defined subset of ordinary SymPy expressions into exact EML ASTs.
-- [ ] Serialize compiler output with enough metadata to trace source expressions and compiler rules.
-- [ ] Embed compiled EML ASTs into soft master trees as warm-start logits.
-- [ ] Add controlled perturbation of warm-start logits to test return-to-solution behavior.
-- [ ] Run and verify trained EML recovery demos for Beer-Lambert and Michaelis-Menten.
-- [ ] Document which demo formulas are exact trained EML recoveries, warm-start recoveries, catalog showcases, or still unsupported.
+- [ ] Decide the next milestone scope.
+- [ ] Consider reducing compiled arithmetic tree depth so Michaelis-Menten can promote under practical warm-start gates.
+- [ ] Consider pure `{1, eml}` synthesis or coefficient fitting for literal constants in a later milestone.
 
 ### Out of Scope
 
@@ -73,7 +71,9 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 | Keep Rust/CUDA as later acceleration targets | The north-star doc recommends Rust and CUDA after profiling, but v1 can validate semantics and pipeline in Python first. | - Pending |
 | Build a package and CLI before any UI | The strong MVP needs reproducible experiments, verification, and demos more than a frontend. | - Pending |
 | Use YOLO GSD defaults | The user asked to implement start to end and this session cannot use interactive GSD questions. | - Pending |
-| v1.1 focuses on compiler-driven warm starts | This is the shortest path from verified catalog demos to actual trained EML recovery without overpromising blind deep search. | - Pending |
+| v1.1 focuses on compiler-driven warm starts | This is the shortest path from verified catalog demos to actual trained EML recovery without overpromising blind deep search. | ✓ Good |
+| Literal constants are explicit provenance | v1.1 demos need fixed coefficients, but those are not pure `{1, eml}` synthesis claims. | ✓ Good |
+| Planck remains stretch reporting | The compiled Planck tree exceeds default warm-start gates; false promotion would weaken the recovery contract. | ✓ Good |
 
 ## Evolution
 
@@ -93,4 +93,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after starting milestone v1.1*
+*Last updated: 2026-04-15 after shipping milestone v1.1*
