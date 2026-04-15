@@ -27,9 +27,16 @@ v1.3 added named campaign presets, guarded campaign folders, tidy CSV exports, d
 - Deterministic SVG charts for recovery, loss, Beer-Lambert perturbation behavior, runtime/budget, and failure taxonomy.
 - Documentation and committed smoke evidence that present same-AST warm-start return, blind recovery, unsupported gates, and failed fits separately.
 
-## Current Milestone
+## Current Milestone: v1.4 Recovery Performance Improvements
 
-No active milestone. Next logical work is to use the v1.3 scoreboard to improve optimizer/compiler performance, then rerun the standard/showcase campaigns to compare before/after evidence.
+**Goal:** Improve real end-to-end recovery performance against the committed v1.3 standard/showcase baselines, then rerun the same campaigns to produce before/after evidence.
+
+**Target features:**
+- Diagnose v1.3 baseline failures from `artifacts/campaigns/v1.3-standard/` and `artifacts/campaigns/v1.3-showcase/`.
+- Improve blind optimizer robustness for shallow formulas where current training snaps but fails verification.
+- Improve Beer-Lambert warm-start robustness at stronger perturbation levels.
+- Reduce compiler depth/operator blockers for selected FOR_DEMO formulas.
+- Generate a before/after campaign comparison report using the same standard/showcase campaign contracts.
 
 ## Requirements
 
@@ -61,6 +68,7 @@ No active milestone. Next logical work is to use the v1.3 scoreboard to improve 
 
 - [ ] Improve blind optimizer robustness using v1.3 snapped-but-failed cases as a baseline.
 - [ ] Reduce compiled arithmetic tree depth or add templates for formulas currently blocked by depth gates.
+- [ ] Improve high-perturbation Beer-Lambert warm-start recovery without weakening verifier-owned recovery semantics.
 - [ ] Rerun standard/showcase campaigns after optimizer/compiler changes to produce before/after evidence.
 - [ ] Add external noisy datasets after synthetic/source-document campaigns remain reproducible and interpretable.
 
@@ -104,6 +112,7 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 | Same-AST warm-start return is not blind discovery | Benchmark reports count same-AST return separately from verifier-owned recovery rate and unsupported cases. | ✓ Good |
 | v1.3 prioritizes showcase evidence over optimizer changes | The user wants crisp numbers, graphs, and a real-life performance narrative before tuning the algorithm. | ✓ Good |
 | Static reports before dashboards | CSV, SVG, and Markdown evidence proved the metrics before adding an interactive dashboard. | ✓ Good |
+| v1.4 uses committed campaigns as the scoreboard | More baseline runs would mostly confirm the same weaknesses; the useful next step is targeted improvement followed by identical reruns. | - Pending |
 
 ## Evolution
 
@@ -123,4 +132,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-15 after completing milestone v1.3*
+*Last updated: 2026-04-15 after starting milestone v1.4*

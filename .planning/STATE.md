@@ -1,24 +1,24 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.3
-milestone_name: Benchmark Campaign and Evidence Report
-current_phase: complete
-status: completed
-stopped_at: v1.3 phases complete
-last_updated: "2026-04-15T11:38:46.395Z"
+milestone: v1.4
+milestone_name: Recovery Performance Improvements
+current_phase: 24
+status: defining_requirements
+stopped_at: milestone v1.4 started
+last_updated: "2026-04-15T12:45:00Z"
 last_activity: 2026-04-15
 progress:
   total_phases: 5
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** complete
+**Current phase:** 24
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,21 +26,21 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Planning next milestone after v1.3 completion
+**Current focus:** Milestone v1.4 - Recovery Performance Improvements
 
 ## Current Position
 
-Phase: v1.3 complete
-Plan: Complete
-Status: All v1.3 phases complete
-Last activity: 2026-04-15
-Progress: [██████████] 100% by completed phases (v1.3: 5/5)
+Phase: Not started (defining requirements)
+Plan: -
+Status: Defining requirements for v1.4
+Last activity: 2026-04-15 - Milestone v1.4 started
+Progress: [----------] 0% by completed phases (v1.4: 0/5 planned)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1, v1.1, and v1.2 phases complete; v1.3 phases 19-23 complete
+- Total plans completed: Historical v1, v1.1, v1.2, and v1.3 phases complete; v1.4 not started
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
@@ -60,16 +60,17 @@ Progress: [██████████] 100% by completed phases (v1.3: 5/5)
 
 ## Current Milestone
 
-**v1.3: Benchmark Campaign and Evidence Report**
+**v1.4: Recovery Performance Improvements**
 
-Goal: Showcase how the paper's EML symbolic-regression idea performs in practice by running a real benchmark campaign and producing crisp numbers, tables, graphs, and a polished evidence report.
+Goal: Improve real end-to-end recovery performance against the committed v1.3 standard/showcase baselines, then rerun the same campaigns to produce before/after evidence.
 
 Target features:
 
-- Campaign presets that run the v1.2 benchmark matrix at smoke, standard, and showcase budgets with reproducible output folders.
-- CSV exports for run-level metrics, grouped recovery rates, losses, timing, perturbation sensitivity, and failure taxonomy.
-- Static publication-style plots for recovery rate, loss before/after snapping, Beer-Lambert perturbation behavior, runtime/depth, and unsupported/failure breakdowns.
-- A self-contained report folder with `report.md`, figures, CSV/JSON data, exact commands, and an honest narrative about what works, what fails, and what remains hard.
+- Baseline failure triage using v1.3 standard/showcase artifacts.
+- Blind optimizer improvements for shallow formulas that currently snap but fail verification.
+- Warm-start robustness improvements for stronger Beer-Lambert perturbations.
+- Compiler depth/operator coverage improvements for selected FOR_DEMO formulas.
+- Before/after campaign comparison reports using the same standard/showcase contracts.
 
 ## Phase Status
 
@@ -117,6 +118,8 @@ Target features:
 - Phase 21 added deterministic SVG plots for recovery, loss, perturbation behavior, runtime, and failure taxonomy.
 - Phase 22 added self-contained campaign `report.md` assembly with metrics, links, limitations, and next experiments.
 - Phase 23 added CLI/docs coverage, committed the v1.3 smoke campaign artifact, and verified the full test suite.
+- v1.4 should change the measured performance, not the definition of `recovered`.
+- v1.4 should use the committed v1.3 `standard` and `showcase` campaigns as before/after baselines.
 
 ### Pending Todos
 
@@ -129,8 +132,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-15
-Stopped at: v1.3 phases complete
+Stopped at: milestone v1.4 started; defining requirements
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after completing Phase 23*
+*Last updated: 2026-04-15 after starting milestone v1.4*
