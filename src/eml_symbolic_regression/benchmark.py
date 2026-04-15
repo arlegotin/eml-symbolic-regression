@@ -145,6 +145,13 @@ class OptimizerBudget:
         }
 
 
+def _tuple_field(payload: Mapping[str, Any], key: str, default: tuple[Any, ...], path: str) -> tuple[Any, ...]:
+    value = payload.get(key, default)
+    if not isinstance(value, (list, tuple)):
+        raise BenchmarkValidationError("malformed_case", f"{key} must be a list", path=f"{path}.{key}")
+    return tuple(value)
+
+
 @dataclass(frozen=True)
 class BenchmarkCase:
     id: str
@@ -166,8 +173,9 @@ class BenchmarkCase:
         for key in required:
             if key not in payload:
                 raise BenchmarkValidationError("malformed_case", f"missing required field {key!r}", path=path)
-        seeds = tuple(int(seed) for seed in payload.get("seeds", (0,)))
-        noises = tuple(float(value) for value in payload.get("perturbation_noise", (0.0,)))
+        seeds = tuple(int(seed) for seed in _tuple_field(payload, "seeds", (0,), path))
+        noises = tuple(float(value) for value in _tuple_field(payload, "perturbation_noise", (0.0,), path))
+        tags = tuple(str(tag) for tag in _tuple_field(payload, "tags", (), path))
         if "evidence_class" in payload:
             raise BenchmarkValidationError(
                 "invalid_proof_contract",
@@ -182,7 +190,7 @@ class BenchmarkCase:
             perturbation_noise=noises,
             dataset=DatasetConfig.from_mapping(payload.get("dataset")),
             optimizer=OptimizerBudget.from_mapping(payload.get("optimizer")),
-            tags=tuple(str(tag) for tag in payload.get("tags", ())),
+            tags=tags,
             expect_recovery=bool(payload.get("expect_recovery", False)),
             claim_id=_optional_str(payload.get("claim_id")),
             threshold_policy_id=_optional_str(payload.get("threshold_policy_id")),

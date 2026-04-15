@@ -118,6 +118,34 @@ def test_custom_suite_loads_from_json(tmp_path):
     assert str(runs[0].artifact_path).startswith(str(tmp_path / "artifacts"))
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("seeds", "10"),
+        ("perturbation_noise", "0.0"),
+        ("tags", "smoke"),
+    ],
+)
+def test_custom_suite_rejects_string_sequence_fields(tmp_path, field, value):
+    path = tmp_path / "suite.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema": "eml.benchmark_suite.v1",
+                "id": "custom",
+                "cases": [{"id": "compile-exp", "formula": "exp", "start_mode": "compile", field: value}],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        load_suite(path)
+
+    assert exc.value.reason == "malformed_case"
+    assert exc.value.path == f"cases[0].{field}"
+
+
 def test_case_accepts_and_serializes_proof_metadata():
     case = BenchmarkCase.from_mapping(
         {
