@@ -92,6 +92,18 @@ Generate a full campaign folder with CSVs, figures, and `report.md`:
 PYTHONPATH=src python -m eml_symbolic_regression.cli campaign smoke --output-root artifacts/campaigns
 ```
 
+Generate the measured depth-curve proof campaign:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli campaign proof-depth-curve --output-root artifacts/campaigns
+```
+
+Generate the full v1.5 proof bundle and claim report:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli proof-campaign --output-root artifacts/proof/v1.5 --overwrite
+```
+
 Reproduce the committed v1.3 smoke report:
 
 ```bash
@@ -151,6 +163,11 @@ Campaigns are the presentation layer over benchmark suites. The built-in presets
 - `smoke`: CI-scale run with one blind baseline, one warm-start recovery path, and one unsupported diagnostic.
 - `standard`: default showcase matrix with shallow blind baselines, Beer-Lambert perturbation sweeps, Michaelis-Menten diagnostics, Planck diagnostics, and selected FOR_DEMO cases.
 - `showcase`: expanded seeds and perturbation levels for presentation-grade evidence.
+- `proof-shallow`: bounded scaffolded shallow proof suite.
+- `proof-shallow-pure-blind`: measured pure-blind shallow proof suite with scaffold initializers disabled.
+- `proof-basin`: bounded perturbed-basin proof suite.
+- `proof-basin-probes`: visible Beer-Lambert high-noise probe rows outside the bounded basin denominator.
+- `proof-depth-curve`: measured blind-vs-perturbed depth-curve suite over deterministic exact EML targets at depths 2 through 6.
 
 Each campaign folder contains:
 
@@ -160,6 +177,8 @@ Each campaign folder contains:
 - `tables/`: `runs.csv`, grouped recovery CSVs, `headline-metrics.json/.csv`, and `failures.csv`.
 - `figures/`: deterministic SVG charts for recovery, losses, Beer-Lambert perturbations, runtime/budget, and failure taxonomy.
 - `report.md`: self-contained evidence report with numbers, charts, limitations, next experiments, and the exact reproduction command.
+
+The one-command proof bundle at `artifacts/proof/v1.5/` aggregates the proof campaigns above, writes a combined `proof-report.md`, preserves the perturbed-basin bound report, and includes a guarded comparison section against the broader v1.4 campaign baselines without mixing denominators.
 
 The committed smoke report is at `artifacts/campaigns/v1.3-smoke/report.md`. Current smoke metrics are intentionally modest: 3 runs total, 1 verifier recovery via same-AST warm start, 1 blind snapped-but-failed run, and 1 unsupported Planck depth gate.
 

@@ -1,7 +1,7 @@
 # Roadmap: EML Symbolic Regression
 
 **Created:** 2026-04-15
-**Updated:** 2026-04-15
+**Updated:** 2026-04-16
 **Granularity:** Coarse
 **Mode:** YOLO
 **Current milestone:** v1.5 Training Proof and Recovery Guarantees
@@ -20,7 +20,7 @@ The milestone target is deliberately bounded and measurable. It must achieve 100
 - **v1.2 Training Benchmark and Recovery Evidence** - Phases 14-18 complete (completed 2026-04-15; archive: `.planning/milestones/v1.2-ROADMAP.md`)
 - **v1.3 Benchmark Campaign and Evidence Report** - Phases 19-23 complete (completed 2026-04-15; archive: `.planning/milestones/v1.3-ROADMAP.md`)
 - **v1.4 Recovery Performance Improvements** - Phases 24-28 complete (completed 2026-04-15; archive: `.planning/milestones/v1.4-ROADMAP.md`)
-- **v1.5 Training Proof and Recovery Guarantees** - Phases 29-33 planned
+- **v1.5 Training Proof and Recovery Guarantees** - Phases 29-33 complete (completed 2026-04-16; audit: `.planning/v1.5-MILESTONE-AUDIT.md`)
 
 ## Completed Milestone Context
 
@@ -40,10 +40,10 @@ The milestone target is deliberately bounded and measurable. It must achieve 100
 - Decimal phases can be inserted later for urgent gap closure.
 
 - [x] **Phase 29: Paper Claim Contract and Proof Dataset Harness** - Convert paper statements into executable claim suites, datasets, and pass/fail thresholds. (requirements: CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04) (completed 2026-04-15)
-- [ ] **Phase 30: Bounded Shallow Blind Training Recovery** - Repair blind training so the declared shallow proof suite reaches 100% verifier-owned recovery. (requirements: SHAL-01, SHAL-02, SHAL-03, SHAL-04) (review-blocked 2026-04-15: current recovery is scaffolded, not pure blind)
+- [x] **Phase 30: Bounded Shallow Blind Training Recovery** - Repair blind training so the declared shallow proof suite reaches 100% verifier-owned recovery. (requirements: SHAL-01, SHAL-02, SHAL-03, SHAL-04) (completed 2026-04-15 via measured pure-blind plus bounded scaffolded split)
 - [x] **Phase 31: Perturbed Basin Training and Local Repair** - Prove perturbed true-tree recovery over declared bounds and repair Beer-Lambert high-noise failures where feasible. (requirements: BASN-01, BASN-02, BASN-03, BASN-04, BASN-05) (completed 2026-04-15)
-- [ ] **Phase 32: Paper Depth-Curve Training Evidence** - Reproduce the paper's qualitative blind-vs-perturbed depth behavior with real training runs and metrics. (requirements: CURV-01, CURV-02, CURV-03, CURV-04)
-- [ ] **Phase 33: Proof Campaign Report and Evidence Lockdown** - Generate the v1.5 proof campaign, report claims honestly, and lock the workflow with tests. (requirements: EVID-01, EVID-02, EVID-03, EVID-04, EVID-05)
+- [x] **Phase 32: Paper Depth-Curve Training Evidence** - Reproduce the paper's qualitative blind-vs-perturbed depth behavior with real training runs and metrics. (requirements: CURV-01, CURV-02, CURV-03, CURV-04) (completed 2026-04-16)
+- [x] **Phase 33: Proof Campaign Report and Evidence Lockdown** - Generate the v1.5 proof campaign, report claims honestly, and lock the workflow with tests. (requirements: EVID-01, EVID-02, EVID-03, EVID-04, EVID-05) (completed 2026-04-16)
 
 ## Phase Details
 
@@ -104,7 +104,9 @@ Plans:
   2. Reports include recovery rates, seed counts, loss distributions, post-snap losses, runtime, snap distance, and training mode.
   3. Narrative compares measured behavior to the paper's claims without treating expected deeper blind failures as regressions.
   4. Raw artifacts are committed or reproducibly generated so future optimizer changes can compare against v1.5.
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [x] 32-01-PLAN.md - Deterministic exact depth inventory, measured proof-depth-curve suite, aggregate depth summaries, and campaign reporting hooks.
 
 ### Phase 33: Proof Campaign Report and Evidence Lockdown
 **Goal**: Users receive a self-contained v1.5 proof report that shows what training can prove, where it is bounded, and what remains unresolved.
@@ -116,7 +118,9 @@ Plans:
   3. Reproduction commands work from a clean checkout using committed configuration.
   4. Tests lock claim matrix, dataset generation, proof suite execution, repair behavior, depth-curve aggregation, and report generation.
   5. v1.5 proof-suite results compare against v1.4 campaign evidence without mixing proof-suite and showcase success rates.
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [x] 33-01-PLAN.md - One-command proof bundle, claim report, basin-bound carry-through, and workflow lockdown tests.
 
 ## Dependency Order
 
@@ -131,10 +135,10 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLAIM-01 | Phase 29 | Pending |
-| CLAIM-02 | Phase 29 | Pending |
-| CLAIM-03 | Phase 29 | Pending |
-| CLAIM-04 | Phase 29 | Pending |
+| CLAIM-01 | Phase 29 | Complete |
+| CLAIM-02 | Phase 29 | Complete |
+| CLAIM-03 | Phase 29 | Complete |
+| CLAIM-04 | Phase 29 | Complete |
 | SHAL-01 | Phase 30 | Complete |
 | SHAL-02 | Phase 30 | Complete |
 | SHAL-03 | Phase 30 | Complete |
@@ -144,15 +148,15 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | BASN-03 | Phase 31 | Complete |
 | BASN-04 | Phase 31 | Complete |
 | BASN-05 | Phase 31 | Complete |
-| CURV-01 | Phase 32 | Pending |
-| CURV-02 | Phase 32 | Pending |
-| CURV-03 | Phase 32 | Pending |
-| CURV-04 | Phase 32 | Pending |
-| EVID-01 | Phase 33 | Pending |
-| EVID-02 | Phase 33 | Pending |
-| EVID-03 | Phase 33 | Pending |
-| EVID-04 | Phase 33 | Pending |
-| EVID-05 | Phase 33 | Pending |
+| CURV-01 | Phase 32 | Complete |
+| CURV-02 | Phase 32 | Complete |
+| CURV-03 | Phase 32 | Complete |
+| CURV-04 | Phase 32 | Complete |
+| EVID-01 | Phase 33 | Complete |
+| EVID-02 | Phase 33 | Complete |
+| EVID-03 | Phase 33 | Complete |
+| EVID-04 | Phase 33 | Complete |
+| EVID-05 | Phase 33 | Complete |
 
 **Coverage:** 22/22 v1.5 requirements mapped. No orphaned requirements. No duplicate phase assignments.
 
@@ -170,8 +174,8 @@ Phase 29 defines the claim contract and datasets. Phases 30 and 31 can proceed i
 | 29. Paper Claim Contract and Proof Dataset Harness | 3/3 | Complete    | 2026-04-15 |
 | 30. Shallow Training Claim Split and Scaffolded Recovery | 3/3 | Complete | 2026-04-15 |
 | 31. Perturbed Basin Training and Local Repair | 3/3 | Complete    | 2026-04-15 |
-| 32. Paper Depth-Curve Training Evidence | 0/1 | Pending | - |
-| 33. Proof Campaign Report and Evidence Lockdown | 0/1 | Pending | - |
+| 32. Paper Depth-Curve Training Evidence | 1/1 | Complete | 2026-04-16 |
+| 33. Proof Campaign Report and Evidence Lockdown | 1/1 | Complete | 2026-04-16 |
 
 ---
-*Roadmap updated: 2026-04-15 after resolving Phase 30 with separate measured pure-blind and bounded scaffolded shallow claims*
+*Roadmap updated: 2026-04-16 after completing the v1.5 depth-curve and proof-bundle phases*

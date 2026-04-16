@@ -328,17 +328,30 @@ def claim_matrix() -> dict[str, PaperClaim]:
         "paper-blind-depth-degradation": PaperClaim(
             id="paper-blind-depth-degradation",
             statement=(
-                "Blind recovery is expected to degrade with increasing EML depth; deeper blind failures are measured "
+                "Blind recovery is expected to degrade with increasing EML depth, while perturbed true-tree starts "
+                "remain much more reliable on the same deterministic target inventory; these measured rows are "
                 "evidence rather than regressions against a universal 100% target."
             ),
             source_refs=("sources/paper.pdf", "sources/NORTH_STAR.md", ".planning/REQUIREMENTS.md", ".planning/ROADMAP.md"),
             claim_class=CLAIM_CLASSES["measured_depth_curve"],
             suite_ids=("proof-depth-curve",),
-            case_ids=("depth_2", "depth_3", "depth_4", "depth_5", "depth_6"),
+            case_ids=(
+                "depth-2-blind",
+                "depth-3-blind",
+                "depth-4-blind",
+                "depth-5-blind",
+                "depth-6-blind",
+                "depth-2-perturbed",
+                "depth-3-perturbed",
+                "depth-4-perturbed",
+                "depth-5-perturbed",
+                "depth-6-perturbed",
+            ),
             threshold_policy_id="measured_depth_curve",
             notes=(
                 "The paper reports rapid blind-depth degradation, including no depth-6 blind recovery in its reported attempts.",
                 "Depth-curve reports must not present expected deep blind failures as product regressions.",
+                "Perturbed rows provide comparative basin evidence inside the same measured suite, not a bounded 100% claim.",
             ),
         ),
     }

@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: milestone
-current_phase: 32
-status: ready
-stopped_at: Phase 30 claim split and Phase 31 complete; Phase 32 ready to plan
-last_updated: "2026-04-15T21:31:00.000Z"
-last_activity: 2026-04-15 -- Phase 30 resolved with measured pure-blind and bounded scaffolded claims
+current_phase: 33
+status: completed
+stopped_at: Milestone v1.5 complete; proof bundle, phase verification, and milestone audit written
+last_updated: "2026-04-16T06:55:45.000Z"
+last_activity: 2026-04-16 -- Phase 32 depth curve and Phase 33 proof bundle completed
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
-  percent: 60
+  completed_phases: 5
+  total_plans: 11
+  completed_plans: 11
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 32
+**Current phase:** 33
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-15)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 32 — Paper Depth-Curve Training Evidence
+**Current focus:** Milestone complete — v1.5 proof bundle and audit are ready for review
 
 ## Current Position
 
-Phase: 32 (Paper Depth-Curve Training Evidence) — READY
-Plan: Not started
-Status: Ready to plan now that Phase 30 and Phase 31 are complete
-Last activity: 2026-04-15 -- Phase 30 resolved with measured pure-blind and bounded scaffolded claims
-Progress: [######----] 60% by completed phases (v1.5: 3/5 complete)
+Phase: 33 (Proof Campaign Report and Evidence Lockdown) — COMPLETE
+Plan: 33-01 complete
+Status: Milestone complete
+Last activity: 2026-04-16 -- Phase 32 depth curve and Phase 33 proof bundle completed
+Progress: [##########] 100% by completed phases (v1.5: 5/5 complete)
 
 ## Performance Metrics
 
@@ -60,6 +60,8 @@ Progress: [######----] 60% by completed phases (v1.5: 3/5 complete)
 | v1.4 comparison report | `artifacts/campaigns/v1.4-comparison/comparison.md` | Complete |
 | v1.5 requirements | `.planning/REQUIREMENTS.md` | Complete |
 | v1.5 roadmap | `.planning/ROADMAP.md` | Complete |
+| v1.5 proof report | `artifacts/proof/v1.5/proof-report.md` | Complete |
+| v1.5 milestone audit | `.planning/v1.5-MILESTONE-AUDIT.md` | Complete |
 
 ## Current Milestone
 
@@ -83,8 +85,8 @@ Target features:
 | 29 | Paper Claim Contract and Proof Dataset Harness | Complete | CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04 |
 | 30 | Shallow Training Claim Split and Scaffolded Recovery | Complete | SHAL-01, SHAL-02, SHAL-03, SHAL-04 |
 | 31 | Perturbed Basin Training and Local Repair | Complete | BASN-01, BASN-02, BASN-03, BASN-04, BASN-05 |
-| 32 | Paper Depth-Curve Training Evidence | Ready | CURV-01, CURV-02, CURV-03, CURV-04 |
-| 33 | Proof Campaign Report and Evidence Lockdown | Pending | EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
+| 32 | Paper Depth-Curve Training Evidence | Complete | CURV-01, CURV-02, CURV-03, CURV-04 |
+| 33 | Proof Campaign Report and Evidence Lockdown | Complete | EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
 
 ## Accumulated Context
 
@@ -100,6 +102,8 @@ Target features:
 - Phase 29 established the v1.5 proof contract: stable paper claim matrix, deterministic proof dataset manifests, proof-aware benchmark artifacts, derived evidence classes, claim-level threshold summaries, CLI inspection commands, and campaign proof metadata/reporting.
 - Phase 30 review CR-01 is resolved by splitting the shallow claim contract: `paper-shallow-blind-recovery` is now a measured pure random-initialized blind boundary with scaffold initializers disabled, and `paper-shallow-scaffolded-recovery` owns the bounded 100% scaffolded proof suite.
 - Phase 31 completed and verified perturbed true-tree basin recovery, verifier-gated local repair, and durable Beer-Lambert bound evidence. BASN-01 through BASN-05 are complete.
+- Phase 32 completed a deterministic exact depth inventory, a measured `proof-depth-curve` suite, per-depth blind-versus-perturbed summaries, and campaign report hooks that preserve deeper blind failures as expected paper-boundary evidence.
+- Phase 33 completed the one-command `proof-campaign` bundle rooted at `artifacts/proof/v1.5/`, keeping v1.5 proof denominators separate from v1.4 showcase baselines and carrying forward the perturbed basin bound report.
 
 ### Pending Todos
 
@@ -107,9 +111,7 @@ None recorded.
 
 ### Blockers/Concerns
 
-The milestone must not claim universal blind recovery of arbitrary deep elementary expressions, because the source paper reports rapid blind recovery degradation beyond shallow depths.
-
-Phase 32 depends on Phase 30, Phase 31, and Phase 29. Those dependencies are complete; Phase 32 should use the pure-blind measured boundary and scaffolded proof claim as inputs.
+The milestone intentionally does not claim universal blind recovery of arbitrary deep elementary expressions, because the source paper reports rapid blind recovery degradation beyond shallow depths.
 
 ### Quick Tasks Completed
 
@@ -119,9 +121,9 @@ Phase 32 depends on Phase 30, Phase 31, and Phase 29. Those dependencies are com
 
 ## Session Continuity
 
-Last session: 2026-04-15
-Stopped at: Phase 30 claim split and Phase 31 complete; Phase 32 ready to plan
+Last session: 2026-04-16
+Stopped at: Milestone v1.5 complete; proof bundle, phase verification, and milestone audit written
 Resume file: None
 
 ---
-*Last updated: 2026-04-15 after resolving Phase 30 and unblocking Phase 32*
+*Last updated: 2026-04-16 after completing the v1.5 proof bundle and milestone audit*

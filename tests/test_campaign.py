@@ -76,6 +76,8 @@ def test_campaign_presets_map_to_budgeted_suites():
         "proof-shallow",
         "proof-shallow-pure-blind",
         "proof-basin",
+        "proof-basin-probes",
+        "proof-depth-curve",
     )
 
     standard = campaign_preset("standard")
@@ -101,6 +103,14 @@ def test_campaign_presets_map_to_budgeted_suites():
     assert proof_basin.benchmark_suite == "proof-perturbed-basin"
     assert proof_basin.budget_guardrail == "CI-scale perturbed basin proof suite; high-noise probes are reported separately"
     assert any(run.case_id == "basin-beer-lambert-bound" for run in load_suite(proof_basin.suite).expanded_runs())
+
+    proof_basin_probes = campaign_preset("proof-basin-probes")
+    assert proof_basin_probes.suite == "proof-perturbed-basin-beer-probes"
+    assert any(run.case_id == "basin-beer-lambert-bound-probes" for run in load_suite(proof_basin_probes.suite).expanded_runs())
+
+    depth_curve = campaign_preset("proof-depth-curve")
+    assert depth_curve.suite == "proof-depth-curve"
+    assert any(run.case_id == "depth-6-perturbed" for run in load_suite(depth_curve.suite).expanded_runs())
 
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
@@ -396,6 +406,25 @@ def test_proof_basin_report_names_probe_suite_and_status_taxonomy(tmp_path):
     assert "`repair_status`" in report
     assert "paper-perturbed-true-tree-basin" in proof_section
     assert "basin-beer-lambert-bound-probes" not in proof_section
+
+
+def test_depth_curve_campaign_writes_depth_curve_tables_and_report(tmp_path):
+    result = run_campaign(
+        "proof-depth-curve",
+        output_root=tmp_path,
+        label="depth-curve",
+        run_filter=RunFilter(case_ids=("depth-2-blind", "depth-2-perturbed"), seeds=(0,)),
+    )
+
+    assert result.table_paths["depth_curve_csv"].exists()
+    rows = list(csv.DictReader(result.table_paths["depth_curve_csv"].open(encoding="utf-8")))
+    assert {row["start_mode"] for row in rows} == {"blind", "perturbed_tree"}
+    assert {row["depth"] for row in rows} == {"2"}
+
+    report = result.report_path.read_text(encoding="utf-8")
+    assert "## Depth Curve" in report
+    assert "paper reports that blind recovery falls sharply with depth" in report
+    assert "depth-curve-recovery.svg" in report
 
 
 def test_campaign_writes_stable_svg_figures(tmp_path):

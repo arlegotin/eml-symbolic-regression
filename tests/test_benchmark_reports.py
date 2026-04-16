@@ -29,6 +29,7 @@ def _synthetic_result(
     status: str = "recovered",
     claim_status: str = "recovered",
     perturbation_noise: float = 0.0,
+    depth: int = 1,
     return_kind: str | None = None,
     raw_status: str | None = None,
     repair_status: str | None = None,
@@ -44,7 +45,7 @@ def _synthetic_result(
         seed=0,
         perturbation_noise=perturbation_noise,
         dataset=DatasetConfig(points=12),
-        optimizer=OptimizerBudget(depth=1, steps=1, restarts=1),
+        optimizer=OptimizerBudget(depth=depth, steps=1, restarts=1),
         artifact_path=Path(f"/tmp/{case_id}.json"),
         claim_id=claim_id,
         threshold_policy_id=threshold_policy_id,
@@ -65,7 +66,11 @@ def _synthetic_result(
         "dataset": run.dataset.as_dict(),
         "dataset_manifest": {"schema": "eml.proof_dataset_manifest.v1"},
         "provenance": {"symbolic_expression": "exp(x)"},
-        "metrics": {},
+        "metrics": {
+            "best_loss": 0.01,
+            "post_snap_loss": 0.02,
+            "snap_min_margin": 0.7,
+        },
         "stage_statuses": {},
     }
     return BenchmarkRunResult(run, status, run.artifact_path, payload)
@@ -489,6 +494,67 @@ def test_measured_depth_curve_threshold_is_reported_not_failed():
     assert threshold["rate"] == 1.0
     assert threshold["required_rate"] is None
     assert threshold["status"] == "reported"
+
+
+def test_depth_curve_summary_groups_by_depth_and_mode():
+    suite = BenchmarkSuite("synthetic-depth-curve", "synthetic depth curve aggregate", ())
+    result = SimpleNamespace(
+        suite=suite,
+        results=(
+            _synthetic_result(
+                case_id="depth-2-blind",
+                start_mode="blind",
+                training_mode="blind_training",
+                evidence_class="blind_training_recovered",
+                depth=2,
+                claim_id="paper-blind-depth-degradation",
+                claim_class="measured_depth_curve",
+                threshold_policy_id="measured_depth_curve",
+            ),
+            _synthetic_result(
+                case_id="depth-4-blind",
+                start_mode="blind",
+                training_mode="blind_training",
+                evidence_class="failed",
+                status="failed",
+                claim_status="failed",
+                depth=4,
+                claim_id="paper-blind-depth-degradation",
+                claim_class="measured_depth_curve",
+                threshold_policy_id="measured_depth_curve",
+            ),
+            _synthetic_result(
+                case_id="depth-4-perturbed",
+                start_mode="perturbed_tree",
+                training_mode="perturbed_true_tree_training",
+                evidence_class="perturbed_true_tree_recovered",
+                perturbation_noise=0.05,
+                depth=4,
+                claim_id="paper-blind-depth-degradation",
+                claim_class="measured_depth_curve",
+                threshold_policy_id="measured_depth_curve",
+            ),
+        ),
+    )
+
+    aggregate = aggregate_evidence(result)
+    rows = aggregate["depth_curve"]
+    markdown = render_aggregate_markdown(aggregate)
+
+    assert {(row["depth"], row["start_mode"]) for row in rows} == {(2, "blind"), (4, "blind"), (4, "perturbed_tree")}
+    depth4_blind = next(row for row in rows if row["depth"] == 4 and row["start_mode"] == "blind")
+    depth4_perturbed = next(row for row in rows if row["depth"] == 4 and row["start_mode"] == "perturbed_tree")
+
+    assert depth4_blind["recovered"] == 0
+    assert depth4_blind["total"] == 1
+    assert depth4_blind["recovery_rate"] == 0.0
+    assert depth4_blind["seed_count"] == 1
+    assert depth4_blind["best_loss_values"] == [0.01]
+    assert depth4_perturbed["recovered"] == 1
+    assert depth4_perturbed["recovery_rate"] == 1.0
+    assert depth4_perturbed["evidence_classes"] == {"perturbed_true_tree_recovered": 1}
+    assert "## Depth Curve" in markdown
+    assert "| 4 | blind | 1 | 0 | 1 | 0.000 |" in markdown
 
 
 def test_write_aggregate_reports_outputs_json_and_markdown(tmp_path):

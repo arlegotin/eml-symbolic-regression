@@ -347,6 +347,41 @@ def test_perturbed_tree_repair_promotes_artifact_without_overwriting_raw(monkeyp
     assert artifact["metrics"]["repair_verifier_status"] == "recovered"
 
 
+def test_depth_curve_runner_records_blind_failure_and_perturbed_recovery(tmp_path):
+    base = builtin_suite("proof-depth-curve")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(
+        suite,
+        run_filter=RunFilter(case_ids=("depth-4-blind", "depth-4-perturbed"), seeds=(0,)),
+    )
+    artifacts = {
+        item.run.case_id: json.loads(item.artifact_path.read_text(encoding="utf-8"))
+        for item in result.results
+    }
+
+    blind = artifacts["depth-4-blind"]
+    perturbed = artifacts["depth-4-perturbed"]
+
+    assert blind["run"]["start_mode"] == "blind"
+    assert blind["training_mode"] == "blind_training"
+    assert blind["claim_id"] == "paper-blind-depth-degradation"
+    assert blind["threshold"]["id"] == "measured_depth_curve"
+    assert blind["status"] in {"snapped_but_failed", "failed"}
+    assert blind["claim_status"] == "failed"
+    assert blind["evidence_class"] in {"snapped_but_failed", "failed", "soft_fit_only"}
+
+    assert perturbed["run"]["start_mode"] == "perturbed_tree"
+    assert perturbed["training_mode"] == "perturbed_true_tree_training"
+    assert perturbed["claim_id"] == "paper-blind-depth-degradation"
+    assert perturbed["threshold"]["id"] == "measured_depth_curve"
+    assert perturbed["status"] == "recovered"
+    assert perturbed["claim_status"] == "recovered"
+    assert perturbed["return_kind"] == "same_ast_return"
+    assert perturbed["raw_status"] == "recovered"
+    assert perturbed["evidence_class"] == "perturbed_true_tree_recovered"
+
+
 def test_cli_benchmark_writes_suite_result(tmp_path):
     result = subprocess.run(
         [

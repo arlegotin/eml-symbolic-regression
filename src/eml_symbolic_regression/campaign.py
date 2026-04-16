@@ -121,6 +121,20 @@ _PRESETS = {
         description="Bounded v1.5 perturbed basin proof campaign with Beer-Lambert probe evidence reported separately.",
         budget_guardrail="CI-scale perturbed basin proof suite; high-noise probes are reported separately",
     ),
+    "proof-basin-probes": CampaignPreset(
+        name="proof-basin-probes",
+        suite="proof-perturbed-basin-beer-probes",
+        tier="proof-contract",
+        description="Visible v1.5 Beer-Lambert perturbed-basin probe campaign outside bounded thresholds.",
+        budget_guardrail="4 runs; declared Beer-Lambert high-noise probe rows kept outside the bounded proof denominator.",
+    ),
+    "proof-depth-curve": CampaignPreset(
+        name="proof-depth-curve",
+        suite="proof-depth-curve",
+        tier="proof-contract",
+        description="Measured v1.5 blind-vs-perturbed depth-curve campaign over deterministic exact EML targets.",
+        budget_guardrail="20 runs; exact depth-2 through depth-6 blind and perturbed rows with fixed seeds and budgets.",
+    ),
 }
 
 
@@ -210,6 +224,7 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
         "group_evidence_class_csv": output_dir / "group-evidence-class.csv",
         "group_claim_csv": output_dir / "group-claim.csv",
         "group_threshold_policy_csv": output_dir / "group-threshold-policy.csv",
+        "depth_curve_csv": output_dir / "depth-curve.csv",
         "headline_json": output_dir / "headline-metrics.json",
         "headline_csv": output_dir / "headline-metrics.csv",
         "failures_csv": output_dir / "failures.csv",
@@ -226,6 +241,7 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
     _write_csv(paths["group_evidence_class_csv"], _group_rows(runs, "evidence_class"), _GROUP_COLUMNS)
     _write_csv(paths["group_claim_csv"], _group_rows(runs, "claim_id"), _GROUP_COLUMNS)
     _write_csv(paths["group_threshold_policy_csv"], _group_rows(runs, lambda run: (run.get("threshold") or {}).get("id")), _GROUP_COLUMNS)
+    _write_csv(paths["depth_curve_csv"], _depth_curve_table_rows(aggregate.get("depth_curve", [])), _DEPTH_CURVE_COLUMNS)
 
     headline = _headline_metrics(runs)
     _write_json(paths["headline_json"], headline)
@@ -250,6 +266,7 @@ def write_campaign_plots(aggregate: Mapping[str, Any], output_dir: Path) -> dict
         "beer_perturbation": output_dir / "beer-perturbation.svg",
         "runtime_depth_budget": output_dir / "runtime-depth-budget.svg",
         "failure_taxonomy": output_dir / "failure-taxonomy.svg",
+        "depth_curve_recovery": output_dir / "depth-curve-recovery.svg",
     }
 
     _write_svg(
@@ -274,6 +291,7 @@ def write_campaign_plots(aggregate: Mapping[str, Any], output_dir: Path) -> dict
     _write_svg(paths["beer_perturbation"], _beer_perturbation_svg(runs))
     _write_svg(paths["runtime_depth_budget"], _runtime_depth_svg(runs))
     _write_svg(paths["failure_taxonomy"], _failure_taxonomy_svg(runs))
+    _write_svg(paths["depth_curve_recovery"], _depth_curve_recovery_svg(aggregate.get("depth_curve", [])))
     return paths
 
 
@@ -326,6 +344,7 @@ def write_campaign_report(
         "",
     ]
     lines.extend(_proof_contract_section(runs, aggregate))
+    lines.extend(_depth_curve_report_section(aggregate))
     lines.extend(
         [
             "## Figures",
@@ -529,6 +548,28 @@ _GROUP_COLUMNS = [
     "failure_rate",
 ]
 
+_DEPTH_CURVE_COLUMNS = [
+    "depth",
+    "start_mode",
+    "training_mode",
+    "seed_count",
+    "recovered",
+    "total",
+    "recovery_rate",
+    "best_loss_median",
+    "best_loss_min",
+    "best_loss_max",
+    "post_snap_loss_median",
+    "post_snap_loss_min",
+    "post_snap_loss_max",
+    "runtime_seconds_median",
+    "runtime_seconds_min",
+    "runtime_seconds_max",
+    "snap_min_margin_median",
+    "snap_min_margin_min",
+    "snap_min_margin_max",
+]
+
 _FAILURE_COLUMNS = [
     "run_id",
     "formula",
@@ -598,6 +639,33 @@ def _failure_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
     row = _run_csv_row(run)
     row["classification"] = run.get("classification")
     return row
+
+
+def _depth_curve_table_rows(rows: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        {
+            "depth": row.get("depth"),
+            "start_mode": row.get("start_mode"),
+            "training_mode": row.get("training_mode"),
+            "seed_count": row.get("seed_count"),
+            "recovered": row.get("recovered"),
+            "total": row.get("total"),
+            "recovery_rate": row.get("recovery_rate"),
+            "best_loss_median": row.get("best_loss_median"),
+            "best_loss_min": row.get("best_loss_min"),
+            "best_loss_max": row.get("best_loss_max"),
+            "post_snap_loss_median": row.get("post_snap_loss_median"),
+            "post_snap_loss_min": row.get("post_snap_loss_min"),
+            "post_snap_loss_max": row.get("post_snap_loss_max"),
+            "runtime_seconds_median": row.get("runtime_seconds_median"),
+            "runtime_seconds_min": row.get("runtime_seconds_min"),
+            "runtime_seconds_max": row.get("runtime_seconds_max"),
+            "snap_min_margin_median": row.get("snap_min_margin_median"),
+            "snap_min_margin_min": row.get("snap_min_margin_min"),
+            "snap_min_margin_max": row.get("snap_min_margin_max"),
+        }
+        for row in rows
+    ]
 
 
 def _group_rows(runs: list[Mapping[str, Any]], key: str | Any) -> list[dict[str, Any]]:
@@ -763,6 +831,51 @@ def _is_proof_basin_report(runs: list[Mapping[str, Any]], aggregate: Mapping[str
     return any(row.get("claim_id") == "paper-perturbed-true-tree-basin" for row in aggregate.get("thresholds", ()))
 
 
+def _depth_curve_report_section(aggregate: Mapping[str, Any]) -> list[str]:
+    rows = list(aggregate.get("depth_curve", ()))
+    if not rows:
+        return []
+
+    lines = [
+        "## Depth Curve",
+        "",
+        "| Depth | Mode | Seeds | Recovered | Total | Rate | Median Best Loss | Median Post-Snap Loss | Median Runtime | Median Snap Margin |",
+        "|-------|------|-------|-----------|-------|------|------------------|-----------------------|----------------|--------------------|",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row['depth']} | {row['start_mode']} | {row['seed_count']} | {row['recovered']} | {row['total']} | "
+            f"{row['recovery_rate']:.3f} | {_format_optional(row['best_loss_median'])} | "
+            f"{_format_optional(row['post_snap_loss_median'])} | {_format_optional(row['runtime_seconds_median'])} | "
+            f"{_format_optional(row['snap_min_margin_median'])} |"
+        )
+
+    blind_rows = [row for row in rows if row.get("start_mode") == "blind"]
+    perturbed_rows = [row for row in rows if row.get("start_mode") == "perturbed_tree"]
+    blind_success_depths = [int(row["depth"]) for row in blind_rows if float(row.get("recovery_rate") or 0.0) > 0.0]
+    perturbed_success_depths = [int(row["depth"]) for row in perturbed_rows if float(row.get("recovery_rate") or 0.0) >= 1.0]
+    blind_phrase = (
+        f"blind recovery only through depth {max(blind_success_depths)} in this inventory"
+        if blind_success_depths
+        else "no blind recovery in this inventory"
+    )
+    perturbed_phrase = (
+        f"perturbed recovery at every measured depth through {max(perturbed_success_depths)}"
+        if perturbed_success_depths
+        else "perturbed recovery below the declared target"
+    )
+    lines.extend(
+        [
+            "",
+            "The paper reports that blind recovery falls sharply with depth while perturbed true-tree starts return much more reliably. "
+            f"This campaign shows {blind_phrase}, alongside {perturbed_phrase}. "
+            "Those deeper blind failures are measured boundary evidence, not product regressions or failed proof claims.",
+            "",
+        ]
+    )
+    return lines
+
+
 def _limitations_section(runs: list[Mapping[str, Any]]) -> str:
     blind_total = sum(1 for run in runs if run.get("start_mode") == "blind")
     blind_recovered = sum(1 for run in runs if run.get("classification") == "blind_recovery")
@@ -778,6 +891,25 @@ def _limitations_section(runs: list[Mapping[str, Any]]) -> str:
             f"- Unsupported gates: {unsupported} runs were blocked by compiler/depth/operator limits and remain in the denominator.",
             f"- Failed fits: {failed} runs did not pass verifier-owned recovery after training or execution.",
         ]
+    )
+
+
+def _depth_curve_recovery_svg(rows: list[Mapping[str, Any]]) -> str:
+    if not rows:
+        return _empty_svg("Depth-Curve Recovery", "No depth-curve rows available.", width=960, height=520)
+    bars = [
+        {
+            "label": f"d{row['depth']} {row['start_mode']}",
+            "value": float(row.get("recovery_rate") or 0.0),
+            "display": f"{float(row.get('recovery_rate') or 0.0):.0%}",
+        }
+        for row in rows
+    ]
+    return _bar_chart_svg(
+        "Depth-Curve Recovery by Depth and Mode",
+        bars,
+        y_label="recovered / total",
+        max_value=1.0,
     )
 
 

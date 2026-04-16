@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import platform
+import statistics
 import subprocess
 import time
 from copy import deepcopy
@@ -44,6 +45,7 @@ BUILTIN_SUITES = (
     "v1.5-shallow-proof",
     "proof-perturbed-basin",
     "proof-perturbed-basin-beer-probes",
+    "proof-depth-curve",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
@@ -379,6 +381,25 @@ class BenchmarkCase:
                 raise BenchmarkValidationError(
                     "invalid_proof_contract",
                     "paper-perturbed-true-tree-basin cases require declared nonzero perturbation noise",
+                    path=f"{path}.perturbation_noise",
+                )
+        if claim.id == "paper-blind-depth-degradation":
+            if self.start_mode not in {"blind", "perturbed_tree"}:
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-blind-depth-degradation cases must use blind or perturbed_tree start_mode",
+                    path=f"{path}.start_mode",
+                )
+            if self.threshold_policy_id != "measured_depth_curve":
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-blind-depth-degradation cases must use measured_depth_curve threshold",
+                    path=f"{path}.threshold_policy_id",
+                )
+            if self.start_mode == "perturbed_tree" and any(noise == 0.0 for noise in self.perturbation_noise):
+                raise BenchmarkValidationError(
+                    "invalid_proof_contract",
+                    "paper-blind-depth-degradation perturbed rows require declared nonzero perturbation noise",
                     path=f"{path}.perturbation_noise",
                 )
 
@@ -973,6 +994,84 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 ),
             ),
         )
+    if name == "proof-depth-curve":
+        blind_kwargs = {
+            "seeds": (0, 1),
+            "points": 24,
+            "steps": 80,
+            "restarts": 3,
+            "tags": ("v1.5", "proof", "measured", "depth_curve", "blind"),
+            "expect_recovery": False,
+            "claim_id": "paper-blind-depth-degradation",
+            "threshold_policy_id": "measured_depth_curve",
+            "training_mode": "blind_training",
+        }
+        perturbed_kwargs = {
+            "seeds": (0, 1),
+            "points": 24,
+            "warm_restarts": 1,
+            "tags": ("v1.5", "proof", "measured", "depth_curve", "perturbed_tree"),
+            "expect_recovery": True,
+            "claim_id": "paper-blind-depth-degradation",
+            "threshold_policy_id": "measured_depth_curve",
+            "training_mode": "perturbed_true_tree_training",
+        }
+        return BenchmarkSuite(
+            id="proof-depth-curve",
+            description="Measured v1.5 blind-vs-perturbed depth curve over deterministic exact EML targets at depths 2 through 6.",
+            cases=(
+                _case("depth-2-blind", "depth_curve_depth2", "blind", depth=2, **blind_kwargs),
+                _case("depth-3-blind", "depth_curve_depth3", "blind", depth=3, **blind_kwargs),
+                _case("depth-4-blind", "depth_curve_depth4", "blind", depth=4, **blind_kwargs),
+                _case("depth-5-blind", "depth_curve_depth5", "blind", depth=5, **blind_kwargs),
+                _case("depth-6-blind", "depth_curve_depth6", "blind", depth=6, **blind_kwargs),
+                _case(
+                    "depth-2-perturbed",
+                    "depth_curve_depth2",
+                    "perturbed_tree",
+                    depth=2,
+                    warm_steps=20,
+                    perturbation_noise=(0.05,),
+                    **perturbed_kwargs,
+                ),
+                _case(
+                    "depth-3-perturbed",
+                    "depth_curve_depth3",
+                    "perturbed_tree",
+                    depth=3,
+                    warm_steps=20,
+                    perturbation_noise=(0.05,),
+                    **perturbed_kwargs,
+                ),
+                _case(
+                    "depth-4-perturbed",
+                    "depth_curve_depth4",
+                    "perturbed_tree",
+                    depth=4,
+                    warm_steps=30,
+                    perturbation_noise=(0.05,),
+                    **perturbed_kwargs,
+                ),
+                _case(
+                    "depth-5-perturbed",
+                    "depth_curve_depth5",
+                    "perturbed_tree",
+                    depth=5,
+                    warm_steps=30,
+                    perturbation_noise=(0.05,),
+                    **perturbed_kwargs,
+                ),
+                _case(
+                    "depth-6-perturbed",
+                    "depth_curve_depth6",
+                    "perturbed_tree",
+                    depth=6,
+                    warm_steps=30,
+                    perturbation_noise=(0.02,),
+                    **perturbed_kwargs,
+                ),
+            ),
+        )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
 
 
@@ -1428,6 +1527,7 @@ def aggregate_evidence(result: BenchmarkSuiteResult) -> dict[str, Any]:
             "depth": _group_counts(runs, lambda item: str(item["optimizer"]["depth"])),
             "seed_group": _group_counts(runs, lambda item: "all" if item["seed"] is not None else "unknown"),
         },
+        "depth_curve": _depth_curve_summary(runs),
         "thresholds": _threshold_summary(runs),
         "runs": runs,
     }
@@ -1476,6 +1576,8 @@ def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
     lines.extend(["", "## By Return Kind", "", _markdown_group_table(aggregate["groups"]["return_kind"])])
     lines.extend(["", "## By Raw Status", "", _markdown_group_table(aggregate["groups"]["raw_status"])])
     lines.extend(["", "## By Repair Status", "", _markdown_group_table(aggregate["groups"]["repair_status"])])
+    if aggregate.get("depth_curve"):
+        lines.extend(["", "## Depth Curve", "", _markdown_depth_curve_table(aggregate["depth_curve"])])
     lines.extend(["", "## Thresholds", "", _markdown_threshold_table(aggregate.get("thresholds", []))])
     lines.extend(["", "## Runs", "", "| Run ID | Formula | Mode | Status | Classification | Artifact |", "|--------|---------|------|--------|----------------|----------|"])
     for run in aggregate["runs"]:
@@ -1500,6 +1602,21 @@ def _markdown_group_table(groups: list[Mapping[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _markdown_depth_curve_table(rows: list[Mapping[str, Any]]) -> str:
+    lines = [
+        "| Depth | Mode | Seeds | Recovered | Total | Rate | Median Best Loss | Median Post-Snap Loss | Median Runtime | Median Snap Margin |",
+        "|-------|------|-------|-----------|-------|------|------------------|-----------------------|----------------|--------------------|",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row['depth']} | {row['start_mode']} | {row['seed_count']} | {row['recovered']} | {row['total']} | "
+            f"{row['recovery_rate']:.3f} | {_format_optional_number(row['best_loss_median'])} | "
+            f"{_format_optional_number(row['post_snap_loss_median'])} | {_format_optional_number(row['runtime_seconds_median'])} | "
+            f"{_format_optional_number(row['snap_min_margin_median'])} |"
+        )
+    return "\n".join(lines)
+
+
 def _markdown_threshold_table(thresholds: list[Mapping[str, Any]]) -> str:
     if not thresholds:
         return "No proof threshold metadata."
@@ -1515,6 +1632,100 @@ def _markdown_threshold_table(thresholds: list[Mapping[str, Any]]) -> str:
             f"{row['failed']} | {row['rate']:.3f} | {required_value} | {row['status']} |"
         )
     return "\n".join(lines)
+
+
+def _depth_curve_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    depth_curve_runs = [run for run in runs if run.get("claim_id") == "paper-blind-depth-degradation"]
+    if not depth_curve_runs:
+        return []
+
+    grouped: dict[tuple[int, str, str], list[Mapping[str, Any]]] = {}
+    for run in depth_curve_runs:
+        depth = int(run.get("optimizer", {}).get("depth") or 0)
+        start_mode = str(run.get("start_mode") or "unknown")
+        training_mode = str(run.get("training_mode") or "unknown")
+        grouped.setdefault((depth, start_mode, training_mode), []).append(run)
+
+    rows: list[dict[str, Any]] = []
+    for (depth, start_mode, training_mode), items in sorted(grouped.items()):
+        best_losses = [_run_metric_number(run, "best_loss") for run in items]
+        post_snap_losses = [_run_metric_number(run, "post_snap_loss") for run in items]
+        runtimes = [_run_timing_seconds(run) for run in items]
+        snap_margins = [_run_metric_number(run, "snap_min_margin") for run in items]
+        recovered = sum(1 for run in items if run.get("claim_status") == "recovered")
+        rows.append(
+            {
+                "depth": depth,
+                "start_mode": start_mode,
+                "training_mode": training_mode,
+                "seed_count": len({int(run["seed"]) for run in items if run.get("seed") is not None}),
+                "total": len(items),
+                "recovered": recovered,
+                "recovery_rate": recovered / len(items) if items else 0.0,
+                "best_loss_values": [value for value in best_losses if value is not None],
+                "best_loss_median": _median_or_none(value for value in best_losses if value is not None),
+                "best_loss_min": min((value for value in best_losses if value is not None), default=None),
+                "best_loss_max": max((value for value in best_losses if value is not None), default=None),
+                "post_snap_loss_values": [value for value in post_snap_losses if value is not None],
+                "post_snap_loss_median": _median_or_none(value for value in post_snap_losses if value is not None),
+                "post_snap_loss_min": min((value for value in post_snap_losses if value is not None), default=None),
+                "post_snap_loss_max": max((value for value in post_snap_losses if value is not None), default=None),
+                "runtime_seconds_values": [value for value in runtimes if value is not None],
+                "runtime_seconds_median": _median_or_none(value for value in runtimes if value is not None),
+                "runtime_seconds_min": min((value for value in runtimes if value is not None), default=None),
+                "runtime_seconds_max": max((value for value in runtimes if value is not None), default=None),
+                "snap_min_margin_values": [value for value in snap_margins if value is not None],
+                "snap_min_margin_median": _median_or_none(value for value in snap_margins if value is not None),
+                "snap_min_margin_min": min((value for value in snap_margins if value is not None), default=None),
+                "snap_min_margin_max": max((value for value in snap_margins if value is not None), default=None),
+                "evidence_classes": _count_by_key(items, "evidence_class"),
+            }
+        )
+    return rows
+
+
+def _run_metric_number(run: Mapping[str, Any], key: str) -> float | None:
+    metrics = run.get("metrics") if isinstance(run.get("metrics"), Mapping) else {}
+    try:
+        value = metrics.get(key)
+        if value is None or value == "":
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _run_timing_seconds(run: Mapping[str, Any]) -> float | None:
+    artifact_path = run.get("artifact_path")
+    if not artifact_path:
+        return None
+    path = Path(str(artifact_path))
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except OSError:
+        return None
+    timing = payload.get("timing") if isinstance(payload.get("timing"), Mapping) else {}
+    try:
+        value = timing.get("elapsed_seconds")
+        if value is None or value == "":
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _median_or_none(values: Any) -> float | None:
+    numeric = [value for value in values if value is not None]
+    return float(statistics.median(numeric)) if numeric else None
+
+
+def _format_optional_number(value: Any) -> str:
+    try:
+        if value is None or value == "":
+            return "n/a"
+        return f"{float(value):.4g}"
+    except (TypeError, ValueError):
+        return "n/a"
 
 
 def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
@@ -1772,6 +1983,14 @@ def _counted_evidence_classes_for_claim(claim_id: str, policy_classes: tuple[str
             EVIDENCE_CLASSES["repaired_candidate"],
         )
     return policy_classes
+
+
+def _count_by_key(runs: list[Mapping[str, Any]], key: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for run in runs:
+        value = str(run.get(key) or "unknown")
+        counts[value] = counts.get(value, 0) + 1
+    return dict(sorted(counts.items()))
 
 
 def _group_counts(runs: list[Mapping[str, Any]], key_fn: Any) -> list[dict[str, Any]]:

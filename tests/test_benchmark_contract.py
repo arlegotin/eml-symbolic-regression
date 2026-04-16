@@ -24,6 +24,7 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "v1.5-shallow-proof",
         "proof-perturbed-basin",
         "proof-perturbed-basin-beer-probes",
+        "proof-depth-curve",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -465,6 +466,39 @@ def test_perturbed_basin_probe_suite_keeps_high_noise_outside_thresholds():
     assert all({"bound_probe", "beer_lambert", "high_noise"} <= set(run.tags) for run in runs)
 
 
+def test_proof_depth_curve_suite_expands_blind_and_perturbed_rows():
+    suite = load_suite("proof-depth-curve")
+    runs = suite.expanded_runs()
+    cases_by_id = {case.id: case for case in suite.cases}
+
+    assert [case.id for case in suite.cases] == [
+        "depth-2-blind",
+        "depth-3-blind",
+        "depth-4-blind",
+        "depth-5-blind",
+        "depth-6-blind",
+        "depth-2-perturbed",
+        "depth-3-perturbed",
+        "depth-4-perturbed",
+        "depth-5-perturbed",
+        "depth-6-perturbed",
+    ]
+    assert len(runs) == 20
+    assert {run.seed for run in runs} == {0, 1}
+    assert {run.claim_id for run in runs} == {"paper-blind-depth-degradation"}
+    assert {run.threshold_policy_id for run in runs} == {"measured_depth_curve"}
+    assert {run.start_mode for run in runs} == {"blind", "perturbed_tree"}
+    assert {run.training_mode for run in runs} == {"blind_training", "perturbed_true_tree_training"}
+    assert all({"v1.5", "proof", "measured", "depth_curve"} <= set(run.tags) for run in runs)
+    assert all(run.threshold_policy_id == paper_claim(run.claim_id).threshold_policy_id for run in runs)
+    assert {cases_by_id[f"depth-{depth}-blind"].optimizer.depth for depth in range(2, 7)} == {2, 3, 4, 5, 6}
+    assert {cases_by_id[f"depth-{depth}-perturbed"].optimizer.depth for depth in range(2, 7)} == {2, 3, 4, 5, 6}
+    assert all(run.perturbation_noise == 0.0 for run in runs if run.start_mode == "blind")
+    assert all(run.perturbation_noise > 0.0 for run in runs if run.start_mode == "perturbed_tree")
+    assert cases_by_id["depth-2-perturbed"].optimizer.warm_steps == 20
+    assert cases_by_id["depth-6-perturbed"].optimizer.warm_steps == 30
+
+
 def test_cli_start_mode_filter_accepts_perturbed_tree():
     args = build_parser().parse_args(["benchmark", "proof-perturbed-basin", "--start-mode", "perturbed_tree"])
 
@@ -522,6 +556,38 @@ def test_perturbed_basin_proof_cases_reject_caller_supplied_evidence_class():
 
     assert exc.value.reason == "invalid_proof_contract"
     assert exc.value.path == "cases[0].evidence_class"
+
+
+@pytest.mark.parametrize(
+    ("override", "reason", "path_suffix"),
+    [
+        ({"start_mode": "compile", "training_mode": "compile_only_verification"}, "invalid_perturbation", "perturbation_noise"),
+        ({"start_mode": "warm_start", "training_mode": "compiler_warm_start_training"}, "invalid_proof_contract", "start_mode"),
+        ({"threshold_policy_id": "bounded_100_percent"}, "invalid_proof_contract", "threshold_policy_id"),
+        ({"training_mode": None}, "invalid_proof_contract", "training_mode"),
+        ({"perturbation_noise": [0.0]}, "invalid_proof_contract", "perturbation_noise"),
+    ],
+)
+def test_depth_curve_perturbed_rows_reject_invalid_metadata(override, reason, path_suffix):
+    payload = {
+        "id": "depth-4-perturbed",
+        "formula": "depth_curve_depth4",
+        "start_mode": "perturbed_tree",
+        "perturbation_noise": [0.05],
+        "claim_id": "paper-blind-depth-degradation",
+        "threshold_policy_id": "measured_depth_curve",
+        "training_mode": "perturbed_true_tree_training",
+        **{key: value for key, value in override.items() if value is not None},
+    }
+    if "training_mode" in override and override["training_mode"] is None:
+        payload.pop("training_mode")
+    suite = BenchmarkSuite.from_mapping({"id": "proof-depth-curve", "cases": [payload]})
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        suite.validate()
+
+    assert exc.value.reason == reason
+    assert exc.value.path == f"cases[0].{path_suffix}"
 
 
 @pytest.mark.parametrize(

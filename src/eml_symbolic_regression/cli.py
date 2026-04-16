@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +24,7 @@ from .diagnostics import (
 )
 from .optimize import TrainingConfig, fit_eml_tree
 from .proof import list_claims
+from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
@@ -245,6 +247,61 @@ def run_campaign_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_proof_campaign_command(args: argparse.Namespace) -> int:
+    run_filter = RunFilter(
+        formulas=tuple(args.formula or ()),
+        start_modes=tuple(args.start_mode or ()),
+        case_ids=tuple(args.case or ()),
+        seeds=tuple(args.seed or ()),
+        perturbation_noises=tuple(args.perturbation_noise or ()),
+    )
+    has_filter = any(
+        (
+            run_filter.formulas,
+            run_filter.start_modes,
+            run_filter.case_ids,
+            run_filter.seeds,
+            run_filter.perturbation_noises,
+        )
+    )
+    campaign_filters = {preset: run_filter for preset in PROOF_CAMPAIGN_PRESETS} if has_filter else None
+    result = run_proof_campaign(
+        output_root=Path(args.output_root),
+        overwrite=args.overwrite,
+        campaign_filters=campaign_filters,
+        reproduction_command=_proof_campaign_reproduction_command(args),
+    )
+    print(
+        f"proof campaign: root -> {result.output_root}; "
+        f"manifest -> {result.manifest_path}; report -> {result.report_path}"
+    )
+    return 0
+
+
+def _proof_campaign_reproduction_command(args: argparse.Namespace) -> str:
+    parts = [
+        "PYTHONPATH=src",
+        "python",
+        "-m",
+        "eml_symbolic_regression.cli",
+        "proof-campaign",
+        "--output-root",
+        str(args.output_root),
+    ]
+    if args.overwrite:
+        parts.append("--overwrite")
+    for key, flag in (
+        ("formula", "--formula"),
+        ("start_mode", "--start-mode"),
+        ("case", "--case"),
+        ("seed", "--seed"),
+        ("perturbation_noise", "--perturbation-noise"),
+    ):
+        for value in getattr(args, key, ()) or ():
+            parts.extend([flag, str(value)])
+    return shlex.join(parts)
+
+
 def diagnostics_triage_command(args: argparse.Namespace) -> int:
     baselines = tuple(Path(path) for path in (args.baseline or DEFAULT_BASELINE_CAMPAIGNS))
     paths = write_baseline_triage(baselines, Path(args.output_dir))
@@ -368,6 +425,21 @@ def build_parser() -> argparse.ArgumentParser:
     campaign.add_argument("--seed", type=int, action="append", help="Only run this seed. Repeatable.")
     campaign.add_argument("--perturbation-noise", type=float, action="append", help="Only run this perturbation noise. Repeatable.")
     campaign.set_defaults(func=run_campaign_command)
+
+    proof_campaign = sub.add_parser("proof-campaign", help="Run the full v1.5 proof bundle and write a claim report.")
+    proof_campaign.add_argument("--output-root", default=str(DEFAULT_PROOF_OUTPUT_ROOT), help="Directory that receives proof bundle outputs.")
+    proof_campaign.add_argument("--overwrite", action="store_true", help="Allow writing into an existing proof bundle root.")
+    proof_campaign.add_argument("--formula", action="append", help="Only run this formula ID across every proof preset. Repeatable.")
+    proof_campaign.add_argument("--start-mode", choices=START_MODES, action="append")
+    proof_campaign.add_argument("--case", action="append", help="Only run this benchmark case ID across every proof preset. Repeatable.")
+    proof_campaign.add_argument("--seed", type=int, action="append", help="Only run this seed across every proof preset. Repeatable.")
+    proof_campaign.add_argument(
+        "--perturbation-noise",
+        type=float,
+        action="append",
+        help="Only run this perturbation noise across every proof preset. Repeatable.",
+    )
+    proof_campaign.set_defaults(func=run_proof_campaign_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect v1.3 baselines and rerun focused diagnostic subsets.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)

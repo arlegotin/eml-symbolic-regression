@@ -10,10 +10,10 @@ Requirements for this milestone only. Completed v1, v1.1, v1.2, v1.3, and v1.4 r
 
 ### Paper Claim Contract
 
-- [ ] **CLAIM-01**: User can inspect a paper-claim matrix that maps each v1.5 experiment to the specific paper-grounded statement it tests: complete depth-bounded EML search, shallow blind recovery, perturbed-true-tree recovery, and blind depth degradation.
-- [ ] **CLAIM-02**: User can generate deterministic proof datasets with seeds, train/held-out/extrapolation splits, normalization metadata, target formulas, and source provenance.
-- [ ] **CLAIM-03**: User can distinguish blind training, compiler warm-start training, perturbed true-tree training, compile-only verification, catalog verification, unsupported cases, and failed cases in every proof artifact.
-- [ ] **CLAIM-04**: User receives explicit pass/fail thresholds for every proof suite, including the bounded suites where 100% verifier-owned training recovery is required and the depth-curve suites where measured rates are reported.
+- [x] **CLAIM-01**: User can inspect a paper-claim matrix that maps each v1.5 experiment to the specific paper-grounded statement it tests: complete depth-bounded EML search, shallow blind recovery, perturbed-true-tree recovery, and blind depth degradation.
+- [x] **CLAIM-02**: User can generate deterministic proof datasets with seeds, train/held-out/extrapolation splits, normalization metadata, target formulas, and source provenance.
+- [x] **CLAIM-03**: User can distinguish blind training, compiler warm-start training, perturbed true-tree training, compile-only verification, catalog verification, unsupported cases, and failed cases in every proof artifact.
+- [x] **CLAIM-04**: User receives explicit pass/fail thresholds for every proof suite, including the bounded suites where 100% verifier-owned training recovery is required and the depth-curve suites where measured rates are reported.
 
 ### Shallow Training Claim Split
 
@@ -32,18 +32,18 @@ Requirements for this milestone only. Completed v1, v1.1, v1.2, v1.3, and v1.4 r
 
 ### Depth-Curve Training Evidence
 
-- [ ] **CURV-01**: User can run a depth-curve experiment for blind and perturbed training over EML depths 2 through 6 with deterministic seeds, budgets, and formula/tree inventories.
-- [ ] **CURV-02**: User receives recovery rates, confidence intervals or seed counts, best-loss distributions, post-snap-loss distributions, runtime, and snap-distance metrics by depth and training mode.
-- [ ] **CURV-03**: User can compare the implementation's measured depth curve against the paper's qualitative claims without presenting deeper blind failures as product regressions.
-- [ ] **CURV-04**: User can preserve depth-curve raw artifacts so future optimizer changes can be compared against the v1.5 paper-proof baseline.
+- [x] **CURV-01**: User can run a depth-curve experiment for blind and perturbed training over EML depths 2 through 6 with deterministic seeds, budgets, and formula/tree inventories.
+- [x] **CURV-02**: User receives recovery rates, confidence intervals or seed counts, best-loss distributions, post-snap-loss distributions, runtime, and snap-distance metrics by depth and training mode.
+- [x] **CURV-03**: User can compare the implementation's measured depth curve against the paper's qualitative claims without presenting deeper blind failures as product regressions.
+- [x] **CURV-04**: User can preserve depth-curve raw artifacts so future optimizer changes can be compared against the v1.5 paper-proof baseline.
 
 ### Proof Evidence Report
 
-- [ ] **EVID-01**: User can run one command that produces the v1.5 proof campaign artifacts: datasets, raw runs, aggregate JSON, CSV tables, plots, and a Markdown claim report.
-- [ ] **EVID-02**: User receives a proof report that states which paper-grounded claims passed, which remain bounded, which failed, and which are out of scope.
-- [ ] **EVID-03**: User can reproduce all proof artifacts from a clean checkout using documented commands and committed configuration.
-- [ ] **EVID-04**: User can run tests that lock the claim matrix, dataset generation, training proof suites, local repair behavior, depth-curve aggregation, and proof report generation.
-- [ ] **EVID-05**: User can compare v1.5 proof-suite results against v1.4 campaign evidence without mixing proof-suite success rates with showcase campaign success rates.
+- [x] **EVID-01**: User can run one command that produces the v1.5 proof campaign artifacts: datasets, raw runs, aggregate JSON, CSV tables, plots, and a Markdown claim report.
+- [x] **EVID-02**: User receives a proof report that states which paper-grounded claims passed, which remain bounded, which failed, and which are out of scope.
+- [x] **EVID-03**: User can reproduce all proof artifacts from a clean checkout using documented commands and committed configuration.
+- [x] **EVID-04**: User can run tests that lock the claim matrix, dataset generation, training proof suites, local repair behavior, depth-curve aggregation, and proof report generation.
+- [x] **EVID-05**: User can compare v1.5 proof-suite results against v1.4 campaign evidence without mixing proof-suite success rates with showcase campaign success rates.
 
 ## Future Requirements
 
@@ -72,10 +72,10 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLAIM-01 | Phase 29 | Pending |
-| CLAIM-02 | Phase 29 | Pending |
-| CLAIM-03 | Phase 29 | Pending |
-| CLAIM-04 | Phase 29 | Pending |
+| CLAIM-01 | Phase 29 | Complete |
+| CLAIM-02 | Phase 29 | Complete |
+| CLAIM-03 | Phase 29 | Complete |
+| CLAIM-04 | Phase 29 | Complete |
 | SHAL-01 | Phase 30 | Complete |
 | SHAL-02 | Phase 30 | Complete |
 | SHAL-03 | Phase 30 | Complete |
@@ -85,15 +85,15 @@ Deferred to later milestones.
 | BASN-03 | Phase 31 | Complete |
 | BASN-04 | Phase 31 | Complete |
 | BASN-05 | Phase 31 | Complete |
-| CURV-01 | Phase 32 | Pending |
-| CURV-02 | Phase 32 | Pending |
-| CURV-03 | Phase 32 | Pending |
-| CURV-04 | Phase 32 | Pending |
-| EVID-01 | Phase 33 | Pending |
-| EVID-02 | Phase 33 | Pending |
-| EVID-03 | Phase 33 | Pending |
-| EVID-04 | Phase 33 | Pending |
-| EVID-05 | Phase 33 | Pending |
+| CURV-01 | Phase 32 | Complete |
+| CURV-02 | Phase 32 | Complete |
+| CURV-03 | Phase 32 | Complete |
+| CURV-04 | Phase 32 | Complete |
+| EVID-01 | Phase 33 | Complete |
+| EVID-02 | Phase 33 | Complete |
+| EVID-03 | Phase 33 | Complete |
+| EVID-04 | Phase 33 | Complete |
+| EVID-05 | Phase 33 | Complete |
 
 **Coverage:**
 - v1.5 requirements: 22 total
@@ -102,4 +102,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-04-15*
-*Last updated: 2026-04-15 after resolving Phase 30 with separate measured pure-blind and bounded scaffolded shallow claims*
+*Last updated: 2026-04-16 after completing Phase 32 depth-curve evidence and Phase 33 proof-bundle reporting*

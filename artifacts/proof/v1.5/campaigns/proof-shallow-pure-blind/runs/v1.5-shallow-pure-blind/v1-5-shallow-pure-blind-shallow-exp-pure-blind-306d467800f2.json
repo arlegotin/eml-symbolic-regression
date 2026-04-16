@@ -1,0 +1,355 @@
+{
+  "budget": {
+    "constants": [
+      "1"
+    ],
+    "depth": 1,
+    "lr": 0.05,
+    "max_compile_depth": 13,
+    "max_compile_nodes": 256,
+    "max_power": 3,
+    "max_warm_depth": 10,
+    "restarts": 2,
+    "scaffold_initializers": [],
+    "steps": 120,
+    "warm_depth": 0,
+    "warm_restarts": 1,
+    "warm_steps": 8
+  },
+  "claim_class": "measured_training_boundary",
+  "claim_id": "paper-shallow-blind-recovery",
+  "claim_status": "recovered",
+  "dataset": {
+    "points": 32,
+    "tolerance": 1e-08
+  },
+  "dataset_manifest": {
+    "formula_id": "exp",
+    "manifest_sha256": "dcebf8f5f83659182566fc8c8aca03393d936e454e4c820ec00b74d6779432d0",
+    "points": 32,
+    "provenance": {
+      "candidate_name": "exact_eml",
+      "description": "Paper smoke test: exp(x) = eml(x, 1).",
+      "formula_id": "exp",
+      "normalized_dimensionless": true,
+      "source_document": "sources/paper.pdf",
+      "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+      "symbolic_expression": "exp(x)",
+      "variable": "x"
+    },
+    "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+    "schema": "eml.proof_dataset_manifest.v1",
+    "seed": 2,
+    "splits": [
+      {
+        "count": 32,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "input_sha256": "9d6a6613bef337d2639431e556a8750f8a9f4d104b1cce69bbfb06dd3e401d6b",
+        "name": "train",
+        "target_sha256": "5ccf3c7dfe8c1fcdde86b81e1e5b193f659331db07f5e8afd72f4a40e6cde93b"
+      },
+      {
+        "count": 16,
+        "domain": [
+          -0.8,
+          0.8
+        ],
+        "input_sha256": "1787673e0adb896f5d92d711f25fd52856f5e9f65e984418baafc4ace9839c81",
+        "name": "heldout",
+        "target_sha256": "6b17b81cf6e0c0010450ac6055ab91d01aec9457a1c699d31ea03f2110a3671d"
+      },
+      {
+        "count": 16,
+        "domain": [
+          1.05,
+          1.5
+        ],
+        "input_sha256": "4309b8cfcf9b3c35336ba44553c8f96f45aed695808aff6dcf85e93535c27b35",
+        "name": "extrapolation",
+        "target_sha256": "5105da41be20b7f495ab2db1a3c1f7caa14ef26f21c718a9e65be5245ae6a78c"
+      }
+    ],
+    "tolerance": 1e-08,
+    "variable": "x"
+  },
+  "environment": {
+    "code_version": "b75c22d",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "evidence_class": "blind_training_recovered",
+  "metrics": {
+    "active_slot_count": null,
+    "best_loss": 1.80614515005668e-10,
+    "changed_slot_count": null,
+    "high_precision_max_error": 0.0,
+    "post_snap_loss": 0.0,
+    "repair_accepted_move_count": 0,
+    "repair_move_count": 0,
+    "repair_status": null,
+    "repair_verifier_status": null,
+    "scaffold_coefficient": null,
+    "scaffold_source": null,
+    "scaffold_strategy": null,
+    "snap_active_node_count": 3,
+    "snap_min_margin": 0.8921231726122388,
+    "verifier_status": "recovered",
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "provenance": {
+    "candidate_name": "exact_eml",
+    "description": "Paper smoke test: exp(x) = eml(x, 1).",
+    "formula_id": "exp",
+    "normalized_dimensionless": true,
+    "source_document": "sources/paper.pdf",
+    "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+    "symbolic_expression": "exp(x)",
+    "variable": "x"
+  },
+  "run": {
+    "artifact_path": "artifacts/proof/v1.5/campaigns/proof-shallow-pure-blind/runs/v1.5-shallow-pure-blind/v1-5-shallow-pure-blind-shallow-exp-pure-blind-306d467800f2.json",
+    "case_id": "shallow-exp-pure-blind",
+    "claim_id": "paper-shallow-blind-recovery",
+    "dataset": {
+      "points": 32,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "exp",
+    "optimizer": {
+      "constants": [
+        "1"
+      ],
+      "depth": 1,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 10,
+      "restarts": 2,
+      "scaffold_initializers": [],
+      "steps": 120,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-5-shallow-pure-blind-shallow-exp-pure-blind-306d467800f2",
+    "seed": 2,
+    "start_mode": "blind",
+    "suite_id": "v1.5-shallow-pure-blind",
+    "tags": [
+      "v1.5",
+      "proof",
+      "measured",
+      "pure_blind"
+    ],
+    "threshold_policy_id": "measured_pure_blind_recovery",
+    "training_mode": "blind_training"
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "blind_baseline": "recovered"
+  },
+  "status": "recovered",
+  "threshold": {
+    "allowed_evidence_classes": [
+      "blind_training_recovered"
+    ],
+    "description": "Pure random-initialized blind suites report measured recovery without a 100% pass target.",
+    "fail_on_execution_error": false,
+    "fail_on_unsupported": false,
+    "id": "measured_pure_blind_recovery",
+    "policy_type": "measured_rate",
+    "required_rate": null
+  },
+  "timing": {
+    "elapsed_seconds": 0.08350937499199063
+  },
+  "trained_eml_candidate": {
+    "best_loss": 1.80614515005668e-10,
+    "best_restart": {
+      "attempt_kind": "random",
+      "best_fit_loss": 1.80614515005668e-10,
+      "final_anomalies": {
+        "by_node": {
+          "root": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 2.719681722997358,
+            "max_exp_real": 1.0005148618582116,
+            "nan_count": 0
+          }
+        },
+        "clamp_count": 0,
+        "inf_count": 0,
+        "max_abs": 2.719681722997358,
+        "max_exp_real": 1.0005148618582116,
+        "nan_count": 0
+      },
+      "initialization": null,
+      "random_restart": 0,
+      "restart": 0,
+      "seed": 2,
+      "steps_completed": 120
+    },
+    "config": {
+      "constants": [
+        "1"
+      ],
+      "depth": 1,
+      "entropy_weight": 0.001,
+      "lr": 0.05,
+      "restarts": 2,
+      "scaffold_initializers": [],
+      "seed": 2,
+      "size_weight": 0.0001,
+      "steps": 120,
+      "temperature_end": 0.25,
+      "temperature_start": 2.0,
+      "variables": [
+        "x"
+      ]
+    },
+    "post_snap_loss": 0.0,
+    "restarts": [
+      {
+        "attempt_kind": "random",
+        "best_fit_loss": 1.80614515005668e-10,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 2.719681722997358,
+              "max_exp_real": 1.0005148618582116,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "inf_count": 0,
+          "max_abs": 2.719681722997358,
+          "max_exp_real": 1.0005148618582116,
+          "nan_count": 0
+        },
+        "initialization": null,
+        "random_restart": 0,
+        "restart": 0,
+        "seed": 2,
+        "steps_completed": 120
+      },
+      {
+        "attempt_kind": "random",
+        "best_fit_loss": 3.8395830561241566e-10,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 2.7196817203573205,
+              "max_exp_real": 1.0005148618989,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "inf_count": 0,
+          "max_abs": 2.7196817203573205,
+          "max_exp_real": 1.0005148618989,
+          "nan_count": 0
+        },
+        "initialization": null,
+        "random_restart": 1,
+        "restart": 1,
+        "seed": 3,
+        "steps_completed": 120
+      }
+    ],
+    "schema": "eml.run_manifest.v1",
+    "snap": {
+      "active_node_count": 3,
+      "ast": {
+        "metadata": {
+          "depth": 1,
+          "node_count": 3,
+          "source": "exact_ast"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "var",
+            "name": "x"
+          },
+          "right": {
+            "kind": "const",
+            "value": "1"
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "decisions": [
+        {
+          "choice": "var:x",
+          "margin": 0.932393104074036,
+          "path": "root",
+          "probability": 0.9661965520370179,
+          "side": "left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 0.8921231726122388,
+          "path": "root",
+          "probability": 0.9460615863061195,
+          "side": "right"
+        }
+      ],
+      "min_margin": 0.8921231726122388
+    },
+    "status": "snapped_candidate"
+  },
+  "trained_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": 0.0,
+    "reason": "verified",
+    "split_results": [
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "train",
+        "passed": true
+      },
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "heldout",
+        "passed": true
+      },
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "extrapolation",
+        "passed": true
+      }
+    ],
+    "status": "recovered",
+    "tolerance": 1e-08
+  },
+  "training_mode": "blind_training"
+}

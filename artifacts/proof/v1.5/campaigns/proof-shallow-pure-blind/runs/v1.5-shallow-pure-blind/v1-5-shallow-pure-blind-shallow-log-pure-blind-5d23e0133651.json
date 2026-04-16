@@ -1,0 +1,523 @@
+{
+  "budget": {
+    "constants": [
+      "1"
+    ],
+    "depth": 3,
+    "lr": 0.05,
+    "max_compile_depth": 13,
+    "max_compile_nodes": 256,
+    "max_power": 3,
+    "max_warm_depth": 10,
+    "restarts": 2,
+    "scaffold_initializers": [],
+    "steps": 120,
+    "warm_depth": 0,
+    "warm_restarts": 1,
+    "warm_steps": 8
+  },
+  "claim_class": "measured_training_boundary",
+  "claim_id": "paper-shallow-blind-recovery",
+  "claim_status": "failed",
+  "dataset": {
+    "points": 32,
+    "tolerance": 1e-08
+  },
+  "dataset_manifest": {
+    "formula_id": "log",
+    "manifest_sha256": "01c2261015de6d16b8338f86f0a15db26f6eb11ee40e6ca1a6c1c411b6e6236f",
+    "points": 32,
+    "provenance": {
+      "candidate_name": "exact_eml",
+      "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+      "formula_id": "log",
+      "normalized_dimensionless": true,
+      "source_document": "sources/paper.pdf",
+      "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+      "symbolic_expression": "E - log(exp(E)/x)",
+      "variable": "x"
+    },
+    "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+    "schema": "eml.proof_dataset_manifest.v1",
+    "seed": 0,
+    "splits": [
+      {
+        "count": 32,
+        "domain": [
+          0.25,
+          3.0
+        ],
+        "input_sha256": "7a5b866c419951619d1dd5195fb43c2f3064af0ce9ffe8192bfa06c020b5c16e",
+        "name": "train",
+        "target_sha256": "0cb922fd23c70ab813ff04ce2c2852cf1d605235e492eef3b49ab7602babc95a"
+      },
+      {
+        "count": 16,
+        "domain": [
+          0.35,
+          2.75
+        ],
+        "input_sha256": "4cd754620d0a85791d28a8c6214907e0e920f8f1ef78f27f5fb741bdb9a5c755",
+        "name": "heldout",
+        "target_sha256": "7ad7fa52c84d6583a32eb307d6a8e7f89a8559012ec2020575f516a0bb3de1ba"
+      },
+      {
+        "count": 16,
+        "domain": [
+          3.1,
+          4.2
+        ],
+        "input_sha256": "b6acd7d0f09925bf8ce64744517b284bf61d3e737f4ba2d6e20e294e9fc338cb",
+        "name": "extrapolation",
+        "target_sha256": "8f5fa7e7a71bdfad73d7ff921a5e4ebf5f2eee4f266f55b84f1fb1c44c323828"
+      }
+    ],
+    "tolerance": 1e-08,
+    "variable": "x"
+  },
+  "environment": {
+    "code_version": "b75c22d",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "evidence_class": "snapped_but_failed",
+  "metrics": {
+    "active_slot_count": null,
+    "best_loss": 0.9569696834586892,
+    "changed_slot_count": null,
+    "high_precision_max_error": 65.33015858740988,
+    "post_snap_loss": 55.409243032935706,
+    "repair_accepted_move_count": 0,
+    "repair_move_count": 0,
+    "repair_status": null,
+    "repair_verifier_status": null,
+    "scaffold_coefficient": null,
+    "scaffold_source": null,
+    "scaffold_strategy": null,
+    "snap_active_node_count": 7,
+    "snap_min_margin": 0.04029769917779358,
+    "verifier_status": "failed",
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "provenance": {
+    "candidate_name": "exact_eml",
+    "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+    "formula_id": "log",
+    "normalized_dimensionless": true,
+    "source_document": "sources/paper.pdf",
+    "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+    "symbolic_expression": "E - log(exp(E)/x)",
+    "variable": "x"
+  },
+  "run": {
+    "artifact_path": "artifacts/proof/v1.5/campaigns/proof-shallow-pure-blind/runs/v1.5-shallow-pure-blind/v1-5-shallow-pure-blind-shallow-log-pure-blind-5d23e0133651.json",
+    "case_id": "shallow-log-pure-blind",
+    "claim_id": "paper-shallow-blind-recovery",
+    "dataset": {
+      "points": 32,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "log",
+    "optimizer": {
+      "constants": [
+        "1"
+      ],
+      "depth": 3,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 10,
+      "restarts": 2,
+      "scaffold_initializers": [],
+      "steps": 120,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-5-shallow-pure-blind-shallow-log-pure-blind-5d23e0133651",
+    "seed": 0,
+    "start_mode": "blind",
+    "suite_id": "v1.5-shallow-pure-blind",
+    "tags": [
+      "v1.5",
+      "proof",
+      "measured",
+      "pure_blind"
+    ],
+    "threshold_policy_id": "measured_pure_blind_recovery",
+    "training_mode": "blind_training"
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "blind_baseline": "failed"
+  },
+  "status": "snapped_but_failed",
+  "threshold": {
+    "allowed_evidence_classes": [
+      "blind_training_recovered"
+    ],
+    "description": "Pure random-initialized blind suites report measured recovery without a 100% pass target.",
+    "fail_on_execution_error": false,
+    "fail_on_unsupported": false,
+    "id": "measured_pure_blind_recovery",
+    "policy_type": "measured_rate",
+    "required_rate": null
+  },
+  "timing": {
+    "elapsed_seconds": 0.42564733303152025
+  },
+  "trained_eml_candidate": {
+    "best_loss": 0.9569696834586892,
+    "best_restart": {
+      "attempt_kind": "random",
+      "best_fit_loss": 0.9569696834586892,
+      "final_anomalies": {
+        "by_node": {
+          "root": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 11.768052826583855,
+            "max_exp_real": 2.058609284435531,
+            "nan_count": 0
+          },
+          "root.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 12.43251869156345,
+            "max_exp_real": 2.7210777602413114,
+            "nan_count": 0
+          },
+          "root.L.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 3.814853645013662,
+            "max_exp_real": 1.068287972909983,
+            "nan_count": 0
+          },
+          "root.L.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 16.922413298097492,
+            "max_exp_real": 2.851303670174415,
+            "nan_count": 0
+          },
+          "root.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 332936225.03692555,
+            "max_exp_real": 19.623461516353665,
+            "nan_count": 0
+          },
+          "root.R.L": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 20.015383468675022,
+            "max_exp_real": 2.996590882494278,
+            "nan_count": 0
+          },
+          "root.R.R": {
+            "clamp_count": 0,
+            "inf_count": 0,
+            "max_abs": 3.250533394510389,
+            "max_exp_real": 1.1984905636762453,
+            "nan_count": 0
+          }
+        },
+        "clamp_count": 0,
+        "inf_count": 0,
+        "max_abs": 332936225.03692555,
+        "max_exp_real": 19.623461516353665,
+        "nan_count": 0
+      },
+      "initialization": null,
+      "random_restart": 1,
+      "restart": 1,
+      "seed": 1,
+      "steps_completed": 120
+    },
+    "config": {
+      "constants": [
+        "1"
+      ],
+      "depth": 3,
+      "entropy_weight": 0.001,
+      "lr": 0.05,
+      "restarts": 2,
+      "scaffold_initializers": [],
+      "seed": 0,
+      "size_weight": 0.0001,
+      "steps": 120,
+      "temperature_end": 0.25,
+      "temperature_start": 2.0,
+      "variables": [
+        "x"
+      ]
+    },
+    "post_snap_loss": 55.409243032935706,
+    "restarts": [
+      {
+        "attempt_kind": "random",
+        "best_fit_loss": 1.5072363681413754,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 15.635940165769123,
+              "max_exp_real": 1.2831938960481344,
+              "nan_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 6.461270467256322,
+              "max_exp_real": 2.2329915851205184,
+              "nan_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 4.55003176234802,
+              "max_exp_real": 1.7284955622646074,
+              "nan_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 18.82348040804669,
+              "max_exp_real": 2.9392550387696033,
+              "nan_count": 0
+            },
+            "root.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 259505082.4996751,
+              "max_exp_real": 19.37428685010107,
+              "nan_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 19.734408688263258,
+              "max_exp_real": 2.9830131709156227,
+              "nan_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 3.980510424231266,
+              "max_exp_real": 1.0107750746721216,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "inf_count": 0,
+          "max_abs": 259505082.4996751,
+          "max_exp_real": 19.37428685010107,
+          "nan_count": 0
+        },
+        "initialization": null,
+        "random_restart": 0,
+        "restart": 0,
+        "seed": 0,
+        "steps_completed": 120
+      },
+      {
+        "attempt_kind": "random",
+        "best_fit_loss": 0.9569696834586892,
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 11.768052826583855,
+              "max_exp_real": 2.058609284435531,
+              "nan_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 12.43251869156345,
+              "max_exp_real": 2.7210777602413114,
+              "nan_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 3.814853645013662,
+              "max_exp_real": 1.068287972909983,
+              "nan_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 16.922413298097492,
+              "max_exp_real": 2.851303670174415,
+              "nan_count": 0
+            },
+            "root.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 332936225.03692555,
+              "max_exp_real": 19.623461516353665,
+              "nan_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 20.015383468675022,
+              "max_exp_real": 2.996590882494278,
+              "nan_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "inf_count": 0,
+              "max_abs": 3.250533394510389,
+              "max_exp_real": 1.1984905636762453,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "inf_count": 0,
+          "max_abs": 332936225.03692555,
+          "max_exp_real": 19.623461516353665,
+          "nan_count": 0
+        },
+        "initialization": null,
+        "random_restart": 1,
+        "restart": 1,
+        "seed": 1,
+        "steps_completed": 120
+      }
+    ],
+    "schema": "eml.run_manifest.v1",
+    "snap": {
+      "active_node_count": 7,
+      "ast": {
+        "metadata": {
+          "depth": 3,
+          "node_count": 7,
+          "source": "exact_ast"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "const",
+            "value": "1"
+          },
+          "right": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "var",
+              "name": "x"
+            }
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "decisions": [
+        {
+          "choice": "const:1",
+          "margin": 0.04029769917779358,
+          "path": "root",
+          "probability": 0.4245061706268678,
+          "side": "left"
+        },
+        {
+          "choice": "child",
+          "margin": 0.3992497584856625,
+          "path": "root",
+          "probability": 0.6179730601984055,
+          "side": "right"
+        },
+        {
+          "choice": "child",
+          "margin": 0.42388917522838043,
+          "path": "root.R",
+          "probability": 0.6851701160512121,
+          "side": "left"
+        },
+        {
+          "choice": "var:x",
+          "margin": 0.6899913948816061,
+          "path": "root.R.L",
+          "probability": 0.844995697440803,
+          "side": "left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 0.7046657652166829,
+          "path": "root.R.L",
+          "probability": 0.8523328826083414,
+          "side": "right"
+        },
+        {
+          "choice": "var:x",
+          "margin": 0.27654834183353405,
+          "path": "root.R",
+          "probability": 0.5755762929133995,
+          "side": "right"
+        }
+      ],
+      "min_margin": 0.04029769917779358
+    },
+    "status": "snapped_candidate"
+  },
+  "trained_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": 65.33015858740988,
+    "reason": "mpmath_failed",
+    "split_results": [
+      {
+        "max_abs_error": 18.442389385860345,
+        "max_imag_residue": 0.0,
+        "mse": 55.409243032935706,
+        "name": "train",
+        "passed": false
+      },
+      {
+        "max_abs_error": 14.087246432276597,
+        "max_imag_residue": 0.0,
+        "mse": 36.792832125248246,
+        "name": "heldout",
+        "passed": false
+      },
+      {
+        "max_abs_error": 65.33015858740987,
+        "max_imag_residue": 0.0,
+        "mse": 1730.154822883454,
+        "name": "extrapolation",
+        "passed": false
+      }
+    ],
+    "status": "failed",
+    "tolerance": 1e-08
+  },
+  "training_mode": "blind_training"
+}

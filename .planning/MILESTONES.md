@@ -1,5 +1,19 @@
 # Milestones
 
+## v1.5 Training Proof and Recovery Guarantees (Shipped: 2026-04-16)
+
+**Phases completed:** 5 phases, 11 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Converted the paper-grounded claim set into executable proof suites, deterministic dataset manifests, explicit threshold policies, and proof-aware benchmark artifacts.
+- Split shallow training evidence into measured pure-blind recovery and bounded scaffolded recovery, preserving honest proof semantics for both.
+- Added first-class perturbed true-tree basin recovery, verifier-gated local repair, and durable Beer-Lambert bound diagnostics.
+- Added a deterministic exact depth-curve inventory and measured blind-versus-perturbed reporting across depths 2 through 6.
+- Shipped the one-command proof bundle in `artifacts/proof/v1.5/` with claim status, depth-curve evidence, carried-forward basin-bound diagnostics, and v1.4 context that keeps denominators separate.
+
+---
+
 ## v1.4 Recovery Performance Improvements (Shipped: 2026-04-15)
 
 **Phases completed:** 5 phases, 5 plans, 0 tasks

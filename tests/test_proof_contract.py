@@ -114,6 +114,20 @@ def test_depth_curve_policy_reports_measured_rates_without_requiring_100_percent
     assert measured.fail_on_unsupported is False
     assert context.required_rate is None
     assert context.policy_type == "context_only"
+    depth_claim = paper_claim("paper-blind-depth-degradation")
+    assert depth_claim.case_ids == (
+        "depth-2-blind",
+        "depth-3-blind",
+        "depth-4-blind",
+        "depth-5-blind",
+        "depth-6-blind",
+        "depth-2-perturbed",
+        "depth-3-perturbed",
+        "depth-4-perturbed",
+        "depth-5-perturbed",
+        "depth-6-perturbed",
+    )
+    assert any("Perturbed rows provide comparative basin evidence" in note for note in depth_claim.notes)
 
 
 def test_unknown_claim_and_policy_ids_fail_closed_with_stable_reason():
