@@ -1,0 +1,112 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-16T15:04:06.219Z",
+  "phase": "38",
+  "phase_name": "38-hybrid-recovery-evaluation-and-regression-lockdown",
+  "phase_dir": ".planning/phases/38-hybrid-recovery-evaluation-and-regression-lockdown",
+  "plan": 1,
+  "task": 3,
+  "total_tasks": 3,
+  "status": "paused",
+  "completed_tasks": [
+    {
+      "id": 1,
+      "name": "Proof and campaign regime summaries",
+      "status": "done"
+    },
+    {
+      "id": 2,
+      "name": "Generic comparisons and archived anchor locks",
+      "status": "done"
+    },
+    {
+      "id": 3,
+      "name": "Hybrid-stage regression locks",
+      "status": "done"
+    },
+    {
+      "id": "followup-proof-bundle",
+      "name": "Fresh v1.6 proof bundle generation and paper-grade report hardening",
+      "status": "in_progress",
+      "progress": "Fresh `v1.6-standard` and `v1.6-showcase` campaigns were rerun and inspected. Multiple proof-bundle dry runs exposed report-layer issues in `src/eml_symbolic_regression/campaign.py`, which are now fixed and covered by `tests/test_campaign.py` (17 passed). An isolated rerun of `campaign proof-shallow-pure-blind` completed successfully, and its `report.md` now matches `aggregate.json`: 3/18 verifier recoveries, including 2 threshold-eligible pure blind recoveries plus 1 repaired candidate."
+    }
+  ],
+  "remaining_tasks": [
+    {
+      "id": "followup-proof-bundle-run",
+      "name": "Run the full authoritative v1.6 proof bundle from the final code state",
+      "status": "not_started"
+    },
+    {
+      "id": "followup-proof-bundle-verify",
+      "name": "Verify regenerated `proof-shallow`, `proof-basin`, and top-level `proof-report.md` against aggregate counts and threshold rows",
+      "status": "not_started"
+    },
+    {
+      "id": "followup-milestone-closeout",
+      "name": "Only after the proof bundle is authoritative, decide whether to archive/tag v1.6",
+      "status": "not_started"
+    }
+  ],
+  "blockers": [
+    {
+      "description": "`artifacts/proof/v1.6` contains mixed provenance from one completed dry run and multiple aborted reruns. The isolated `proof-shallow-pure-blind` suite is current, but the top-level proof bundle and the other proof-suite reports are not yet authoritative from the latest code state.",
+      "type": "technical",
+      "workaround": "Rerun `PYTHONPATH=src python -m eml_symbolic_regression.cli proof-campaign --output-root artifacts/proof/v1.6 --overwrite`, then verify rewritten report mtimes and contents before citing any `artifacts/proof/v1.6` top-level artifact."
+    }
+  ],
+  "human_actions_pending": [],
+  "decisions": [
+    {
+      "decision": "Treat the fresh v1.6 paper bundle as a post-phase follow-up rather than silently trusting the first proof-campaign run.",
+      "rationale": "The first completed proof bundle exposed report inaccuracies that did not affect core aggregates but would weaken publication-grade reporting if left uncorrected."
+    },
+    {
+      "decision": "Make `campaign.py` report generation regime-aware and evidence-class-aware before trusting any fresh proof output.",
+      "rationale": "Dry-run inspection showed three real failures: blind-only proof reports mentioning warm-start evidence, perturbed-tree same-AST returns being dropped from campaign-level counts, and pure-blind report prose overstating threshold-eligible recoveries by counting repaired candidates."
+    },
+    {
+      "decision": "Use an isolated `proof-shallow-pure-blind` rerun as the gating canary before attempting another full proof-campaign rerun.",
+      "rationale": "That suite exposed every report-layer issue fastest and now provides a verified reference point for the final full rerun."
+    }
+  ],
+  "uncommitted_files": [
+    ".planning/REQUIREMENTS.md",
+    ".planning/ROADMAP.md",
+    ".planning/STATE.md",
+    "README.md",
+    "docs/IMPLEMENTATION.md",
+    "src/eml_symbolic_regression/benchmark.py",
+    "src/eml_symbolic_regression/campaign.py",
+    "src/eml_symbolic_regression/cli.py",
+    "src/eml_symbolic_regression/compiler.py",
+    "src/eml_symbolic_regression/diagnostics.py",
+    "src/eml_symbolic_regression/expression.py",
+    "src/eml_symbolic_regression/master_tree.py",
+    "src/eml_symbolic_regression/optimize.py",
+    "src/eml_symbolic_regression/proof_campaign.py",
+    "src/eml_symbolic_regression/semantics.py",
+    "src/eml_symbolic_regression/verify.py",
+    "tests/test_benchmark_reports.py",
+    "tests/test_benchmark_runner.py",
+    "tests/test_campaign.py",
+    "tests/test_compiler_warm_start.py",
+    "tests/test_diagnostics.py",
+    "tests/test_proof_campaign.py",
+    "tests/test_semantics_expression.py",
+    ".planning/phases/36-post-snap-constant-refit-and-numerical-stability/36-01-SUMMARY.md",
+    ".planning/phases/36-post-snap-constant-refit-and-numerical-stability/36-VERIFICATION.md",
+    ".planning/phases/37-compiler-macro-shortening-and-warm-start-coverage/37-01-SUMMARY.md",
+    ".planning/phases/37-compiler-macro-shortening-and-warm-start-coverage/37-VERIFICATION.md",
+    ".planning/phases/38-hybrid-recovery-evaluation-and-regression-lockdown/38-01-SUMMARY.md",
+    ".planning/phases/38-hybrid-recovery-evaluation-and-regression-lockdown/38-VERIFICATION.md",
+    ".planning/v1.6-MILESTONE-AUDIT.md",
+    "artifacts/benchmarks/verify-scaled-exp-growth-seed0/",
+    "artifacts/campaigns/v1.6-showcase/",
+    "artifacts/campaigns/v1.6-standard/",
+    "artifacts/proof/v1.6/",
+    "tests/test_verify.py"
+  ],
+  "next_action": "Start with `PYTHONPATH=src python -m eml_symbolic_regression.cli proof-campaign --output-root artifacts/proof/v1.6 --overwrite`, then verify the rewritten `proof-shallow/report.md`, `proof-basin/report.md`, and `proof-report.md` against their aggregates before citing any v1.6 proof artifact.",
+  "context_notes": "Safe pause state: no proof-campaign or pytest processes are running. The `proof-shallow-pure-blind` campaign is freshly regenerated from the latest code state and should be used as the correctness reference. The next session should not trust file counts while overwriting `artifacts/proof/v1.6`; use report mtimes and content checks instead. Expected during proof runs: repeated `RuntimeWarning: overflow encountered in exp` from `src/eml_symbolic_regression/semantics.py:208` on stress-path blind cases."
+}
