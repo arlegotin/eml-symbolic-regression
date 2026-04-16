@@ -70,17 +70,11 @@ Progress: [##########] 100% by completed phases (v1.7: 5/5 planned)
 | v1.6 archived roadmap | `.planning/milestones/v1.6-ROADMAP.md` | Complete |
 | v1.6 milestone audit | `.planning/milestones/v1.6-MILESTONE-AUDIT.md` | Complete |
 | v1.6 archived phase artifacts | `.planning/milestones/v1.6-phases/` | Complete |
-| v1.7 active project context | `.planning/PROJECT.md` | Complete |
-| v1.7 active requirements | `.planning/REQUIREMENTS.md` | Complete |
-| v1.7 active roadmap | `.planning/ROADMAP.md` | Complete |
-| Phase 39 context, plan, summary, verification | `.planning/phases/39-centered-operator-semantics-and-exact-forms/` | Complete |
-| Phase 40 context, plan, summary, verification | `.planning/phases/40-family-aware-master-tree-and-recovery-pipeline/` | Complete |
-| Phase 41 context, plan, summary, verification | `.planning/phases/41-operator-family-campaign-matrix/` | Complete |
-| Phase 42 context, plan, summary, verification | `.planning/phases/42-comparative-evidence-aggregation-and-regression-locks/` | Complete |
-| Phase 43 context, plan, summary, verification | `.planning/phases/43-paper-decision-memo-and-completeness-boundary/` | Complete |
-| v1.7 paper decision package | `artifacts/paper/v1.7/` | Complete |
+| v1.7 project context | `.planning/PROJECT.md` | Complete |
 | v1.7 archived requirements | `.planning/milestones/v1.7-REQUIREMENTS.md` | Complete |
 | v1.7 archived roadmap | `.planning/milestones/v1.7-ROADMAP.md` | Complete |
+| v1.7 archived phase artifacts | `.planning/milestones/v1.7-phases/` | Complete |
+| v1.7 paper decision package | `artifacts/paper/v1.7/` | Complete |
 | v1.7 milestone audit | `.planning/milestones/v1.7-MILESTONE-AUDIT.md` | Complete |
 
 ## Completed Milestone
