@@ -143,6 +143,26 @@ def test_runner_executes_catalog_compile_blind_and_warm_start(tmp_path):
         assert artifact["provenance"]["source_document"].startswith("sources/")
 
 
+def test_runner_executes_operator_family_smoke_matrix(tmp_path):
+    base = builtin_suite("v1.7-family-smoke")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(
+        suite,
+        run_filter=RunFilter(case_ids=("exp-blind-ceml2", "exp-blind-zeml8-4"), seeds=(0,)),
+    )
+
+    assert len(result.results) == 2
+    for item in result.results:
+        artifact = json.loads(item.artifact_path.read_text(encoding="utf-8"))
+        assert artifact["budget"] == item.run.optimizer.as_dict()
+        assert artifact["budget"]["operator_family"]["label"] in {"CEML_2", "ZEML_8"}
+        assert artifact["trained_eml_candidate"]["config"]["operator_family"]["label"] in {"CEML_2", "ZEML_8"}
+        assert artifact["metrics"]["operator_family"] in {"CEML_2", "ZEML_8"}
+        if item.run.case_id == "exp-blind-zeml8-4":
+            assert artifact["metrics"]["operator_schedule"] == "ZEML_8 -> ZEML_4"
+
+
 def test_runner_filter_executes_subset(tmp_path):
     base = builtin_suite("v1.2-evidence")
     suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")

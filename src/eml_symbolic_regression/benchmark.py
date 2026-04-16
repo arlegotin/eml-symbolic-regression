@@ -11,7 +11,7 @@ import statistics
 import subprocess
 import time
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
@@ -50,6 +50,13 @@ BUILTIN_SUITES = (
     "proof-perturbed-basin",
     "proof-perturbed-basin-beer-probes",
     "proof-depth-curve",
+    "v1.7-family-smoke",
+    "v1.7-family-shallow-pure-blind",
+    "v1.7-family-shallow",
+    "v1.7-family-basin",
+    "v1.7-family-depth-curve",
+    "v1.7-family-standard",
+    "v1.7-family-showcase",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
@@ -842,6 +849,8 @@ def _case(
     claim_id: str | None = None,
     threshold_policy_id: str | None = None,
     training_mode: str | None = None,
+    operator_family: EmlOperator | None = None,
+    operator_schedule: Iterable[EmlOperator] = (),
 ) -> BenchmarkCase:
     return BenchmarkCase(
         id=id,
@@ -859,6 +868,8 @@ def _case(
             warm_restarts=warm_restarts,
             max_warm_depth=max_warm_depth,
             scaffold_initializers=tuple(scaffold_initializers),
+            operator_family=operator_family or raw_eml_operator(),
+            operator_schedule=tuple(operator_schedule),
         ),
         tags=tuple(tags),
         expect_recovery=expect_recovery,
@@ -866,6 +877,77 @@ def _case(
         threshold_policy_id=threshold_policy_id,
         training_mode=training_mode,
     )
+
+
+@dataclass(frozen=True)
+class _OperatorVariant:
+    id: str
+    operator_family: EmlOperator
+    operator_schedule: tuple[EmlOperator, ...] = ()
+
+    @property
+    def label(self) -> str:
+        if self.operator_schedule:
+            return " -> ".join(operator.label for operator in self.operator_schedule)
+        return self.operator_family.label
+
+    @property
+    def tags(self) -> tuple[str, ...]:
+        return ("operator_family", f"operator:{self.id}")
+
+
+def _family_variants(*, include_continuation: bool = True) -> tuple[_OperatorVariant, ...]:
+    variants = [
+        _OperatorVariant("raw", raw_eml_operator()),
+        _OperatorVariant("ceml2", eml_operator_from_spec("ceml_s:2")),
+        _OperatorVariant("zeml2", eml_operator_from_spec("zeml_s:2")),
+    ]
+    if include_continuation:
+        variants.append(
+            _OperatorVariant(
+                "zeml8-4",
+                eml_operator_from_spec("zeml_s:8"),
+                (eml_operator_from_spec("zeml_s:8"), eml_operator_from_spec("zeml_s:4")),
+            )
+        )
+    return tuple(variants)
+
+
+def _operator_variant_budget(base: OptimizerBudget, variant: _OperatorVariant) -> OptimizerBudget:
+    scaffold_initializers = base.scaffold_initializers
+    if not variant.operator_family.is_raw:
+        scaffold_initializers = tuple(scaffold for scaffold in scaffold_initializers if scaffold != "scaled_exp")
+    return replace(
+        base,
+        scaffold_initializers=scaffold_initializers,
+        operator_family=variant.operator_family,
+        operator_schedule=variant.operator_schedule,
+    )
+
+
+def _family_case(base: BenchmarkCase, variant: _OperatorVariant) -> BenchmarkCase:
+    return replace(
+        base,
+        id=f"{base.id}-{variant.id}",
+        optimizer=_operator_variant_budget(base.optimizer, variant),
+        tags=tuple(dict.fromkeys((*base.tags, "v1.7", "family_matrix", *variant.tags))),
+        claim_id=None,
+        threshold_policy_id=None,
+        expect_recovery=False if not variant.operator_family.is_raw else base.expect_recovery,
+    )
+
+
+def _family_suite(
+    *,
+    id: str,
+    description: str,
+    base_name: str,
+    include_continuation: bool = True,
+) -> BenchmarkSuite:
+    base = builtin_suite(base_name)
+    variants = _family_variants(include_continuation=include_continuation)
+    cases = tuple(_family_case(case, variant) for case in base.cases for variant in variants)
+    return BenchmarkSuite(id=id, description=description, cases=cases)
 
 
 def builtin_suite(name: str) -> BenchmarkSuite:
@@ -1203,6 +1285,48 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                     **perturbed_kwargs,
                 ),
             ),
+        )
+    if name == "v1.7-family-smoke":
+        return _family_suite(
+            id="v1.7-family-smoke",
+            description="CI-scale v1.7 raw-vs-centered operator-family smoke matrix.",
+            base_name="smoke",
+        )
+    if name == "v1.7-family-shallow-pure-blind":
+        return _family_suite(
+            id="v1.7-family-shallow-pure-blind",
+            description="v1.7 family matrix cloned from the shallow pure-blind proof denominator without proof thresholds.",
+            base_name="v1.5-shallow-pure-blind",
+        )
+    if name == "v1.7-family-shallow":
+        return _family_suite(
+            id="v1.7-family-shallow",
+            description="v1.7 family matrix cloned from the shallow scaffolded proof denominator without proof thresholds.",
+            base_name="v1.5-shallow-proof",
+        )
+    if name == "v1.7-family-basin":
+        return _family_suite(
+            id="v1.7-family-basin",
+            description="v1.7 family matrix cloned from the perturbed-basin proof denominator without proof thresholds.",
+            base_name="proof-perturbed-basin",
+        )
+    if name == "v1.7-family-depth-curve":
+        return _family_suite(
+            id="v1.7-family-depth-curve",
+            description="v1.7 family matrix cloned from the blind-vs-perturbed depth curve without proof thresholds.",
+            base_name="proof-depth-curve",
+        )
+    if name == "v1.7-family-standard":
+        return _family_suite(
+            id="v1.7-family-standard",
+            description="v1.7 standard-style raw-vs-centered operator-family comparison matrix.",
+            base_name="v1.3-standard",
+        )
+    if name == "v1.7-family-showcase":
+        return _family_suite(
+            id="v1.7-family-showcase",
+            description="v1.7 showcase-style raw-vs-centered operator-family comparison matrix.",
+            base_name="v1.3-showcase",
         )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
 

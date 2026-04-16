@@ -80,6 +80,13 @@ def test_campaign_presets_map_to_budgeted_suites():
         "proof-basin",
         "proof-basin-probes",
         "proof-depth-curve",
+        "family-smoke",
+        "family-shallow-pure-blind",
+        "family-shallow",
+        "family-basin",
+        "family-depth-curve",
+        "family-standard",
+        "family-showcase",
     )
 
     standard = campaign_preset("standard")
@@ -115,6 +122,16 @@ def test_campaign_presets_map_to_budgeted_suites():
     assert depth_curve.suite == "proof-depth-curve"
     assert any(run.case_id == "depth-6-perturbed" for run in load_suite(depth_curve.suite).expanded_runs())
 
+    family_smoke = campaign_preset("family-smoke")
+    family_runs = load_suite(family_smoke.suite).expanded_runs()
+    assert family_smoke.suite == "v1.7-family-smoke"
+    assert any(run.case_id == "exp-blind-ceml2" for run in family_runs)
+    assert any([operator.label for operator in run.optimizer.operator_schedule] == ["ZEML_8", "ZEML_4"] for run in family_runs)
+
+    family_standard = campaign_preset("family-standard")
+    assert family_standard.suite == "v1.7-family-standard"
+    assert family_standard.tier == "v1.7-family-matrix"
+
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
     result = run_campaign(
@@ -137,6 +154,24 @@ def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
     assert manifest["counts"]["total"] == 1
     assert manifest["run_filter"]["case_ids"] == ["planck-diagnostic"]
     assert "campaign smoke" in manifest["reproducibility"]["command"]
+
+
+def test_family_smoke_campaign_writes_family_manifest(tmp_path):
+    result = run_campaign(
+        "family-smoke",
+        output_root=tmp_path,
+        label="family-ci",
+        run_filter=RunFilter(case_ids=("exp-blind-ceml2",)),
+    )
+
+    manifest = json.loads(result.manifest_path.read_text())
+    aggregate = json.loads(result.aggregate_paths["json"].read_text())
+
+    assert manifest["preset"]["name"] == "family-smoke"
+    assert manifest["suite"]["id"] == "v1.7-family-smoke"
+    assert manifest["counts"]["total"] == 1
+    assert manifest["run_filter"]["case_ids"] == ["exp-blind-ceml2"]
+    assert aggregate["runs"][0]["metrics"]["operator_family"] == "CEML_2"
 
 
 def test_reproduction_command_quotes_shell_sensitive_values(tmp_path):

@@ -25,6 +25,13 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "proof-perturbed-basin",
         "proof-perturbed-basin-beer-probes",
         "proof-depth-curve",
+        "v1.7-family-smoke",
+        "v1.7-family-shallow-pure-blind",
+        "v1.7-family-shallow",
+        "v1.7-family-basin",
+        "v1.7-family-depth-curve",
+        "v1.7-family-standard",
+        "v1.7-family-showcase",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -35,6 +42,43 @@ def test_builtin_suite_registry_expands_stable_run_ids():
     assert runs[0].claim_id is None
     assert runs[0].threshold_policy_id is None
     assert runs[0].training_mode == "blind_training"
+
+
+def test_family_matrix_suites_clone_regimes_with_operator_variants():
+    suite = load_suite("v1.7-family-shallow-pure-blind")
+    runs = suite.expanded_runs()
+
+    assert len(runs) == 72
+    assert {run.claim_id for run in runs} == {None}
+    assert {run.threshold_policy_id for run in runs} == {None}
+    assert {"shallow-exp-pure-blind-raw", "shallow-exp-pure-blind-ceml2", "shallow-exp-pure-blind-zeml8-4"} <= {
+        run.case_id for run in runs
+    }
+    assert {"raw_eml", "CEML_2", "ZEML_2", "ZEML_8"} <= {
+        run.optimizer.operator_family.label for run in runs
+    }
+    assert any([operator.label for operator in run.optimizer.operator_schedule] == ["ZEML_8", "ZEML_4"] for run in runs)
+    assert all({"v1.7", "family_matrix"} <= set(run.tags) for run in runs)
+
+    shallow = load_suite("v1.7-family-shallow")
+    centered_scaffolded = [
+        run for run in shallow.expanded_runs() if run.case_id == "shallow-beer-lambert-blind-ceml2"
+    ]
+    assert centered_scaffolded
+    assert "scaled_exp" not in centered_scaffolded[0].optimizer.scaffold_initializers
+
+
+def test_family_basin_and_depth_curve_preserve_regime_shapes_without_thresholds():
+    basin_runs = load_suite("v1.7-family-basin").expanded_runs()
+    depth_runs = load_suite("v1.7-family-depth-curve").expanded_runs()
+
+    assert len(basin_runs) == 36
+    assert len(depth_runs) == 80
+    assert {"perturbed_tree"} == {run.start_mode for run in basin_runs}
+    assert {"blind", "perturbed_tree"} == {run.start_mode for run in depth_runs}
+    assert {run.claim_id for run in basin_runs + depth_runs} == {None}
+    assert any(run.case_id == "basin-depth1-perturbed-ceml2" for run in basin_runs)
+    assert any(run.case_id == "depth-6-perturbed-zeml8-4" for run in depth_runs)
 
 
 def test_v12_evidence_suite_contains_perturbation_matrix():

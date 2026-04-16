@@ -135,6 +135,55 @@ _PRESETS = {
         description="Measured v1.5 blind-vs-perturbed depth-curve campaign over deterministic exact EML targets.",
         budget_guardrail="20 runs; exact depth-2 through depth-6 blind and perturbed rows with fixed seeds and budgets.",
     ),
+    "family-smoke": CampaignPreset(
+        name="family-smoke",
+        suite="v1.7-family-smoke",
+        tier="ci",
+        description="CI-scale v1.7 raw-vs-centered operator-family smoke campaign.",
+        budget_guardrail="12 runs; raw, fixed centered, and continuation variants over the smoke suite.",
+    ),
+    "family-shallow-pure-blind": CampaignPreset(
+        name="family-shallow-pure-blind",
+        suite="v1.7-family-shallow-pure-blind",
+        tier="v1.7-family-matrix",
+        description="v1.7 shallow pure-blind raw-vs-centered operator-family matrix.",
+        budget_guardrail="72 runs; v1.5 shallow pure-blind cases cloned across four operator variants without proof thresholds.",
+    ),
+    "family-shallow": CampaignPreset(
+        name="family-shallow",
+        suite="v1.7-family-shallow",
+        tier="v1.7-family-matrix",
+        description="v1.7 shallow scaffolded raw-vs-centered operator-family matrix.",
+        budget_guardrail="72 runs; v1.5 shallow scaffolded cases cloned across four operator variants without proof thresholds.",
+    ),
+    "family-basin": CampaignPreset(
+        name="family-basin",
+        suite="v1.7-family-basin",
+        tier="v1.7-family-matrix",
+        description="v1.7 perturbed-basin raw-vs-centered operator-family matrix.",
+        budget_guardrail="Raw basin rows run normally; centered perturbed-tree rows fail closed until same-family seeds exist.",
+    ),
+    "family-depth-curve": CampaignPreset(
+        name="family-depth-curve",
+        suite="v1.7-family-depth-curve",
+        tier="v1.7-family-matrix",
+        description="v1.7 blind-vs-perturbed depth-curve operator-family matrix.",
+        budget_guardrail="80 expanded runs; depth-curve cases cloned across four operator variants without proof thresholds.",
+    ),
+    "family-standard": CampaignPreset(
+        name="family-standard",
+        suite="v1.7-family-standard",
+        tier="v1.7-family-matrix",
+        description="v1.7 standard-style raw-vs-centered operator-family comparison campaign.",
+        budget_guardrail="Standard-style comparison cloned across four operator variants with isolated v1.7 outputs.",
+    ),
+    "family-showcase": CampaignPreset(
+        name="family-showcase",
+        suite="v1.7-family-showcase",
+        tier="v1.7-family-matrix",
+        description="v1.7 showcase-style raw-vs-centered operator-family comparison campaign.",
+        budget_guardrail="Showcase-style comparison cloned across four operator variants with isolated v1.7 outputs.",
+    ),
 }
 
 
