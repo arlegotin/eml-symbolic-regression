@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.7
 milestone_name: Centered-Family Baseline and Paper Decision
-current_phase: 39
-status: roadmap_ready
-stopped_at: v1.7 roadmap created; ready for Phase 39 planning
-last_updated: "2026-04-16T19:10:00Z"
-last_activity: 2026-04-16 -- Milestone v1.7 requirements and roadmap created
+current_phase: 40
+status: in_progress
+stopped_at: Phase 39 complete; ready for Phase 40 planning
+last_updated: "2026-04-16T19:25:00Z"
+last_activity: 2026-04-16 -- Phase 39 centered operator semantics completed
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 20
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 39
+**Current phase:** 40
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 39 will add centered-family semantics and exact AST support for the v1.7 raw-vs-centered operator comparison.
+**Current focus:** Phase 40 will thread centered-family choices through the soft master tree and recovery pipeline.
 
 ## Current Position
 
-Phase: 39 — Centered Operator Semantics and Exact Forms
+Phase: 40 — Family-Aware Master Tree and Recovery Pipeline
 Plan: —
-Status: Roadmap ready; phase planning not started
-Last activity: 2026-04-16 -- Milestone v1.7 requirements and roadmap created
-Progress: [----------] 0% by completed phases (v1.7: 0/5 planned)
+Status: Phase 39 complete; Phase 40 pending planning
+Last activity: 2026-04-16 -- Phase 39 centered operator semantics completed
+Progress: [##--------] 20% by completed phases (v1.7: 1/5 planned)
 
 ## Performance Metrics
 
@@ -73,6 +73,7 @@ Progress: [----------] 0% by completed phases (v1.7: 0/5 planned)
 | v1.7 active project context | `.planning/PROJECT.md` | Complete |
 | v1.7 active requirements | `.planning/REQUIREMENTS.md` | Complete |
 | v1.7 active roadmap | `.planning/ROADMAP.md` | Complete |
+| Phase 39 context, plan, summary, verification | `.planning/phases/39-centered-operator-semantics-and-exact-forms/` | Complete |
 
 ## Completed Milestone
 
@@ -106,7 +107,7 @@ Target work:
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 39 | Centered Operator Semantics and Exact Forms | Pending | OPF-01, OPF-02, OPF-03, OPF-04, OPF-05 |
+| 39 | Centered Operator Semantics and Exact Forms | Complete | OPF-01, OPF-02, OPF-03, OPF-04, OPF-05 |
 | 40 | Family-Aware Master Tree and Recovery Pipeline | Pending | TRN-01, TRN-02, TRN-03, TRN-04, TRN-05 |
 | 41 | Operator-Family Campaign Matrix | Pending | EVD-01, EVD-02 |
 | 42 | Comparative Evidence Aggregation and Regression Locks | Pending | EVD-03, EVD-04, EVD-05 |
@@ -138,6 +139,7 @@ Target work:
 - The final v1.6 proof bundle was regenerated from the latest code state after fixing pure-blind report pluralization; manifest counts match campaign aggregates, pure-blind reports `2/18` threshold-eligible pure blind recoveries plus one repaired candidate, proof-basin reports `9/9` same-AST perturbed-tree returns, and anchor locks cover the five current proof campaigns plus v1.5/v1.4 anchors.
 - v1.7 pivots from raw-EML optimizer-only tuning to a centered/scaled operator-family comparison because the archived proof evidence points to search geometry as the main unresolved bottleneck.
 - `CEML_s` and `ZEML_s` must be kept distinct: `CEML_s` is the unit-terminal/formal successor candidate, while `ZEML_s` is the training-centered variant and must not be overclaimed as a completeness replacement.
+- Phase 39 added operator-family metadata, centered `expm1`/`log1p` semantics, exact centered ASTs, mpmath/SymPy export, and shifted-singularity diagnostics while preserving raw EML defaults.
 
 ### Pending Todos
 
@@ -156,8 +158,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: v1.7 roadmap created; ready for Phase 39 planning
+Stopped at: Phase 39 complete; ready for Phase 40 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after creating milestone v1.7 roadmap*
+*Last updated: 2026-04-16 after completing Phase 39*

@@ -10,11 +10,11 @@ Requirements for this milestone only. Completed v1 through v1.6 requirements are
 
 ### Operator Family Semantics and Exact Forms
 
-- [ ] **OPF-01**: User can evaluate `raw_eml`, `cEML_{s,t}`, `CEML_s`, and `ZEML_s` through explicit training and verification semantics that preserve the existing PyTorch `complex128` default.
-- [ ] **OPF-02**: User can rely on `expm1` and `log1p` implementations for centered-family nodes, with faithful verification behavior separated from any training-mode clamps or guards.
-- [ ] **OPF-03**: User can serialize, deserialize, snap, and inspect exact AST nodes that record operator family, scale `s`, shift `t`, terminal convention, and child structure.
-- [ ] **OPF-04**: User can evaluate centered-family exact ASTs through SymPy and high-precision mpmath paths without collapsing them into raw-EML-only reporting.
-- [ ] **OPF-05**: User can inspect anomaly diagnostics for centered nodes, including non-finite intermediates, `expm1` overflow pressure, `log1p` branch or domain events, and distance to the shifted singularity.
+- [x] **OPF-01**: User can evaluate `raw_eml`, `cEML_{s,t}`, `CEML_s`, and `ZEML_s` through explicit training and verification semantics that preserve the existing PyTorch `complex128` default.
+- [x] **OPF-02**: User can rely on `expm1` and `log1p` implementations for centered-family nodes, with faithful verification behavior separated from any training-mode clamps or guards.
+- [x] **OPF-03**: User can serialize, deserialize, snap, and inspect exact AST nodes that record operator family, scale `s`, shift `t`, terminal convention, and child structure.
+- [x] **OPF-04**: User can evaluate centered-family exact ASTs through SymPy and high-precision mpmath paths without collapsing them into raw-EML-only reporting.
+- [x] **OPF-05**: User can inspect anomaly diagnostics for centered nodes, including non-finite intermediates, `expm1` overflow pressure, `log1p` branch or domain events, and distance to the shifted singularity.
 
 ### Family-Aware Training and Recovery
 
@@ -70,11 +70,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| OPF-01 | Phase 39 | Pending |
-| OPF-02 | Phase 39 | Pending |
-| OPF-03 | Phase 39 | Pending |
-| OPF-04 | Phase 39 | Pending |
-| OPF-05 | Phase 39 | Pending |
+| OPF-01 | Phase 39 | Complete |
+| OPF-02 | Phase 39 | Complete |
+| OPF-03 | Phase 39 | Complete |
+| OPF-04 | Phase 39 | Complete |
+| OPF-05 | Phase 39 | Complete |
 | TRN-01 | Phase 40 | Pending |
 | TRN-02 | Phase 40 | Pending |
 | TRN-03 | Phase 40 | Pending |
@@ -98,4 +98,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after creating milestone v1.7 roadmap*
+*Last updated: 2026-04-16 after completing Phase 39 centered operator semantics*

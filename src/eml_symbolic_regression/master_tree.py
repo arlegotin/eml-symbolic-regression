@@ -8,7 +8,7 @@ from typing import Any, Mapping, Sequence
 
 import torch
 
-from .expression import Const, Eml, Expr, Var
+from .expression import CenteredEml, Const, Eml, Expr, Var
 from .semantics import AnomalyStats, TrainingSemanticsConfig, as_complex_tensor, eml_torch
 
 
@@ -52,6 +52,12 @@ def expressions_equal(left: Expr, right: Expr, *, constant_tolerance: float = 1e
         return expressions_equal(left.left, right.left, constant_tolerance=constant_tolerance) and expressions_equal(
             left.right, right.right, constant_tolerance=constant_tolerance
         )
+    if isinstance(left, CenteredEml) and isinstance(right, CenteredEml):
+        return left.operator == right.operator and expressions_equal(
+            left.left,
+            right.left,
+            constant_tolerance=constant_tolerance,
+        ) and expressions_equal(left.right, right.right, constant_tolerance=constant_tolerance)
     return False
 
 
