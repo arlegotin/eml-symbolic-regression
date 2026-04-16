@@ -2,17 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.6
 milestone_name: hybrid search pipeline and exact candidate recovery
-current_phase: 34
+current_phase: 35
 status: ready
-stopped_at: Milestone v1.6 initialized; Phase 34 is ready for discussion and planning
-last_updated: "2026-04-16T09:48:49Z"
-last_activity: 2026-04-16 -- Milestone v1.6 started; requirements and roadmap created
+stopped_at: Phase 34 complete; Phase 35 is ready for discussion and planning
+last_updated: "2026-04-16T10:23:15Z"
+last_activity: 2026-04-16 -- Phase 34 completed; verifier-gated exact candidate pooling landed
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 20
 ---
 
 # GSD State: EML Symbolic Regression
@@ -26,21 +26,21 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Milestone v1.6 initialized — hybrid recovery pipeline upgrades are ready for phase planning
+**Current focus:** Phase 34 is complete — verifier-gated exact candidate pooling is in place and Phase 35 is ready
 
 ## Current Position
 
-Phase: 34 (Exact Candidate Pool and Checkpoint Snapping) — NOT STARTED
+Phase: 35 (Snap-Neighborhood Discrete Cleanup) — NOT STARTED
 Plan: —
 Status: Ready for phase discussion/planning
-Last activity: 2026-04-16 -- Milestone v1.6 started; requirements and roadmap created
-Progress: [..........] 0% by completed phases (v1.6: 0/5 planned)
+Last activity: 2026-04-16 -- Phase 34 completed; verifier-gated exact candidate pooling landed
+Progress: [##........] 20% by completed phases (v1.6: 1/5 planned)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1 through v1.5 milestones complete.
+- Total plans completed: Historical v1 through v1.5 milestones complete, plus 1 plan completed in v1.6.
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
@@ -65,6 +65,7 @@ Progress: [..........] 0% by completed phases (v1.6: 0/5 planned)
 | v1.5 archived phase context | `.planning/milestones/v1.5-phases/` | Complete |
 | v1.6 requirements | `.planning/REQUIREMENTS.md` | Complete |
 | v1.6 roadmap | `.planning/ROADMAP.md` | Complete |
+| Phase 34 planning and execution artifacts | `.planning/phases/34-exact-candidate-pool-and-checkpoint-snapping/` | Complete |
 
 ## Current Milestone
 
@@ -84,7 +85,7 @@ Target features:
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 34 | Exact Candidate Pool and Checkpoint Snapping | Pending | HARD-01, HARD-02, HARD-03, HARD-04 |
+| 34 | Exact Candidate Pool and Checkpoint Snapping | Complete | HARD-01, HARD-02, HARD-03, HARD-04 |
 | 35 | Snap-Neighborhood Discrete Cleanup | Pending | DISC-01, DISC-02, DISC-03, DISC-04 |
 | 36 | Post-Snap Constant Refit and Numerical Stability | Pending | REFI-01, REFI-02, STAB-01, STAB-02 |
 | 37 | Compiler Macro Shortening and Warm-Start Coverage | Pending | COMP-01, COMP-02, COMP-03 |
@@ -108,6 +109,7 @@ Target features:
 - Phase 33 completed the one-command `proof-campaign` bundle rooted at `artifacts/proof/v1.5/`, keeping v1.5 proof denominators separate from v1.4 showcase baselines and carrying forward the perturbed basin bound report.
 - v1.6 begins from the proof-bundle evidence that representation is strong but blind search quality is still the dominant bottleneck.
 - v1.6 will prioritize weak-dominance upgrades first: exact-candidate pooling, discrete cleanup, refit, and compiler shortening must preserve the current exact candidate as fallback on declared benchmark paths.
+- Phase 34 added explicit late hardening checkpoints, retained exact-candidate pooling, verifier-gated selection, and serialized legacy fallback provenance across blind, warm-start, basin, benchmark, and CLI flows.
 
 ### Pending Todos
 
@@ -126,8 +128,8 @@ The milestone intentionally does not claim universal blind recovery of arbitrary
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: Milestone v1.6 initialized; Phase 34 is ready for discussion and planning
+Stopped at: Phase 34 complete; Phase 35 is ready for discussion and planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after starting milestone v1.6 and archiving the v1.5 planning artifacts*
+*Last updated: 2026-04-16 after completing Phase 34 and advancing milestone v1.6 to Phase 35*
