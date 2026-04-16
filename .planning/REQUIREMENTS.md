@@ -1,105 +1,102 @@
-# Requirements: EML Symbolic Regression Milestone v1.5
+# Requirements: EML Symbolic Regression Milestone v1.6
 
-**Defined:** 2026-04-15
-**Milestone:** v1.5 Training Proof and Recovery Guarantees
+**Defined:** 2026-04-16
+**Milestone:** v1.6 Hybrid Search Pipeline and Exact Candidate Recovery
 **Core Value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Milestone v1.5 Requirements
+## Milestone v1.6 Requirements
 
-Requirements for this milestone only. Completed v1, v1.1, v1.2, v1.3, and v1.4 requirements are recorded as validated capabilities in `.planning/PROJECT.md` and `.planning/milestones/`.
+Requirements for this milestone only. Completed v1 through v1.5 requirements are recorded as validated capabilities in `.planning/PROJECT.md` and archived milestone files under `.planning/milestones/`.
 
-### Paper Claim Contract
+### Hardening and Exact Candidate Selection
 
-- [x] **CLAIM-01**: User can inspect a paper-claim matrix that maps each v1.5 experiment to the specific paper-grounded statement it tests: complete depth-bounded EML search, shallow blind recovery, perturbed-true-tree recovery, and blind depth degradation.
-- [x] **CLAIM-02**: User can generate deterministic proof datasets with seeds, train/held-out/extrapolation splits, normalization metadata, target formulas, and source provenance.
-- [x] **CLAIM-03**: User can distinguish blind training, compiler warm-start training, perturbed true-tree training, compile-only verification, catalog verification, unsupported cases, and failed cases in every proof artifact.
-- [x] **CLAIM-04**: User receives explicit pass/fail thresholds for every proof suite, including the bounded suites where 100% verifier-owned training recovery is required and the depth-curve suites where measured rates are reported.
+- [ ] **HARD-01**: User can run an explicit late hardening stage that sharpens categorical slots and emits exact snapped candidates at selected checkpoints instead of snapping only once at the end.
+- [ ] **HARD-02**: User can retain exact candidates from every restart and late hardening checkpoint, rather than selecting the final answer solely from the minimum soft fit loss.
+- [ ] **HARD-03**: User receives a verifier-gated exact-candidate ranking that prioritizes verifier status, extrapolation and high-precision error, held-out error, train post-snap loss, and complexity before soft-loss ties.
+- [ ] **HARD-04**: User can inspect candidate provenance for the selected exact tree, including source restart/checkpoint, snap margins, active-slot diagnostics, and the fallback candidate that would have been chosen by the old selector.
 
-### Shallow Training Claim Split
+### Snap-Neighborhood Discrete Cleanup
 
-- [x] **SHAL-01**: User can run declared shallow training suites covering `exp`, `log`, `radioactive_decay`, Beer-Lambert-style scaled exponentials, and signed/scaled exponential variants with fixed seeds and budgets, split into measured pure random-initialized blind recovery and bounded scaffolded recovery.
-- [x] **SHAL-02**: User receives separate evidence for measured pure random-initialized blind recovery and 100% verifier-owned scaffolded shallow recovery, with scaffolded starts never counted toward the pure-blind claim.
-- [x] **SHAL-03**: User can inspect optimizer and snap diagnostics for any scaffolded shallow run, including scaffold source, best loss, post-snap loss, snap margin, active node count, and verifier status.
-- [x] **SHAL-04**: User can run regression tests that fail if the scaffolded `radioactive_decay` or declared signed/scaled exponential suite regresses below the 100% bounded target, or if pure-blind and scaffolded claim semantics are mixed.
+- [ ] **DISC-01**: User can run bounded low-margin beam expansion over ambiguous active snap slots using top-k categorical alternatives and exact AST deduplication.
+- [ ] **DISC-02**: User can apply target-free local discrete repair to a failed snapped candidate without access to a known target AST or embedding.
+- [ ] **DISC-03**: User can inspect which slots or subtrees were varied during beam or repair search, along with their margins and resulting exact-candidate deltas.
+- [ ] **DISC-04**: User retains the original snapped exact candidate as fallback whenever beam search or local repair fails to improve the verifier-owned ranking.
 
-### Perturbed Basin Training
+### Post-Snap Constant Refit
 
-- [x] **BASN-01**: User can generate exact EML target trees at declared depths and perturb their active categorical slots under deterministic noise envelopes.
-- [x] **BASN-02**: User receives 100% verifier-owned recovery for the declared perturbed-true-tree basin proof suite, with per-depth and per-noise thresholds documented before execution.
-- [x] **BASN-03**: User can run Beer-Lambert perturbation repair experiments that either recover all declared high-noise cases or formally narrow the supported perturbation bound with evidence.
-- [x] **BASN-04**: User can apply local snap/discrete repair around failed trained candidates and inspect which slots or subtrees changed.
-- [x] **BASN-05**: User can verify that same-AST return, verified-equivalent AST, repaired AST, snapped-but-failed, soft-fit-only, and unsupported outcomes remain distinct.
+- [ ] **REFI-01**: User can freeze a snapped exact tree, expose its literal constants, and optimize those coefficients post-snap without changing the discrete structure.
+- [ ] **REFI-02**: User receives both pre-refit and post-refit exact-candidate artifacts, and the refit candidate is accepted only when it improves or matches the fallback under verifier-owned ranking.
 
-### Depth-Curve Training Evidence
+### Numerical Stability and Domain Control
 
-- [x] **CURV-01**: User can run a depth-curve experiment for blind and perturbed training over EML depths 2 through 6 with deterministic seeds, budgets, and formula/tree inventories.
-- [x] **CURV-02**: User receives recovery rates, confidence intervals or seed counts, best-loss distributions, post-snap-loss distributions, runtime, and snap-distance metrics by depth and training mode.
-- [x] **CURV-03**: User can compare the implementation's measured depth curve against the paper's qualitative claims without presenting deeper blind failures as product regressions.
-- [x] **CURV-04**: User can preserve depth-curve raw artifacts so future optimizer changes can be compared against the v1.5 paper-proof baseline.
+- [ ] **STAB-01**: User can inspect training diagnostics for `exp` overflow, `log`-domain violations, non-finite intermediates, clamp counts, and other branch or domain anomalies rather than only `exp` clamping.
+- [ ] **STAB-02**: User can enable positive-domain-safe parameterizations or penalties for log-feeding branches during training without changing faithful verification semantics after snapping.
 
-### Proof Evidence Report
+### Compiler Macro Shortening and Warm Starts
 
-- [x] **EVID-01**: User can run one command that produces the v1.5 proof campaign artifacts: datasets, raw runs, aggregate JSON, CSV tables, plots, and a Markdown claim report.
-- [x] **EVID-02**: User receives a proof report that states which paper-grounded claims passed, which remain bounded, which failed, and which are out of scope.
-- [x] **EVID-03**: User can reproduce all proof artifacts from a clean checkout using documented commands and committed configuration.
-- [x] **EVID-04**: User can run tests that lock the claim matrix, dataset generation, training proof suites, local repair behavior, depth-curve aggregation, and proof report generation.
-- [x] **EVID-05**: User can compare v1.5 proof-suite results against v1.4 campaign evidence without mixing proof-suite success rates with showcase campaign success rates.
+- [ ] **COMP-01**: User can compile supported small primitives and canonical motifs through a validated short-macro library before falling back to the existing generic compiler rules.
+- [ ] **COMP-02**: User can inspect compiler diagnostics that report macro hits, missed shortcut opportunities, and depth/node deltas against the old compiler output.
+- [ ] **COMP-03**: User gets expanded warm-start coverage for currently depth-limited formulas while preserving the existing fail-closed compiler behavior when no validated short macro applies.
+
+### Evaluation Integrity and Regression Evidence
+
+- [ ] **EVAL-01**: User can run proof and campaign suites that keep pure blind, scaffolded blind, compile-only, warm-start, and perturbed-basin modes explicitly separate in run artifacts and aggregate reports.
+- [ ] **EVAL-02**: User can compare v1.6 recovery results against archived v1.5 proof artifacts and archived v1.4 campaign baselines without overwriting those prior milestone outputs.
+- [ ] **EVAL-03**: User can run regression tests that fail if the new candidate-pool, cleanup, refit, or macro stages regress below the fallback exact-candidate performance on declared benchmark cases.
+- [ ] **EVAL-04**: User receives reports and docs that state weak-dominance claims separately from likely-improvement claims and do not overstate blind-discovery capability.
 
 ## Future Requirements
 
 Deferred to later milestones.
 
-### External Evidence and Baselines
+### External Baselines and Publication
 
-- **FUT-20**: User can run external noisy real-world datasets after v1.5 establishes bounded synthetic/source-document training proof behavior.
-- **FUT-21**: User can compare v1.5 training proof suites against PySR or another external symbolic-regression baseline.
-- **FUT-22**: User can use GPU/profiling acceleration after proof-suite bottlenecks are measured.
-- **FUT-23**: User can explore a web or notebook dashboard after proof artifacts and reports stabilize.
+- **FUT-24**: User can run matched-budget external symbolic-regression baselines such as PySR, AI Feynman, PhySO, or ParFam once the v1.6 hybrid recovery pipeline stabilizes.
+- **FUT-25**: User can run family-guided or parametric EML subsearch for scientific-law families if the generic hybrid pipeline still underperforms on coefficiented showcase formulas.
+- **FUT-26**: User can evaluate noisy external datasets or units-aware benchmarks after synthetic proof and hybrid search behavior are stable.
+- **FUT-27**: User can assemble a publication-grade benchmark and paper package after the hybrid recovery pipeline and external baselines are in place.
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Universal 100% recovery for all elementary functions | The paper reports rapid blind recovery degradation beyond shallow depths; v1.5 proves bounded suites and reports measured limits. |
-| Counting compile-only or catalog verification as training proof | The user's goal is real training; compiler/catalog paths remain useful but separate evidence classes. |
-| Counting exact scaffold starts as pure blind recovery | Phase 30 review found scaffolded scaled-exponential starts recover verifier-owned candidates but are not random-initialized blind recovery under the paper/NORTH_STAR definition. |
-| Redefining `recovered` by loosening verifier thresholds | v1.5 must improve training behavior and evidence, not change the claim contract. |
-| External noisy datasets | The current gap is bounded synthetic/source-document training proof; external data should come after that is credible. |
-| GPU or custom kernels | The milestone target is recovery correctness and evidence quality, not throughput-first optimization. |
-| Formal theorem proving | Numeric, high-precision, and symbolic verification are sufficient for this training-evidence milestone. |
+| Guaranteed improvement on every unseen formula | The honest guarantee for this milestone is weak dominance on declared benchmark selection, not universal success. |
+| Claiming full blind recovery of arbitrary deeper formulas | The paper and v1.5 proof bundle both show strong blind degradation beyond shallow depths. |
+| Counting scaffolded or warm-start evidence as pure blind discovery | Regime separation is part of the scientific contract and cannot be relaxed. |
+| Replacing archived v1.5 proof artifacts or v1.4 campaign outputs | Those artifacts are preserved as baseline anchors for v1.6 comparisons. |
+| Matched-budget external baseline competitions | Important, but deferred until the hybrid pipeline is materially stronger. |
+| GPU or custom kernels | The current priority is recovery quality and exact-candidate handling, not throughput-first optimization. |
+| Formal theorem proving | Numeric, high-precision, and symbolic verification remain sufficient for this milestone. |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CLAIM-01 | Phase 29 | Complete |
-| CLAIM-02 | Phase 29 | Complete |
-| CLAIM-03 | Phase 29 | Complete |
-| CLAIM-04 | Phase 29 | Complete |
-| SHAL-01 | Phase 30 | Complete |
-| SHAL-02 | Phase 30 | Complete |
-| SHAL-03 | Phase 30 | Complete |
-| SHAL-04 | Phase 30 | Complete |
-| BASN-01 | Phase 31 | Complete |
-| BASN-02 | Phase 31 | Complete |
-| BASN-03 | Phase 31 | Complete |
-| BASN-04 | Phase 31 | Complete |
-| BASN-05 | Phase 31 | Complete |
-| CURV-01 | Phase 32 | Complete |
-| CURV-02 | Phase 32 | Complete |
-| CURV-03 | Phase 32 | Complete |
-| CURV-04 | Phase 32 | Complete |
-| EVID-01 | Phase 33 | Complete |
-| EVID-02 | Phase 33 | Complete |
-| EVID-03 | Phase 33 | Complete |
-| EVID-04 | Phase 33 | Complete |
-| EVID-05 | Phase 33 | Complete |
+| HARD-01 | Phase 34 | Pending |
+| HARD-02 | Phase 34 | Pending |
+| HARD-03 | Phase 34 | Pending |
+| HARD-04 | Phase 34 | Pending |
+| DISC-01 | Phase 35 | Pending |
+| DISC-02 | Phase 35 | Pending |
+| DISC-03 | Phase 35 | Pending |
+| DISC-04 | Phase 35 | Pending |
+| REFI-01 | Phase 36 | Pending |
+| REFI-02 | Phase 36 | Pending |
+| STAB-01 | Phase 36 | Pending |
+| STAB-02 | Phase 36 | Pending |
+| COMP-01 | Phase 37 | Pending |
+| COMP-02 | Phase 37 | Pending |
+| COMP-03 | Phase 37 | Pending |
+| EVAL-01 | Phase 38 | Pending |
+| EVAL-02 | Phase 38 | Pending |
+| EVAL-03 | Phase 38 | Pending |
+| EVAL-04 | Phase 38 | Pending |
 
 **Coverage:**
-- v1.5 requirements: 22 total
-- Mapped to phases: 22
+- v1.6 requirements: 19 total
+- Mapped to phases: 19
 - Unmapped: 0
 
 ---
-*Requirements defined: 2026-04-15*
-*Last updated: 2026-04-16 after completing Phase 32 depth-curve evidence and Phase 33 proof-bundle reporting*
+*Requirements defined: 2026-04-16*
+*Last updated: 2026-04-16 after defining milestone v1.6*

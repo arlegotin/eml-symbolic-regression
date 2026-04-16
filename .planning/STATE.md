@@ -1,54 +1,54 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.5
-milestone_name: milestone
-current_phase: 33
-status: completed
-stopped_at: Milestone v1.5 complete; proof bundle, phase verification, and milestone audit written
-last_updated: "2026-04-16T06:55:45.000Z"
-last_activity: 2026-04-16 -- Phase 32 depth curve and Phase 33 proof bundle completed
+milestone: v1.6
+milestone_name: hybrid search pipeline and exact candidate recovery
+current_phase: 34
+status: ready
+stopped_at: Milestone v1.6 initialized; Phase 34 is ready for discussion and planning
+last_updated: "2026-04-16T09:48:49Z"
+last_activity: 2026-04-16 -- Milestone v1.6 started; requirements and roadmap created
 progress:
   total_phases: 5
-  completed_phases: 5
-  total_plans: 11
-  completed_plans: 11
-  percent: 100
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 33
+**Current phase:** 34
 **Mode:** YOLO
 
 ## Project Reference
 
-See: `.planning/PROJECT.md` (updated 2026-04-15)
+See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Milestone complete — v1.5 proof bundle and audit are ready for review
+**Current focus:** Milestone v1.6 initialized — hybrid recovery pipeline upgrades are ready for phase planning
 
 ## Current Position
 
-Phase: 33 (Proof Campaign Report and Evidence Lockdown) — COMPLETE
-Plan: 33-01 complete
-Status: Milestone complete
-Last activity: 2026-04-16 -- Phase 32 depth curve and Phase 33 proof bundle completed
-Progress: [##########] 100% by completed phases (v1.5: 5/5 complete)
+Phase: 34 (Exact Candidate Pool and Checkpoint Snapping) — NOT STARTED
+Plan: —
+Status: Ready for phase discussion/planning
+Last activity: 2026-04-16 -- Milestone v1.6 started; requirements and roadmap created
+Progress: [..........] 0% by completed phases (v1.6: 0/5 planned)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1, v1.1, v1.2, v1.3, and v1.4 milestones complete.
+- Total plans completed: Historical v1 through v1.5 milestones complete.
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
 **Recent Trend:**
 
-- v1.4 improved overall standard/showcase recovery from 18/45 to 27/45.
-- v1.4 blind recovery improved to 10/15, but `radioactive_decay` remains 0/5.
-- v1.4 Beer-Lambert perturbation recovery remained 15/21, with high-noise failures diagnosed as active-slot perturbation.
+- v1.5 proved that representation and verifier contracts are strong while pure-blind shallow recovery remains weak (`2/18`) and deeper blind recovery degrades after depth 3.
+- v1.5 scaffolded shallow proof reached `18/18`, and perturbed basin proof reached `9/9`, showing that basin return is much stronger than blind discovery.
+- v1.6 focuses on search-quality upgrades that can weakly dominate the current exact-candidate selector while keeping archived baselines intact.
 
 ## Artifacts
 
@@ -58,35 +58,37 @@ Progress: [##########] 100% by completed phases (v1.5: 5/5 complete)
 | Workflow config | `.planning/config.json` | Complete |
 | Milestone log | `.planning/MILESTONES.md` | Complete |
 | v1.4 comparison report | `artifacts/campaigns/v1.4-comparison/comparison.md` | Complete |
-| v1.5 requirements | `.planning/REQUIREMENTS.md` | Complete |
-| v1.5 roadmap | `.planning/ROADMAP.md` | Complete |
 | v1.5 proof report | `artifacts/proof/v1.5/proof-report.md` | Complete |
 | v1.5 milestone audit | `.planning/v1.5-MILESTONE-AUDIT.md` | Complete |
+| v1.5 archived requirements | `.planning/milestones/v1.5-REQUIREMENTS.md` | Complete |
+| v1.5 archived roadmap | `.planning/milestones/v1.5-ROADMAP.md` | Complete |
+| v1.5 archived phase context | `.planning/milestones/v1.5-phases/` | Complete |
+| v1.6 requirements | `.planning/REQUIREMENTS.md` | Complete |
+| v1.6 roadmap | `.planning/ROADMAP.md` | Complete |
 
 ## Current Milestone
 
-**v1.5: Training Proof and Recovery Guarantees**
+**v1.6: Hybrid Search Pipeline and Exact Candidate Recovery**
 
-Goal: Prove paper-grounded EML training claims with real training runs, bounded 100% recovery targets, transparent failure boundaries, metrics, and reproducible datasets.
+Goal: Upgrade the current MVP optimizer into a verifier-gated hybrid recovery pipeline that improves exact candidate quality without weakening the evidence contract.
 
 Target features:
 
-- Executable paper claim suites and datasets.
-- Separate measured pure-blind shallow recovery and 100% verifier-owned scaffolded recovery on a declared bounded shallow proof suite.
-- Repair for current `radioactive_decay` blind failures and scaled/signed exponential families.
-- Perturbed true-tree basin recovery metrics and Beer-Lambert high-noise repair or a defensible narrowed bound.
-- Depth-curve experiments that reproduce the paper's qualitative blind-vs-perturbed behavior.
-- Proof report with raw runs, metrics, plots, and honest claim taxonomy.
+- Exact-candidate selection from restarts and hardening checkpoints rather than soft-loss-only winners.
+- Target-free low-margin discrete cleanup and snap-neighborhood repair.
+- Post-snap constant refit plus stronger `exp`/`log` numerical and domain controls.
+- Short compiler macros and wider warm-start coverage with fail-closed fallback preserved.
+- Honest proof and campaign reruns against archived v1.5 and v1.4 baselines.
 
 ## Phase Status
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 29 | Paper Claim Contract and Proof Dataset Harness | Complete | CLAIM-01, CLAIM-02, CLAIM-03, CLAIM-04 |
-| 30 | Shallow Training Claim Split and Scaffolded Recovery | Complete | SHAL-01, SHAL-02, SHAL-03, SHAL-04 |
-| 31 | Perturbed Basin Training and Local Repair | Complete | BASN-01, BASN-02, BASN-03, BASN-04, BASN-05 |
-| 32 | Paper Depth-Curve Training Evidence | Complete | CURV-01, CURV-02, CURV-03, CURV-04 |
-| 33 | Proof Campaign Report and Evidence Lockdown | Complete | EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
+| 34 | Exact Candidate Pool and Checkpoint Snapping | Pending | HARD-01, HARD-02, HARD-03, HARD-04 |
+| 35 | Snap-Neighborhood Discrete Cleanup | Pending | DISC-01, DISC-02, DISC-03, DISC-04 |
+| 36 | Post-Snap Constant Refit and Numerical Stability | Pending | REFI-01, REFI-02, STAB-01, STAB-02 |
+| 37 | Compiler Macro Shortening and Warm-Start Coverage | Pending | COMP-01, COMP-02, COMP-03 |
+| 38 | Hybrid Recovery Evaluation and Regression Lockdown | Pending | EVAL-01, EVAL-02, EVAL-03, EVAL-04 |
 
 ## Accumulated Context
 
@@ -104,6 +106,8 @@ Target features:
 - Phase 31 completed and verified perturbed true-tree basin recovery, verifier-gated local repair, and durable Beer-Lambert bound evidence. BASN-01 through BASN-05 are complete.
 - Phase 32 completed a deterministic exact depth inventory, a measured `proof-depth-curve` suite, per-depth blind-versus-perturbed summaries, and campaign report hooks that preserve deeper blind failures as expected paper-boundary evidence.
 - Phase 33 completed the one-command `proof-campaign` bundle rooted at `artifacts/proof/v1.5/`, keeping v1.5 proof denominators separate from v1.4 showcase baselines and carrying forward the perturbed basin bound report.
+- v1.6 begins from the proof-bundle evidence that representation is strong but blind search quality is still the dominant bottleneck.
+- v1.6 will prioritize weak-dominance upgrades first: exact-candidate pooling, discrete cleanup, refit, and compiler shortening must preserve the current exact candidate as fallback on declared benchmark paths.
 
 ### Pending Todos
 
@@ -111,7 +115,7 @@ None recorded.
 
 ### Blockers/Concerns
 
-The milestone intentionally does not claim universal blind recovery of arbitrary deep elementary expressions, because the source paper reports rapid blind recovery degradation beyond shallow depths.
+The milestone intentionally does not claim universal blind recovery of arbitrary deep elementary expressions, because both the paper and the v1.5 proof bundle show rapid blind recovery degradation beyond shallow depths.
 
 ### Quick Tasks Completed
 
@@ -122,8 +126,8 @@ The milestone intentionally does not claim universal blind recovery of arbitrary
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: Milestone v1.5 complete; proof bundle, phase verification, and milestone audit written
+Stopped at: Milestone v1.6 initialized; Phase 34 is ready for discussion and planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after completing the v1.5 proof bundle and milestone audit*
+*Last updated: 2026-04-16 after starting milestone v1.6 and archiving the v1.5 planning artifacts*
