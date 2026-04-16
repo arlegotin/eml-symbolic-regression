@@ -159,6 +159,14 @@ def test_shallow_beer_lambert_blind_run_artifact_exposes_scaled_scaffold_diagnos
     assert metrics["snap_min_margin"] > 0.99
     assert metrics["snap_active_node_count"] == 19
     assert metrics["verifier_status"] == "recovered"
+    assert candidate["selection"]["mode"] == "verifier_gated_exact_candidate_pool"
+    assert candidate["selected_candidate"]["candidate_id"] == candidate["selection"]["selected_candidate_id"]
+    assert candidate["fallback_candidate"]["candidate_id"] == candidate["selection"]["fallback_candidate_id"]
+    assert candidate["fallback_candidate"]["source"] == "legacy_final_snap"
+    assert metrics["selected_candidate_id"] == candidate["selection"]["selected_candidate_id"]
+    assert metrics["fallback_candidate_id"] == candidate["selection"]["fallback_candidate_id"]
+    assert metrics["selection_mode"] == "verifier_gated_exact_candidate_pool"
+    assert metrics["candidate_pool_size"] == candidate["selection"]["candidate_count"]
 
 
 def test_runner_writes_execution_error_if_payload_construction_fails(tmp_path):

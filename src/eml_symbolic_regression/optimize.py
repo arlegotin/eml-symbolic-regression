@@ -2,15 +2,16 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Callable, Mapping
 
 import numpy as np
 import torch
 
-from .master_tree import SnapResult, SoftEMLTree, constant_label
 from .expression import format_constant_value
+from .master_tree import SnapDecision, SnapResult, SoftEMLTree, constant_label
 from .semantics import AnomalyStats, as_complex_tensor, mse_complex_numpy
+from .verify import DataSplit, VerificationReport, verify_candidate
 
 
 @dataclass(frozen=True)
@@ -23,10 +24,55 @@ class TrainingConfig:
     lr: float = 0.05
     temperature_start: float = 2.0
     temperature_end: float = 0.25
+    hardening_steps: int = 4
+    hardening_temperature_end: float = 0.02
+    hardening_emit_interval: int = 2
     entropy_weight: float = 1e-3
     size_weight: float = 1e-4
     seed: int = 0
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
+
+
+@dataclass(frozen=True)
+class ExactCandidate:
+    candidate_id: str
+    attempt_index: int
+    random_restart: int | None
+    seed: int
+    attempt_kind: str
+    source: str
+    checkpoint_index: int | None
+    hardening_step: int | None
+    global_step: int
+    temperature: float
+    best_fit_loss: float
+    post_snap_loss: float
+    snap: SnapResult
+    verification: VerificationReport | None = None
+    selection_metrics: dict[str, Any] | None = None
+
+    def as_dict(self) -> dict[str, Any]:
+        low_margin = sorted(self.snap.decisions, key=lambda item: item.margin)[:5]
+        return {
+            "candidate_id": self.candidate_id,
+            "attempt_index": self.attempt_index,
+            "random_restart": self.random_restart,
+            "seed": self.seed,
+            "attempt_kind": self.attempt_kind,
+            "source": self.source,
+            "checkpoint_index": self.checkpoint_index,
+            "hardening_step": self.hardening_step,
+            "global_step": self.global_step,
+            "temperature": self.temperature,
+            "best_fit_loss": self.best_fit_loss,
+            "post_snap_loss": self.post_snap_loss,
+            "active_slot_count": len(self.snap.decisions),
+            "low_margin_slot_count": sum(1 for item in self.snap.decisions if item.margin < 0.1),
+            "lowest_margin_slots": [_decision_payload(item) for item in low_margin],
+            "snap": self.snap.as_dict(),
+            "verification": self.verification.as_dict() if self.verification is not None else None,
+            "selection_metrics": dict(self.selection_metrics or {}),
+        }
 
 
 @dataclass(frozen=True)
@@ -36,6 +82,10 @@ class FitResult:
     post_snap_loss: float
     snap: SnapResult
     manifest: dict[str, Any]
+    verification: VerificationReport | None = None
+    selected_candidate: ExactCandidate | None = None
+    fallback_candidate: ExactCandidate | None = None
+    candidates: tuple[ExactCandidate, ...] = ()
 
 
 def _temperature(config: TrainingConfig, step: int) -> float:
@@ -45,22 +95,183 @@ def _temperature(config: TrainingConfig, step: int) -> float:
     return config.temperature_start + frac * (config.temperature_end - config.temperature_start)
 
 
+def _hardening_temperature(config: TrainingConfig, step: int) -> float:
+    if config.hardening_steps <= 1:
+        return config.hardening_temperature_end
+    frac = step / (config.hardening_steps - 1)
+    return config.temperature_end + frac * (config.hardening_temperature_end - config.temperature_end)
+
+
+def _should_emit_hardening_candidate(config: TrainingConfig, step: int) -> bool:
+    if config.hardening_steps <= 0:
+        return False
+    if step == config.hardening_steps - 1:
+        return True
+    interval = max(int(config.hardening_emit_interval), 1)
+    return step % interval == 0
+
+
+def _decision_payload(decision: SnapDecision) -> dict[str, Any]:
+    return {
+        "slot": f"{decision.path}.{decision.side}",
+        "choice": decision.choice,
+        "probability": decision.probability,
+        "margin": decision.margin,
+    }
+
+
+def _train_step(
+    model: SoftEMLTree,
+    optimizer: torch.optim.Optimizer,
+    tensor_inputs: Mapping[str, torch.Tensor],
+    target_tensor: torch.Tensor,
+    *,
+    temperature: float,
+    config: TrainingConfig,
+) -> tuple[float | None, AnomalyStats]:
+    optimizer.zero_grad()
+    stats = AnomalyStats()
+    pred = model(tensor_inputs, temperature=temperature, training_semantics=True, stats=stats)
+    fit_loss = torch.mean(torch.abs(pred - target_tensor) ** 2)
+    entropy = model.gate_entropy(temperature)
+    size = model.expected_child_use(temperature)
+    loss = fit_loss + config.entropy_weight * entropy + config.size_weight * size
+    if not torch.isfinite(loss):
+        return None, stats
+    loss.backward()
+    optimizer.step()
+    return float(fit_loss.detach().item()), stats
+
+
+def _emit_candidate(
+    model: SoftEMLTree,
+    inputs: Mapping[str, Any],
+    target: Any,
+    *,
+    candidate_id: str,
+    attempt_index: int,
+    random_restart: int | None,
+    seed: int,
+    attempt_kind: str,
+    source: str,
+    checkpoint_index: int | None,
+    hardening_step: int | None,
+    global_step: int,
+    temperature: float,
+    best_fit_loss: float,
+) -> ExactCandidate:
+    snap = model.snap()
+    snapped_pred = snap.expression.evaluate_numpy({name: np.asarray(value) for name, value in inputs.items()})
+    post_snap_loss = mse_complex_numpy(snapped_pred, target)
+    return ExactCandidate(
+        candidate_id=candidate_id,
+        attempt_index=attempt_index,
+        random_restart=random_restart,
+        seed=seed,
+        attempt_kind=attempt_kind,
+        source=source,
+        checkpoint_index=checkpoint_index,
+        hardening_step=hardening_step,
+        global_step=global_step,
+        temperature=temperature,
+        best_fit_loss=best_fit_loss,
+        post_snap_loss=post_snap_loss,
+        snap=snap,
+    )
+
+
+def _report_group_error(report: VerificationReport | None, predicate: Callable[[str], bool]) -> float:
+    if report is None:
+        return float("inf")
+    values = [result.max_abs_error for result in report.split_results if predicate(result.name.lower())]
+    if not values:
+        return 0.0
+    return float(max(values))
+
+
+def _selection_metrics(candidate: ExactCandidate, report: VerificationReport | None) -> dict[str, Any]:
+    verifier_status = report.status if report is not None else None
+    extrap_error = _report_group_error(report, lambda name: "extra" in name)
+    heldout_error = _report_group_error(report, lambda name: "hold" in name or "valid" in name)
+    return {
+        "verifier_status": verifier_status,
+        "status_rank": _status_rank(verifier_status),
+        "extrapolation_max_abs_error": extrap_error,
+        "high_precision_max_error": report.high_precision_max_error if report is not None else float("inf"),
+        "heldout_max_abs_error": heldout_error,
+        "post_snap_loss": candidate.post_snap_loss,
+        "complexity": candidate.snap.active_node_count,
+        "soft_fit_loss": candidate.best_fit_loss,
+    }
+
+
+def _status_rank(status: str | None) -> int:
+    return {
+        "recovered": 0,
+        "verified_showcase": 1,
+        "failed": 2,
+        None: 3,
+    }.get(status, 3)
+
+
+def _finite_or_inf(value: Any) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return float("inf")
+    return number if np.isfinite(number) else float("inf")
+
+
+def _candidate_ranking_key(candidate: ExactCandidate) -> tuple[Any, ...]:
+    metrics = candidate.selection_metrics or {}
+    return (
+        int(metrics.get("status_rank", 3)),
+        _finite_or_inf(metrics.get("extrapolation_max_abs_error")),
+        _finite_or_inf(metrics.get("high_precision_max_error")),
+        _finite_or_inf(metrics.get("heldout_max_abs_error")),
+        _finite_or_inf(metrics.get("post_snap_loss")),
+        int(metrics.get("complexity", candidate.snap.active_node_count)),
+        _finite_or_inf(metrics.get("soft_fit_loss")),
+        candidate.candidate_id,
+    )
+
+
+def _select_exact_candidate(
+    candidates: list[ExactCandidate],
+    *,
+    verification_splits: list[DataSplit] | None,
+    tolerance: float,
+) -> tuple[list[ExactCandidate], str]:
+    selection_mode = "verifier_gated_exact_candidate_pool" if verification_splits is not None else "train_post_snap_exact_candidate_pool"
+    ranked: list[ExactCandidate] = []
+    for candidate in candidates:
+        report = (
+            verify_candidate(candidate.snap.expression, verification_splits, tolerance=tolerance)
+            if verification_splits is not None
+            else None
+        )
+        ranked.append(replace(candidate, verification=report, selection_metrics=_selection_metrics(candidate, report)))
+    ranked.sort(key=_candidate_ranking_key)
+    return ranked, selection_mode
+
+
 def fit_eml_tree(
     inputs: Mapping[str, Any],
     target: Any,
     config: TrainingConfig,
     initializer: Callable[[SoftEMLTree, int, int], dict[str, Any]] | None = None,
+    *,
+    verification_splits: list[DataSplit] | None = None,
+    tolerance: float = 1e-8,
 ) -> FitResult:
-    """Fit a soft EML tree and return the best snapped candidate.
-
-    This is a candidate generator. Verification must be run separately.
-    """
+    """Fit a soft EML tree and retain a verifier-rankable exact-candidate pool."""
 
     target_tensor = as_complex_tensor(target)
     tensor_inputs = {name: as_complex_tensor(value) for name, value in inputs.items()}
 
-    best: tuple[float, SoftEMLTree, dict[str, Any]] | None = None
+    best: tuple[float, dict[str, Any]] | None = None
     restart_logs: list[dict[str, Any]] = []
+    candidates: list[ExactCandidate] = []
 
     attempts = _training_attempts(config, initializer is not None)
 
@@ -81,55 +292,149 @@ def fit_eml_tree(
         final_stats = AnomalyStats()
 
         for step in range(config.steps):
-            optimizer.zero_grad()
-            stats = AnomalyStats()
             temp = _temperature(config, step)
-            pred = model(tensor_inputs, temperature=temp, training_semantics=True, stats=stats)
-            fit_loss = torch.mean(torch.abs(pred - target_tensor) ** 2)
-            entropy = model.gate_entropy(temp)
-            size = model.expected_child_use(temp)
-            loss = fit_loss + config.entropy_weight * entropy + config.size_weight * size
-            if not torch.isfinite(loss):
+            fit_loss, stats = _train_step(
+                model,
+                optimizer,
+                tensor_inputs,
+                target_tensor,
+                temperature=temp,
+                config=config,
+            )
+            if fit_loss is None:
                 break
-            loss.backward()
-            optimizer.step()
-            losses.append(float(fit_loss.detach().item()))
+            losses.append(fit_loss)
             final_stats = stats
 
-        best_loss = min(losses) if losses else float("inf")
+        attempt_best_loss = min(losses) if losses else float("inf")
         log = {
             "restart": attempt_index,
             "random_restart": restart if attempt["kind"] == "random" else None,
             "seed": seed,
             "attempt_kind": attempt["kind"],
             "steps_completed": len(losses),
-            "best_fit_loss": best_loss,
+            "hardening_steps_completed": 0,
+            "best_fit_loss": attempt_best_loss,
             "final_anomalies": final_stats.as_dict(),
             "initialization": initialization_log,
+            "candidate_ids": [],
         }
-        restart_logs.append(log)
-        if best is None or best_loss < best[0]:
-            best = (best_loss, model, log)
 
-    if best is None:
+        legacy_candidate = _emit_candidate(
+            model,
+            inputs,
+            target,
+            candidate_id=f"attempt-{attempt_index:03d}-legacy-final-snap",
+            attempt_index=attempt_index,
+            random_restart=log["random_restart"],
+            seed=seed,
+            attempt_kind=str(attempt["kind"]),
+            source="legacy_final_snap",
+            checkpoint_index=None,
+            hardening_step=None,
+            global_step=max(len(losses) - 1, 0),
+            temperature=_temperature(config, max(len(losses) - 1, 0)),
+            best_fit_loss=attempt_best_loss,
+        )
+        candidates.append(legacy_candidate)
+        log["candidate_ids"].append(legacy_candidate.candidate_id)
+
+        hardening_completed = 0
+        checkpoint_index = 0
+        for hardening_step in range(config.hardening_steps):
+            temp = _hardening_temperature(config, hardening_step)
+            fit_loss, stats = _train_step(
+                model,
+                optimizer,
+                tensor_inputs,
+                target_tensor,
+                temperature=temp,
+                config=config,
+            )
+            if fit_loss is None:
+                break
+            hardening_completed = hardening_step + 1
+            final_stats = stats
+            if _should_emit_hardening_candidate(config, hardening_step):
+                candidate = _emit_candidate(
+                    model,
+                    inputs,
+                    target,
+                    candidate_id=f"attempt-{attempt_index:03d}-hardening-{checkpoint_index:02d}",
+                    attempt_index=attempt_index,
+                    random_restart=log["random_restart"],
+                    seed=seed,
+                    attempt_kind=str(attempt["kind"]),
+                    source="hardening_checkpoint",
+                    checkpoint_index=checkpoint_index,
+                    hardening_step=hardening_step,
+                    global_step=config.steps + hardening_step,
+                    temperature=temp,
+                    best_fit_loss=attempt_best_loss,
+                )
+                candidates.append(candidate)
+                log["candidate_ids"].append(candidate.candidate_id)
+                checkpoint_index += 1
+
+        log["hardening_steps_completed"] = hardening_completed
+        log["final_anomalies"] = final_stats.as_dict()
+        log["legacy_candidate_id"] = legacy_candidate.candidate_id
+        restart_logs.append(log)
+
+        if best is None or attempt_best_loss < best[0]:
+            best = (attempt_best_loss, log)
+
+    if best is None or not candidates:
         raise RuntimeError("No optimization restart completed")
 
-    best_loss, model, best_log = best
-    snap = model.snap()
-    snapped_pred = snap.expression.evaluate_numpy({k: np.asarray(v) for k, v in inputs.items()})
-    post_snap_loss = mse_complex_numpy(snapped_pred, target)
-    status = "snapped_candidate" if np.isfinite(post_snap_loss) else "failed"
+    legacy_best_loss, best_log = best
+    ranked_candidates, selection_mode = _select_exact_candidate(
+        candidates,
+        verification_splits=verification_splits,
+        tolerance=tolerance,
+    )
+    selected_candidate = ranked_candidates[0]
+    fallback_candidate = next(
+        candidate
+        for candidate in ranked_candidates
+        if candidate.candidate_id == str(best_log["legacy_candidate_id"])
+    )
+    status = "snapped_candidate" if np.isfinite(selected_candidate.post_snap_loss) else "failed"
     manifest = {
         "schema": "eml.run_manifest.v1",
         "config": {**config.__dict__, "constants": [format_constant_value(value) for value in config.constants]},
         "best_restart": best_log,
         "restarts": restart_logs,
-        "snap": snap.as_dict(),
-        "best_loss": best_loss,
-        "post_snap_loss": post_snap_loss,
+        "candidates": [candidate.as_dict() for candidate in ranked_candidates],
+        "selection": {
+            "mode": selection_mode,
+            "candidate_count": len(candidates),
+            "selected_candidate_id": selected_candidate.candidate_id,
+            "fallback_candidate_id": fallback_candidate.candidate_id,
+            "selected_attempt_index": selected_candidate.attempt_index,
+            "selected_source": selected_candidate.source,
+            "fallback_attempt_index": fallback_candidate.attempt_index,
+            "fallback_source": fallback_candidate.source,
+        },
+        "selected_candidate": selected_candidate.as_dict(),
+        "fallback_candidate": fallback_candidate.as_dict(),
+        "snap": selected_candidate.snap.as_dict(),
+        "best_loss": selected_candidate.best_fit_loss,
+        "legacy_best_loss": legacy_best_loss,
+        "post_snap_loss": selected_candidate.post_snap_loss,
         "status": status,
     }
-    return FitResult(status, best_loss, post_snap_loss, snap, manifest)
+    return FitResult(
+        status=status,
+        best_loss=selected_candidate.best_fit_loss,
+        post_snap_loss=selected_candidate.post_snap_loss,
+        snap=selected_candidate.snap,
+        manifest=manifest,
+        verification=selected_candidate.verification,
+        selected_candidate=selected_candidate,
+        fallback_candidate=fallback_candidate,
+        candidates=tuple(ranked_candidates),
+    )
 
 
 def _training_attempts(config: TrainingConfig, has_external_initializer: bool) -> list[dict[str, Any]]:

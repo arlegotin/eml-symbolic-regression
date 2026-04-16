@@ -51,6 +51,46 @@ def test_cli_demo_writes_report(tmp_path):
     assert payload["verification"]["status"] == "recovered"
 
 
+def test_cli_demo_train_eml_writes_selection_and_fallback_provenance(tmp_path):
+    output = tmp_path / "exp-trained-report.json"
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "demo",
+            "exp",
+            "--points",
+            "24",
+            "--train-eml",
+            "--depth",
+            "1",
+            "--steps",
+            "2",
+            "--restarts",
+            "1",
+            "--hardening-steps",
+            "2",
+            "--hardening-emit-interval",
+            "1",
+            "--output",
+            str(output),
+        ],
+        check=True,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+    payload = json.loads(output.read_text())
+    selection = payload["trained_eml_candidate"]["selection"]
+
+    assert payload["trained_eml_verification"]["status"] == "recovered"
+    assert selection["mode"] == "verifier_gated_exact_candidate_pool"
+    assert selection["selected_candidate_id"] == payload["trained_eml_candidate"]["selected_candidate"]["candidate_id"]
+    assert selection["fallback_candidate_id"] == payload["trained_eml_candidate"]["fallback_candidate"]["candidate_id"]
+    assert payload["trained_eml_candidate"]["fallback_candidate"]["source"] == "legacy_final_snap"
+
+
 def test_cli_verify_paper():
     result = subprocess.run(
         [sys.executable, "-m", "eml_symbolic_regression.cli", "verify-paper", "--points", "24"],

@@ -81,10 +81,20 @@ def run_demo(args: argparse.Namespace) -> int:
             steps=args.steps,
             restarts=args.restarts,
             seed=args.seed,
+            lr=args.lr,
+            hardening_steps=args.hardening_steps,
+            hardening_temperature_end=args.hardening_temperature_end,
+            hardening_emit_interval=args.hardening_emit_interval,
         )
-        fit = fit_eml_tree(train.inputs, train.target, config)
+        fit = fit_eml_tree(
+            train.inputs,
+            train.target,
+            config,
+            verification_splits=splits,
+            tolerance=args.tolerance,
+        )
         payload["trained_eml_candidate"] = fit.manifest
-        trained_report = verify_candidate(fit.snap.expression, splits, tolerance=args.tolerance)
+        trained_report = fit.verification or verify_candidate(fit.snap.expression, splits, tolerance=args.tolerance)
         payload["trained_eml_verification"] = trained_report.as_dict()
         stage_statuses["blind_baseline"] = trained_report.status
 
@@ -138,6 +148,9 @@ def run_demo(args: argparse.Namespace) -> int:
                 restarts=args.warm_restarts,
                 seed=args.seed,
                 lr=args.lr,
+                hardening_steps=args.hardening_steps,
+                hardening_temperature_end=args.hardening_temperature_end,
+                hardening_emit_interval=args.hardening_emit_interval,
             )
             warm = fit_warm_started_eml_tree(
                 train.inputs,
@@ -364,6 +377,9 @@ def build_parser() -> argparse.ArgumentParser:
     demo.add_argument("--steps", type=int, default=80)
     demo.add_argument("--restarts", type=int, default=2)
     demo.add_argument("--lr", type=float, default=0.05)
+    demo.add_argument("--hardening-steps", type=int, default=4)
+    demo.add_argument("--hardening-temperature-end", type=float, default=0.02)
+    demo.add_argument("--hardening-emit-interval", type=int, default=2)
     demo.add_argument("--compile-eml", action="store_true", help="Compile the demo source expression into an exact EML AST.")
     demo.add_argument(
         "--warm-start-eml",

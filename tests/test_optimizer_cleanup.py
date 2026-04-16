@@ -53,6 +53,41 @@ def test_optimizer_custom_initializer_does_not_add_scaffold_provenance():
     assert kinds == ["custom_initializer"]
 
 
+def test_optimizer_records_candidate_pool_selection_and_legacy_fallback():
+    spec = get_demo("exp")
+    splits = spec.make_splits(points=16)
+    result = fit_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(
+            depth=1,
+            variables=("x",),
+            steps=2,
+            restarts=1,
+            seed=0,
+            hardening_steps=2,
+            hardening_emit_interval=1,
+        ),
+        verification_splits=splits,
+    )
+
+    selection = result.manifest["selection"]
+    selected = result.manifest["selected_candidate"]
+    fallback = result.manifest["fallback_candidate"]
+    candidates = result.manifest["candidates"]
+
+    assert selection["mode"] == "verifier_gated_exact_candidate_pool"
+    assert selection["candidate_count"] == len(candidates)
+    assert len(candidates) >= 2
+    assert selection["selected_candidate_id"] == selected["candidate_id"]
+    assert selection["fallback_candidate_id"] == fallback["candidate_id"]
+    assert fallback["source"] == "legacy_final_snap"
+    assert any(candidate["source"] == "hardening_checkpoint" for candidate in candidates)
+    assert selected["verification"]["status"] == "recovered"
+    assert result.verification is not None
+    assert result.verification.status == "recovered"
+
+
 def test_optimizer_scaled_exp_scaffold_recovers_radioactive_decay_with_manifest():
     spec = get_demo("radioactive_decay")
     splits = spec.make_splits(points=12, seed=0)

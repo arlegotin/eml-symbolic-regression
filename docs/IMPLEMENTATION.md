@@ -7,7 +7,7 @@ The package follows the roadmap in `.planning/ROADMAP.md`:
 1. `semantics.py` defines canonical and training-mode EML behavior.
 2. `expression.py` defines exact ASTs and non-EML catalog candidates used by showcase demos.
 3. `master_tree.py` defines complete depth-bounded soft EML trees.
-4. `optimize.py` turns a soft tree into snapped candidates.
+4. `optimize.py` turns a soft tree into an exact-candidate pool, preserves the legacy final snap, and selects the shipped exact tree from that pool.
 5. `verify.py` owns recovery status.
 6. `cleanup.py` exports readable SymPy expressions and records cleanup reports.
 7. `compiler.py` compiles a whitelisted SymPy subset into the existing exact EML `Expr` AST.
@@ -19,7 +19,7 @@ The package follows the roadmap in `.planning/ROADMAP.md`:
 
 ## Recovery Contract
 
-Training loss is not enough. A candidate is only `recovered` when:
+Training loss is not enough. The optimizer now emits a retained exact-candidate pool across restarts plus late hardening checkpoints, but a candidate is only `recovered` when:
 
 - it is an exact EML AST,
 - it is evaluated after snapping,
@@ -28,7 +28,7 @@ Training loss is not enough. A candidate is only `recovered` when:
 
 Non-EML catalog formulas can pass as `verified_showcase`; those reports are useful for demos and verifier coverage, but they are not labeled as EML recovery.
 
-Compiler output is also not enough by itself. A compiled seed can verify as an exact EML AST, but public demo promotion requires the warm-start path to train, snap, and verify the final exact AST. The optimizer manifest remains a candidate-generation artifact and never assigns `recovered`.
+Compiler output is also not enough by itself. A compiled seed can verify as an exact EML AST, but public demo promotion requires the warm-start path to train, harden, snap, and verify the final exact AST. The optimizer manifest remains a candidate-generation artifact and never assigns `recovered`; verifier-owned ranking decides which exact candidate wins when evaluation splits are available.
 
 ## Compiler Contract
 
@@ -53,7 +53,7 @@ Unsupported functions, unknown variables, unsafe constants, excessive powers, an
 2. records the terminal bank and assignments,
 3. applies deterministic logit perturbation,
 4. trains through the existing Adam optimizer,
-5. snaps the final model,
+5. emits a retained exact-candidate pool from the legacy final snap plus late hardening checkpoints,
 6. delegates recovery status to `verify_candidate()`.
 
 Warm-start outcomes are separated as `same_ast_return`, `verified_equivalent_ast`, `snapped_but_failed`, `soft_fit_only`, or `failed`.

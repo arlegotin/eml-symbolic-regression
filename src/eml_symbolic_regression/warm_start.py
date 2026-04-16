@@ -17,7 +17,7 @@ from .master_tree import (
     expressions_equal,
 )
 from .optimize import FitResult, TrainingConfig, fit_eml_tree
-from .verify import DataSplit, VerificationReport, verify_candidate
+from .verify import DataSplit, VerificationReport
 
 
 @dataclass(frozen=True)
@@ -143,8 +143,15 @@ def fit_warm_started_eml_tree(
             "perturbation": perturb.as_dict(),
         }
 
-    fit = fit_eml_tree(inputs, target, config, initializer=initializer)
-    verification = verify_candidate(fit.snap.expression, verification_splits, tolerance=tolerance) if verification_splits else None
+    fit = fit_eml_tree(
+        inputs,
+        target,
+        config,
+        initializer=initializer,
+        verification_splits=verification_splits,
+        tolerance=tolerance,
+    )
+    verification = fit.verification if verification_splits else None
 
     if expressions_equal(fit.snap.expression, compiled_expr):
         status = "same_ast_return"

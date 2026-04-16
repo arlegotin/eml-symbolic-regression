@@ -10,7 +10,7 @@ import numpy as np
 from .expression import Const, Eml, Expr, Var, format_constant_value
 from .master_tree import EmbeddingConfig, EmbeddingResult, SoftEMLTree, embed_expr_into_tree, expressions_equal
 from .optimize import FitResult, TrainingConfig, fit_eml_tree
-from .verify import DataSplit, VerificationReport, verify_candidate
+from .verify import DataSplit, VerificationReport
 from .warm_start import PerturbationConfig, perturb_tree_logits
 
 
@@ -126,8 +126,15 @@ def fit_perturbed_true_tree(
             "perturbation": perturbation.as_dict(),
         }
 
-    fit = fit_eml_tree(inputs, target, config, initializer=initializer)
-    verification = verify_candidate(fit.snap.expression, verification_splits, tolerance=tolerance) if verification_splits else None
+    fit = fit_eml_tree(
+        inputs,
+        target,
+        config,
+        initializer=initializer,
+        verification_splits=verification_splits,
+        tolerance=tolerance,
+    )
+    verification = fit.verification if verification_splits else None
 
     if expressions_equal(fit.snap.expression, target_expr):
         return_kind = "same_ast_return"

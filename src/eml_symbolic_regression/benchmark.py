@@ -97,6 +97,9 @@ class OptimizerBudget:
     steps: int = 20
     restarts: int = 1
     lr: float = 0.05
+    hardening_steps: int = 4
+    hardening_temperature_end: float = 0.02
+    hardening_emit_interval: int = 2
     warm_depth: int = 0
     warm_steps: int = 20
     warm_restarts: int = 1
@@ -120,6 +123,9 @@ class OptimizerBudget:
         values["depth"] = int(values["depth"])
         values["steps"] = int(values["steps"])
         values["restarts"] = int(values["restarts"])
+        values["hardening_steps"] = int(values["hardening_steps"])
+        values["hardening_temperature_end"] = float(values["hardening_temperature_end"])
+        values["hardening_emit_interval"] = int(values["hardening_emit_interval"])
         values["warm_depth"] = int(values["warm_depth"])
         values["warm_steps"] = int(values["warm_steps"])
         values["warm_restarts"] = int(values["warm_restarts"])
@@ -153,10 +159,24 @@ class OptimizerBudget:
         for name in positive:
             if int(getattr(self, name)) <= 0:
                 raise BenchmarkValidationError("invalid_budget", f"{name} must be positive", path=f"{path}.{name}")
+        if self.hardening_steps < 0:
+            raise BenchmarkValidationError("invalid_budget", "hardening_steps must be 0 or positive", path=f"{path}.hardening_steps")
+        if self.hardening_emit_interval <= 0:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "hardening_emit_interval must be positive",
+                path=f"{path}.hardening_emit_interval",
+            )
         if self.warm_depth < 0:
             raise BenchmarkValidationError("invalid_budget", "warm_depth must be 0 or positive", path=f"{path}.warm_depth")
         if self.lr <= 0:
             raise BenchmarkValidationError("invalid_budget", "lr must be positive", path=f"{path}.lr")
+        if self.hardening_temperature_end <= 0:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "hardening_temperature_end must be positive",
+                path=f"{path}.hardening_temperature_end",
+            )
         if not self.constants:
             raise BenchmarkValidationError("invalid_budget", "constants must not be empty", path=f"{path}.constants")
         for index, value in enumerate(self.constants):
@@ -178,6 +198,9 @@ class OptimizerBudget:
             "steps": self.steps,
             "restarts": self.restarts,
             "lr": self.lr,
+            "hardening_steps": self.hardening_steps,
+            "hardening_temperature_end": self.hardening_temperature_end,
+            "hardening_emit_interval": self.hardening_emit_interval,
             "warm_depth": self.warm_depth,
             "warm_steps": self.warm_steps,
             "warm_restarts": self.warm_restarts,
@@ -1191,10 +1214,19 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             restarts=run.optimizer.restarts,
             seed=run.seed,
             lr=run.optimizer.lr,
+            hardening_steps=run.optimizer.hardening_steps,
+            hardening_temperature_end=run.optimizer.hardening_temperature_end,
+            hardening_emit_interval=run.optimizer.hardening_emit_interval,
             scaffold_initializers=run.optimizer.scaffold_initializers,
         )
-        fit = fit_eml_tree(train.inputs, train.target, config)
-        report = verify_candidate(fit.snap.expression, splits, tolerance=run.dataset.tolerance)
+        fit = fit_eml_tree(
+            train.inputs,
+            train.target,
+            config,
+            verification_splits=splits,
+            tolerance=run.dataset.tolerance,
+        )
+        report = fit.verification or verify_candidate(fit.snap.expression, splits, tolerance=run.dataset.tolerance)
         stage_statuses["blind_baseline"] = report.status
         status = report.status if report.status == "recovered" else ("snapped_but_failed" if fit.status == "snapped_candidate" else fit.status)
         return {
@@ -1245,6 +1277,9 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             restarts=run.optimizer.warm_restarts,
             seed=run.seed,
             lr=run.optimizer.lr,
+            hardening_steps=run.optimizer.hardening_steps,
+            hardening_temperature_end=run.optimizer.hardening_temperature_end,
+            hardening_emit_interval=run.optimizer.hardening_emit_interval,
         )
         warm = fit_warm_started_eml_tree(
             train.inputs,
@@ -1323,6 +1358,9 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             restarts=run.optimizer.warm_restarts,
             seed=run.seed,
             lr=run.optimizer.lr,
+            hardening_steps=run.optimizer.hardening_steps,
+            hardening_temperature_end=run.optimizer.hardening_temperature_end,
+            hardening_emit_interval=run.optimizer.hardening_emit_interval,
         )
         basin = fit_perturbed_true_tree(
             train.inputs,
@@ -1436,12 +1474,17 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     candidate = payload.get("trained_eml_candidate")
     if not candidate and isinstance(payload.get("warm_start_eml"), Mapping):
         candidate = payload["warm_start_eml"].get("optimizer")
+    selected = candidate.get("selected_candidate") if isinstance(candidate, Mapping) else None
+    fallback = candidate.get("fallback_candidate") if isinstance(candidate, Mapping) else None
+    selection = candidate.get("selection") if isinstance(candidate, Mapping) else None
 
     verification = payload.get("trained_eml_verification")
     if not verification and isinstance(payload.get("warm_start_eml"), Mapping):
         verification = payload["warm_start_eml"].get("verification")
     if not verification:
         verification = payload.get("compiled_eml_verification") or payload.get("verification")
+    if not verification and isinstance(selected, Mapping):
+        verification = selected.get("verification")
 
     repair = payload.get("repair")
     repair_verification = repair.get("verification") if isinstance(repair, Mapping) else None
@@ -1465,10 +1508,52 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
             changed_slots = sum(1 for item in changes if item.get("changed"))
 
     return {
-        "best_loss": candidate.get("best_loss") if isinstance(candidate, Mapping) else None,
-        "post_snap_loss": candidate.get("post_snap_loss") if isinstance(candidate, Mapping) else None,
-        "snap_min_margin": candidate.get("snap", {}).get("min_margin") if isinstance(candidate, Mapping) else None,
-        "snap_active_node_count": candidate.get("snap", {}).get("active_node_count") if isinstance(candidate, Mapping) else None,
+        "best_loss": (
+            selected.get("best_fit_loss")
+            if isinstance(selected, Mapping)
+            else candidate.get("best_loss")
+            if isinstance(candidate, Mapping)
+            else None
+        ),
+        "legacy_best_loss": candidate.get("legacy_best_loss") if isinstance(candidate, Mapping) else None,
+        "post_snap_loss": (
+            selected.get("post_snap_loss")
+            if isinstance(selected, Mapping)
+            else candidate.get("post_snap_loss")
+            if isinstance(candidate, Mapping)
+            else None
+        ),
+        "fallback_post_snap_loss": fallback.get("post_snap_loss") if isinstance(fallback, Mapping) else None,
+        "snap_min_margin": (
+            selected.get("snap", {}).get("min_margin")
+            if isinstance(selected, Mapping)
+            else candidate.get("snap", {}).get("min_margin")
+            if isinstance(candidate, Mapping)
+            else None
+        ),
+        "snap_active_node_count": (
+            selected.get("snap", {}).get("active_node_count")
+            if isinstance(selected, Mapping)
+            else candidate.get("snap", {}).get("active_node_count")
+            if isinstance(candidate, Mapping)
+            else None
+        ),
+        "candidate_pool_size": (
+            selection.get("candidate_count")
+            if isinstance(selection, Mapping)
+            else len(candidate.get("candidates", ()))
+            if isinstance(candidate, Mapping) and isinstance(candidate.get("candidates"), list)
+            else None
+        ),
+        "selected_candidate_id": selection.get("selected_candidate_id") if isinstance(selection, Mapping) else None,
+        "selected_candidate_source": selected.get("source") if isinstance(selected, Mapping) else None,
+        "selected_candidate_attempt_index": selected.get("attempt_index") if isinstance(selected, Mapping) else None,
+        "selected_candidate_checkpoint_index": selected.get("checkpoint_index") if isinstance(selected, Mapping) else None,
+        "fallback_candidate_id": selection.get("fallback_candidate_id") if isinstance(selection, Mapping) else None,
+        "fallback_candidate_source": fallback.get("source") if isinstance(fallback, Mapping) else None,
+        "fallback_candidate_attempt_index": fallback.get("attempt_index") if isinstance(fallback, Mapping) else None,
+        "fallback_candidate_checkpoint_index": fallback.get("checkpoint_index") if isinstance(fallback, Mapping) else None,
+        "selection_mode": selection.get("mode") if isinstance(selection, Mapping) else None,
         "scaffold_source": initialization.get("kind") if isinstance(initialization, Mapping) else None,
         "scaffold_strategy": initialization.get("strategy") if isinstance(initialization, Mapping) else None,
         "scaffold_coefficient": initialization.get("coefficient") if isinstance(initialization, Mapping) else None,
