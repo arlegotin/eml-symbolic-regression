@@ -1,18 +1,18 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.6
-milestone_name: Hybrid Search Pipeline and Exact Candidate Recovery
+milestone: v1.7
+milestone_name: Centered-Family Baseline and Paper Decision
 current_phase: null
-status: milestone_complete
-stopped_at: v1.6 shipped, archived, and ready for next milestone planning
-last_updated: "2026-04-16T18:25:32Z"
-last_activity: 2026-04-16 -- v1.6 archived after final proof bundle verification
+status: defining_requirements
+stopped_at: v1.7 started; requirements and roadmap are being defined
+last_updated: "2026-04-16T19:00:00Z"
+last_activity: 2026-04-16 -- Milestone v1.7 started for centered-family baseline and paper decision
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.6 is shipped and archived; next recommended milestone is the paper package and publication evidence.
+**Current focus:** v1.7 starts the centered/scaled EML family baseline and paper-decision milestone.
 
 ## Current Position
 
-Phase: None — v1.6 milestone complete
+Phase: Not started (defining requirements)
 Plan: —
-Status: Milestone complete; archives are finalized and the next action is paper-milestone planning
-Last activity: 2026-04-16 -- v1.6 archived after final proof bundle verification
-Progress: [##########] 100% by completed phases (v1.6: 5/5 planned)
+Status: Defining requirements for v1.7
+Last activity: 2026-04-16 -- Milestone v1.7 started for centered-family baseline and paper decision
+Progress: [----------] 0% by completed phases (v1.7 roadmap pending)
 
 ## Performance Metrics
 
@@ -49,6 +49,7 @@ Progress: [##########] 100% by completed phases (v1.6: 5/5 planned)
 - v1.5 proved that representation and verifier contracts are strong while pure-blind shallow recovery remains weak (`2/18`) and deeper blind recovery degrades after depth 3.
 - v1.5 scaffolded shallow proof reached `18/18`, and perturbed basin proof reached `9/9`, showing that basin return is much stronger than blind discovery.
 - v1.6 delivered search-quality upgrades that weakly dominate the prior exact-candidate selector on declared paths while keeping archived baselines intact.
+- v1.7 begins from the interpretation that raw EML's main unresolved weakness is search geometry, not representation power or verification discipline.
 
 ## Artifacts
 
@@ -69,6 +70,7 @@ Progress: [##########] 100% by completed phases (v1.6: 5/5 planned)
 | v1.6 archived roadmap | `.planning/milestones/v1.6-ROADMAP.md` | Complete |
 | v1.6 milestone audit | `.planning/milestones/v1.6-MILESTONE-AUDIT.md` | Complete |
 | v1.6 archived phase artifacts | `.planning/milestones/v1.6-phases/` | Complete |
+| v1.7 active project context | `.planning/PROJECT.md` | In Progress |
 
 ## Completed Milestone
 
@@ -84,29 +86,23 @@ Target features:
 - Short compiler macros and wider warm-start coverage with fail-closed fallback preserved.
 - Honest proof and campaign reruns against archived v1.5 and v1.4 baselines.
 
-## Next Recommended Milestone
+## Current Milestone
 
-**Paper Package and Publication Evidence**
+**v1.7: Centered-Family Baseline and Paper Decision**
 
-Goal: Turn the current implementation and archived evidence into a defensible manuscript package.
+Goal: Determine whether centered/scaled transport families materially improve exact symbolic recovery relative to raw EML while preserving verifier-owned evidence discipline.
 
-Likely work:
+Target work:
 
-- Claims-to-evidence table grounded in `artifacts/proof/v1.6/` and archived campaigns.
-- Manuscript outline and first paper draft.
-- Stable figure/table selection from proof and campaign reports.
-- External-baseline or ablation decision before submission.
-- Limitations section that keeps pure-blind weakness explicit.
+- Family-aware semantics and exact AST support for raw EML, `cEML_{s,t}`, `CEML_s`, and `ZEML_s`.
+- Family-aware soft master tree, snapping, verification, compiler, and warm-start support.
+- Raw-vs-centered proof and campaign matrix with fixed `s` grids and continuation schedules.
+- Comparative evidence bundle for recovery rates, depth behavior, anomalies, repair/refit dependence, and formula overhead.
+- Decision memo choosing between a publish-now robustness/geometry paper and a later successor-family paper requiring constructive completeness evidence.
 
 ## Phase Status
 
-| Phase | Name | Status | Requirements |
-|-------|------|--------|--------------|
-| 34 | Exact Candidate Pool and Checkpoint Snapping | Complete | HARD-01, HARD-02, HARD-03, HARD-04 |
-| 35 | Snap-Neighborhood Discrete Cleanup | Complete | DISC-01, DISC-02, DISC-03, DISC-04 |
-| 36 | Post-Snap Constant Refit and Numerical Stability | Complete | REFI-01, REFI-02, STAB-01, STAB-02 |
-| 37 | Compiler Macro Shortening and Warm-Start Coverage | Complete | COMP-01, COMP-02, COMP-03 |
-| 38 | Hybrid Recovery Evaluation and Regression Lockdown | Complete | EVAL-01, EVAL-02, EVAL-03, EVAL-04 |
+No active phases yet. Requirements and roadmap are being defined for v1.7.
 
 ## Accumulated Context
 
@@ -132,6 +128,8 @@ Likely work:
 - Phase 37 added explicit compiler macro diagnostics, a direct-division shortening path for true denominator motifs, CLI parity for unsupported compiler diagnostics, and verified Shockley warm-start coverage in the standard benchmark matrix while Michaelis-Menten and Planck remain fail-closed at the shipped compile gate.
 - Phase 38 added explicit regime summaries to campaign/proof reports, generic comparison lock manifests, corrected measured proof verdict labeling, and aggregate-level regression locks for selection/fallback/refit metrics.
 - The final v1.6 proof bundle was regenerated from the latest code state after fixing pure-blind report pluralization; manifest counts match campaign aggregates, pure-blind reports `2/18` threshold-eligible pure blind recoveries plus one repaired candidate, proof-basin reports `9/9` same-AST perturbed-tree returns, and anchor locks cover the five current proof campaigns plus v1.5/v1.4 anchors.
+- v1.7 pivots from raw-EML optimizer-only tuning to a centered/scaled operator-family comparison because the archived proof evidence points to search geometry as the main unresolved bottleneck.
+- `CEML_s` and `ZEML_s` must be kept distinct: `CEML_s` is the unit-terminal/formal successor candidate, while `ZEML_s` is the training-centered variant and must not be overclaimed as a completeness replacement.
 
 ### Pending Todos
 
@@ -139,7 +137,7 @@ None recorded.
 
 ### Blockers/Concerns
 
-The milestone intentionally does not claim universal blind recovery of arbitrary deep elementary expressions, because both the paper and the v1.5 proof bundle show rapid blind recovery degradation beyond shallow depths.
+The milestone must not claim universal blind recovery of arbitrary deep elementary expressions or completeness of the centered/scaled family unless the evidence produced in v1.7 actually supports those claims.
 
 ### Quick Tasks Completed
 
@@ -154,4 +152,4 @@ Stopped at: v1.6 shipped, archived, and ready for next milestone planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after archiving milestone v1.6*
+*Last updated: 2026-04-16 after starting milestone v1.7*

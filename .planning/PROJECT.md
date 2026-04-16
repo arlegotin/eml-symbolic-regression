@@ -4,19 +4,19 @@
 
 This project implements a hybrid symbolic-regression engine based on the paper "All elementary functions from a single binary operator." It searches over complete depth-bounded EML trees, optimizes soft categorical choices with PyTorch, snaps the result into an exact EML tree, cleans it up symbolically, and verifies candidate formulas against held-out data and high-precision evaluators.
 
-The current release is a research-grade Python package and CLI for recovering compact elementary laws from synthetic scientific datasets, with demos, benchmark campaigns, and proof artifacts drawn from `sources/FOR_DEMO.md`. The next milestone should turn the implementation and archived evidence into a paper package: claims, figures, manuscript structure, and any focused validation still needed before submission.
+The current release is a research-grade Python package and CLI for recovering compact elementary laws from synthetic scientific datasets, with demos, benchmark campaigns, and proof artifacts drawn from `sources/FOR_DEMO.md`. The next milestone keeps that verifier and evidence harness intact while testing whether centered/scaled exp-log operator families improve the search geometry that raw EML currently exposes as the main bottleneck.
 
 ## Core Value
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.6 Shipped
+## Current State: v1.7 Started
 
 The repo now has strong representation, verification, and reproducibility foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, and a one-command proof bundle are all in place and archived through v1.5.
 
 v1.6 upgraded the optimizer into a verifier-gated hybrid discrete-continuous pipeline: hardening and checkpoint snaps, exact-candidate ranking, low-margin discrete cleanup, post-snap constant refit, shorter compiler macros, and regime-aware reporting that preserves archived v1.5 and v1.4 evidence.
 
-The final `artifacts/proof/v1.6` bundle was regenerated from the latest code state and verified against campaign aggregates. It keeps the empirical story honest: pure random shallow blind recovery remains measured at `2/18` threshold-eligible recoveries plus one repaired candidate, scaffolded shallow proof remains `18/18`, perturbed true-tree basin proof remains `9/9` with same-AST returns, and depth-curve evidence remains reported rather than overclaimed.
+The final `artifacts/proof/v1.6` bundle was regenerated from the latest code state and verified against campaign aggregates. It keeps the empirical story honest: pure random shallow blind recovery remains measured at `2/18` threshold-eligible recoveries plus one repaired candidate, scaffolded shallow proof remains `18/18`, perturbed true-tree basin proof remains `9/9` with same-AST returns, and depth-curve evidence remains reported rather than overclaimed. v1.7 starts from that interpretation: the next paper-worthy question is whether centered/scaled transports of EML improve training geometry without weakening exact verification discipline.
 
 ## Last Completed Milestone: v1.6 Hybrid Search Pipeline and Exact Candidate Recovery
 
@@ -29,16 +29,16 @@ The final `artifacts/proof/v1.6` bundle was regenerated from the latest code sta
 - Macro-aware compiler shortcuts with conservative fail-closed warm-start coverage expansion.
 - Final `artifacts/proof/v1.6/` proof bundle with regime-aware reporting, immutable current/archived anchor locks, and corrected measured-proof verdicts.
 
-## Next Milestone: Paper Package and Publication Evidence
+## Current Milestone: v1.7 Centered-Family Baseline and Paper Decision
 
-**Recommended goal:** Turn the current implementation and evidence into a defensible EML training paper.
+**Goal:** Determine whether centered/scaled transport families materially improve exact symbolic recovery relative to raw EML while preserving verifier-owned evidence discipline.
 
-**Likely target features:**
-- Claims-to-evidence table that maps each manuscript claim to archived proof/campaign artifacts.
-- Paper outline and first manuscript draft covering EML representation, differentiable training, snapping, cleanup, compiler warm starts, and verification.
-- Figure/table selection from `artifacts/proof/v1.6`, archived campaigns, and implementation diagnostics.
-- Explicit limitations section covering weak pure-blind recovery and depth degradation.
-- Decision on external baselines or ablations needed before submission.
+**Target features:**
+- Family-aware semantics and exact AST support for raw EML, `cEML_{s,t}`, `CEML_s`, and `ZEML_s`, using `expm1`/`log1p` and shifted-singularity diagnostics.
+- Family-aware soft master tree, snapping, verification, compiler, and warm-start support for fixed operator-family runs.
+- Reproducible raw-vs-centered experiment matrix across proof and showcase campaigns, including fixed `s` grids and continuation schedules.
+- Comparative evidence reports covering recovery by regime/depth/family, anomaly rates, post-snap verifier success, repair usage, and formula overhead.
+- Decision memo that separates a publish-now robustness/geometry paper from a stronger successor-family paper that would require constructive completeness evidence.
 
 ## Requirements
 
@@ -84,16 +84,18 @@ The final `artifacts/proof/v1.6` bundle was regenerated from the latest code sta
 
 ### Active
 
-- [ ] Define the paper's claims-to-evidence table before changing the algorithm again.
-- [ ] Draft the manuscript structure around evidence regimes instead of a single overstated recovery claim.
-- [ ] Choose which archived v1.6 figures/tables belong in the paper.
-- [ ] Decide whether external symbolic-regression baselines are required before submission.
+- [ ] Implement family-aware semantics, exact ASTs, serialization, and faithful verification for raw EML, `cEML_{s,t}`, `CEML_s`, and `ZEML_s`.
+- [ ] Add family-aware training, snapping, compiler, and warm-start paths without regressing raw EML behavior.
+- [ ] Run fixed-family and continuation-schedule campaigns against the existing proof harness with pure-blind, scaffolded, basin, compile, and repair evidence kept separate.
+- [ ] Produce a comparative proof bundle and decision memo that determines whether to publish a robustness/geometry paper now or wait for constructive completeness evidence.
 
 ### Out of Scope
 
-- Guaranteed improvement on every unseen future formula - the defensible promise for v1.6 is weak dominance on declared benchmark selection, not universal success.
-- Full blind recovery of arbitrary depth-6 formulas - the paper and v1.5 depth curve both show sharp degradation beyond shallow depths.
+- Guaranteed improvement on every unseen future formula - the defensible promise for v1.7 is measured comparison on declared benchmark and proof suites, not universal success.
+- Full blind recovery of arbitrary depth-6 formulas - the paper and v1.5/v1.6 depth curves both show sharp degradation beyond shallow depths.
 - Claiming warm-start same-AST return or scaffolded recovery as pure blind discovery - those evidence classes remain separate by design.
+- Claiming `CEML_s` is a full Sheffer successor family without constructive proof - v1.7 may search for evidence, but must not overclaim completeness.
+- Treating `ZEML_s` as a formal terminal-1 completeness replacement - closed zero-terminal trees collapse to zero, so `ZEML_s` is a training-centered form.
 - Replacing or rewriting archived v1.5 proof artifacts or v1.4 campaign baselines - the milestone must preserve them as comparison anchors.
 - Matched-budget external baseline competitions - important, but deferred until the hybrid recovery pipeline is materially stronger.
 - Custom CUDA kernels - use normal PyTorch execution first and profile before adding kernels.
@@ -106,16 +108,16 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 
 `sources/NORTH_STAR.md` turns that paper result into an implementation blueprint. Its core recommendation is a hybrid pipeline: continuous search, hardening, symbolic snapping, local discrete cleanup, and verification. It also warns that pure gradient descent is not enough because the paper's blind recovery success drops sharply with depth, while warm starts recover reliably from perturbed correct solutions.
 
-The committed v1.6 proof bundle now gives the stable evidence base for writing. Representation is strong, verifier ownership is strong, scaffolded and perturbed-basin regimes are strong, and pure-blind discovery remains the honest weak point. The paper should present EML training as a pipeline with separated evidence regimes rather than as a universal blind symbolic-regression solver.
+The committed v1.6 proof bundle now gives the stable evidence base for a research pivot. Representation is strong, verifier ownership is strong, scaffolded and perturbed-basin regimes are strong, and pure-blind discovery remains the honest weak point. v1.7 should test the thesis that the bottleneck is raw EML search geometry by comparing it with centered/scaled exp-log transports under the same proof harness.
 
 ## Constraints
 
 - **Paper fidelity**: EML semantics, complete-tree construction, snapping, hardening, and complex arithmetic must stay grounded in `sources/paper.pdf` and `sources/NORTH_STAR.md`.
 - **Verification**: A candidate is not "recovered" based on training loss alone; final selection is verifier-owned and exact-candidate based.
 - **Non-destructive evidence**: v1.4 and v1.5 artifacts stay archived and comparable; new results cannot overwrite the historical benchmark anchors.
-- **Weak dominance first**: Candidate-pool selection, beam cleanup, refit, and compiler macros keep the prior exact candidate available as fallback on declared benchmark paths.
+- **Centered-family honesty**: `cEML_{s,t}`, `CEML_s`, and `ZEML_s` must be reported as operator-family experiments unless constructive interdefinability or completeness evidence is actually produced.
 - **Numerics**: Training defaults to PyTorch `complex128`, with training-mode guards only where needed and faithful verification afterwards.
-- **Scope realism**: v1.6 must improve blind-discovery quality without overselling deep blind recovery or universal guarantees.
+- **Scope realism**: v1.7 must compare search geometry without overselling deep blind recovery, universal guarantees, or unproved successor-family completeness.
 - **Demos**: Showcase examples must remain drawn from `sources/FOR_DEMO.md`, favoring normalized, dimensionless, visually distinctive laws.
 - **Repository state**: This project now has archived milestone planning and proof artifacts that must remain inspectable after the rollover.
 
@@ -146,6 +148,8 @@ The committed v1.6 proof bundle now gives the stable evidence base for writing. 
 | Preserve the current exact candidate as fallback in every new recovery stage | Weak-dominance upgrades should not make declared benchmark cases worse by construction. | ✓ Good |
 | Separate pure blind, scaffolded blind, compile, warm-start, and perturbed-basin evidence in every report | Honest regime separation is part of the scientific contribution, not just documentation. | ✓ Good |
 | Defer matched-budget external baselines until the hybrid pipeline is stronger | External comparisons matter, but they should follow a materially improved blind-discovery engine. | ⚠️ Revisit for paper |
+| v1.7 tests centered/scaled EML transports before writing the flagship paper | v1.6 evidence shows representation and basin return are strong while raw blind search geometry remains the dominant bottleneck. | - Pending |
+| Use `CEML_s` for unit-terminal/formal successor claims and `ZEML_s` for training-centered comparisons | Zero-terminal centered trees do not generate new constants from closed trees, so training convenience and formal completeness must stay separate. | - Pending |
 
 ## Evolution
 
@@ -165,4 +169,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-16 after shipping milestone v1.6*
+*Last updated: 2026-04-16 after starting milestone v1.7*
