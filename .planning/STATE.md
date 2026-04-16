@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.7
 milestone_name: Centered-Family Baseline and Paper Decision
-current_phase: null
-status: defining_requirements
-stopped_at: v1.7 started; requirements and roadmap are being defined
-last_updated: "2026-04-16T19:00:00Z"
-last_activity: 2026-04-16 -- Milestone v1.7 started for centered-family baseline and paper decision
+current_phase: 39
+status: roadmap_ready
+stopped_at: v1.7 roadmap created; ready for Phase 39 planning
+last_updated: "2026-04-16T19:10:00Z"
+last_activity: 2026-04-16 -- Milestone v1.7 requirements and roadmap created
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
-  total_plans: 0
+  total_plans: 5
   completed_plans: 0
   percent: 0
 ---
@@ -18,7 +18,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** None
+**Current phase:** 39
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.7 starts the centered/scaled EML family baseline and paper-decision milestone.
+**Current focus:** Phase 39 will add centered-family semantics and exact AST support for the v1.7 raw-vs-centered operator comparison.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 39 — Centered Operator Semantics and Exact Forms
 Plan: —
-Status: Defining requirements for v1.7
-Last activity: 2026-04-16 -- Milestone v1.7 started for centered-family baseline and paper decision
-Progress: [----------] 0% by completed phases (v1.7 roadmap pending)
+Status: Roadmap ready; phase planning not started
+Last activity: 2026-04-16 -- Milestone v1.7 requirements and roadmap created
+Progress: [----------] 0% by completed phases (v1.7: 0/5 planned)
 
 ## Performance Metrics
 
@@ -70,7 +70,9 @@ Progress: [----------] 0% by completed phases (v1.7 roadmap pending)
 | v1.6 archived roadmap | `.planning/milestones/v1.6-ROADMAP.md` | Complete |
 | v1.6 milestone audit | `.planning/milestones/v1.6-MILESTONE-AUDIT.md` | Complete |
 | v1.6 archived phase artifacts | `.planning/milestones/v1.6-phases/` | Complete |
-| v1.7 active project context | `.planning/PROJECT.md` | In Progress |
+| v1.7 active project context | `.planning/PROJECT.md` | Complete |
+| v1.7 active requirements | `.planning/REQUIREMENTS.md` | Complete |
+| v1.7 active roadmap | `.planning/ROADMAP.md` | Complete |
 
 ## Completed Milestone
 
@@ -102,7 +104,13 @@ Target work:
 
 ## Phase Status
 
-No active phases yet. Requirements and roadmap are being defined for v1.7.
+| Phase | Name | Status | Requirements |
+|-------|------|--------|--------------|
+| 39 | Centered Operator Semantics and Exact Forms | Pending | OPF-01, OPF-02, OPF-03, OPF-04, OPF-05 |
+| 40 | Family-Aware Master Tree and Recovery Pipeline | Pending | TRN-01, TRN-02, TRN-03, TRN-04, TRN-05 |
+| 41 | Operator-Family Campaign Matrix | Pending | EVD-01, EVD-02 |
+| 42 | Comparative Evidence Aggregation and Regression Locks | Pending | EVD-03, EVD-04, EVD-05 |
+| 43 | Paper Decision Memo and Completeness Boundary | Pending | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 |
 
 ## Accumulated Context
 
@@ -148,8 +156,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: v1.6 shipped, archived, and ready for next milestone planning
+Stopped at: v1.7 roadmap created; ready for Phase 39 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after starting milestone v1.7*
+*Last updated: 2026-04-16 after creating milestone v1.7 roadmap*

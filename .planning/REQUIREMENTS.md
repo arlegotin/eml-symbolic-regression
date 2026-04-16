@@ -70,32 +70,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| OPF-01 | TBD | Pending |
-| OPF-02 | TBD | Pending |
-| OPF-03 | TBD | Pending |
-| OPF-04 | TBD | Pending |
-| OPF-05 | TBD | Pending |
-| TRN-01 | TBD | Pending |
-| TRN-02 | TBD | Pending |
-| TRN-03 | TBD | Pending |
-| TRN-04 | TBD | Pending |
-| TRN-05 | TBD | Pending |
-| EVD-01 | TBD | Pending |
-| EVD-02 | TBD | Pending |
-| EVD-03 | TBD | Pending |
-| EVD-04 | TBD | Pending |
-| EVD-05 | TBD | Pending |
-| PAP-01 | TBD | Pending |
-| PAP-02 | TBD | Pending |
-| PAP-03 | TBD | Pending |
-| PAP-04 | TBD | Pending |
-| PAP-05 | TBD | Pending |
+| OPF-01 | Phase 39 | Pending |
+| OPF-02 | Phase 39 | Pending |
+| OPF-03 | Phase 39 | Pending |
+| OPF-04 | Phase 39 | Pending |
+| OPF-05 | Phase 39 | Pending |
+| TRN-01 | Phase 40 | Pending |
+| TRN-02 | Phase 40 | Pending |
+| TRN-03 | Phase 40 | Pending |
+| TRN-04 | Phase 40 | Pending |
+| TRN-05 | Phase 40 | Pending |
+| EVD-01 | Phase 41 | Pending |
+| EVD-02 | Phase 41 | Pending |
+| EVD-03 | Phase 42 | Pending |
+| EVD-04 | Phase 42 | Pending |
+| EVD-05 | Phase 42 | Pending |
+| PAP-01 | Phase 43 | Pending |
+| PAP-02 | Phase 43 | Pending |
+| PAP-03 | Phase 43 | Pending |
+| PAP-04 | Phase 43 | Pending |
+| PAP-05 | Phase 43 | Pending |
 
 **Coverage:**
 - v1.7 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20
+- Mapped to phases: 20
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after initial v1.7 requirement definition*
+*Last updated: 2026-04-16 after creating milestone v1.7 roadmap*
