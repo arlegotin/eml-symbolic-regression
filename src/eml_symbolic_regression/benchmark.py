@@ -29,7 +29,7 @@ from .proof import (
     threshold_policy,
     validate_claim_reference,
 )
-from .repair import repair_perturbed_candidate
+from .repair import cleanup_failed_candidate, repair_perturbed_candidate
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
@@ -1229,12 +1229,34 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         report = fit.verification or verify_candidate(fit.snap.expression, splits, tolerance=run.dataset.tolerance)
         stage_statuses["blind_baseline"] = report.status
         status = report.status if report.status == "recovered" else ("snapped_but_failed" if fit.status == "snapped_candidate" else fit.status)
+        claim_status = report.status
+        repair_payload = None
+        repair_status = "not_attempted"
+        if status != "recovered":
+            cleanup = cleanup_failed_candidate(
+                fit,
+                depth=_fit_depth(fit, run.optimizer.depth),
+                variables=_fit_variables(fit, (spec.variable,)),
+                constants=_fit_constants(fit, run.optimizer.constants),
+                verification_splits=splits,
+                tolerance=run.dataset.tolerance,
+                original_status=status,
+                return_kind=status,
+            )
+            repair_payload = cleanup.as_dict()
+            repair_status = "repaired" if cleanup.status == "repaired_candidate" else cleanup.status
+            stage_statuses["local_repair"] = cleanup.status
+            if cleanup.status == "repaired_candidate" and cleanup.verification is not None:
+                status = "repaired_candidate"
+                claim_status = cleanup.verification.status
         return {
             "status": status,
             "stage_statuses": stage_statuses,
             "trained_eml_candidate": fit.manifest,
             "trained_eml_verification": report.as_dict(),
-            "claim_status": report.status,
+            "repair": repair_payload,
+            "repair_status": repair_status,
+            "claim_status": claim_status,
         }
 
     if run.start_mode == "warm_start":
@@ -1294,12 +1316,35 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         stage_statuses["warm_start_attempt"] = warm.status
         if warm.verification is not None:
             stage_statuses["trained_exact_recovery"] = warm.verification.status
+        status = warm.status
+        claim_status = warm.verification.status if warm.verification else warm.status
+        repair_payload = None
+        repair_status = "not_attempted"
+        if status not in {"same_ast_return", "verified_equivalent_ast", "recovered"}:
+            cleanup = cleanup_failed_candidate(
+                warm.fit,
+                depth=_fit_depth(warm.fit, warm_depth),
+                variables=_fit_variables(warm.fit, (spec.variable,)),
+                constants=_fit_constants(warm.fit, run.optimizer.constants),
+                verification_splits=splits,
+                tolerance=run.dataset.tolerance,
+                original_status=status,
+                return_kind=status,
+            )
+            repair_payload = cleanup.as_dict()
+            repair_status = "repaired" if cleanup.status == "repaired_candidate" else cleanup.status
+            stage_statuses["local_repair"] = cleanup.status
+            if cleanup.status == "repaired_candidate" and cleanup.verification is not None:
+                status = "repaired_candidate"
+                claim_status = cleanup.verification.status
         return {
-            "status": warm.status,
+            "status": status,
             "stage_statuses": stage_statuses,
             **compiled_payload,
             "warm_start_eml": warm.manifest,
-            "claim_status": warm.verification.status if warm.verification else warm.status,
+            "repair": repair_payload,
+            "repair_status": repair_status,
+            "claim_status": claim_status,
         }
 
     if run.start_mode == "perturbed_tree":
@@ -1382,18 +1427,31 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         repair_status = "not_attempted"
         if basin.status != "recovered":
             repair_constants = tuple(sorted(target_expr.constants(), key=lambda value: (value.real, value.imag)))
-            repair = repair_perturbed_candidate(
+            repair = cleanup_failed_candidate(
                 basin.fit,
-                target_expr=target_expr,
-                embedding=basin.embedding,
-                depth=training_depth,
-                variables=tuple(sorted(target_expr.variables())),
-                constants=repair_constants,
+                depth=_fit_depth(basin.fit, training_depth),
+                variables=_fit_variables(basin.fit, tuple(sorted(target_expr.variables()))),
+                constants=_fit_constants(basin.fit, repair_constants),
                 verification_splits=splits,
                 tolerance=run.dataset.tolerance,
                 original_status=raw_status,
                 return_kind=basin.return_kind,
             )
+            if repair.status != "repaired_candidate":
+                target_repair = repair_perturbed_candidate(
+                    basin.fit,
+                    target_expr=target_expr,
+                    embedding=basin.embedding,
+                    depth=training_depth,
+                    variables=tuple(sorted(target_expr.variables())),
+                    constants=repair_constants,
+                    verification_splits=splits,
+                    tolerance=run.dataset.tolerance,
+                    original_status=raw_status,
+                    return_kind=basin.return_kind,
+                )
+                if target_repair.status == "repaired_candidate" or repair.variant_count == 0:
+                    repair = target_repair
             repair_payload = repair.as_dict()
             repair_status = "repaired" if repair.status == "repaired_candidate" else repair.status
             stage_statuses["local_repair"] = repair.status
@@ -1415,6 +1473,25 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         }
 
     raise BenchmarkValidationError("invalid_start_mode", f"unsupported start mode {run.start_mode!r}")
+
+
+def _fit_depth(fit: FitResult, default_depth: int) -> int:
+    config = fit.manifest.get("config") if isinstance(fit.manifest, Mapping) else None
+    return int(config.get("depth", default_depth)) if isinstance(config, Mapping) else int(default_depth)
+
+
+def _fit_variables(fit: FitResult, default_variables: tuple[str, ...]) -> tuple[str, ...]:
+    config = fit.manifest.get("config") if isinstance(fit.manifest, Mapping) else None
+    variables = config.get("variables") if isinstance(config, Mapping) else None
+    return tuple(str(value) for value in variables) if isinstance(variables, list) else tuple(default_variables)
+
+
+def _fit_constants(fit: FitResult, default_constants: tuple[complex, ...]) -> tuple[complex, ...]:
+    config = fit.manifest.get("config") if isinstance(fit.manifest, Mapping) else None
+    constants = config.get("constants") if isinstance(config, Mapping) else None
+    if not isinstance(constants, list):
+        return tuple(default_constants)
+    return tuple(parse_constant_value(value) for value in constants)
 
 
 def _compile_demo(run: BenchmarkRun, splits: Any) -> dict[str, Any]:
@@ -1490,6 +1567,7 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     repair_verification = repair.get("verification") if isinstance(repair, Mapping) else None
     repair_attempts = repair.get("moves_attempted") if isinstance(repair, Mapping) else None
     repair_accepted = repair.get("accepted_moves") if isinstance(repair, Mapping) else None
+    repair_variant_count = repair.get("variant_count") if isinstance(repair, Mapping) else None
 
     diagnosis = {}
     warm_start = payload.get("warm_start_eml")
@@ -1564,6 +1642,7 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "warm_start_mechanism": diagnosis.get("mechanism"),
         "warm_start_status": diagnosis.get("status"),
         "repair_status": payload.get("repair_status"),
+        "repair_variant_count": repair_variant_count,
         "repair_move_count": len(repair_attempts) if isinstance(repair_attempts, list) else 0,
         "repair_accepted_move_count": len(repair_accepted) if isinstance(repair_accepted, list) else 0,
         "repair_verifier_status": repair_verification.get("status") if isinstance(repair_verification, Mapping) else None,

@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import torch
 
 import eml_symbolic_regression.benchmark as benchmark_module
 from eml_symbolic_regression.basin import BasinTrainingResult
@@ -22,8 +23,9 @@ from eml_symbolic_regression.benchmark import (
 )
 from eml_symbolic_regression.expression import Const, Eml, Var
 from eml_symbolic_regression.master_tree import SoftEMLTree
-from eml_symbolic_regression.optimize import FitResult
+from eml_symbolic_regression.optimize import ExactCandidate, FitResult
 from eml_symbolic_regression.verify import SplitResult, VerificationReport
+from eml_symbolic_regression.warm_start import WarmStartResult
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,6 +55,57 @@ def _fit_from_slots(slots: dict[str, str], *, depth: int = 2) -> FitResult:
         post_snap_loss=1.0,
         snap=snap,
         manifest={"schema": "eml.run_manifest.v1", "status": "snapped_candidate", "snap": snap.as_dict()},
+    )
+
+
+def _repairable_fit_for_exp() -> FitResult:
+    tree = SoftEMLTree(1, ("x",), (1.0,))
+    tree.set_slot("root", "right", "const:1", strength=40.0)
+    with torch.no_grad():
+        tree.root.left_logits.copy_(torch.tensor([2.0, 1.85], dtype=torch.float64))
+
+    snap = tree.snap()
+    selected = ExactCandidate(
+        candidate_id="selected",
+        attempt_index=0,
+        random_restart=0,
+        seed=0,
+        attempt_kind="random",
+        source="legacy_final_snap",
+        checkpoint_index=None,
+        hardening_step=None,
+        global_step=0,
+        temperature=0.25,
+        best_fit_loss=1.0,
+        post_snap_loss=1.0,
+        snap=snap,
+        verification=_verification_report("failed"),
+        slot_alternatives=tree.active_slot_alternatives(top_k=1),
+    )
+    manifest = {
+        "schema": "eml.run_manifest.v1",
+        "status": "snapped_candidate",
+        "snap": snap.as_dict(),
+        "candidates": [selected.as_dict()],
+        "selection": {
+            "mode": "verifier_gated_exact_candidate_pool",
+            "candidate_count": 1,
+            "selected_candidate_id": "selected",
+            "fallback_candidate_id": "selected",
+        },
+        "selected_candidate": selected.as_dict(),
+        "fallback_candidate": selected.as_dict(),
+    }
+    return FitResult(
+        status="snapped_candidate",
+        best_loss=1.0,
+        post_snap_loss=1.0,
+        snap=snap,
+        manifest=manifest,
+        verification=_verification_report("failed"),
+        selected_candidate=selected,
+        fallback_candidate=selected,
+        candidates=(selected,),
     )
 
 
@@ -353,6 +406,61 @@ def test_perturbed_tree_repair_promotes_artifact_without_overwriting_raw(monkeyp
     assert artifact["metrics"]["repair_move_count"] >= 1
     assert artifact["metrics"]["repair_accepted_move_count"] >= 1
     assert artifact["metrics"]["repair_verifier_status"] == "recovered"
+
+
+@pytest.mark.parametrize("start_mode", ["blind", "warm_start"])
+def test_target_free_cleanup_promotes_blind_and_warm_start_artifacts(monkeypatch, tmp_path, start_mode):
+    fit = _repairable_fit_for_exp()
+    run = BenchmarkRun(
+        suite_id="phase35",
+        case_id=f"{start_mode}-cleanup",
+        formula="exp",
+        start_mode=start_mode,
+        seed=0,
+        perturbation_noise=0.0,
+        dataset=DatasetConfig(points=12),
+        optimizer=OptimizerBudget(depth=1, steps=1, restarts=1, warm_steps=1, warm_restarts=1),
+        artifact_path=tmp_path / f"{start_mode}-cleanup.json",
+        training_mode="blind_training" if start_mode == "blind" else "compiler_warm_start_training",
+    )
+
+    if start_mode == "blind":
+        monkeypatch.setattr(benchmark_module, "fit_eml_tree", lambda *args, **kwargs: fit)
+    else:
+        warm_tree = SoftEMLTree(1, ("x",), (1.0,))
+        embedding = warm_tree.embed_expr(Eml(Var("x"), Const(1.0)))
+
+        def fake_warm_start(*args, **kwargs):
+            return WarmStartResult(
+                status="snapped_but_failed",
+                fit=fit,
+                embedding=embedding,
+                verification=_verification_report("failed"),
+                manifest={
+                    "schema": "eml.warm_start_manifest.v1",
+                    "status": "snapped_but_failed",
+                    "optimizer": fit.manifest,
+                    "verification": _verification_report("failed").as_dict(),
+                    "diagnosis": {"status": "snapped_but_failed", "mechanism": "snap_instability"},
+                },
+            )
+
+        monkeypatch.setattr(benchmark_module, "fit_warm_started_eml_tree", fake_warm_start)
+
+    result = execute_benchmark_run(run)
+    artifact = json.loads(result.artifact_path.read_text(encoding="utf-8"))
+    candidate = artifact["trained_eml_candidate"] if start_mode == "blind" else artifact["warm_start_eml"]["optimizer"]
+
+    assert result.status == "repaired_candidate"
+    assert artifact["status"] == "repaired_candidate"
+    assert artifact["claim_status"] == "recovered"
+    assert artifact["repair_status"] == "repaired"
+    assert artifact["repair"]["status"] == "repaired_candidate"
+    assert artifact["repair"]["accepted_moves"][0]["source"] == "slot_alternative"
+    assert candidate["selected_candidate"]["candidate_id"] == "selected"
+    assert candidate["fallback_candidate"]["candidate_id"] == "selected"
+    assert artifact["metrics"]["repair_status"] == "repaired"
+    assert artifact["metrics"]["repair_accepted_move_count"] >= 1
 
 
 def test_depth_curve_runner_records_blind_failure_and_perturbed_recovery(tmp_path):

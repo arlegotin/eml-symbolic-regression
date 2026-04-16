@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 import torch
 
@@ -76,6 +77,100 @@ class SnapResult:
             "active_node_count": self.active_node_count,
             "decisions": [decision.__dict__ for decision in self.decisions],
             "ast": self.expression.to_document(),
+        }
+
+
+@dataclass(frozen=True)
+class ReplayAssignment:
+    slot: str
+    choice: str
+
+    def as_dict(self) -> dict[str, str]:
+        return {"slot": self.slot, "choice": self.choice}
+
+
+@dataclass(frozen=True)
+class SlotAlternative:
+    choice: str
+    probability: float
+    probability_gap: float
+    rank: int
+    descendant_assignments: tuple[ReplayAssignment, ...] = ()
+    subtree_root: str | None = None
+
+    def as_dict(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "choice": self.choice,
+            "probability": self.probability,
+            "probability_gap": self.probability_gap,
+            "rank": self.rank,
+        }
+        if self.descendant_assignments:
+            payload["descendant_assignments"] = [assignment.as_dict() for assignment in self.descendant_assignments]
+        if self.subtree_root is not None:
+            payload["subtree_root"] = self.subtree_root
+        return payload
+
+
+@dataclass(frozen=True)
+class ActiveSlotAlternatives:
+    slot: str
+    current_choice: str
+    current_probability: float
+    current_margin: float
+    alternatives: tuple[SlotAlternative, ...]
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "slot": self.slot,
+            "current_choice": self.current_choice,
+            "current_probability": self.current_probability,
+            "current_margin": self.current_margin,
+            "alternatives": [alternative.as_dict() for alternative in self.alternatives],
+        }
+
+
+@dataclass(frozen=True)
+class NeighborhoodMove:
+    slot: str
+    before: str
+    after: str
+    slot_margin: float
+    probability_gap: float
+    rank: int
+    descendant_assignments: tuple[ReplayAssignment, ...] = ()
+    pruned_assignments: tuple[ReplayAssignment, ...] = ()
+    subtree_root: str | None = None
+
+    def as_dict(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "slot": self.slot,
+            "before": self.before,
+            "after": self.after,
+            "slot_margin": self.slot_margin,
+            "probability_gap": self.probability_gap,
+            "rank": self.rank,
+        }
+        if self.descendant_assignments:
+            payload["descendant_assignments"] = [assignment.as_dict() for assignment in self.descendant_assignments]
+        if self.pruned_assignments:
+            payload["pruned_assignments"] = [assignment.as_dict() for assignment in self.pruned_assignments]
+        if self.subtree_root is not None:
+            payload["subtree_root"] = self.subtree_root
+        return payload
+
+
+@dataclass(frozen=True)
+class NeighborhoodVariant:
+    expression: Expr
+    moves: tuple[NeighborhoodMove, ...]
+    heuristic_gap: float
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "moves": [move.as_dict() for move in self.moves],
+            "heuristic_gap": self.heuristic_gap,
+            "ast": self.expression.to_document(source="snap_neighborhood_candidate"),
         }
 
 
@@ -268,6 +363,11 @@ class _SoftNode(torch.nn.Module):
     def _snap(self, decisions: list[SnapDecision]) -> Expr:
         return Eml(self._snap_slot("left", decisions), self._snap_slot("right", decisions))
 
+    def _subtree_assignments(self) -> tuple[ReplayAssignment, ...]:
+        decisions: list[SnapDecision] = []
+        self._snap(decisions)
+        return tuple(ReplayAssignment(f"{decision.path}.{decision.side}", decision.choice) for decision in decisions)
+
     def set_slot(self, node_path: str, side: str, choice: str, strength: float = 30.0) -> None:
         if self.path == node_path:
             logits = self.left_logits if side == "left" else self.right_logits
@@ -324,6 +424,16 @@ class SoftEMLTree(torch.nn.Module):
     def slot_catalog(self) -> dict[str, list[str]]:
         return self.root.slot_catalog()
 
+    def _node_for_path(self, node_path: str) -> _SoftNode:
+        node = self.root
+        if node_path == "root":
+            return node
+        for part in node_path.split(".")[1:]:
+            node = node.left_child if part == "L" else node.right_child
+            if node is None:
+                raise ValueError(f"Unknown node path: {node_path}")
+        return node
+
     def parameter_count(self) -> int:
         return sum(parameter.numel() for parameter in self.parameters())
 
@@ -350,6 +460,59 @@ class SoftEMLTree(torch.nn.Module):
             min_margin=min_margin,
             active_node_count=expression.node_count(),
         )
+
+    def active_slot_alternatives(
+        self,
+        top_k: int = 2,
+        *,
+        max_slots: int | None = None,
+        margin_threshold: float | None = None,
+    ) -> tuple[ActiveSlotAlternatives, ...]:
+        if top_k <= 0:
+            return ()
+        snap = self.snap()
+        ranked = sorted(snap.decisions, key=lambda item: (item.margin, f"{item.path}.{item.side}"))
+        groups: list[ActiveSlotAlternatives] = []
+        for decision in ranked:
+            if margin_threshold is not None and decision.margin > margin_threshold:
+                continue
+            node = self._node_for_path(decision.path)
+            logits = node.left_logits if decision.side == "left" else node.right_logits
+            child = node.left_child if decision.side == "left" else node.right_child
+            probs = torch.softmax(logits.detach(), dim=0)
+            order = torch.argsort(probs, descending=True)
+            alternatives: list[SlotAlternative] = []
+            for index in order.tolist():
+                choice = node.labels[int(index)]
+                if choice == decision.choice:
+                    continue
+                subtree_root = child.path if choice == "child" and child is not None else None
+                descendant_assignments = child._subtree_assignments() if choice == "child" and child is not None else ()
+                alternatives.append(
+                    SlotAlternative(
+                        choice=choice,
+                        probability=float(probs[index].item()),
+                        probability_gap=max(0.0, decision.probability - float(probs[index].item())),
+                        rank=len(alternatives) + 1,
+                        descendant_assignments=descendant_assignments,
+                        subtree_root=subtree_root,
+                    )
+                )
+                if len(alternatives) >= top_k:
+                    break
+            if alternatives:
+                groups.append(
+                    ActiveSlotAlternatives(
+                        slot=f"{decision.path}.{decision.side}",
+                        current_choice=decision.choice,
+                        current_probability=decision.probability,
+                        current_margin=decision.margin,
+                        alternatives=tuple(alternatives),
+                    )
+                )
+            if max_slots is not None and len(groups) >= max_slots:
+                break
+        return tuple(groups)
 
     def set_slot(self, node_path: str, side: str, choice: str, strength: float = 30.0) -> None:
         self.root.set_slot(node_path, side, choice, strength=strength)
@@ -454,3 +617,154 @@ def embed_expr_into_tree(
     round_trip = expressions_equal(expression, snap.expression)
     diagnostics = () if round_trip else ("snap_round_trip_mismatch",)
     return EmbeddingResult(bool(round_trip), tuple(assignments), snap, bool(round_trip), diagnostics)
+
+
+def slot_map_from_snap(snap: SnapResult) -> dict[str, str]:
+    return {f"{decision.path}.{decision.side}": decision.choice for decision in snap.decisions}
+
+
+def replay_slot_map_expression(
+    slot_map: Mapping[str, str],
+    *,
+    depth: int,
+    variables: tuple[str, ...],
+    constants: tuple[complex, ...],
+    strength: float = 30.0,
+) -> Expr:
+    tree = SoftEMLTree(depth, variables, constants)
+    for slot, choice in _slot_items_for_replay(slot_map):
+        node_path, side = slot.rsplit(".", 1)
+        tree.set_slot(node_path, side, choice, strength=strength)
+    return tree.snap().expression
+
+
+def expand_snap_neighborhood(
+    snap: SnapResult,
+    slot_alternatives: Sequence[ActiveSlotAlternatives],
+    *,
+    depth: int,
+    variables: tuple[str, ...],
+    constants: tuple[complex, ...],
+    beam_width: int = 8,
+    max_moves: int = 2,
+    max_slots: int | None = None,
+    strength: float = 30.0,
+) -> tuple[NeighborhoodVariant, ...]:
+    if beam_width <= 0 or max_moves <= 0:
+        return ()
+    base_slot_map = slot_map_from_snap(snap)
+    groups = sorted(slot_alternatives, key=lambda item: (item.current_margin, item.slot))
+    if max_slots is not None:
+        groups = groups[:max_slots]
+    beam: list[tuple[NeighborhoodMove, ...]] = [()]
+    variants: dict[str, NeighborhoodVariant] = {}
+
+    for group in groups:
+        next_beam: dict[str, tuple[NeighborhoodMove, ...]] = {_state_signature(state): state for state in beam}
+        for state in beam:
+            used_slots = {move.slot for move in state}
+            if len(state) >= max_moves or group.slot in used_slots:
+                continue
+            for alternative in group.alternatives:
+                move = _move_from_alternative(base_slot_map, group, alternative)
+                new_state = (*state, move)
+                expression = replay_slot_map_expression(
+                    _slot_map_with_moves(base_slot_map, new_state),
+                    depth=depth,
+                    variables=variables,
+                    constants=constants,
+                    strength=strength,
+                )
+                key = json.dumps(expression.to_document(source="snap_neighborhood_candidate"), sort_keys=True)
+                candidate = NeighborhoodVariant(
+                    expression=expression,
+                    moves=new_state,
+                    heuristic_gap=sum(item.probability_gap for item in new_state),
+                )
+                existing = variants.get(key)
+                if existing is None or _variant_rank_key(candidate) < _variant_rank_key(existing):
+                    variants[key] = candidate
+                signature = _state_signature(new_state)
+                incumbent = next_beam.get(signature)
+                if incumbent is None or _state_rank_key(new_state) < _state_rank_key(incumbent):
+                    next_beam[signature] = new_state
+        beam = sorted(next_beam.values(), key=_state_rank_key)[:beam_width]
+    return tuple(sorted(variants.values(), key=_variant_rank_key))
+
+
+def _child_root(slot: str) -> str:
+    node_path, side = slot.rsplit(".", 1)
+    return f"{node_path}.{'L' if side == 'left' else 'R'}"
+
+
+def _descendant_assignments_from_slot_map(slot_map: Mapping[str, str], subtree_root: str) -> tuple[ReplayAssignment, ...]:
+    return tuple(
+        ReplayAssignment(slot, slot_map[slot])
+        for slot in _sorted_slots(slot for slot in slot_map if slot.startswith(f"{subtree_root}."))
+    )
+
+
+def _move_from_alternative(
+    slot_map: Mapping[str, str],
+    group: ActiveSlotAlternatives,
+    alternative: SlotAlternative,
+) -> NeighborhoodMove:
+    subtree_root = alternative.subtree_root
+    if group.current_choice == "child" and subtree_root is None:
+        subtree_root = _child_root(group.slot)
+    pruned_assignments = (
+        _descendant_assignments_from_slot_map(slot_map, subtree_root)
+        if group.current_choice == "child" and alternative.choice != "child" and subtree_root is not None
+        else ()
+    )
+    return NeighborhoodMove(
+        slot=group.slot,
+        before=group.current_choice,
+        after=alternative.choice,
+        slot_margin=group.current_margin,
+        probability_gap=alternative.probability_gap,
+        rank=alternative.rank,
+        descendant_assignments=alternative.descendant_assignments,
+        pruned_assignments=pruned_assignments,
+        subtree_root=subtree_root,
+    )
+
+
+def _slot_map_with_moves(slot_map: Mapping[str, str], moves: Sequence[NeighborhoodMove]) -> dict[str, str]:
+    replay = dict(slot_map)
+    for move in moves:
+        replay[move.slot] = move.after
+        for assignment in move.descendant_assignments:
+            replay[assignment.slot] = assignment.choice
+    return replay
+
+
+def _slot_items_for_replay(slot_map: Mapping[str, str]) -> tuple[tuple[str, str], ...]:
+    return tuple((slot, slot_map[slot]) for slot in _sorted_slots(slot_map))
+
+
+def _sorted_slots(slots: Sequence[str] | Mapping[str, str] | Any) -> list[str]:
+    return sorted(slots, key=lambda slot: (str(slot).count("."), str(slot)))
+
+
+def _state_signature(state: Sequence[NeighborhoodMove]) -> str:
+    return "|".join(f"{move.slot}:{move.after}" for move in state)
+
+
+def _state_rank_key(state: Sequence[NeighborhoodMove]) -> tuple[Any, ...]:
+    return (
+        len(state),
+        sum(move.probability_gap for move in state),
+        tuple(move.slot for move in state),
+        tuple(move.after for move in state),
+    )
+
+
+def _variant_rank_key(variant: NeighborhoodVariant) -> tuple[Any, ...]:
+    return (
+        len(variant.moves),
+        variant.heuristic_gap,
+        variant.expression.node_count(),
+        tuple(move.slot for move in variant.moves),
+        tuple(move.after for move in variant.moves),
+    )

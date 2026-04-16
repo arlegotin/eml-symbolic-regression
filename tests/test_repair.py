@@ -1,9 +1,16 @@
 import numpy as np
+import torch
 
 from eml_symbolic_regression.expression import Const, Eml, Var
 from eml_symbolic_regression.master_tree import EmbeddingResult, SoftEMLTree
-from eml_symbolic_regression.optimize import FitResult
-from eml_symbolic_regression.repair import RepairConfig, RepairMove, RepairReport, repair_perturbed_candidate
+from eml_symbolic_regression.optimize import ExactCandidate, FitResult
+from eml_symbolic_regression.repair import (
+    RepairConfig,
+    RepairMove,
+    RepairReport,
+    cleanup_failed_candidate,
+    repair_perturbed_candidate,
+)
 from eml_symbolic_regression.verify import DataSplit, SplitResult, VerificationReport
 
 
@@ -66,6 +73,36 @@ def _run_repair(fit: FitResult, target_expr: Eml, embedding: EmbeddingResult) ->
         tolerance=1e-8,
         original_status="snapped_but_failed",
         return_kind="snapped_but_failed",
+    )
+
+
+def _fit_with_selected_candidate(tree: SoftEMLTree) -> FitResult:
+    snap = tree.snap()
+    selected = ExactCandidate(
+        candidate_id="selected",
+        attempt_index=0,
+        random_restart=0,
+        seed=0,
+        attempt_kind="random",
+        source="legacy_final_snap",
+        checkpoint_index=None,
+        hardening_step=None,
+        global_step=0,
+        temperature=0.25,
+        best_fit_loss=1.0,
+        post_snap_loss=1.0,
+        snap=snap,
+        slot_alternatives=tree.active_slot_alternatives(top_k=2),
+    )
+    return FitResult(
+        status="snapped_candidate",
+        best_loss=1.0,
+        post_snap_loss=1.0,
+        snap=snap,
+        manifest={"schema": "eml.run_manifest.v1", "status": "snapped_candidate", "snap": snap.as_dict()},
+        selected_candidate=selected,
+        fallback_candidate=selected,
+        candidates=(selected,),
     )
 
 
@@ -274,3 +311,43 @@ def test_repair_does_not_accept_without_verifier_recovery() -> None:
     assert payload["accepted_moves"] == []
     assert payload["repaired_ast"] is None
     assert {move["verifier_status"] for move in payload["moves_attempted"]} == {"failed"}
+
+
+def test_target_free_cleanup_recovers_from_low_margin_slot_alternative() -> None:
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    tree = SoftEMLTree(2, ("x",), (1.0,))
+    tree.set_slot("root", "right", "const:1", strength=40.0)
+    tree.set_slot("root.L", "left", "var:x", strength=40.0)
+    tree.set_slot("root.L", "right", "const:1", strength=40.0)
+    with torch.no_grad():
+        tree.root.left_logits.copy_(torch.tensor([0.0, 2.0, 1.85], dtype=torch.float64))
+
+    fit = _fit_with_selected_candidate(tree)
+    report = cleanup_failed_candidate(
+        fit,
+        depth=2,
+        variables=("x",),
+        constants=(1.0,),
+        verification_splits=_verification_splits(target_expr),
+        tolerance=1e-8,
+        original_status="snapped_but_failed",
+        return_kind="snapped_but_failed",
+    )
+
+    payload = report.as_dict()
+    accepted = payload["accepted_moves"][0]
+
+    assert payload["status"] == "repaired_candidate"
+    assert payload["reason"] == "verified_slot_neighborhood"
+    assert payload["verification"]["status"] == "recovered"
+    assert payload["variant_count"] >= 1
+    assert accepted["slot"] == "root.left"
+    assert accepted["before"] == "var:x"
+    assert accepted["after"] == "child"
+    assert accepted["source"] == "slot_alternative"
+    assert accepted["slot_margin"] < 0.2
+    assert accepted["probability_gap"] > 0.0
+    assert accepted["descendant_assignments"] == [
+        {"slot": "root.L.left", "choice": "var:x"},
+        {"slot": "root.L.right", "choice": "const:1"},
+    ]

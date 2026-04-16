@@ -9,7 +9,7 @@ import numpy as np
 import torch
 
 from .expression import format_constant_value
-from .master_tree import SnapDecision, SnapResult, SoftEMLTree, constant_label
+from .master_tree import ActiveSlotAlternatives, SnapDecision, SnapResult, SoftEMLTree, constant_label
 from .semantics import AnomalyStats, as_complex_tensor, mse_complex_numpy
 from .verify import DataSplit, VerificationReport, verify_candidate
 
@@ -48,6 +48,7 @@ class ExactCandidate:
     best_fit_loss: float
     post_snap_loss: float
     snap: SnapResult
+    slot_alternatives: tuple[ActiveSlotAlternatives, ...] = ()
     verification: VerificationReport | None = None
     selection_metrics: dict[str, Any] | None = None
 
@@ -70,6 +71,7 @@ class ExactCandidate:
             "low_margin_slot_count": sum(1 for item in self.snap.decisions if item.margin < 0.1),
             "lowest_margin_slots": [_decision_payload(item) for item in low_margin],
             "snap": self.snap.as_dict(),
+            "slot_alternatives": [item.as_dict() for item in self.slot_alternatives],
             "verification": self.verification.as_dict() if self.verification is not None else None,
             "selection_metrics": dict(self.selection_metrics or {}),
         }
@@ -161,6 +163,7 @@ def _emit_candidate(
     best_fit_loss: float,
 ) -> ExactCandidate:
     snap = model.snap()
+    slot_alternatives = model.active_slot_alternatives(top_k=2)
     snapped_pred = snap.expression.evaluate_numpy({name: np.asarray(value) for name, value in inputs.items()})
     post_snap_loss = mse_complex_numpy(snapped_pred, target)
     return ExactCandidate(
@@ -177,6 +180,7 @@ def _emit_candidate(
         best_fit_loss=best_fit_loss,
         post_snap_loss=post_snap_loss,
         snap=snap,
+        slot_alternatives=slot_alternatives,
     )
 
 

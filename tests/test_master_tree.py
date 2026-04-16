@@ -1,7 +1,10 @@
+import json
+
 import numpy as np
 import pytest
+import torch
 
-from eml_symbolic_regression.master_tree import EmbeddingError, SoftEMLTree
+from eml_symbolic_regression.master_tree import EmbeddingError, SoftEMLTree, expand_snap_neighborhood
 
 
 def test_univariate_parameter_count_matches_paper():
@@ -57,3 +60,60 @@ def test_force_scaled_exp_requires_coefficient_in_constant_bank():
 
     with pytest.raises(EmbeddingError, match="missing_constant"):
         tree.force_scaled_exp("x", -0.8)
+
+
+def test_active_slot_alternatives_capture_replayable_child_subtree() -> None:
+    tree = SoftEMLTree(2, ("x",))
+    tree.set_slot("root", "right", "const:1", strength=40.0)
+    tree.set_slot("root.L", "left", "var:x", strength=40.0)
+    tree.set_slot("root.L", "right", "const:1", strength=40.0)
+
+    with torch.no_grad():
+        tree.root.left_logits.copy_(torch.tensor([0.0, 2.0, 1.8], dtype=torch.float64))
+
+    alternatives = tree.active_slot_alternatives(top_k=2, max_slots=1)
+
+    assert len(alternatives) == 1
+    assert alternatives[0].slot == "root.left"
+    assert alternatives[0].current_choice == "var:x"
+    assert alternatives[0].current_margin < 0.2
+    assert [item.choice for item in alternatives[0].alternatives] == ["child", "const:1"]
+    assert alternatives[0].alternatives[0].subtree_root == "root.L"
+    assert [item.as_dict() for item in alternatives[0].alternatives[0].descendant_assignments] == [
+        {"slot": "root.L.left", "choice": "var:x"},
+        {"slot": "root.L.right", "choice": "const:1"},
+    ]
+
+
+def test_expand_snap_neighborhood_deduplicates_parent_overrides() -> None:
+    tree = SoftEMLTree(2, ("x",))
+    tree.set_slot("root", "left", "child", strength=40.0)
+    tree.set_slot("root", "right", "const:1", strength=40.0)
+    tree.set_slot("root.L", "left", "var:x", strength=40.0)
+    tree.set_slot("root.L", "right", "const:1", strength=40.0)
+
+    with torch.no_grad():
+        tree.root.left_logits.copy_(torch.tensor([0.0, 1.8, 2.0], dtype=torch.float64))
+        tree.root.left_child.left_logits.copy_(torch.tensor([1.8, 2.0], dtype=torch.float64))
+
+    snap = tree.snap()
+    variants = expand_snap_neighborhood(
+        snap,
+        tree.active_slot_alternatives(top_k=1, max_slots=2),
+        depth=2,
+        variables=("x",),
+        constants=(1.0,),
+        beam_width=8,
+        max_moves=2,
+    )
+
+    serialized = [json.dumps(item.expression.to_document(), sort_keys=True) for item in variants]
+
+    assert len(serialized) == len(set(serialized))
+    terminal_variant = [
+        item
+        for item in variants
+        if item.moves and item.moves[0].slot == "root.left" and item.moves[0].after == "var:x"
+    ]
+    assert len(terminal_variant) == 1
+    assert len(terminal_variant[0].moves) == 1

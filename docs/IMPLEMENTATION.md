@@ -9,13 +9,14 @@ The package follows the roadmap in `.planning/ROADMAP.md`:
 3. `master_tree.py` defines complete depth-bounded soft EML trees.
 4. `optimize.py` turns a soft tree into an exact-candidate pool, preserves the legacy final snap, and selects the shipped exact tree from that pool.
 5. `verify.py` owns recovery status.
-6. `cleanup.py` exports readable SymPy expressions and records cleanup reports.
-7. `compiler.py` compiles a whitelisted SymPy subset into the existing exact EML `Expr` AST.
-8. `master_tree.py` also supports literal-constant terminal banks and AST-to-logit embedding.
-9. `warm_start.py` embeds compiled ASTs, records deterministic perturbation metadata, trains through `fit_eml_tree()`, and classifies the post-snap outcome.
-10. `benchmark.py` defines repeatable benchmark suites, run execution, per-run artifacts, aggregate evidence reports, and recovery/failure taxonomy.
-11. `campaign.py` defines campaign presets, guarded output folders, CSV exports, SVG figures, and `report.md` assembly.
-12. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
+6. `repair.py` runs bounded target-free snap-neighborhood cleanup and the older perturbed-basin target-aware repair path.
+7. `cleanup.py` exports readable SymPy expressions and records cleanup reports.
+8. `compiler.py` compiles a whitelisted SymPy subset into the existing exact EML `Expr` AST.
+9. `master_tree.py` also supports literal-constant terminal banks, AST-to-logit embedding, replayable slot alternatives, and exact neighborhood expansion helpers.
+10. `warm_start.py` embeds compiled ASTs, records deterministic perturbation metadata, trains through `fit_eml_tree()`, and classifies the post-snap outcome.
+11. `benchmark.py` defines repeatable benchmark suites, run execution, per-run artifacts, aggregate evidence reports, and recovery/failure taxonomy.
+12. `campaign.py` defines campaign presets, guarded output folders, CSV exports, SVG figures, and `report.md` assembly.
+13. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
 
 ## Recovery Contract
 
@@ -29,6 +30,8 @@ Training loss is not enough. The optimizer now emits a retained exact-candidate 
 Non-EML catalog formulas can pass as `verified_showcase`; those reports are useful for demos and verifier coverage, but they are not labeled as EML recovery.
 
 Compiler output is also not enough by itself. A compiled seed can verify as an exact EML AST, but public demo promotion requires the warm-start path to train, harden, snap, and verify the final exact AST. The optimizer manifest remains a candidate-generation artifact and never assigns `recovered`; verifier-owned ranking decides which exact candidate wins when evaluation splits are available.
+
+If that selected exact candidate still fails, benchmark flows can now run a bounded target-free cleanup stage over serialized low-margin slot alternatives. Cleanup never overwrites the original selected candidate in place; it records attempted edits and only promotes a repaired candidate when verifier-owned ranking improves.
 
 ## Compiler Contract
 
@@ -54,7 +57,8 @@ Unsupported functions, unknown variables, unsafe constants, excessive powers, an
 3. applies deterministic logit perturbation,
 4. trains through the existing Adam optimizer,
 5. emits a retained exact-candidate pool from the legacy final snap plus late hardening checkpoints,
-6. delegates recovery status to `verify_candidate()`.
+6. serializes replayable low-margin slot alternatives for the selected exact candidate,
+7. delegates recovery status to `verify_candidate()`.
 
 Warm-start outcomes are separated as `same_ast_return`, `verified_equivalent_ast`, `snapped_but_failed`, `soft_fit_only`, or `failed`.
 
@@ -76,9 +80,11 @@ Each run writes schema `eml.benchmark_run.v1` with:
 - dataset and optimizer configuration,
 - start mode, seed, perturbation noise, and tags,
 - stage statuses,
-- normalized metrics such as best loss, post-snap loss, snap margin, active slot changes, verifier status, and high-precision error when available,
+- normalized metrics such as best loss, post-snap loss, snap margin, active slot changes, verifier status, repair status, repair variant count, and high-precision error when available,
 - timing and environment provenance,
 - structured errors for unsupported or failed execution paths.
+
+When a blind, warm-start, or perturbed-basin exact candidate fails verification, the run artifact can now include a `repair` section with attempted slot or subtree edits, their margins/probability gaps, accepted moves, and the repaired verifier report if cleanup wins. The original selected and fallback candidates from the optimizer manifest remain intact for weak-dominance comparisons.
 
 Aggregate reports use schema `eml.benchmark_aggregate.v1` and are written as both JSON and Markdown. Recovery rates are grouped by formula, start mode, perturbation level, depth, and seed group. `claim_status == "recovered"` is the only source of verifier-owned recovery counts.
 
