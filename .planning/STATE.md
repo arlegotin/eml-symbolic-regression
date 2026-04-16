@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.8
 milestone_name: Centered-Family Viability and Full Evidence Run
-current_phase: null
-status: defining_requirements
-stopped_at: v1.8 milestone started; defining requirements and roadmap
-last_updated: "2026-04-16T21:29:00Z"
-last_activity: 2026-04-16 -- v1.8 milestone started
+current_phase: 44
+status: ready_to_plan
+stopped_at: v1.8 roadmap created; ready to plan Phase 44
+last_updated: "2026-04-16T21:31:00Z"
+last_activity: 2026-04-16 -- v1.8 roadmap created
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
-  total_plans: 0
+  total_plans: 5
   completed_plans: 0
   percent: 0
 ---
@@ -18,7 +18,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Not started
+**Current phase:** Phase 44 - Centered-Family Smoke Triage and Full-Run Gate
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,11 +30,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-16 -- v1.8 milestone started
-Progress: [----------] 0% by completed phases (v1.8 roadmap pending)
+Phase: 44 - Centered-Family Smoke Triage and Full-Run Gate
+Plan: Not planned yet
+Status: Ready to plan
+Last activity: 2026-04-16 -- v1.8 roadmap created
+Progress: [----------] 0% by completed phases (v1.8: 0/5 planned)
 
 ## Performance Metrics
 
@@ -77,7 +77,9 @@ Progress: [----------] 0% by completed phases (v1.8 roadmap pending)
 | v1.7 archived phase artifacts | `.planning/milestones/v1.7-phases/` | Complete |
 | v1.7 paper decision package | `artifacts/paper/v1.7/` | Complete |
 | v1.7 milestone audit | `.planning/milestones/v1.7-MILESTONE-AUDIT.md` | Complete |
-| v1.8 project context | `.planning/PROJECT.md` | In Progress |
+| v1.8 project context | `.planning/PROJECT.md` | Complete |
+| v1.8 active requirements | `.planning/REQUIREMENTS.md` | Complete |
+| v1.8 active roadmap | `.planning/ROADMAP.md` | Complete |
 
 ## Completed Milestone
 
@@ -111,7 +113,11 @@ Target work:
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| TBD | Requirements and roadmap pending | Pending | TBD |
+| 44 | Centered-Family Smoke Triage and Full-Run Gate | Pending | TRI-01, TRI-02, TRI-03, TRI-04 |
+| 45 | Centered Integration Fixes | Pending | FIX-01, FIX-02, FIX-03, FIX-04, FIX-05 |
+| 46 | Family Matrix Calibration | Pending | MAT-01, MAT-02, MAT-03, MAT-04, MAT-05 |
+| 47 | Full Family Evidence Campaigns | Pending | RUN-01, RUN-02, RUN-03, RUN-04, RUN-05 |
+| 48 | Paper Decision Refresh and Milestone Audit | Pending | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 |
 
 ## Accumulated Context
 
@@ -163,8 +169,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: v1.8 milestone started; requirements and roadmap pending
+Stopped at: v1.8 roadmap created; ready to plan Phase 44
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after starting v1.8*
+*Last updated: 2026-04-16 after creating v1.8 roadmap*

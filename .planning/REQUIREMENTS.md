@@ -72,36 +72,36 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TRI-01 | TBD | Pending |
-| TRI-02 | TBD | Pending |
-| TRI-03 | TBD | Pending |
-| TRI-04 | TBD | Pending |
-| FIX-01 | TBD | Pending |
-| FIX-02 | TBD | Pending |
-| FIX-03 | TBD | Pending |
-| FIX-04 | TBD | Pending |
-| FIX-05 | TBD | Pending |
-| MAT-01 | TBD | Pending |
-| MAT-02 | TBD | Pending |
-| MAT-03 | TBD | Pending |
-| MAT-04 | TBD | Pending |
-| MAT-05 | TBD | Pending |
-| RUN-01 | TBD | Pending |
-| RUN-02 | TBD | Pending |
-| RUN-03 | TBD | Pending |
-| RUN-04 | TBD | Pending |
-| RUN-05 | TBD | Pending |
-| PAP-01 | TBD | Pending |
-| PAP-02 | TBD | Pending |
-| PAP-03 | TBD | Pending |
-| PAP-04 | TBD | Pending |
-| PAP-05 | TBD | Pending |
+| TRI-01 | Phase 44 | Pending |
+| TRI-02 | Phase 44 | Pending |
+| TRI-03 | Phase 44 | Pending |
+| TRI-04 | Phase 44 | Pending |
+| FIX-01 | Phase 45 | Pending |
+| FIX-02 | Phase 45 | Pending |
+| FIX-03 | Phase 45 | Pending |
+| FIX-04 | Phase 45 | Pending |
+| FIX-05 | Phase 45 | Pending |
+| MAT-01 | Phase 46 | Pending |
+| MAT-02 | Phase 46 | Pending |
+| MAT-03 | Phase 46 | Pending |
+| MAT-04 | Phase 46 | Pending |
+| MAT-05 | Phase 46 | Pending |
+| RUN-01 | Phase 47 | Pending |
+| RUN-02 | Phase 47 | Pending |
+| RUN-03 | Phase 47 | Pending |
+| RUN-04 | Phase 47 | Pending |
+| RUN-05 | Phase 47 | Pending |
+| PAP-01 | Phase 48 | Pending |
+| PAP-02 | Phase 48 | Pending |
+| PAP-03 | Phase 48 | Pending |
+| PAP-04 | Phase 48 | Pending |
+| PAP-05 | Phase 48 | Pending |
 
 **Coverage:**
 - v1.8 requirements: 24 total
-- Mapped to phases: 0
-- Unmapped: 24
+- Mapped to phases: 24
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after initial definition*
+*Last updated: 2026-04-16 after roadmap creation*
