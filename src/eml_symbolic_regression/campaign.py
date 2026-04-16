@@ -274,6 +274,10 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
         "group_claim_csv": output_dir / "group-claim.csv",
         "group_threshold_policy_csv": output_dir / "group-threshold-policy.csv",
         "depth_curve_csv": output_dir / "depth-curve.csv",
+        "operator_family_recovery_csv": output_dir / "operator-family-recovery.csv",
+        "operator_family_diagnostics_csv": output_dir / "operator-family-diagnostics.csv",
+        "operator_family_comparison_md": output_dir / "operator-family-comparison.md",
+        "operator_family_locks_json": output_dir / "operator-family-locks.json",
         "headline_json": output_dir / "headline-metrics.json",
         "headline_csv": output_dir / "headline-metrics.csv",
         "failures_csv": output_dir / "failures.csv",
@@ -291,6 +295,15 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
     _write_csv(paths["group_claim_csv"], _group_rows(runs, "claim_id"), _GROUP_COLUMNS)
     _write_csv(paths["group_threshold_policy_csv"], _group_rows(runs, lambda run: (run.get("threshold") or {}).get("id")), _GROUP_COLUMNS)
     _write_csv(paths["depth_curve_csv"], _depth_curve_table_rows(aggregate.get("depth_curve", [])), _DEPTH_CURVE_COLUMNS)
+    family_recovery_rows = _operator_family_recovery_rows(runs)
+    family_diagnostic_rows = _operator_family_diagnostic_rows(runs)
+    _write_csv(paths["operator_family_recovery_csv"], family_recovery_rows, _OPERATOR_FAMILY_RECOVERY_COLUMNS)
+    _write_csv(paths["operator_family_diagnostics_csv"], family_diagnostic_rows, _OPERATOR_FAMILY_DIAGNOSTIC_COLUMNS)
+    paths["operator_family_comparison_md"].write_text(
+        _operator_family_comparison_markdown(family_recovery_rows, family_diagnostic_rows),
+        encoding="utf-8",
+    )
+    _write_json(paths["operator_family_locks_json"], _operator_family_lock_payload(runs))
 
     headline = _headline_metrics(runs)
     _write_json(paths["headline_json"], headline)
@@ -395,6 +408,7 @@ def write_campaign_report(
     lines.extend(_regime_summary_section(runs))
     lines.extend(_proof_contract_section(runs, aggregate))
     lines.extend(_depth_curve_report_section(aggregate))
+    lines.extend(_operator_family_report_section(runs, campaign_dir, table_paths))
     lines.extend(
         [
             "## Figures",
@@ -622,6 +636,56 @@ _DEPTH_CURVE_COLUMNS = [
     "snap_min_margin_max",
 ]
 
+_OPERATOR_FAMILY_RECOVERY_COLUMNS = [
+    "operator_family",
+    "operator_schedule",
+    "formula",
+    "start_mode",
+    "training_mode",
+    "depth",
+    "total",
+    "verifier_recovered",
+    "same_ast_return",
+    "verified_equivalent_ast",
+    "unsupported",
+    "failed",
+    "execution_error",
+    "verifier_recovery_rate",
+    "unsupported_rate",
+    "failure_rate",
+    "post_snap_verifier_pass_rate",
+    "median_best_loss",
+    "median_post_snap_loss",
+    "median_runtime_seconds",
+    "median_active_node_count",
+    "median_candidate_complexity",
+]
+
+_OPERATOR_FAMILY_DIAGNOSTIC_COLUMNS = [
+    "operator_family",
+    "operator_schedule",
+    "start_mode",
+    "training_mode",
+    "depth",
+    "total",
+    "verifier_pass_rate",
+    "unsupported_rate",
+    "repair_attempt_rate",
+    "repair_accept_rate",
+    "refit_attempt_rate",
+    "refit_accept_rate",
+    "anomaly_clamp_count_total",
+    "anomaly_exp_overflow_count_total",
+    "anomaly_expm1_overflow_count_total",
+    "anomaly_log_branch_cut_count_total",
+    "anomaly_log1p_branch_cut_count_total",
+    "anomaly_shifted_singularity_near_count_total",
+    "shifted_singularity_min_distance_min",
+    "median_active_node_count",
+    "median_candidate_complexity",
+    "median_post_snap_loss",
+]
+
 _FAILURE_COLUMNS = [
     "run_id",
     "formula",
@@ -722,6 +786,175 @@ def _depth_curve_table_rows(rows: list[Mapping[str, Any]]) -> list[dict[str, Any
     ]
 
 
+def _operator_family_recovery_rows(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[tuple[str, str, str, str, str, str], list[Mapping[str, Any]]] = {}
+    for run in runs:
+        key = (
+            _operator_family_label(run),
+            _operator_schedule_label(run),
+            str(run.get("formula") or ""),
+            str(run.get("start_mode") or ""),
+            str(run.get("training_mode") or ""),
+            str((run.get("optimizer") or {}).get("depth") or ""),
+        )
+        grouped.setdefault(key, []).append(run)
+
+    rows: list[dict[str, Any]] = []
+    for (operator_family, operator_schedule, formula, start_mode, training_mode, depth), items in sorted(grouped.items()):
+        summary = _count_summary(items)
+        rows.append(
+            {
+                "operator_family": operator_family,
+                "operator_schedule": operator_schedule,
+                "formula": formula,
+                "start_mode": start_mode,
+                "training_mode": training_mode,
+                "depth": depth,
+                **summary,
+                "post_snap_verifier_pass_rate": _rate(
+                    sum(1 for run in items if _metric_text(run, "verifier_status") == "recovered"),
+                    len(items),
+                ),
+                "median_best_loss": _median(_metric(run, "best_loss") for run in items),
+                "median_post_snap_loss": _median(_metric(run, "post_snap_loss") for run in items),
+                "median_runtime_seconds": _median(_runtime_seconds(run) for run in items),
+                "median_active_node_count": _median(_metric(run, "snap_active_node_count") for run in items),
+                "median_candidate_complexity": _median(_metric(run, "candidate_complexity") for run in items),
+            }
+        )
+    return rows
+
+
+def _operator_family_diagnostic_rows(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[tuple[str, str, str, str, str], list[Mapping[str, Any]]] = {}
+    for run in runs:
+        key = (
+            _operator_family_label(run),
+            _operator_schedule_label(run),
+            str(run.get("start_mode") or ""),
+            str(run.get("training_mode") or ""),
+            str((run.get("optimizer") or {}).get("depth") or ""),
+        )
+        grouped.setdefault(key, []).append(run)
+
+    rows: list[dict[str, Any]] = []
+    for (operator_family, operator_schedule, start_mode, training_mode, depth), items in sorted(grouped.items()):
+        total = len(items)
+        unsupported = sum(1 for run in items if _summary_class(run) == "unsupported")
+        repair_attempts = sum(1 for run in items if _metric_text(run, "repair_status") not in {"", "None", "none", "not_attempted"})
+        repair_accepts = sum(
+            1
+            for run in items
+            if _metric_text(run, "repair_status") == "repaired" or _metric_text(run, "repair_verifier_status") == "recovered"
+        )
+        refit_attempts = sum(1 for run in items if _metric_text(run, "refit_status") not in {"", "None", "none", "not_attempted"})
+        refit_accepts = sum(1 for run in items if _metric_text(run, "refit_accepted") == "True")
+        rows.append(
+            {
+                "operator_family": operator_family,
+                "operator_schedule": operator_schedule,
+                "start_mode": start_mode,
+                "training_mode": training_mode,
+                "depth": depth,
+                "total": total,
+                "verifier_pass_rate": _rate(sum(1 for run in items if _metric_text(run, "verifier_status") == "recovered"), total),
+                "unsupported_rate": _rate(unsupported, total),
+                "repair_attempt_rate": _rate(repair_attempts, total),
+                "repair_accept_rate": _rate(repair_accepts, total),
+                "refit_attempt_rate": _rate(refit_attempts, total),
+                "refit_accept_rate": _rate(refit_accepts, total),
+                "anomaly_clamp_count_total": _metric_sum(items, "anomaly_clamp_count"),
+                "anomaly_exp_overflow_count_total": _metric_sum(items, "anomaly_exp_overflow_count"),
+                "anomaly_expm1_overflow_count_total": _metric_sum(items, "anomaly_expm1_overflow_count"),
+                "anomaly_log_branch_cut_count_total": _metric_sum(items, "anomaly_log_branch_cut_count"),
+                "anomaly_log1p_branch_cut_count_total": _metric_sum(items, "anomaly_log1p_branch_cut_count"),
+                "anomaly_shifted_singularity_near_count_total": _metric_sum(items, "anomaly_shifted_singularity_near_count"),
+                "shifted_singularity_min_distance_min": _metric_min(items, "anomaly_shifted_singularity_min_distance"),
+                "median_active_node_count": _median(_metric(run, "snap_active_node_count") for run in items),
+                "median_candidate_complexity": _median(_metric(run, "candidate_complexity") for run in items),
+                "median_post_snap_loss": _median(_metric(run, "post_snap_loss") for run in items),
+            }
+        )
+    return rows
+
+
+def _operator_family_lock_payload(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
+    rows = _operator_family_diagnostic_rows(runs)
+    return {
+        "schema": "eml.operator_family_locks.v1",
+        "groups": [
+            {
+                "operator_family": row["operator_family"],
+                "operator_schedule": row["operator_schedule"],
+                "start_mode": row["start_mode"],
+                "training_mode": row["training_mode"],
+                "depth": row["depth"],
+                "total": row["total"],
+                "verifier_pass_rate": row["verifier_pass_rate"],
+                "unsupported_rate": row["unsupported_rate"],
+                "repair_attempt_rate": row["repair_attempt_rate"],
+                "refit_accept_rate": row["refit_accept_rate"],
+            }
+            for row in rows
+        ],
+    }
+
+
+def _operator_family_comparison_markdown(
+    recovery_rows: list[Mapping[str, Any]],
+    diagnostic_rows: list[Mapping[str, Any]],
+) -> str:
+    lines = [
+        "# Operator-Family Comparison",
+        "",
+        "## Recovery",
+        "",
+        "| Operator | Schedule | Formula | Mode | Depth | Recovered | Total | Rate | Unsupported |",
+        "|----------|----------|---------|------|-------|-----------|-------|------|-------------|",
+    ]
+    for row in recovery_rows:
+        lines.append(
+            "| {operator_family} | {operator_schedule} | {formula} | {start_mode} | {depth} | "
+            "{verifier_recovered} | {total} | {rate:.1%} | {unsupported} |".format(
+                operator_family=row.get("operator_family", ""),
+                operator_schedule=row.get("operator_schedule", ""),
+                formula=row.get("formula", ""),
+                start_mode=row.get("start_mode", ""),
+                depth=row.get("depth", ""),
+                verifier_recovered=int(row.get("verifier_recovered") or 0),
+                total=int(row.get("total") or 0),
+                rate=float(row.get("verifier_recovery_rate") or 0.0),
+                unsupported=int(row.get("unsupported") or 0),
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## Diagnostics",
+            "",
+            "| Operator | Schedule | Mode | Depth | Verifier Pass | Unsupported | Repair Attempt | Refit Accept | Active Nodes |",
+            "|----------|----------|------|-------|---------------|-------------|----------------|--------------|--------------|",
+        ]
+    )
+    for row in diagnostic_rows:
+        lines.append(
+            "| {operator_family} | {operator_schedule} | {start_mode} | {depth} | {verifier:.1%} | "
+            "{unsupported:.1%} | {repair:.1%} | {refit:.1%} | {active} |".format(
+                operator_family=row.get("operator_family", ""),
+                operator_schedule=row.get("operator_schedule", ""),
+                start_mode=row.get("start_mode", ""),
+                depth=row.get("depth", ""),
+                verifier=float(row.get("verifier_pass_rate") or 0.0),
+                unsupported=float(row.get("unsupported_rate") or 0.0),
+                repair=float(row.get("repair_attempt_rate") or 0.0),
+                refit=float(row.get("refit_accept_rate") or 0.0),
+                active=_format_optional(row.get("median_active_node_count")),
+            )
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
 def _group_rows(runs: list[Mapping[str, Any]], key: str | Any) -> list[dict[str, Any]]:
     grouped: dict[str, list[Mapping[str, Any]]] = {}
     for run in runs:
@@ -799,6 +1032,42 @@ def _headline_metrics(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
 def _metric(run: Mapping[str, Any], key: str) -> float | None:
     value = run.get("metrics", {}).get(key)
     return _number_or_none(value)
+
+
+def _metric_text(run: Mapping[str, Any], key: str) -> str:
+    value = run.get("metrics", {}).get(key)
+    return "" if value is None else str(value)
+
+
+def _metric_sum(runs: list[Mapping[str, Any]], key: str) -> float:
+    return float(sum(value for value in (_metric(run, key) for run in runs) if value is not None))
+
+
+def _metric_min(runs: list[Mapping[str, Any]], key: str) -> float | None:
+    values = [value for value in (_metric(run, key) for run in runs) if value is not None and math.isfinite(value)]
+    return min(values) if values else None
+
+
+def _operator_family_label(run: Mapping[str, Any]) -> str:
+    metrics = run.get("metrics") if isinstance(run.get("metrics"), Mapping) else {}
+    value = metrics.get("operator_family")
+    if value:
+        return str(value)
+    optimizer = run.get("optimizer") if isinstance(run.get("optimizer"), Mapping) else {}
+    operator = optimizer.get("operator_family") if isinstance(optimizer.get("operator_family"), Mapping) else {}
+    return str(operator.get("label") or operator.get("family") or "raw_eml")
+
+
+def _operator_schedule_label(run: Mapping[str, Any]) -> str:
+    metrics = run.get("metrics") if isinstance(run.get("metrics"), Mapping) else {}
+    value = metrics.get("operator_schedule")
+    if value:
+        return str(value)
+    optimizer = run.get("optimizer") if isinstance(run.get("optimizer"), Mapping) else {}
+    schedule = optimizer.get("operator_schedule")
+    if isinstance(schedule, list) and schedule:
+        return " -> ".join(str(item.get("label") or item.get("family") or "") for item in schedule if isinstance(item, Mapping))
+    return "fixed"
 
 
 def _runtime_seconds(run: Mapping[str, Any]) -> float | None:
@@ -966,6 +1235,34 @@ def _is_proof_basin_report(runs: list[Mapping[str, Any]], aggregate: Mapping[str
     if any(run.get("suite_id") == "proof-perturbed-basin" for run in runs):
         return True
     return any(row.get("claim_id") == "paper-perturbed-true-tree-basin" for row in aggregate.get("thresholds", ()))
+
+
+def _operator_family_report_section(
+    runs: list[Mapping[str, Any]],
+    campaign_dir: Path,
+    table_paths: Mapping[str, Path],
+) -> list[str]:
+    operators = {_operator_family_label(run) for run in runs}
+    if len(operators) <= 1:
+        return []
+    lines = [
+        "## Operator-Family Comparison",
+        "",
+        "Family rows keep recovery regimes separate by formula, start mode, training mode, depth, fixed operator, and continuation schedule.",
+        "",
+    ]
+    for label, key in (
+        ("comparison markdown", "operator_family_comparison_md"),
+        ("recovery CSV", "operator_family_recovery_csv"),
+        ("diagnostics CSV", "operator_family_diagnostics_csv"),
+        ("regression locks JSON", "operator_family_locks_json"),
+    ):
+        path = table_paths.get(key)
+        if path is not None:
+            rel = _relative_link(path, campaign_dir)
+            lines.append(f"- [{label}]({rel})")
+    lines.append("")
+    return lines
 
 
 def _depth_curve_report_section(aggregate: Mapping[str, Any]) -> list[str]:

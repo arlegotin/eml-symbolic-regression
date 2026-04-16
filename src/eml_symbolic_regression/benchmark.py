@@ -2319,6 +2319,11 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
             if isinstance(candidate, Mapping)
             else None
         ),
+        "candidate_complexity": (
+            selected.get("metrics", {}).get("complexity")
+            if isinstance(selected, Mapping) and isinstance(selected.get("metrics"), Mapping)
+            else None
+        ),
         "candidate_pool_size": (
             selection.get("candidate_count")
             if isinstance(selection, Mapping)
@@ -2361,6 +2366,12 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "anomaly_log_branch_cut_count": anomalies.get("log_branch_cut_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_log_non_finite_input_count": anomalies.get("log_non_finite_input_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_log_safety_penalty": anomalies.get("log_safety_penalty") if isinstance(anomalies, Mapping) else None,
+        "anomaly_expm1_overflow_count": anomalies.get("expm1_overflow_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_log1p_branch_cut_count": anomalies.get("log1p_branch_cut_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_shifted_singularity_near_count": anomalies.get("shifted_singularity_near_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_shifted_singularity_min_distance": (
+            anomalies.get("shifted_singularity_min_distance") if isinstance(anomalies, Mapping) else None
+        ),
     }
 
 

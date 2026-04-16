@@ -28,9 +28,9 @@ Requirements for this milestone only. Completed v1 through v1.6 requirements are
 
 - [x] **EVD-01**: User can rerun `proof-shallow-pure-blind`, `proof-shallow`, `proof-basin`, and `proof-depth-curve` under selected raw, `CEML_s`, `ZEML_s`, and continuation variants.
 - [x] **EVD-02**: User can run v1.6-standard and v1.6-showcase style campaigns for operator-family comparisons without overwriting archived v1.6 artifacts.
-- [ ] **EVD-03**: User receives aggregate tables for exact recovery rate by regime, depth, operator family, scale, continuation schedule, and target formula.
-- [ ] **EVD-04**: User receives aggregate diagnostics for anomaly rates, post-snap verifier pass rates, repair/refit usage, and formula depth or length overhead.
-- [ ] **EVD-05**: User can run regression and smoke tests that prove family-aware changes preserve raw EML semantics, existing benchmark commands, and reporting contracts.
+- [x] **EVD-03**: User receives aggregate tables for exact recovery rate by regime, depth, operator family, scale, continuation schedule, and target formula.
+- [x] **EVD-04**: User receives aggregate diagnostics for anomaly rates, post-snap verifier pass rates, repair/refit usage, and formula depth or length overhead.
+- [x] **EVD-05**: User can run regression and smoke tests that prove family-aware changes preserve raw EML semantics, existing benchmark commands, and reporting contracts.
 
 ### Paper Decision and Claim Boundaries
 
@@ -82,9 +82,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TRN-05 | Phase 40 | Complete |
 | EVD-01 | Phase 41 | Complete |
 | EVD-02 | Phase 41 | Complete |
-| EVD-03 | Phase 42 | Pending |
-| EVD-04 | Phase 42 | Pending |
-| EVD-05 | Phase 42 | Pending |
+| EVD-03 | Phase 42 | Complete |
+| EVD-04 | Phase 42 | Complete |
+| EVD-05 | Phase 42 | Complete |
 | PAP-01 | Phase 43 | Pending |
 | PAP-02 | Phase 43 | Pending |
 | PAP-03 | Phase 43 | Pending |
@@ -98,4 +98,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after completing Phase 41 operator-family campaign matrix*
+*Last updated: 2026-04-16 after completing Phase 42 comparative evidence aggregation*

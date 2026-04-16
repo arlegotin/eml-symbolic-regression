@@ -161,17 +161,28 @@ def test_family_smoke_campaign_writes_family_manifest(tmp_path):
         "family-smoke",
         output_root=tmp_path,
         label="family-ci",
-        run_filter=RunFilter(case_ids=("exp-blind-ceml2",)),
+        run_filter=RunFilter(case_ids=("exp-blind-raw", "exp-blind-ceml2")),
     )
 
     manifest = json.loads(result.manifest_path.read_text())
     aggregate = json.loads(result.aggregate_paths["json"].read_text())
+    recovery_rows = list(csv.DictReader(result.table_paths["operator_family_recovery_csv"].open(encoding="utf-8")))
+    diagnostic_rows = list(csv.DictReader(result.table_paths["operator_family_diagnostics_csv"].open(encoding="utf-8")))
+    locks = json.loads(result.table_paths["operator_family_locks_json"].read_text())
+    comparison = result.table_paths["operator_family_comparison_md"].read_text(encoding="utf-8")
 
     assert manifest["preset"]["name"] == "family-smoke"
     assert manifest["suite"]["id"] == "v1.7-family-smoke"
-    assert manifest["counts"]["total"] == 1
-    assert manifest["run_filter"]["case_ids"] == ["exp-blind-ceml2"]
-    assert aggregate["runs"][0]["metrics"]["operator_family"] == "CEML_2"
+    assert manifest["counts"]["total"] == 2
+    assert manifest["run_filter"]["case_ids"] == ["exp-blind-raw", "exp-blind-ceml2"]
+    assert {"raw_eml", "CEML_2"} <= {row["operator_family"] for row in recovery_rows}
+    assert {"raw_eml", "CEML_2"} <= {row["operator_family"] for row in diagnostic_rows}
+    assert locks["schema"] == "eml.operator_family_locks.v1"
+    assert {row["operator_family"] for row in locks["groups"]} >= {"raw_eml", "CEML_2"}
+    assert "Operator-Family Comparison" in comparison
+    assert "operator_family_comparison_md" in result.table_paths
+    assert {run["metrics"]["operator_family"] for run in aggregate["runs"]} <= {"raw_eml", "CEML_2"}
+    assert "## Operator-Family Comparison" in result.report_path.read_text(encoding="utf-8")
 
 
 def test_reproduction_command_quotes_shell_sensitive_values(tmp_path):
