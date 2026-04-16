@@ -10,17 +10,17 @@ Requirements for this milestone only. Completed v1 through v1.5 requirements are
 
 ### Hardening and Exact Candidate Selection
 
-- [ ] **HARD-01**: User can run an explicit late hardening stage that sharpens categorical slots and emits exact snapped candidates at selected checkpoints instead of snapping only once at the end.
-- [ ] **HARD-02**: User can retain exact candidates from every restart and late hardening checkpoint, rather than selecting the final answer solely from the minimum soft fit loss.
-- [ ] **HARD-03**: User receives a verifier-gated exact-candidate ranking that prioritizes verifier status, extrapolation and high-precision error, held-out error, train post-snap loss, and complexity before soft-loss ties.
-- [ ] **HARD-04**: User can inspect candidate provenance for the selected exact tree, including source restart/checkpoint, snap margins, active-slot diagnostics, and the fallback candidate that would have been chosen by the old selector.
+- [x] **HARD-01**: User can run an explicit late hardening stage that sharpens categorical slots and emits exact snapped candidates at selected checkpoints instead of snapping only once at the end.
+- [x] **HARD-02**: User can retain exact candidates from every restart and late hardening checkpoint, rather than selecting the final answer solely from the minimum soft fit loss.
+- [x] **HARD-03**: User receives a verifier-gated exact-candidate ranking that prioritizes verifier status, extrapolation and high-precision error, held-out error, train post-snap loss, and complexity before soft-loss ties.
+- [x] **HARD-04**: User can inspect candidate provenance for the selected exact tree, including source restart/checkpoint, snap margins, active-slot diagnostics, and the fallback candidate that would have been chosen by the old selector.
 
 ### Snap-Neighborhood Discrete Cleanup
 
-- [ ] **DISC-01**: User can run bounded low-margin beam expansion over ambiguous active snap slots using top-k categorical alternatives and exact AST deduplication.
-- [ ] **DISC-02**: User can apply target-free local discrete repair to a failed snapped candidate without access to a known target AST or embedding.
-- [ ] **DISC-03**: User can inspect which slots or subtrees were varied during beam or repair search, along with their margins and resulting exact-candidate deltas.
-- [ ] **DISC-04**: User retains the original snapped exact candidate as fallback whenever beam search or local repair fails to improve the verifier-owned ranking.
+- [x] **DISC-01**: User can run bounded low-margin beam expansion over ambiguous active snap slots using top-k categorical alternatives and exact AST deduplication.
+- [x] **DISC-02**: User can apply target-free local discrete repair to a failed snapped candidate without access to a known target AST or embedding.
+- [x] **DISC-03**: User can inspect which slots or subtrees were varied during beam or repair search, along with their margins and resulting exact-candidate deltas.
+- [x] **DISC-04**: User retains the original snapped exact candidate as fallback whenever beam search or local repair fails to improve the verifier-owned ranking.
 
 ### Post-Snap Constant Refit
 
@@ -72,14 +72,14 @@ Deferred to later milestones.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HARD-01 | Phase 34 | Pending |
-| HARD-02 | Phase 34 | Pending |
-| HARD-03 | Phase 34 | Pending |
-| HARD-04 | Phase 34 | Pending |
-| DISC-01 | Phase 35 | Pending |
-| DISC-02 | Phase 35 | Pending |
-| DISC-03 | Phase 35 | Pending |
-| DISC-04 | Phase 35 | Pending |
+| HARD-01 | Phase 34 | Complete |
+| HARD-02 | Phase 34 | Complete |
+| HARD-03 | Phase 34 | Complete |
+| HARD-04 | Phase 34 | Complete |
+| DISC-01 | Phase 35 | Complete |
+| DISC-02 | Phase 35 | Complete |
+| DISC-03 | Phase 35 | Complete |
+| DISC-04 | Phase 35 | Complete |
 | REFI-01 | Phase 36 | Pending |
 | REFI-02 | Phase 36 | Pending |
 | STAB-01 | Phase 36 | Pending |
@@ -99,4 +99,4 @@ Deferred to later milestones.
 
 ---
 *Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after defining milestone v1.6*
+*Last updated: 2026-04-16 after completing Phase 35 discrete cleanup*

@@ -21,7 +21,7 @@ v1.6 upgrades the engine from a soft optimizer with one greedy final snap into a
 - **v1.3 Benchmark Campaign and Evidence Report** - Phases 19-23 complete (completed 2026-04-15; archive: `.planning/milestones/v1.3-ROADMAP.md`)
 - **v1.4 Recovery Performance Improvements** - Phases 24-28 complete (completed 2026-04-15; archive: `.planning/milestones/v1.4-ROADMAP.md`)
 - **v1.5 Training Proof and Recovery Guarantees** - Phases 29-33 complete (completed 2026-04-16; archive: `.planning/milestones/v1.5-ROADMAP.md`; audit: `.planning/v1.5-MILESTONE-AUDIT.md`)
-- **v1.6 Hybrid Search Pipeline and Exact Candidate Recovery** - Phase 34 complete, Phases 35-38 planned
+- **v1.6 Hybrid Search Pipeline and Exact Candidate Recovery** - Phases 34-35 complete, Phases 36-38 planned
 
 ## Completed Milestone Context
 
@@ -42,7 +42,7 @@ v1.6 upgrades the engine from a soft optimizer with one greedy final snap into a
 - Decimal phases can be inserted later for urgent gap closure.
 
 - [x] **Phase 34: Exact Candidate Pool and Checkpoint Snapping** - Replace soft-loss-only winner selection with verifier-gated exact-candidate pooling across restarts and late hardening checkpoints. (requirements: HARD-01, HARD-02, HARD-03, HARD-04)
-- [ ] **Phase 35: Snap-Neighborhood Discrete Cleanup** - Add target-free low-margin beam expansion and local discrete repair around failed snapped candidates. (requirements: DISC-01, DISC-02, DISC-03, DISC-04)
+- [x] **Phase 35: Snap-Neighborhood Discrete Cleanup** - Add target-free low-margin beam expansion and local discrete repair around failed snapped candidates. (requirements: DISC-01, DISC-02, DISC-03, DISC-04)
 - [ ] **Phase 36: Post-Snap Constant Refit and Numerical Stability** - Freeze snapped structures for coefficient refit and expand training-time numerical/domain controls for `exp` and `log` sensitive paths. (requirements: REFI-01, REFI-02, STAB-01, STAB-02)
 - [ ] **Phase 37: Compiler Macro Shortening and Warm-Start Coverage** - Add validated short-macro compiler shortcuts and measure their depth/node impact on warm-startable formulas. (requirements: COMP-01, COMP-02, COMP-03)
 - [ ] **Phase 38: Hybrid Recovery Evaluation and Regression Lockdown** - Re-run proof and campaign evidence with honest regime separation, weak-dominance tests, and archived baseline comparisons. (requirements: EVAL-01, EVAL-02, EVAL-03, EVAL-04)
@@ -117,10 +117,10 @@ Phase 34 establishes the exact-candidate pool and fallback-preserving selector t
 | HARD-02 | Phase 34 | Complete |
 | HARD-03 | Phase 34 | Complete |
 | HARD-04 | Phase 34 | Complete |
-| DISC-01 | Phase 35 | Pending |
-| DISC-02 | Phase 35 | Pending |
-| DISC-03 | Phase 35 | Pending |
-| DISC-04 | Phase 35 | Pending |
+| DISC-01 | Phase 35 | Complete |
+| DISC-02 | Phase 35 | Complete |
+| DISC-03 | Phase 35 | Complete |
+| DISC-04 | Phase 35 | Complete |
 | REFI-01 | Phase 36 | Pending |
 | REFI-02 | Phase 36 | Pending |
 | STAB-01 | Phase 36 | Pending |
@@ -148,10 +148,10 @@ Phase 34 establishes the exact-candidate pool and fallback-preserving selector t
 | 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
 | 29-33. v1.5 Training Proof and Recovery Guarantees | Complete | Complete | 2026-04-16 |
 | 34. Exact Candidate Pool and Checkpoint Snapping | 1/1 | Complete | 2026-04-16 |
-| 35. Snap-Neighborhood Discrete Cleanup | 0/0 | Pending | — |
+| 35. Snap-Neighborhood Discrete Cleanup | 1/1 | Complete | 2026-04-16 |
 | 36. Post-Snap Constant Refit and Numerical Stability | 0/0 | Pending | — |
 | 37. Compiler Macro Shortening and Warm-Start Coverage | 0/0 | Pending | — |
 | 38. Hybrid Recovery Evaluation and Regression Lockdown | 0/0 | Pending | — |
 
 ---
-*Roadmap updated: 2026-04-16 after completing Phase 34 candidate pooling and advancing milestone v1.6 to Phase 35*
+*Roadmap updated: 2026-04-16 after completing Phase 35 discrete cleanup and advancing milestone v1.6 to Phase 36*
