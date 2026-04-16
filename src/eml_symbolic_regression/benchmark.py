@@ -33,7 +33,7 @@ from .proof import (
     validate_claim_reference,
 )
 from .repair import cleanup_failed_candidate, repair_perturbed_candidate
-from .semantics import AnomalyStats, as_complex_tensor, mse_complex_numpy
+from .semantics import AnomalyStats, EmlOperator, as_complex_tensor, eml_operator_from_spec, mse_complex_numpy, raw_eml_operator
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
@@ -122,11 +122,14 @@ class OptimizerBudget:
     refit_steps: int = 80
     refit_lr: float = 0.02
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
+    operator_family: EmlOperator = field(default_factory=raw_eml_operator)
+    operator_schedule: tuple[EmlOperator, ...] = ()
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any] | None, *, path: str = "optimizer") -> "OptimizerBudget":
         payload = payload or {}
-        values = {field_name: payload.get(field_name, getattr(cls, field_name)) for field_name in cls.__dataclass_fields__}
+        defaults = cls()
+        values = {field_name: payload.get(field_name, getattr(defaults, field_name)) for field_name in cls.__dataclass_fields__}
         constants = values["constants"]
         if not isinstance(constants, (list, tuple)):
             raise BenchmarkValidationError("malformed_budget", "constants must be a list", path=f"{path}.constants")
@@ -163,6 +166,31 @@ class OptimizerBudget:
                 path=f"{path}.scaffold_initializers",
             )
         values["scaffold_initializers"] = tuple(str(value) for value in scaffold_initializers)
+        try:
+            values["operator_family"] = eml_operator_from_spec(payload.get("operator_family"))
+        except (KeyError, TypeError, ValueError) as exc:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "operator_family must identify raw_eml, CEML_s, ZEML_s, or cEML_s_t",
+                path=f"{path}.operator_family",
+            ) from exc
+        operator_schedule = payload.get("operator_schedule", ())
+        if operator_schedule in (None, ""):
+            values["operator_schedule"] = ()
+        elif isinstance(operator_schedule, (list, tuple)):
+            parsed_schedule: list[EmlOperator] = []
+            for index, item in enumerate(operator_schedule):
+                try:
+                    parsed_schedule.append(eml_operator_from_spec(item))
+                except (KeyError, TypeError, ValueError) as exc:
+                    raise BenchmarkValidationError(
+                        "invalid_budget",
+                        "operator_schedule entries must identify centered-family operators",
+                        path=f"{path}.operator_schedule[{index}]",
+                    ) from exc
+            values["operator_schedule"] = tuple(parsed_schedule)
+        else:
+            raise BenchmarkValidationError("malformed_budget", "operator_schedule must be a list", path=f"{path}.operator_schedule")
         return cls(**values)
 
     def validate(self, path: str) -> None:
@@ -241,6 +269,13 @@ class OptimizerBudget:
                 f"unknown scaffold initializers: {', '.join(unknown_scaffolds)}",
                 path=f"{path}.scaffold_initializers",
             )
+        for index, operator in enumerate(self.operator_schedule):
+            if operator.is_raw:
+                raise BenchmarkValidationError(
+                    "invalid_budget",
+                    "operator_schedule entries must be centered-family operators",
+                    path=f"{path}.operator_schedule[{index}]",
+                )
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -267,6 +302,8 @@ class OptimizerBudget:
             "refit_steps": self.refit_steps,
             "refit_lr": self.refit_lr,
             "scaffold_initializers": list(self.scaffold_initializers),
+            "operator_family": self.operator_family.as_dict(),
+            "operator_schedule": [operator.as_dict() for operator in self.operator_schedule],
         }
 
 
@@ -1377,6 +1414,19 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                     "max_warm_depth": run.optimizer.max_warm_depth,
                 },
             }
+        if not _budget_operator_family(run.optimizer).is_raw:
+            return {
+                "status": "unsupported",
+                "stage_statuses": {**stage_statuses, "warm_start_attempt": "unsupported"},
+                **compiled_payload,
+                "claim_status": "unsupported",
+                "warm_start_eml": {
+                    "status": "unsupported",
+                    "reason": "centered_family_warm_start_rules_missing",
+                    "operator_family": _budget_operator_family(run.optimizer).as_dict(),
+                    "detail": "compiler warm-start currently emits raw EML trees unless a centered-family seed is supplied",
+                },
+            }
 
         train = splits[0]
         warm_depth = run.optimizer.warm_depth or compiled.metadata.depth
@@ -1504,6 +1554,19 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 },
                 "claim_status": "unsupported",
             }
+        if not _budget_operator_family(run.optimizer).is_raw:
+            return {
+                "status": "unsupported",
+                "stage_statuses": {**stage_statuses, "perturbed_true_tree_attempt": "unsupported"},
+                **target_payload,
+                "perturbed_true_tree": {
+                    "status": "unsupported",
+                    "reason": "centered_family_target_seed_missing",
+                    "operator_family": _budget_operator_family(run.optimizer).as_dict(),
+                    "detail": "perturbed-tree training requires a target exact tree from the same operator family",
+                },
+                "claim_status": "unsupported",
+            }
 
         train = splits[0]
         training_depth = run.optimizer.warm_depth or max(run.optimizer.depth, target_expr.depth())
@@ -1611,6 +1674,10 @@ def _fit_depth(fit: FitResult, default_depth: int) -> int:
     return int(config.get("depth", default_depth)) if isinstance(config, Mapping) else int(default_depth)
 
 
+def _budget_operator_family(budget: OptimizerBudget) -> EmlOperator:
+    return budget.operator_schedule[0] if budget.operator_schedule else budget.operator_family
+
+
 def _fit_variables(fit: FitResult, default_variables: tuple[str, ...]) -> tuple[str, ...]:
     config = fit.manifest.get("config") if isinstance(fit.manifest, Mapping) else None
     variables = config.get("variables") if isinstance(config, Mapping) else None
@@ -1663,6 +1730,8 @@ def _training_config_from_budget(
         refit_steps=run.optimizer.refit_steps,
         refit_lr=run.optimizer.refit_lr,
         scaffold_initializers=run.optimizer.scaffold_initializers if scaffold_initializers is None else scaffold_initializers,
+        operator_family=run.optimizer.operator_schedule[0] if run.optimizer.operator_schedule else run.optimizer.operator_family,
+        operator_schedule=run.optimizer.operator_schedule,
     )
 
 
@@ -2086,6 +2155,16 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     refit_constants = refit.get("refittable_constants")
 
     return {
+        "operator_family": (
+            (candidate.get("config") or {}).get("operator_family", {}).get("label")
+            if isinstance(candidate, Mapping) and isinstance(candidate.get("config"), Mapping)
+            else None
+        ),
+        "operator_schedule": (
+            " -> ".join(item.get("label", "") for item in (candidate.get("config") or {}).get("operator_schedule", ()))
+            if isinstance(candidate, Mapping) and isinstance(candidate.get("config"), Mapping)
+            else None
+        ),
         "best_loss": (
             selected.get("best_fit_loss")
             if isinstance(selected, Mapping)

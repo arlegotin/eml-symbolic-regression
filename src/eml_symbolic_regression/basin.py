@@ -106,7 +106,7 @@ def fit_perturbed_true_tree(
     variables = tuple(sorted(target_expr.variables()))
     config = replace(config, variables=variables, constants=constants)
 
-    probe_tree = SoftEMLTree(config.depth, config.variables, config.constants)
+    probe_tree = SoftEMLTree(config.depth, config.variables, config.constants, operator_family=config.operator_family)
     embedding = embed_expr_into_tree(probe_tree, target_expr, config=embedding_config)
     if not embedding.success:
         raise ValueError(f"embedding failed: {embedding.diagnostics}")

@@ -44,7 +44,7 @@ The milestone adds family-aware semantics and exact AST support for `cEML_{s,t}`
 - Decimal phases can be inserted later for urgent gap closure.
 
 - [x] **Phase 39: Centered Operator Semantics and Exact Forms** - Add family-aware training and verification semantics plus exact AST support for raw EML, `cEML_{s,t}`, `CEML_s`, and `ZEML_s`. (requirements: OPF-01, OPF-02, OPF-03, OPF-04, OPF-05)
-- [ ] **Phase 40: Family-Aware Master Tree and Recovery Pipeline** - Thread fixed-family and scheduled-family choices through soft training, snapping, candidate ranking, compiler/warm-start paths, cleanup, repair, and refit. (requirements: TRN-01, TRN-02, TRN-03, TRN-04, TRN-05)
+- [x] **Phase 40: Family-Aware Master Tree and Recovery Pipeline** - Thread fixed-family and scheduled-family choices through soft training, snapping, candidate ranking, compiler/warm-start paths, cleanup, repair, and refit. (requirements: TRN-01, TRN-02, TRN-03, TRN-04, TRN-05)
 - [ ] **Phase 41: Operator-Family Campaign Matrix** - Add reproducible raw-vs-centered proof and showcase campaign presets with isolated artifacts and family-aware manifests. (requirements: EVD-01, EVD-02)
 - [ ] **Phase 42: Comparative Evidence Aggregation and Regression Locks** - Produce family comparison tables, anomaly diagnostics, verifier/repair/refit summaries, and smoke/regression locks. (requirements: EVD-03, EVD-04, EVD-05)
 - [ ] **Phase 43: Paper Decision Memo and Completeness Boundary** - Convert the comparison evidence into a publish/wait decision, safe claim language, figure inventory, and optional completeness-search boundary report. (requirements: PAP-01, PAP-02, PAP-03, PAP-04, PAP-05)
@@ -122,11 +122,11 @@ Phase 39 establishes the mathematical and artifact representation for centered-f
 | OPF-03 | Phase 39 | Complete |
 | OPF-04 | Phase 39 | Complete |
 | OPF-05 | Phase 39 | Complete |
-| TRN-01 | Phase 40 | Pending |
-| TRN-02 | Phase 40 | Pending |
-| TRN-03 | Phase 40 | Pending |
-| TRN-04 | Phase 40 | Pending |
-| TRN-05 | Phase 40 | Pending |
+| TRN-01 | Phase 40 | Complete |
+| TRN-02 | Phase 40 | Complete |
+| TRN-03 | Phase 40 | Complete |
+| TRN-04 | Phase 40 | Complete |
+| TRN-05 | Phase 40 | Complete |
 | EVD-01 | Phase 41 | Pending |
 | EVD-02 | Phase 41 | Pending |
 | EVD-03 | Phase 42 | Pending |
@@ -154,10 +154,10 @@ Phase 39 establishes the mathematical and artifact representation for centered-f
 | 29-33. v1.5 Training Proof and Recovery Guarantees | Complete | Complete | 2026-04-16 |
 | 34-38. v1.6 Hybrid Search Pipeline and Exact Candidate Recovery | Complete | Complete | 2026-04-16 |
 | 39. Centered Operator Semantics and Exact Forms | 1/1 | Complete | 2026-04-16 |
-| 40. Family-Aware Master Tree and Recovery Pipeline | 0/1 | Pending | - |
+| 40. Family-Aware Master Tree and Recovery Pipeline | 1/1 | Complete | 2026-04-16 |
 | 41. Operator-Family Campaign Matrix | 0/1 | Pending | - |
 | 42. Comparative Evidence Aggregation and Regression Locks | 0/1 | Pending | - |
 | 43. Paper Decision Memo and Completeness Boundary | 0/1 | Pending | - |
 
 ---
-*Roadmap updated: 2026-04-16 after completing Phase 39*
+*Roadmap updated: 2026-04-16 after completing Phase 40*

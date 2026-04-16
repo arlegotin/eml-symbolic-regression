@@ -18,11 +18,11 @@ Requirements for this milestone only. Completed v1 through v1.6 requirements are
 
 ### Family-Aware Training and Recovery
 
-- [ ] **TRN-01**: User can run the soft master tree with a fixed operator family selected per run, including raw EML, `CEML_s`, and `ZEML_s` for declared `s` values.
-- [ ] **TRN-02**: User can snap and rank exact centered-family candidates with the same verifier-owned candidate-pool, fallback, cleanup, repair, and refit discipline used for raw EML.
-- [ ] **TRN-03**: User can use compiler or warm-start support for centered-family trees where validated rules exist, while unsupported transforms fail closed with explicit diagnostics.
-- [ ] **TRN-04**: User can run scheduled `s` continuation experiments, such as `8 -> 4 -> 2 -> 1` and `8 -> 4`, with schedule metadata preserved in run artifacts.
-- [ ] **TRN-05**: User can compare centered-family runs against raw EML without changing existing raw-EML defaults or regressing archived v1.6 proof behavior.
+- [x] **TRN-01**: User can run the soft master tree with a fixed operator family selected per run, including raw EML, `CEML_s`, and `ZEML_s` for declared `s` values.
+- [x] **TRN-02**: User can snap and rank exact centered-family candidates with the same verifier-owned candidate-pool, fallback, cleanup, repair, and refit discipline used for raw EML.
+- [x] **TRN-03**: User can use compiler or warm-start support for centered-family trees where validated rules exist, while unsupported transforms fail closed with explicit diagnostics.
+- [x] **TRN-04**: User can run scheduled `s` continuation experiments, such as `8 -> 4 -> 2 -> 1` and `8 -> 4`, with schedule metadata preserved in run artifacts.
+- [x] **TRN-05**: User can compare centered-family runs against raw EML without changing existing raw-EML defaults or regressing archived v1.6 proof behavior.
 
 ### Comparative Experiment Matrix and Evidence
 
@@ -75,11 +75,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OPF-03 | Phase 39 | Complete |
 | OPF-04 | Phase 39 | Complete |
 | OPF-05 | Phase 39 | Complete |
-| TRN-01 | Phase 40 | Pending |
-| TRN-02 | Phase 40 | Pending |
-| TRN-03 | Phase 40 | Pending |
-| TRN-04 | Phase 40 | Pending |
-| TRN-05 | Phase 40 | Pending |
+| TRN-01 | Phase 40 | Complete |
+| TRN-02 | Phase 40 | Complete |
+| TRN-03 | Phase 40 | Complete |
+| TRN-04 | Phase 40 | Complete |
+| TRN-05 | Phase 40 | Complete |
 | EVD-01 | Phase 41 | Pending |
 | EVD-02 | Phase 41 | Pending |
 | EVD-03 | Phase 42 | Pending |
@@ -98,4 +98,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after completing Phase 39 centered operator semantics*
+*Last updated: 2026-04-16 after completing Phase 40 family-aware training pipeline*

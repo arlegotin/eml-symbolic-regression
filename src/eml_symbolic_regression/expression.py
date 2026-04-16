@@ -20,7 +20,6 @@ from .semantics import (
     centered_eml_torch,
     eml_numpy,
     eml_torch,
-    raw_eml_operator,
     zeml_s_operator,
 )
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from .expression import Expr
+from .expression import CenteredEml, Expr
 from .master_tree import EmbeddingResult, NeighborhoodMove, SoftEMLTree, expand_snap_neighborhood
 from .optimize import FitResult
 from .verify import DataSplit, VerificationReport, verify_candidate
@@ -152,6 +152,7 @@ def cleanup_failed_candidate(
         depth=depth,
         variables=variables,
         constants=constants,
+        operator_family=selected.snap.expression.operator if isinstance(selected.snap.expression, CenteredEml) else None,
         beam_width=config.cleanup_beam_width,
         max_moves=config.cleanup_max_moves,
         max_slots=config.cleanup_max_slots,

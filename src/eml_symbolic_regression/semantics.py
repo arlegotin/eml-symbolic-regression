@@ -128,6 +128,33 @@ def zeml_s_operator(s: float) -> EmlOperator:
     return EmlOperator("zeml_s", s=s)
 
 
+def eml_operator_from_spec(value: Any) -> EmlOperator:
+    """Parse an operator family from stable artifact/config input."""
+
+    if value is None:
+        return raw_eml_operator()
+    if isinstance(value, EmlOperator):
+        return value
+    if isinstance(value, dict):
+        return EmlOperator.from_mapping(value)
+    text = str(value).strip()
+    lower = text.lower()
+    if lower in {"raw", "raw_eml", "eml"}:
+        return raw_eml_operator()
+    if lower.startswith("ceml_s:"):
+        return ceml_s_operator(float(text.split(":", 1)[1]))
+    if lower.startswith("zeml_s:"):
+        return zeml_s_operator(float(text.split(":", 1)[1]))
+    if lower.startswith("ceml_s_t:"):
+        _, scale, shift = text.split(":", 2)
+        return ceml_operator(float(scale), complex(float(shift), 0.0))
+    if lower.startswith("ceml_"):
+        return ceml_s_operator(float(text.split("_", 1)[1]))
+    if lower.startswith("zeml_"):
+        return zeml_s_operator(float(text.split("_", 1)[1]))
+    raise ValueError(f"cannot parse EML operator family spec: {value!r}")
+
+
 @dataclass
 class TrainingSemanticsConfig:
     """Training-only numerical controls that leave verification semantics unchanged."""

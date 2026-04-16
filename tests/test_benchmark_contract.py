@@ -246,6 +246,58 @@ def test_optimizer_budget_parses_and_serializes_constants():
     assert exc.value.path == "optimizer.scaffold_initializers"
 
 
+def test_optimizer_budget_parses_operator_family_and_schedule():
+    budget = OptimizerBudget.from_mapping(
+        {
+            "operator_family": {"family": "ceml_s", "s": 2},
+            "operator_schedule": ["zeml_s:8", "zeml_s:4"],
+        }
+    )
+
+    assert budget.operator_family.label == "CEML_2"
+    assert [operator.label for operator in budget.operator_schedule] == ["ZEML_8", "ZEML_4"]
+    assert budget.as_dict()["operator_family"]["label"] == "CEML_2"
+    assert [item["label"] for item in budget.as_dict()["operator_schedule"]] == ["ZEML_8", "ZEML_4"]
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"operator_schedule": "zeml_s:8"}).validate("optimizer")
+
+    assert exc.value.reason == "malformed_budget"
+    assert exc.value.path == "optimizer.operator_schedule"
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"operator_family": "not-a-family"}).validate("optimizer")
+
+    assert exc.value.reason == "invalid_budget"
+    assert exc.value.path == "optimizer.operator_family"
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"operator_schedule": ["raw_eml"]}).validate("optimizer")
+
+    assert exc.value.reason == "invalid_budget"
+    assert exc.value.path == "optimizer.operator_schedule[0]"
+
+
+def test_operator_family_participates_in_benchmark_run_id():
+    raw_case = BenchmarkCase.from_mapping(
+        {"id": "exp-blind", "formula": "exp", "start_mode": "blind", "optimizer": {"depth": 1}},
+        path="cases[0]",
+    )
+    centered_case = BenchmarkCase.from_mapping(
+        {
+            "id": "exp-blind",
+            "formula": "exp",
+            "start_mode": "blind",
+            "optimizer": {"depth": 1, "operator_family": {"family": "ceml_s", "s": 2}},
+        },
+        path="cases[0]",
+    )
+    raw_run = BenchmarkSuite("custom", "raw", (raw_case,)).expanded_runs()[0]
+    centered_run = BenchmarkSuite("custom", "centered", (centered_case,)).expanded_runs()[0]
+
+    assert raw_run.run_id != centered_run.run_id
+
+
 @pytest.mark.parametrize(
     ("suite_id", "case_id", "path_suffix"),
     [

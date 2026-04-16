@@ -2,7 +2,9 @@ import numpy as np
 
 from eml_symbolic_regression.cleanup import cleanup_candidate
 from eml_symbolic_regression.datasets import get_demo
+from eml_symbolic_regression.expression import Const, Var, ceml_s_expr
 from eml_symbolic_regression.optimize import TrainingConfig, fit_eml_tree
+from eml_symbolic_regression.semantics import ceml_s_operator, zeml_s_operator
 from eml_symbolic_regression.verify import verify_candidate
 
 
@@ -32,6 +34,50 @@ def test_optimizer_scaffold_recovers_exp_with_manifest_provenance():
 
     assert report.status == "recovered"
     assert "scaffold_exp" in kinds
+
+
+def test_optimizer_runs_fixed_centered_family_with_manifest_metadata():
+    x = np.linspace(-1.0, 1.0, 16)
+    target = 2.0 * np.expm1(x / 2.0)
+    expected = ceml_s_expr(Var("x"), Const(1.0), s=2.0)
+    result = fit_eml_tree(
+        {"x": x},
+        target,
+        TrainingConfig(
+            depth=1,
+            variables=("x",),
+            steps=2,
+            restarts=1,
+            seed=0,
+            operator_family=ceml_s_operator(2.0),
+        ),
+    )
+
+    assert result.snap.expression.to_node()["operator"]["label"] == "CEML_2"
+    np.testing.assert_allclose(result.snap.expression.evaluate_numpy({"x": x}), expected.evaluate_numpy({"x": x}), atol=1e-12)
+    assert result.manifest["config"]["operator_family"]["label"] == "CEML_2"
+
+
+def test_optimizer_preserves_centered_schedule_metadata():
+    x = np.linspace(-1.0, 1.0, 16)
+    target = np.expm1(x)
+    result = fit_eml_tree(
+        {"x": x},
+        target,
+        TrainingConfig(
+            depth=1,
+            variables=("x",),
+            steps=4,
+            restarts=1,
+            seed=0,
+            operator_schedule=(zeml_s_operator(8.0), zeml_s_operator(4.0)),
+            scaffold_initializers=(),
+        ),
+    )
+
+    assert result.manifest["config"]["operator_schedule"][0]["label"] == "ZEML_8"
+    assert result.manifest["config"]["operator_schedule"][1]["label"] == "ZEML_4"
+    assert result.snap.expression.to_node()["operator"]["label"] == "ZEML_4"
 
 
 def test_optimizer_custom_initializer_does_not_add_scaffold_provenance():
