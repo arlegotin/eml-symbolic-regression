@@ -1,5 +1,20 @@
 # Milestones
 
+## v1.7 Centered-Family Baseline and Paper Decision (Shipped: 2026-04-16)
+
+**Phases completed:** 5 phases, 5 plans, 20 requirements
+
+**Key accomplishments:**
+
+- Added centered/scaled operator-family semantics and exact AST support for `cEML_{s,t}`, `CEML_s`, and `ZEML_s` with `expm1`/`log1p` and shifted-singularity diagnostics.
+- Threaded fixed-family and scheduled-continuation operators through the soft master tree, optimizer manifests, snapping, repair/refit, benchmark budgets, and campaign CSV rows.
+- Added v1.7 raw-vs-centered family benchmark suites and campaign presets for smoke, shallow, basin, depth-curve, standard, and showcase-style matrices.
+- Added operator-family recovery tables, diagnostic tables, comparison Markdown, and regression-lock JSON outputs for campaign reports.
+- Generated `artifacts/paper/v1.7/` with the decision memo, safe/unsafe claim language, figure/table inventory, and an explicit incomplete completeness boundary.
+- Audit decision: wait for centered-family campaign evidence before submitting the centered empirical paper; raw-EML searchability/geometry remains a viable note from archived proof evidence.
+
+---
+
 ## v1.6 Hybrid Search Pipeline and Exact Candidate Recovery (Shipped: 2026-04-16)
 
 **Phases completed:** 5 phases, 5 plans, 15 tasks

@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.7
 milestone_name: Centered-Family Baseline and Paper Decision
 current_phase: null
-status: milestone_complete_pending_audit
-stopped_at: Phase 43 complete; ready for milestone audit
-last_updated: "2026-04-16T23:50:00Z"
-last_activity: 2026-04-16 -- Phase 43 paper decision package completed
+status: milestone_archived
+stopped_at: v1.7 archived; ready for next milestone
+last_updated: "2026-04-16T23:59:00Z"
+last_activity: 2026-04-16 -- v1.7 milestone archived
 progress:
   total_phases: 5
   completed_phases: 5
@@ -26,14 +26,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.7 phase work is complete; milestone audit and archive are next.
+**Current focus:** No active milestone. Start the next milestone when ready.
 
 ## Current Position
 
 Phase: —
 Plan: —
-Status: Phase 43 complete; milestone audit pending
-Last activity: 2026-04-16 -- Phase 43 paper decision package completed
+Status: v1.7 archived
+Last activity: 2026-04-16 -- v1.7 milestone archived
 Progress: [##########] 100% by completed phases (v1.7: 5/5 planned)
 
 ## Performance Metrics
@@ -79,6 +79,9 @@ Progress: [##########] 100% by completed phases (v1.7: 5/5 planned)
 | Phase 42 context, plan, summary, verification | `.planning/phases/42-comparative-evidence-aggregation-and-regression-locks/` | Complete |
 | Phase 43 context, plan, summary, verification | `.planning/phases/43-paper-decision-memo-and-completeness-boundary/` | Complete |
 | v1.7 paper decision package | `artifacts/paper/v1.7/` | Complete |
+| v1.7 archived requirements | `.planning/milestones/v1.7-REQUIREMENTS.md` | Complete |
+| v1.7 archived roadmap | `.planning/milestones/v1.7-ROADMAP.md` | Complete |
+| v1.7 milestone audit | `.planning/milestones/v1.7-MILESTONE-AUDIT.md` | Complete |
 
 ## Completed Milestone
 
@@ -167,8 +170,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: Phase 43 complete; ready for milestone audit
+Stopped at: v1.7 archived; ready for next milestone
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after completing Phase 43*
+*Last updated: 2026-04-16 after archiving v1.7*

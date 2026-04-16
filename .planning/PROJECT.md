@@ -4,41 +4,36 @@
 
 This project implements a hybrid symbolic-regression engine based on the paper "All elementary functions from a single binary operator." It searches over complete depth-bounded EML trees, optimizes soft categorical choices with PyTorch, snaps the result into an exact EML tree, cleans it up symbolically, and verifies candidate formulas against held-out data and high-precision evaluators.
 
-The current release is a research-grade Python package and CLI for recovering compact elementary laws from synthetic scientific datasets, with demos, benchmark campaigns, and proof artifacts drawn from `sources/FOR_DEMO.md`. The next milestone keeps that verifier and evidence harness intact while testing whether centered/scaled exp-log operator families improve the search geometry that raw EML currently exposes as the main bottleneck.
+The current release is a research-grade Python package and CLI for recovering compact elementary laws from synthetic scientific datasets, with demos, benchmark campaigns, proof artifacts, centered/scaled operator-family experiments, and paper-decision artifacts drawn from `sources/FOR_DEMO.md`.
 
 ## Core Value
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.7 Started
+## Current State: v1.7 Shipped
 
-The repo now has strong representation, verification, and reproducibility foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, and a one-command proof bundle are all in place and archived through v1.5.
+The repo now has strong representation, verification, and reproducibility foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, and one-command proof bundles are all in place and archived through v1.6.
 
 v1.6 upgraded the optimizer into a verifier-gated hybrid discrete-continuous pipeline: hardening and checkpoint snaps, exact-candidate ranking, low-margin discrete cleanup, post-snap constant refit, shorter compiler macros, and regime-aware reporting that preserves archived v1.5 and v1.4 evidence.
 
-The final `artifacts/proof/v1.6` bundle was regenerated from the latest code state and verified against campaign aggregates. It keeps the empirical story honest: pure random shallow blind recovery remains measured at `2/18` threshold-eligible recoveries plus one repaired candidate, scaffolded shallow proof remains `18/18`, perturbed true-tree basin proof remains `9/9` with same-AST returns, and depth-curve evidence remains reported rather than overclaimed. v1.7 starts from that interpretation: the next paper-worthy question is whether centered/scaled transports of EML improve training geometry without weakening exact verification discipline.
+The final `artifacts/proof/v1.6` bundle was regenerated from the latest code state and verified against campaign aggregates. It keeps the empirical story honest: pure random shallow blind recovery remains measured at `2/18` threshold-eligible recoveries plus one repaired candidate, scaffolded shallow proof remains `18/18`, perturbed true-tree basin proof remains `9/9` with same-AST returns, and depth-curve evidence remains reported rather than overclaimed.
 
-## Last Completed Milestone: v1.6 Hybrid Search Pipeline and Exact Candidate Recovery
+v1.7 shipped the centered/scaled operator-family baseline: centered semantics and exact ASTs, family-aware training and benchmark metadata, v1.7 family campaign suites, operator-family comparison tables, and a paper-decision package under `artifacts/paper/v1.7/`. The generated decision is conservative because full v1.7 family campaigns were not run in this session: wait for centered-family campaign evidence before submitting the centered empirical paper, while preserving raw-EML searchability/geometry as a viable note.
 
-**Goal shipped:** Upgrade the recovery engine from a soft-loss-only final snap into a verifier-gated hybrid pipeline while preserving fallback candidates, exact evidence provenance, archived comparison anchors, and honest regime separation.
+## Last Completed Milestone: v1.7 Centered-Family Baseline and Paper Decision
 
 **Shipped features:**
-- Late-hardening checkpoint snaps, exact-candidate pooling, verifier-owned final ranking, and legacy fallback provenance.
-- Target-free snap-neighborhood cleanup over low-margin active slots with exact AST deduplication.
-- Frozen exact-tree constant refit, pre/post-refit artifacts, and richer `exp`/`log` anomaly diagnostics.
-- Macro-aware compiler shortcuts with conservative fail-closed warm-start coverage expansion.
-- Final `artifacts/proof/v1.6/` proof bundle with regime-aware reporting, immutable current/archived anchor locks, and corrected measured-proof verdicts.
+- Centered/scaled operator semantics and exact ASTs for `cEML_{s,t}`, `CEML_s`, and `ZEML_s`.
+- Family-aware soft master tree training, snapping, schedule metadata, benchmark budgets, campaign CSV rows, and raw-default preservation.
+- Built-in v1.7 family suites and campaign presets for raw, fixed centered, and continuation variants.
+- Operator-family recovery, diagnostics, comparison Markdown, and regression-lock outputs in campaign reports.
+- Paper decision package with safe claims, unsafe claims, figure/table inventory, and incomplete completeness boundary.
 
-## Current Milestone: v1.7 Centered-Family Baseline and Paper Decision
+## Current Milestone
 
-**Goal:** Determine whether centered/scaled transport families materially improve exact symbolic recovery relative to raw EML while preserving verifier-owned evidence discipline.
+No active milestone is currently planned.
 
-**Target features:**
-- Family-aware semantics and exact AST support for raw EML, `cEML_{s,t}`, `CEML_s`, and `ZEML_s`, using `expm1`/`log1p` and shifted-singularity diagnostics.
-- Family-aware soft master tree, snapping, verification, compiler, and warm-start support for fixed operator-family runs.
-- Reproducible raw-vs-centered experiment matrix across proof and showcase campaigns, including fixed `s` grids and continuation schedules.
-- Comparative evidence reports covering recovery by regime/depth/family, anomaly rates, post-snap verifier success, repair usage, and formula overhead.
-- Decision memo that separates a publish-now robustness/geometry paper from a stronger successor-family paper that would require constructive completeness evidence.
+Recommended next milestone: run the full v1.7 family evidence matrix and regenerate the paper decision package with centered-family aggregates, or pursue constructive `CEML_s` witness search.
 
 ## Requirements
 
@@ -81,13 +76,15 @@ The final `artifacts/proof/v1.6` bundle was regenerated from the latest code sta
 - ✓ Macro-aware compiler shortening and conservative warm-start coverage expansion — v1.6 Phase 37
 - ✓ Regime-aware proof/campaign reporting, immutable anchor locks, and aggregate-level hybrid regression locks — v1.6 Phase 38
 - ✓ Final `artifacts/proof/v1.6/` evidence bundle regenerated and verified from the archived code state — v1.6 closeout
+- ✓ Centered/scaled EML semantics, exact ASTs, serialization, mpmath/SymPy export, and shifted-singularity diagnostics — v1.7 Phase 39
+- ✓ Family-aware training, snapping, repair/refit, benchmark budgets, schedules, and raw-default regression coverage — v1.7 Phase 40
+- ✓ v1.7 raw-vs-centered family benchmark suites and campaign presets — v1.7 Phase 41
+- ✓ Operator-family recovery tables, diagnostics tables, comparison Markdown, and regression-lock JSON outputs — v1.7 Phase 42
+- ✓ Paper decision package with safe claims, unsafe claims, figure inventory, and incomplete completeness boundary — v1.7 Phase 43
 
 ### Active
 
-- [ ] Implement family-aware semantics, exact ASTs, serialization, and faithful verification for raw EML, `cEML_{s,t}`, `CEML_s`, and `ZEML_s`.
-- [ ] Add family-aware training, snapping, compiler, and warm-start paths without regressing raw EML behavior.
-- [ ] Run fixed-family and continuation-schedule campaigns against the existing proof harness with pure-blind, scaffolded, basin, compile, and repair evidence kept separate.
-- [ ] Produce a comparative proof bundle and decision memo that determines whether to publish a robustness/geometry paper now or wait for constructive completeness evidence.
+No active requirements. Start the next milestone with `$gsd-new-milestone`.
 
 ### Out of Scope
 
@@ -148,8 +145,8 @@ The committed v1.6 proof bundle now gives the stable evidence base for a researc
 | Preserve the current exact candidate as fallback in every new recovery stage | Weak-dominance upgrades should not make declared benchmark cases worse by construction. | ✓ Good |
 | Separate pure blind, scaffolded blind, compile, warm-start, and perturbed-basin evidence in every report | Honest regime separation is part of the scientific contribution, not just documentation. | ✓ Good |
 | Defer matched-budget external baselines until the hybrid pipeline is stronger | External comparisons matter, but they should follow a materially improved blind-discovery engine. | ⚠️ Revisit for paper |
-| v1.7 tests centered/scaled EML transports before writing the flagship paper | v1.6 evidence shows representation and basin return are strong while raw blind search geometry remains the dominant bottleneck. | - Pending |
-| Use `CEML_s` for unit-terminal/formal successor claims and `ZEML_s` for training-centered comparisons | Zero-terminal centered trees do not generate new constants from closed trees, so training convenience and formal completeness must stay separate. | - Pending |
+| v1.7 tests centered/scaled EML transports before writing the flagship paper | v1.6 evidence shows representation and basin return are strong while raw blind search geometry remains the dominant bottleneck. | ✓ Good |
+| Use `CEML_s` for unit-terminal/formal successor claims and `ZEML_s` for training-centered comparisons | Zero-terminal centered trees do not generate new constants from closed trees, so training convenience and formal completeness must stay separate. | ✓ Good |
 
 ## Evolution
 
@@ -169,4 +166,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-16 after starting milestone v1.7*
+*Last updated: 2026-04-16 after shipping milestone v1.7*
