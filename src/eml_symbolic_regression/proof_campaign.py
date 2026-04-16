@@ -1,7 +1,8 @@
-"""One-command v1.5 proof campaign orchestration and claim reporting."""
+"""One-command proof campaign orchestration and claim reporting."""
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -14,10 +15,14 @@ from .diagnostics import write_perturbed_basin_bound_report
 from .proof import list_claims, paper_claim
 
 
-DEFAULT_PROOF_OUTPUT_ROOT = Path("artifacts") / "proof" / "v1.5"
+DEFAULT_PROOF_OUTPUT_ROOT = Path("artifacts") / "proof" / "v1.6"
 DEFAULT_V14_CAMPAIGNS = (
     Path("artifacts") / "campaigns" / "v1.4-standard",
     Path("artifacts") / "campaigns" / "v1.4-showcase",
+)
+DEFAULT_ARCHIVED_ANCHORS = (
+    Path("artifacts") / "proof" / "v1.5",
+    *DEFAULT_V14_CAMPAIGNS,
 )
 PROOF_CAMPAIGN_PRESETS = (
     "proof-shallow-pure-blind",
@@ -35,6 +40,7 @@ class ProofCampaignResult:
     report_path: Path
     campaigns: Mapping[str, CampaignResult]
     basin_bound_paths: Mapping[str, Path]
+    anchor_lock_path: Path
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -43,6 +49,7 @@ class ProofCampaignResult:
             "report_path": str(self.report_path),
             "campaigns": {name: result.as_dict() for name, result in self.campaigns.items()},
             "basin_bound_paths": {key: str(value) for key, value in self.basin_bound_paths.items()},
+            "anchor_lock_path": str(self.anchor_lock_path),
         }
 
 
@@ -52,6 +59,7 @@ def run_proof_campaign(
     overwrite: bool = False,
     campaign_filters: Mapping[str, RunFilter] | None = None,
     baseline_campaigns: tuple[Path, ...] = DEFAULT_V14_CAMPAIGNS,
+    archived_anchor_roots: tuple[Path, ...] = DEFAULT_ARCHIVED_ANCHORS,
     reproduction_command: str | None = None,
 ) -> ProofCampaignResult:
     output_root = Path(output_root)
@@ -80,19 +88,31 @@ def run_proof_campaign(
         campaigns=campaign_results,
         basin_bound_paths=basin_bound_paths,
         baseline_campaigns=baseline_campaigns,
+        archived_anchor_roots=archived_anchor_roots,
         reproduction_command=reproduction_command
         or f"PYTHONPATH=src python -m eml_symbolic_regression.cli proof-campaign --output-root {output_root}",
     )
     manifest_path = output_root / "proof-campaign.json"
     report_path = output_root / "proof-report.md"
+    anchor_lock_path = output_root / "anchor-locks.json"
     _write_json(manifest_path, manifest)
+    _write_json(
+        anchor_lock_path,
+        {
+            "schema": "eml.proof_campaign_anchor_lock.v1",
+            "campaign_locks": manifest["campaign_locks"],
+            "anchor_locks": manifest["anchor_locks"],
+        },
+    )
     report_path.write_text(render_proof_campaign_report(manifest, output_root), encoding="utf-8")
-    return ProofCampaignResult(output_root, manifest_path, report_path, campaign_results, basin_bound_paths)
+    return ProofCampaignResult(output_root, manifest_path, report_path, campaign_results, basin_bound_paths, anchor_lock_path)
 
 
 def render_proof_campaign_report(manifest: Mapping[str, Any], output_root: Path) -> str:
+    version_label = _proof_version_label(output_root)
+    title = f"# EML {version_label} Proof Campaign Report" if version_label is not None else "# EML Proof Campaign Report"
     lines = [
-        "# EML v1.5 Proof Campaign Report",
+        title,
         "",
         "This bundle keeps bounded proof claims, measured blind boundaries, and older showcase campaigns separate.",
         "",
@@ -116,6 +136,23 @@ def render_proof_campaign_report(manifest: Mapping[str, Any], output_root: Path)
     if basin_bound:
         basin_report = _relative_link(basin_bound["markdown"], output_root)
         lines.extend(["", f"- Perturbed basin bound evidence: [{basin_report}]({basin_report})"])
+    if manifest.get("anchor_locks") or manifest.get("campaign_locks"):
+        lines.extend(["", "- Anchor locks: [anchor-locks.json](anchor-locks.json)"])
+
+    lines.extend(
+        [
+            "",
+            "## Regime Summary",
+            "",
+            "| Regime | Runs | Verifier Recovered | Same AST | Verified Equivalent | Unsupported | Failed |",
+            "|--------|------|--------------------|----------|---------------------|-------------|--------|",
+        ]
+    )
+    for row in manifest.get("regime_summary", ()):
+        lines.append(
+            f"| {row['regime']} | {row['total']} | {row['verifier_recovered']} | {row['same_ast_return']} | "
+            f"{row['verified_equivalent_ast']} | {row['unsupported']} | {row['failed']} |"
+        )
 
     lines.extend(
         [
@@ -159,11 +196,27 @@ def render_proof_campaign_report(manifest: Mapping[str, Any], output_root: Path)
             ]
         )
 
+    lines.extend(["", "## Archived Anchors", ""])
+    if manifest.get("anchor_locks"):
+        lines.extend(
+            [
+                "These archived proof and campaign anchors are hash-locked so later comparisons can prove which historical files were used.",
+                "",
+                "| Campaign | File | SHA-256 |",
+                "|----------|------|---------|",
+            ]
+        )
+        for campaign in manifest["anchor_locks"]:
+            for file_info in campaign["files"]:
+                lines.append(f"| {campaign['label']} | {file_info['path']} | `{file_info['sha256']}` |")
+    else:
+        lines.append("No archived anchor locks were available.")
+
     lines.extend(["", "## v1.4 Context", ""])
     if manifest.get("v14_campaigns"):
         lines.extend(
             [
-                "These denominators are intentionally separate. v1.5 proof suites are claim-labeled training evidence; "
+                "These denominators are intentionally separate. The proof suites are claim-labeled training evidence; "
                 "v1.4 standard/showcase campaigns are broader presentation baselines and must not be merged into proof rates.",
                 "",
                 "| Campaign | Total Runs | Recovered | Recovery Rate | Blind Runs | Blind Recovered | Blind Rate |",
@@ -199,15 +252,18 @@ def _proof_manifest_payload(
     campaigns: Mapping[str, CampaignResult],
     basin_bound_paths: Mapping[str, Path],
     baseline_campaigns: tuple[Path, ...],
+    archived_anchor_roots: tuple[Path, ...],
     reproduction_command: str,
 ) -> dict[str, Any]:
     campaign_payload: dict[str, Any] = {}
     claim_rows: list[dict[str, Any]] = []
     depth_curve_rows: list[dict[str, Any]] = []
+    all_runs: list[Mapping[str, Any]] = []
 
     for name, result in campaigns.items():
         manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
         aggregate = json.loads(result.aggregate_paths["json"].read_text(encoding="utf-8"))
+        all_runs.extend(list(aggregate.get("runs", ())))
         campaign_payload[name] = {
             "campaign_dir": str(result.campaign_dir),
             "report_path": str(result.report_path),
@@ -249,9 +305,12 @@ def _proof_manifest_payload(
         "output_root": str(output_root),
         "reproducibility": {"command": reproduction_command},
         "campaigns": campaign_payload,
+        "regime_summary": _regime_summary_rows(all_runs),
         "claim_rows": claim_rows,
         "depth_curve": depth_curve_rows,
         "basin_bound_report": {key: str(value) for key, value in basin_bound_paths.items()},
+        "campaign_locks": [_campaign_lock(result.campaign_dir) for result in campaigns.values()],
+        "anchor_locks": [_campaign_lock(path) for path in archived_anchor_roots if path.exists()],
         "v14_campaigns": [_load_v14_campaign(path) for path in baseline_campaigns if path.exists()],
         "out_of_scope_claims": out_of_scope,
     }
@@ -284,10 +343,68 @@ def _claim_verdict(status: Any) -> str:
     if status == "passed":
         return "passed"
     if status == "reported":
-        return "bounded"
+        return "reported"
     if status == "failed":
         return "failed"
     return "out_of_scope"
+
+
+def _regime_summary_rows(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for regime in ("blind", "warm_start", "compile", "catalog", "perturbed_tree"):
+        regime_runs = [run for run in runs if run.get("start_mode") == regime]
+        rows.append(
+            {
+                "regime": regime,
+                "total": len(regime_runs),
+                "verifier_recovered": sum(1 for run in regime_runs if run.get("claim_status") == "recovered"),
+                "same_ast_return": sum(
+                    1
+                    for run in regime_runs
+                    if run.get("classification") in {"same_ast_warm_start_return", "same_ast_return"}
+                ),
+                "verified_equivalent_ast": sum(
+                    1
+                    for run in regime_runs
+                    if run.get("classification") in {"verified_equivalent_warm_start_recovery", "verified_equivalent_ast"}
+                ),
+                "unsupported": sum(1 for run in regime_runs if run.get("classification") == "unsupported"),
+                "failed": sum(
+                    1
+                    for run in regime_runs
+                    if run.get("classification") in {"failed", "snapped_but_failed", "soft_fit_only", "execution_failure"}
+                ),
+            }
+        )
+    return rows
+
+
+def _campaign_lock(path: Path) -> dict[str, Any]:
+    path = Path(path)
+    files = []
+    for relative in (
+        "aggregate.json",
+        "suite-result.json",
+        "campaign-manifest.json",
+        "report.md",
+        "proof-campaign.json",
+        "proof-report.md",
+        "anchor-locks.json",
+        "tables/runs.csv",
+        "tables/failures.csv",
+    ):
+        file_path = path / relative
+        if file_path.exists():
+            files.append({"path": str(file_path), "sha256": _sha256(file_path)})
+    return {"label": path.name, "path": str(path), "files": files}
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _load_v14_campaign(path: Path) -> dict[str, Any]:
@@ -316,6 +433,13 @@ def _relative_link(path: str | Path, base: Path) -> str:
         return path_obj.relative_to(base).as_posix()
     except ValueError:
         return path_obj.as_posix()
+
+
+def _proof_version_label(path: Path) -> str | None:
+    name = Path(path).name
+    if name.startswith("v") and any(character.isdigit() for character in name):
+        return name
+    return None
 
 
 def _format_optional_rate(value: Any) -> str:

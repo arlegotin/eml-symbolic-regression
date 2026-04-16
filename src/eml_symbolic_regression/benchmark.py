@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import multiprocessing
 import platform
+import queue
 import statistics
 import subprocess
 import time
@@ -15,11 +17,12 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 import numpy as np
+import torch
 
 from .basin import fit_perturbed_true_tree
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
 from .datasets import demo_specs, proof_dataset_manifest
-from .expression import Expr, format_constant_value, parse_constant_value
+from .expression import ConstantOccurrence, Expr, expr_from_document, format_constant_value, parse_constant_value
 from .optimize import TrainingConfig, fit_eml_tree
 from .proof import (
     EVIDENCE_CLASSES,
@@ -30,6 +33,7 @@ from .proof import (
     validate_claim_reference,
 )
 from .repair import cleanup_failed_candidate, repair_perturbed_candidate
+from .semantics import AnomalyStats, as_complex_tensor, mse_complex_numpy
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
@@ -51,6 +55,9 @@ DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
 STABLE_EVIDENCE_SNAPSHOT_CODE_VERSION = "snapshot"
 STABLE_EVIDENCE_SNAPSHOT_ELAPSED_SECONDS = 0.0
+# Publication bundles must never block on SymPy pretty-printing of failed blind candidates.
+SYMBOLIC_INLINE_NODE_BUDGET = 0
+SYMBOLIC_RENDER_TIMEOUT_SECONDS = 2.0
 
 
 class BenchmarkValidationError(ValueError):
@@ -105,8 +112,15 @@ class OptimizerBudget:
     warm_restarts: int = 1
     max_compile_depth: int = 13
     max_compile_nodes: int = 256
-    max_warm_depth: int = 10
+    max_warm_depth: int = 14
     max_power: int = 3
+    clamp_exp_real: float = 40.0
+    log_domain_epsilon: float = 1e-9
+    log_safety_weight: float = 0.0
+    log_safety_margin: float = 1e-6
+    log_safety_imag_tolerance: float = 1e-6
+    refit_steps: int = 80
+    refit_lr: float = 0.02
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
 
     @classmethod
@@ -134,6 +148,13 @@ class OptimizerBudget:
         values["max_warm_depth"] = int(values["max_warm_depth"])
         values["max_power"] = int(values["max_power"])
         values["lr"] = float(values["lr"])
+        values["clamp_exp_real"] = float(values["clamp_exp_real"])
+        values["log_domain_epsilon"] = float(values["log_domain_epsilon"])
+        values["log_safety_weight"] = float(values["log_safety_weight"])
+        values["log_safety_margin"] = float(values["log_safety_margin"])
+        values["log_safety_imag_tolerance"] = float(values["log_safety_imag_tolerance"])
+        values["refit_steps"] = int(values["refit_steps"])
+        values["refit_lr"] = float(values["refit_lr"])
         scaffold_initializers = values["scaffold_initializers"]
         if not isinstance(scaffold_initializers, (list, tuple)):
             raise BenchmarkValidationError(
@@ -177,6 +198,36 @@ class OptimizerBudget:
                 "hardening_temperature_end must be positive",
                 path=f"{path}.hardening_temperature_end",
             )
+        if self.clamp_exp_real <= 0:
+            raise BenchmarkValidationError("invalid_budget", "clamp_exp_real must be positive", path=f"{path}.clamp_exp_real")
+        if self.log_domain_epsilon <= 0:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "log_domain_epsilon must be positive",
+                path=f"{path}.log_domain_epsilon",
+            )
+        if self.log_safety_weight < 0:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "log_safety_weight must be 0 or positive",
+                path=f"{path}.log_safety_weight",
+            )
+        if self.log_safety_margin <= 0:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "log_safety_margin must be positive",
+                path=f"{path}.log_safety_margin",
+            )
+        if self.log_safety_imag_tolerance <= 0:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "log_safety_imag_tolerance must be positive",
+                path=f"{path}.log_safety_imag_tolerance",
+            )
+        if self.refit_steps < 0:
+            raise BenchmarkValidationError("invalid_budget", "refit_steps must be 0 or positive", path=f"{path}.refit_steps")
+        if self.refit_lr <= 0:
+            raise BenchmarkValidationError("invalid_budget", "refit_lr must be positive", path=f"{path}.refit_lr")
         if not self.constants:
             raise BenchmarkValidationError("invalid_budget", "constants must not be empty", path=f"{path}.constants")
         for index, value in enumerate(self.constants):
@@ -208,6 +259,13 @@ class OptimizerBudget:
             "max_compile_nodes": self.max_compile_nodes,
             "max_warm_depth": self.max_warm_depth,
             "max_power": self.max_power,
+            "clamp_exp_real": self.clamp_exp_real,
+            "log_domain_epsilon": self.log_domain_epsilon,
+            "log_safety_weight": self.log_safety_weight,
+            "log_safety_margin": self.log_safety_margin,
+            "log_safety_imag_tolerance": self.log_safety_imag_tolerance,
+            "refit_steps": self.refit_steps,
+            "refit_lr": self.refit_lr,
             "scaffold_initializers": list(self.scaffold_initializers),
         }
 
@@ -740,7 +798,7 @@ def _case(
     depth: int = 2,
     constants: Iterable[complex] = (1.0,),
     warm_restarts: int = 1,
-    max_warm_depth: int = 10,
+    max_warm_depth: int = 14,
     scaffold_initializers: Iterable[str] = ("exp", "log", "scaled_exp"),
     tags: Iterable[str] = (),
     expect_recovery: bool = False,
@@ -856,7 +914,14 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 ),
                 _case("michaelis-warm-diagnostic", "michaelis_menten", "warm_start", tags=("diagnostic", "depth_gate", "for_demo")),
                 _case("logistic-compile", "logistic", "compile", tags=("diagnostic", "for_demo")),
-                _case("shockley-compile", "shockley", "compile", tags=("diagnostic", "for_demo")),
+                _case(
+                    "shockley-warm",
+                    "shockley",
+                    "warm_start",
+                    warm_steps=1,
+                    tags=("warm_start", "for_demo"),
+                    expect_recovery=True,
+                ),
                 _case("planck-diagnostic", "planck", "compile", tags=("stretch", "depth_gate", "for_demo")),
             ),
         )
@@ -888,7 +953,14 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 ),
                 _case("michaelis-warm-diagnostic", "michaelis_menten", "warm_start", warm_steps=90, tags=("diagnostic", "depth_gate", "for_demo")),
                 _case("logistic-compile", "logistic", "compile", tags=("diagnostic", "for_demo")),
-                _case("shockley-compile", "shockley", "compile", tags=("diagnostic", "for_demo")),
+                _case(
+                    "shockley-warm",
+                    "shockley",
+                    "warm_start",
+                    warm_steps=1,
+                    tags=("warm_start", "for_demo"),
+                    expect_recovery=True,
+                ),
                 _case("damped-oscillator-compile", "damped_oscillator", "compile", tags=("stretch", "for_demo")),
                 _case("planck-diagnostic", "planck", "compile", tags=("stretch", "depth_gate", "for_demo")),
             ),
@@ -1206,18 +1278,13 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
 
     if run.start_mode == "blind":
         train = splits[0]
-        config = TrainingConfig(
+        config = _training_config_from_budget(
+            run,
+            variable=spec.variable,
             depth=run.optimizer.depth,
-            variables=(spec.variable,),
-            constants=run.optimizer.constants,
             steps=run.optimizer.steps,
             restarts=run.optimizer.restarts,
             seed=run.seed,
-            lr=run.optimizer.lr,
-            hardening_steps=run.optimizer.hardening_steps,
-            hardening_temperature_end=run.optimizer.hardening_temperature_end,
-            hardening_emit_interval=run.optimizer.hardening_emit_interval,
-            scaffold_initializers=run.optimizer.scaffold_initializers,
         )
         fit = fit_eml_tree(
             train.inputs,
@@ -1230,6 +1297,9 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         stage_statuses["blind_baseline"] = report.status
         status = report.status if report.status == "recovered" else ("snapped_but_failed" if fit.status == "snapped_candidate" else fit.status)
         claim_status = report.status
+        current_expression = fit.snap.expression
+        current_verification = report
+        current_source = "selected_exact_candidate"
         repair_payload = None
         repair_status = "not_attempted"
         if status != "recovered":
@@ -1249,6 +1319,24 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             if cleanup.status == "repaired_candidate" and cleanup.verification is not None:
                 status = "repaired_candidate"
                 claim_status = cleanup.verification.status
+                current_expression = cleanup.repaired_expression or current_expression
+                current_verification = cleanup.verification
+                current_source = "repaired_candidate"
+
+        refit = _run_post_snap_refit(
+            current_expression,
+            verification=current_verification,
+            source=current_source,
+            training_split=train,
+            verification_splits=splits,
+            config=config,
+            tolerance=run.dataset.tolerance,
+        )
+        stage_statuses["post_snap_refit"] = refit.status
+        if refit.accepted and refit.verification is not None:
+            claim_status = refit.verification.status
+            if repair_status != "repaired" and refit.verification.status == "recovered":
+                status = "recovered"
         return {
             "status": status,
             "stage_statuses": stage_statuses,
@@ -1256,6 +1344,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             "trained_eml_verification": report.as_dict(),
             "repair": repair_payload,
             "repair_status": repair_status,
+            "refit": refit.payload,
             "claim_status": claim_status,
         }
 
@@ -1291,17 +1380,14 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
 
         train = splits[0]
         warm_depth = run.optimizer.warm_depth or compiled.metadata.depth
-        config = TrainingConfig(
+        config = _training_config_from_budget(
+            run,
+            variable=spec.variable,
             depth=warm_depth,
-            variables=(spec.variable,),
-            constants=run.optimizer.constants,
             steps=run.optimizer.warm_steps,
             restarts=run.optimizer.warm_restarts,
             seed=run.seed,
-            lr=run.optimizer.lr,
-            hardening_steps=run.optimizer.hardening_steps,
-            hardening_temperature_end=run.optimizer.hardening_temperature_end,
-            hardening_emit_interval=run.optimizer.hardening_emit_interval,
+            scaffold_initializers=(),
         )
         warm = fit_warm_started_eml_tree(
             train.inputs,
@@ -1318,6 +1404,9 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             stage_statuses["trained_exact_recovery"] = warm.verification.status
         status = warm.status
         claim_status = warm.verification.status if warm.verification else warm.status
+        current_expression = warm.fit.snap.expression
+        current_verification = warm.verification
+        current_source = "warm_start_candidate"
         repair_payload = None
         repair_status = "not_attempted"
         if status not in {"same_ast_return", "verified_equivalent_ast", "recovered"}:
@@ -1337,6 +1426,28 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             if cleanup.status == "repaired_candidate" and cleanup.verification is not None:
                 status = "repaired_candidate"
                 claim_status = cleanup.verification.status
+                current_expression = cleanup.repaired_expression or current_expression
+                current_verification = cleanup.verification
+                current_source = "repaired_candidate"
+
+        refit = _run_post_snap_refit(
+            current_expression,
+            verification=current_verification,
+            source=current_source,
+            training_split=train,
+            verification_splits=splits,
+            config=config,
+            tolerance=run.dataset.tolerance,
+        )
+        stage_statuses["post_snap_refit"] = refit.status
+        if refit.accepted and refit.verification is not None:
+            claim_status = refit.verification.status
+            if (
+                repair_status != "repaired"
+                and refit.verification.status == "recovered"
+                and status not in {"same_ast_return", "verified_equivalent_ast", "recovered"}
+            ):
+                status = "verified_equivalent_ast"
         return {
             "status": status,
             "stage_statuses": stage_statuses,
@@ -1344,6 +1455,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             "warm_start_eml": warm.manifest,
             "repair": repair_payload,
             "repair_status": repair_status,
+            "refit": refit.payload,
             "claim_status": claim_status,
         }
 
@@ -1395,17 +1507,14 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
 
         train = splits[0]
         training_depth = run.optimizer.warm_depth or max(run.optimizer.depth, target_expr.depth())
-        config = TrainingConfig(
+        config = _training_config_from_budget(
+            run,
+            variable=spec.variable,
             depth=training_depth,
-            variables=(spec.variable,),
-            constants=run.optimizer.constants,
             steps=run.optimizer.warm_steps,
             restarts=run.optimizer.warm_restarts,
             seed=run.seed,
-            lr=run.optimizer.lr,
-            hardening_steps=run.optimizer.hardening_steps,
-            hardening_temperature_end=run.optimizer.hardening_temperature_end,
-            hardening_emit_interval=run.optimizer.hardening_emit_interval,
+            scaffold_initializers=(),
         )
         basin = fit_perturbed_true_tree(
             train.inputs,
@@ -1423,6 +1532,9 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         raw_status = str(basin.manifest.get("raw_status") or basin.status)
         status = basin.status
         claim_status = basin.verification.status if basin.verification else basin.status
+        current_expression = basin.fit.snap.expression
+        current_verification = basin.verification
+        current_source = "perturbed_true_tree_candidate"
         repair_payload = None
         repair_status = "not_attempted"
         if basin.status != "recovered":
@@ -1458,6 +1570,24 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             if repair.status == "repaired_candidate" and repair.verification is not None:
                 status = "repaired_candidate"
                 claim_status = repair.verification.status
+                current_expression = repair.repaired_expression or current_expression
+                current_verification = repair.verification
+                current_source = "repaired_candidate"
+
+        refit = _run_post_snap_refit(
+            current_expression,
+            verification=current_verification,
+            source=current_source,
+            training_split=train,
+            verification_splits=splits,
+            config=config,
+            tolerance=run.dataset.tolerance,
+        )
+        stage_statuses["post_snap_refit"] = refit.status
+        if refit.accepted and refit.verification is not None:
+            claim_status = refit.verification.status
+            if repair_status != "repaired" and refit.verification.status == "recovered" and status != "recovered":
+                status = "recovered"
         return {
             "status": status,
             "stage_statuses": stage_statuses,
@@ -1469,6 +1599,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             "raw_status": raw_status,
             "repair": repair_payload,
             "repair_status": repair_status,
+            "refit": refit.payload,
             "claim_status": claim_status,
         }
 
@@ -1492,6 +1623,367 @@ def _fit_constants(fit: FitResult, default_constants: tuple[complex, ...]) -> tu
     if not isinstance(constants, list):
         return tuple(default_constants)
     return tuple(parse_constant_value(value) for value in constants)
+
+
+@dataclass(frozen=True)
+class RefitResult:
+    status: str
+    accepted: bool
+    expression: Expr | None
+    verification: VerificationReport | None
+    payload: dict[str, Any]
+
+
+def _training_config_from_budget(
+    run: BenchmarkRun,
+    *,
+    variable: str,
+    depth: int,
+    steps: int,
+    restarts: int,
+    seed: int,
+    scaffold_initializers: tuple[str, ...] | None = None,
+) -> TrainingConfig:
+    return TrainingConfig(
+        depth=depth,
+        variables=(variable,),
+        constants=run.optimizer.constants,
+        steps=steps,
+        restarts=restarts,
+        seed=seed,
+        lr=run.optimizer.lr,
+        hardening_steps=run.optimizer.hardening_steps,
+        hardening_temperature_end=run.optimizer.hardening_temperature_end,
+        hardening_emit_interval=run.optimizer.hardening_emit_interval,
+        clamp_exp_real=run.optimizer.clamp_exp_real,
+        log_domain_epsilon=run.optimizer.log_domain_epsilon,
+        log_safety_weight=run.optimizer.log_safety_weight,
+        log_safety_margin=run.optimizer.log_safety_margin,
+        log_safety_imag_tolerance=run.optimizer.log_safety_imag_tolerance,
+        refit_steps=run.optimizer.refit_steps,
+        refit_lr=run.optimizer.refit_lr,
+        scaffold_initializers=run.optimizer.scaffold_initializers if scaffold_initializers is None else scaffold_initializers,
+    )
+
+
+def _exact_candidate_metrics(
+    expression: Expr,
+    verification: VerificationReport | None,
+    *,
+    post_snap_loss: float,
+) -> dict[str, Any]:
+    verifier_status = verification.status if verification is not None else None
+    return {
+        "verifier_status": verifier_status,
+        "status_rank": _refit_status_rank(verifier_status),
+        "extrapolation_max_abs_error": _report_group_error(verification, lambda name: "extra" in name),
+        "high_precision_max_error": verification.high_precision_max_error if verification is not None else float("inf"),
+        "heldout_max_abs_error": _report_group_error(verification, lambda name: "hold" in name or "valid" in name),
+        "post_snap_loss": post_snap_loss,
+        "complexity": expression.node_count(),
+    }
+
+
+def _report_group_error(report: VerificationReport | None, predicate: Any) -> float:
+    if report is None:
+        return float("inf")
+    values = [result.max_abs_error for result in report.split_results if predicate(result.name.lower())]
+    if not values:
+        return 0.0
+    return float(max(values))
+
+
+def _exact_candidate_ranking_key(metrics: Mapping[str, Any]) -> tuple[Any, ...]:
+    return (
+        int(metrics.get("status_rank", 3)),
+        _finite_or_inf(metrics.get("extrapolation_max_abs_error")),
+        _finite_or_inf(metrics.get("high_precision_max_error")),
+        _finite_or_inf(metrics.get("heldout_max_abs_error")),
+        _finite_or_inf(metrics.get("post_snap_loss")),
+        int(metrics.get("complexity", 0)),
+    )
+
+
+def _refit_status_rank(status: str | None) -> int:
+    return {
+        "recovered": 0,
+        "verified_showcase": 1,
+        "failed": 2,
+        None: 3,
+    }.get(status, 3)
+
+
+def _finite_or_inf(value: Any) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return float("inf")
+    return number if np.isfinite(number) else float("inf")
+
+
+def _constant_rows(
+    occurrences: tuple[ConstantOccurrence, ...],
+    updated_values: Mapping[str, complex] | None = None,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for item in occurrences:
+        after = complex(updated_values[item.path]) if updated_values is not None and item.path in updated_values else complex(item.value)
+        rows.append(
+            {
+                "path": item.path,
+                "before": format_constant_value(item.value),
+                "after": format_constant_value(after),
+                "changed": abs(after - complex(item.value)) > 1e-12,
+                "refittable": item.refittable,
+            }
+        )
+    return rows
+
+
+def _symbolic_expression_worker(document: Mapping[str, Any], result_queue: Any) -> None:
+    try:
+        expression = expr_from_document(document)
+        result_queue.put({"status": "rendered", "value": str(expression.to_sympy())})
+    except Exception as exc:  # noqa: BLE001 - child process must marshal failures back to parent.
+        result_queue.put({"status": "omitted_error", "detail": f"{type(exc).__name__}: {exc}"})
+
+
+def _render_symbolic_expression_subprocess(document: Mapping[str, Any], *, timeout_seconds: float) -> dict[str, Any]:
+    context = multiprocessing.get_context("spawn")
+    result_queue = context.Queue(maxsize=1)
+    process = context.Process(target=_symbolic_expression_worker, args=(document, result_queue))
+    process.start()
+    process.join(timeout_seconds)
+    if process.is_alive():
+        process.terminate()
+        process.join(1.0)
+        return {
+            "status": "omitted_timeout",
+            "mode": "subprocess",
+            "timeout_seconds": timeout_seconds,
+            "detail": "symbolic SymPy rendering exceeded the publication artifact time budget",
+        }
+    try:
+        result = result_queue.get_nowait()
+    except queue.Empty:
+        return {
+            "status": "omitted_error",
+            "mode": "subprocess",
+            "timeout_seconds": timeout_seconds,
+            "detail": f"symbolic renderer exited with code {process.exitcode}",
+        }
+    return {
+        "mode": "subprocess",
+        "timeout_seconds": timeout_seconds,
+        **dict(result),
+    }
+
+
+def _safe_symbolic_expression_payload(expression: Expr) -> dict[str, Any]:
+    node_count = expression.node_count()
+    depth = expression.depth()
+    if node_count <= SYMBOLIC_INLINE_NODE_BUDGET:
+        try:
+            return {
+                "status": "rendered",
+                "mode": "inline",
+                "node_count": node_count,
+                "depth": depth,
+                "value": str(expression.to_sympy()),
+            }
+        except Exception as exc:  # noqa: BLE001 - artifact export must fail soft on presentation-only rendering.
+            return {
+                "status": "omitted_error",
+                "mode": "inline",
+                "node_count": node_count,
+                "depth": depth,
+                "detail": f"{type(exc).__name__}: {exc}",
+            }
+
+    payload = _render_symbolic_expression_subprocess(
+        expression.to_document(variables=sorted(expression.variables()), source="symbolic_render"),
+        timeout_seconds=SYMBOLIC_RENDER_TIMEOUT_SECONDS,
+    )
+    payload["node_count"] = node_count
+    payload["depth"] = depth
+    return payload
+
+
+def _exact_candidate_payload(
+    expression: Expr,
+    verification: VerificationReport | None,
+    *,
+    source: str,
+    post_snap_loss: float,
+    anomalies: dict[str, Any] | None = None,
+    constant_rows: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    metrics = _exact_candidate_metrics(expression, verification, post_snap_loss=post_snap_loss)
+    symbolic_payload = _safe_symbolic_expression_payload(expression)
+    symbolic_expression = symbolic_payload.pop("value", None)
+    payload: dict[str, Any] = {
+        "source": source,
+        "ast": expression.to_document(variables=sorted(expression.variables()), source=source),
+        "symbolic_expression": symbolic_expression,
+        "symbolic_expression_render": symbolic_payload,
+        "post_snap_loss": post_snap_loss,
+        "metrics": metrics,
+        "verification": verification.as_dict() if verification is not None else None,
+    }
+    if anomalies is not None:
+        payload["final_anomalies"] = anomalies
+    if constant_rows is not None:
+        payload["constants"] = constant_rows
+    return payload
+
+
+def _run_post_snap_refit(
+    expression: Expr,
+    *,
+    verification: VerificationReport | None,
+    source: str,
+    training_split: DataSplit,
+    verification_splits: list[DataSplit],
+    config: TrainingConfig,
+    tolerance: float,
+) -> RefitResult:
+    occurrences = expression.constant_occurrences()
+    pre_loss = mse_complex_numpy(expression.evaluate_numpy(training_split.inputs), training_split.target)
+    pre_payload = _exact_candidate_payload(
+        expression,
+        verification,
+        source=source,
+        post_snap_loss=pre_loss,
+        constant_rows=_constant_rows(occurrences),
+    )
+    refittable = tuple(item for item in occurrences if item.refittable)
+    fixed = tuple(item for item in occurrences if not item.refittable)
+
+    if config.refit_steps <= 0:
+        return RefitResult(
+            status="not_attempted",
+            accepted=False,
+            expression=None,
+            verification=None,
+            payload={
+                "status": "not_attempted",
+                "accepted": False,
+                "reason": "refit_disabled",
+                "refittable_constants": _constant_rows(refittable),
+                "fixed_constants": _constant_rows(fixed),
+                "pre_refit_candidate": pre_payload,
+                "post_refit_candidate": None,
+                "selected_candidate": "pre_refit",
+            },
+        )
+
+    if not refittable:
+        return RefitResult(
+            status="not_attempted",
+            accepted=False,
+            expression=None,
+            verification=None,
+            payload={
+                "status": "not_attempted",
+                "accepted": False,
+                "reason": "no_refittable_constants",
+                "refittable_constants": [],
+                "fixed_constants": _constant_rows(fixed),
+                "pre_refit_candidate": pre_payload,
+                "post_refit_candidate": None,
+                "selected_candidate": "pre_refit",
+            },
+        )
+
+    parameter_map: dict[str, torch.nn.Parameter] = {}
+    real_only_paths: set[str] = set()
+    for item in refittable:
+        value = complex(item.value)
+        if abs(value.imag) <= 1e-12:
+            parameter_map[item.path] = torch.nn.Parameter(torch.tensor(float(value.real), dtype=torch.float64))
+            real_only_paths.add(item.path)
+        else:
+            parameter_map[item.path] = torch.nn.Parameter(torch.tensor(value, dtype=torch.complex128))
+    optimizer = torch.optim.Adam(list(parameter_map.values()), lr=config.refit_lr)
+    tensor_inputs = {name: as_complex_tensor(value) for name, value in training_split.inputs.items()}
+    target_tensor = as_complex_tensor(training_split.target)
+    best_loss = pre_loss
+    best_values = {
+        path: complex(float(parameter.detach().item()), 0.0) if path in real_only_paths else complex(parameter.detach().cpu().item())
+        for path, parameter in parameter_map.items()
+    }
+    final_stats = AnomalyStats()
+    steps_completed = 0
+
+    for step in range(config.refit_steps):
+        optimizer.zero_grad()
+        stats = AnomalyStats()
+        override_map = {
+            path: torch.complex(parameter, torch.zeros_like(parameter))
+            if path in real_only_paths
+            else parameter.to(dtype=torch.complex128)
+            for path, parameter in parameter_map.items()
+        }
+        prediction = expression.evaluate_torch(
+            tensor_inputs,
+            training=True,
+            stats=stats,
+            semantics=config.semantics_config(),
+            constant_overrides=override_map,
+        )
+        fit_loss = torch.mean(torch.abs(prediction - target_tensor) ** 2)
+        loss = fit_loss + stats.training_penalty(device=fit_loss.device)
+        if not torch.isfinite(loss):
+            final_stats = stats
+            break
+        loss.backward()
+        optimizer.step()
+        steps_completed = step + 1
+        final_stats = stats
+        fit_loss_value = float(fit_loss.detach().item())
+        if np.isfinite(fit_loss_value) and fit_loss_value <= best_loss:
+            best_loss = fit_loss_value
+            best_values = {
+                path: complex(float(parameter.detach().item()), 0.0)
+                if path in real_only_paths
+                else complex(parameter.detach().cpu().item())
+                for path, parameter in parameter_map.items()
+            }
+
+    post_expression = expression.with_constant_updates(best_values)
+    post_verification = verify_candidate(post_expression, verification_splits, tolerance=tolerance)
+    post_payload = _exact_candidate_payload(
+        post_expression,
+        post_verification,
+        source="post_snap_refit",
+        post_snap_loss=best_loss,
+        anomalies=final_stats.as_dict(),
+        constant_rows=_constant_rows(refittable, best_values),
+    )
+
+    pre_metrics = pre_payload["metrics"] if isinstance(pre_payload.get("metrics"), Mapping) else {}
+    post_metrics = post_payload["metrics"] if isinstance(post_payload.get("metrics"), Mapping) else {}
+    accepted = _exact_candidate_ranking_key(post_metrics) <= _exact_candidate_ranking_key(pre_metrics)
+    reason = "verifier_rank_improved_or_matched" if accepted else "fallback_rank_stronger"
+
+    return RefitResult(
+        status="accepted" if accepted else "rejected",
+        accepted=accepted,
+        expression=post_expression if accepted else None,
+        verification=post_verification if accepted else None,
+        payload={
+            "status": "accepted" if accepted else "rejected",
+            "accepted": accepted,
+            "reason": reason,
+            "optimizer": {"steps": config.refit_steps, "lr": config.refit_lr},
+            "steps_completed": steps_completed,
+            "refittable_constants": _constant_rows(refittable, best_values),
+            "fixed_constants": _constant_rows(fixed),
+            "pre_refit_candidate": pre_payload,
+            "post_refit_candidate": post_payload,
+            "selected_candidate": "post_refit" if accepted else "pre_refit",
+        },
+    )
 
 
 def _compile_demo(run: BenchmarkRun, splits: Any) -> dict[str, Any]:
@@ -1579,11 +2071,19 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     initialization: Mapping[str, Any] = {}
     if isinstance(candidate, Mapping):
         initialization = candidate.get("best_restart", {}).get("initialization") or {}
+        anomalies = candidate.get("best_restart", {}).get("final_anomalies") or {}
         perturbation = initialization.get("perturbation") or {}
         changes = perturbation.get("active_slot_changes")
         if isinstance(changes, list):
             active_slot_changes = len(changes)
             changed_slots = sum(1 for item in changes if item.get("changed"))
+    else:
+        anomalies = {}
+
+    refit = payload.get("refit") if isinstance(payload.get("refit"), Mapping) else {}
+    post_refit = refit.get("post_refit_candidate") if isinstance(refit.get("post_refit_candidate"), Mapping) else {}
+    post_refit_verification = post_refit.get("verification") if isinstance(post_refit.get("verification"), Mapping) else {}
+    refit_constants = refit.get("refittable_constants")
 
     return {
         "best_loss": (
@@ -1646,6 +2146,18 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "repair_move_count": len(repair_attempts) if isinstance(repair_attempts, list) else 0,
         "repair_accepted_move_count": len(repair_accepted) if isinstance(repair_accepted, list) else 0,
         "repair_verifier_status": repair_verification.get("status") if isinstance(repair_verification, Mapping) else None,
+        "refit_status": refit.get("status") if isinstance(refit, Mapping) else None,
+        "refit_accepted": refit.get("accepted") if isinstance(refit, Mapping) else None,
+        "refit_post_snap_loss": post_refit.get("post_snap_loss") if isinstance(post_refit, Mapping) else None,
+        "refit_verifier_status": post_refit_verification.get("status") if isinstance(post_refit_verification, Mapping) else None,
+        "refit_constant_count": len(refit_constants) if isinstance(refit_constants, list) else 0,
+        "anomaly_clamp_count": anomalies.get("clamp_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_exp_overflow_count": anomalies.get("exp_overflow_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_log_small_magnitude_count": anomalies.get("log_small_magnitude_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_log_non_positive_real_count": anomalies.get("log_non_positive_real_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_log_branch_cut_count": anomalies.get("log_branch_cut_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_log_non_finite_input_count": anomalies.get("log_non_finite_input_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_log_safety_penalty": anomalies.get("log_safety_penalty") if isinstance(anomalies, Mapping) else None,
     }
 
 

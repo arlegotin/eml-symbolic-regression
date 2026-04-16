@@ -98,10 +98,10 @@ Generate the measured depth-curve proof campaign:
 PYTHONPATH=src python -m eml_symbolic_regression.cli campaign proof-depth-curve --output-root artifacts/campaigns
 ```
 
-Generate the full v1.5 proof bundle and claim report:
+Generate the full current proof bundle and claim report:
 
 ```bash
-PYTHONPATH=src python -m eml_symbolic_regression.cli proof-campaign --output-root artifacts/proof/v1.5 --overwrite
+PYTHONPATH=src python -m eml_symbolic_regression.cli proof-campaign --output-root artifacts/proof/v1.6 --overwrite
 ```
 
 Reproduce the committed v1.3 smoke report:
@@ -110,10 +110,10 @@ Reproduce the committed v1.3 smoke report:
 PYTHONPATH=src python -m eml_symbolic_regression.cli campaign smoke --output-root artifacts/campaigns --label v1.3-smoke --overwrite
 ```
 
-Compare v1.4 standard/showcase campaigns against the committed v1.3 baselines:
+Compare archived baseline campaigns against candidate campaigns (example: v1.3 versus v1.4):
 
 ```bash
-PYTHONPATH=src python -m eml_symbolic_regression.cli diagnostics compare --baseline artifacts/campaigns/v1.3-standard --candidate artifacts/campaigns/v1.4-standard --baseline artifacts/campaigns/v1.3-showcase --candidate artifacts/campaigns/v1.4-showcase --output-dir artifacts/campaigns/v1.4-comparison
+PYTHONPATH=src python -m eml_symbolic_regression.cli diagnostics compare --baseline artifacts/campaigns/v1.3-standard --candidate artifacts/campaigns/v1.4-standard --baseline artifacts/campaigns/v1.3-showcase --candidate artifacts/campaigns/v1.4-showcase --output-dir artifacts/campaigns/comparison-v1.3-v1.4
 ```
 
 Try soft EML training on a shallow demo:
@@ -178,7 +178,7 @@ Each campaign folder contains:
 - `figures/`: deterministic SVG charts for recovery, losses, Beer-Lambert perturbations, runtime/budget, and failure taxonomy.
 - `report.md`: self-contained evidence report with numbers, charts, limitations, next experiments, and the exact reproduction command.
 
-The one-command proof bundle at `artifacts/proof/v1.5/` aggregates the proof campaigns above, writes a combined `proof-report.md`, preserves the perturbed-basin bound report, and includes a guarded comparison section against the broader v1.4 campaign baselines without mixing denominators.
+The one-command proof bundle can be rooted at a milestone-specific path such as `artifacts/proof/v1.6/`. It aggregates the proof campaigns above, writes a combined `proof-report.md`, preserves the perturbed-basin bound report, records `anchor-locks.json` for archived comparison roots, and includes a guarded comparison section against the broader v1.4 campaign baselines without mixing denominators.
 
 The committed smoke report is at `artifacts/campaigns/v1.3-smoke/report.md`. Current smoke metrics are intentionally modest: 3 runs total, 1 verifier recovery via same-AST warm start, 1 blind snapped-but-failed run, and 1 unsupported Planck depth gate.
 

@@ -4,41 +4,41 @@
 
 This project implements a hybrid symbolic-regression engine based on the paper "All elementary functions from a single binary operator." It searches over complete depth-bounded EML trees, optimizes soft categorical choices with PyTorch, snaps the result into an exact EML tree, cleans it up symbolically, and verifies candidate formulas against held-out data and high-precision evaluators.
 
-The current release is a research-grade Python package and CLI for recovering compact elementary laws from synthetic scientific datasets, with demos, benchmark campaigns, and proof artifacts drawn from `sources/FOR_DEMO.md`. The next milestone focuses on improving blind-discovery search quality without weakening the repo's verifier-owned recovery contract or replacing any archived evidence.
+The current release is a research-grade Python package and CLI for recovering compact elementary laws from synthetic scientific datasets, with demos, benchmark campaigns, and proof artifacts drawn from `sources/FOR_DEMO.md`. The next milestone should turn the implementation and archived evidence into a paper package: claims, figures, manuscript structure, and any focused validation still needed before submission.
 
 ## Core Value
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.6 In Progress
+## Current State: v1.6 Shipped
 
 The repo now has strong representation, verification, and reproducibility foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, and a one-command proof bundle are all in place and archived through v1.5.
 
-The v1.5 proof results make the next bottleneck clear. Pure random shallow blind recovery is still weak (`2/18`), while scaffolded shallow proof is bounded and strong (`18/18`), perturbed true-tree basin recovery is strong (`9/9`), and blind depth performance drops after depth 3. That evidence supports the paper's claim that representation is not the main failure mode; search and post-processing are.
+v1.6 upgraded the optimizer into a verifier-gated hybrid discrete-continuous pipeline: hardening and checkpoint snaps, exact-candidate ranking, low-margin discrete cleanup, post-snap constant refit, shorter compiler macros, and regime-aware reporting that preserves archived v1.5 and v1.4 evidence.
 
-v1.6 therefore shifts the project from proving training boundaries to upgrading the recovery algorithm itself. The milestone targets a verifier-gated hybrid discrete-continuous pipeline: hardening and checkpoint snaps, exact-candidate ranking, low-margin discrete cleanup, post-snap constant refit, shorter compiler macros, and numerics/reporting changes that preserve scientific honesty.
+The final `artifacts/proof/v1.6` bundle was regenerated from the latest code state and verified against campaign aggregates. It keeps the empirical story honest: pure random shallow blind recovery remains measured at `2/18` threshold-eligible recoveries plus one repaired candidate, scaffolded shallow proof remains `18/18`, perturbed true-tree basin proof remains `9/9` with same-AST returns, and depth-curve evidence remains reported rather than overclaimed.
 
-## Last Completed Milestone: v1.5 Training Proof and Recovery Guarantees
+## Last Completed Milestone: v1.6 Hybrid Search Pipeline and Exact Candidate Recovery
 
-**Goal shipped:** Prove the paper-grounded EML training claims with real training runs, bounded 100% recovery targets, transparent failure boundaries, metrics, and reproducible datasets.
+**Goal shipped:** Upgrade the recovery engine from a soft-loss-only final snap into a verifier-gated hybrid pipeline while preserving fallback candidates, exact evidence provenance, archived comparison anchors, and honest regime separation.
 
 **Shipped features:**
-- Stable paper-claim matrix, deterministic proof datasets, proof-aware benchmark artifacts, and explicit threshold policies.
-- Honest shallow proof split between measured pure-blind recovery and bounded scaffolded recovery.
-- First-class perturbed true-tree basin recovery, local repair provenance, and Beer-Lambert basin-bound diagnostics.
-- Deterministic depth-curve evidence across EML depths 2 through 6 with separate blind and perturbed reporting.
-- One-command `artifacts/proof/v1.5/` bundle with raw runs, aggregates, plots, claim report, and milestone audit.
+- Late-hardening checkpoint snaps, exact-candidate pooling, verifier-owned final ranking, and legacy fallback provenance.
+- Target-free snap-neighborhood cleanup over low-margin active slots with exact AST deduplication.
+- Frozen exact-tree constant refit, pre/post-refit artifacts, and richer `exp`/`log` anomaly diagnostics.
+- Macro-aware compiler shortcuts with conservative fail-closed warm-start coverage expansion.
+- Final `artifacts/proof/v1.6/` proof bundle with regime-aware reporting, immutable current/archived anchor locks, and corrected measured-proof verdicts.
 
-## Current Milestone: v1.6 Hybrid Search Pipeline and Exact Candidate Recovery
+## Next Milestone: Paper Package and Publication Evidence
 
-**Goal:** Turn the current MVP optimizer into a verifier-gated hybrid recovery pipeline that can improve exact candidate quality without weakening the repo's evidence contract or discarding existing artifacts.
+**Recommended goal:** Turn the current implementation and evidence into a defensible EML training paper.
 
-**Target features:**
-- Select the final answer from a pool of exact snapped candidates gathered across restarts and late hardening checkpoints, not only from the minimum soft-loss winner.
-- Generalize local discrete repair into a target-free snap-neighborhood cleanup stage driven by low-margin ambiguity and exact AST deduplication.
-- Add post-snap constant refit plus stronger numerical and domain diagnostics for `exp` and `log` sensitive paths.
-- Shorten compiled EML trees with validated macro rules so warm-start coverage expands without removing fail-closed fallback behavior.
-- Re-run proof and campaign evidence with explicit pure-blind versus scaffolded separation and weak-dominance reporting against archived v1.5 and v1.4 baselines.
+**Likely target features:**
+- Claims-to-evidence table that maps each manuscript claim to archived proof/campaign artifacts.
+- Paper outline and first manuscript draft covering EML representation, differentiable training, snapping, cleanup, compiler warm starts, and verification.
+- Figure/table selection from `artifacts/proof/v1.6`, archived campaigns, and implementation diagnostics.
+- Explicit limitations section covering weak pure-blind recovery and depth degradation.
+- Decision on external baselines or ablations needed before submission.
 
 ## Requirements
 
@@ -75,14 +75,19 @@ v1.6 therefore shifts the project from proving training boundaries to upgrading 
 - ✓ Perturbed basin recovery, repair provenance, and Beer-Lambert bound evidence — v1.5 Phase 31
 - ✓ Deterministic blind-versus-perturbed depth-curve evidence — v1.5 Phase 32
 - ✓ One-command proof bundle and milestone audit rooted at `artifacts/proof/v1.5/` — v1.5 Phase 33
+- ✓ Verifier-gated exact-candidate pooling across restarts and hardening checkpoints — v1.6 Phase 34
+- ✓ Target-free low-margin discrete cleanup with fallback-preserving exact candidate artifacts — v1.6 Phase 35
+- ✓ Post-snap constant refit and richer numerical/domain diagnostics — v1.6 Phase 36
+- ✓ Macro-aware compiler shortening and conservative warm-start coverage expansion — v1.6 Phase 37
+- ✓ Regime-aware proof/campaign reporting, immutable anchor locks, and aggregate-level hybrid regression locks — v1.6 Phase 38
+- ✓ Final `artifacts/proof/v1.6/` evidence bundle regenerated and verified from the archived code state — v1.6 closeout
 
 ### Active
 
-- [ ] Replace soft-loss-only winner selection with verifier-gated exact candidate pooling and ranking.
-- [ ] Add target-free low-margin discrete cleanup so near-miss snaps can recover exact trees without access to a ground-truth AST.
-- [ ] Add post-snap constant refit and stronger training-time numerical/domain controls without changing faithful verification semantics.
-- [ ] Shorten the compiler with validated macro rules and expand warm-start coverage while preserving fail-closed fallback behavior.
-- [ ] Re-run proof and campaign evidence with explicit weak-dominance claims, archived baselines, and separate reporting for pure blind, scaffolded blind, compile, warm-start, and perturbed-basin regimes.
+- [ ] Define the paper's claims-to-evidence table before changing the algorithm again.
+- [ ] Draft the manuscript structure around evidence regimes instead of a single overstated recovery claim.
+- [ ] Choose which archived v1.6 figures/tables belong in the paper.
+- [ ] Decide whether external symbolic-regression baselines are required before submission.
 
 ### Out of Scope
 
@@ -101,14 +106,14 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 
 `sources/NORTH_STAR.md` turns that paper result into an implementation blueprint. Its core recommendation is a hybrid pipeline: continuous search, hardening, symbolic snapping, local discrete cleanup, and verification. It also warns that pure gradient descent is not enough because the paper's blind recovery success drops sharply with depth, while warm starts recover reliably from perturbed correct solutions.
 
-The committed v1.5 proof bundle now shows the same pattern in this implementation. Representation is strong, verifier ownership is strong, and perturbed-basin return is strong, but blind discovery remains bottlenecked by soft-to-hard mismatch, brittle greedy snapping, limited compiler coverage, missing constant refit, and partial numerical controls. The user supplied a detailed milestone brief that grounds v1.6 in weak-dominance upgrades: preserve the old exact candidate as fallback, search over a larger exact candidate set, and only promote new stages when they improve verifier-owned outcomes.
+The committed v1.6 proof bundle now gives the stable evidence base for writing. Representation is strong, verifier ownership is strong, scaffolded and perturbed-basin regimes are strong, and pure-blind discovery remains the honest weak point. The paper should present EML training as a pipeline with separated evidence regimes rather than as a universal blind symbolic-regression solver.
 
 ## Constraints
 
 - **Paper fidelity**: EML semantics, complete-tree construction, snapping, hardening, and complex arithmetic must stay grounded in `sources/paper.pdf` and `sources/NORTH_STAR.md`.
 - **Verification**: A candidate is not "recovered" based on training loss alone; final selection is verifier-owned and exact-candidate based.
 - **Non-destructive evidence**: v1.4 and v1.5 artifacts stay archived and comparable; new results cannot overwrite the historical benchmark anchors.
-- **Weak dominance first**: Candidate-pool selection, beam cleanup, refit, and compiler macros must keep the current exact candidate available as fallback on declared benchmark paths.
+- **Weak dominance first**: Candidate-pool selection, beam cleanup, refit, and compiler macros keep the prior exact candidate available as fallback on declared benchmark paths.
 - **Numerics**: Training defaults to PyTorch `complex128`, with training-mode guards only where needed and faithful verification afterwards.
 - **Scope realism**: v1.6 must improve blind-discovery quality without overselling deep blind recovery or universal guarantees.
 - **Demos**: Showcase examples must remain drawn from `sources/FOR_DEMO.md`, favoring normalized, dimensionless, visually distinctive laws.
@@ -137,10 +142,10 @@ The committed v1.5 proof bundle now shows the same pattern in this implementatio
 | v1.5 training proof must be bounded | The paper itself reports rapid blind degradation at depth; the defensible target was 100% over declared suites plus honest depth curves. | ✓ Good |
 | Compile-only success does not prove training | v1.5 reports compiler-assisted cases separately and counts proof success only when actual training and verifier checks pass. | ✓ Good |
 | Proof evidence must be claim-labeled | Phase 29 established stable paper claim IDs, threshold policies, dataset manifests, and derived evidence classes before running proof campaigns. | ✓ Good |
-| Treat the optimizer as a candidate generator, not the whole symbolic-regression algorithm | The strongest current gap is the mismatch between soft optimization and hard exact-tree claims. | - Pending |
-| Preserve the current exact candidate as fallback in every new recovery stage | Weak-dominance upgrades should not make declared benchmark cases worse by construction. | - Pending |
-| Separate pure blind, scaffolded blind, compile, warm-start, and perturbed-basin evidence in every report | Honest regime separation is part of the scientific contribution, not just documentation. | - Pending |
-| Defer matched-budget external baselines until the hybrid pipeline is stronger | External comparisons matter, but they should follow a materially improved blind-discovery engine. | - Pending |
+| Treat the optimizer as a candidate generator, not the whole symbolic-regression algorithm | The strongest current gap is the mismatch between soft optimization and hard exact-tree claims. | ✓ Good |
+| Preserve the current exact candidate as fallback in every new recovery stage | Weak-dominance upgrades should not make declared benchmark cases worse by construction. | ✓ Good |
+| Separate pure blind, scaffolded blind, compile, warm-start, and perturbed-basin evidence in every report | Honest regime separation is part of the scientific contribution, not just documentation. | ✓ Good |
+| Defer matched-budget external baselines until the hybrid pipeline is stronger | External comparisons matter, but they should follow a materially improved blind-discovery engine. | ⚠️ Revisit for paper |
 
 ## Evolution
 
@@ -160,4 +165,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-16 after starting milestone v1.6*
+*Last updated: 2026-04-16 after shipping milestone v1.6*

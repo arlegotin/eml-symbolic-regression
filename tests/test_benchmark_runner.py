@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import sympy as sp
 import torch
 
 import eml_symbolic_regression.benchmark as benchmark_module
@@ -21,10 +22,12 @@ from eml_symbolic_regression.benchmark import (
     execute_benchmark_run,
     run_benchmark_suite,
 )
+from eml_symbolic_regression.compiler import CompilerConfig, compile_and_validate
+from eml_symbolic_regression.datasets import get_demo
 from eml_symbolic_regression.expression import Const, Eml, Var
 from eml_symbolic_regression.master_tree import SoftEMLTree
-from eml_symbolic_regression.optimize import ExactCandidate, FitResult
-from eml_symbolic_regression.verify import SplitResult, VerificationReport
+from eml_symbolic_regression.optimize import ExactCandidate, FitResult, TrainingConfig
+from eml_symbolic_regression.verify import SplitResult, VerificationReport, verify_candidate
 from eml_symbolic_regression.warm_start import WarmStartResult
 
 
@@ -463,6 +466,94 @@ def test_target_free_cleanup_promotes_blind_and_warm_start_artifacts(monkeypatch
     assert artifact["metrics"]["repair_accepted_move_count"] >= 1
 
 
+def test_post_snap_refit_accepts_improved_literal_constant_candidate():
+    spec = get_demo("beer_lambert")
+    splits = spec.make_splits(points=24, seed=0)
+    x = sp.Symbol(spec.variable)
+    compiled = compile_and_validate(
+        sp.exp(sp.Float("-0.7") * x),
+        CompilerConfig(variables=(spec.variable,), max_depth=16, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+    verification = verify_candidate(compiled.expression, splits, tolerance=1e-8)
+    config = TrainingConfig(
+        depth=compiled.metadata.depth,
+        variables=(spec.variable,),
+        constants=compiled.metadata.constants,
+        steps=1,
+        restarts=1,
+        seed=0,
+        refit_steps=60,
+        refit_lr=0.05,
+    )
+
+    refit = benchmark_module._run_post_snap_refit(
+        compiled.expression,
+        verification=verification,
+        source="test_candidate",
+        training_split=splits[0],
+        verification_splits=splits,
+        config=config,
+        tolerance=1e-8,
+    )
+
+    assert verification.status == "failed"
+    assert refit.status == "accepted"
+    assert refit.accepted is True
+    assert refit.verification is not None
+    assert refit.verification.status == "failed"
+    assert refit.payload["selected_candidate"] == "post_refit"
+    assert refit.payload["pre_refit_candidate"]["metrics"]["verifier_status"] == "failed"
+    assert refit.payload["post_refit_candidate"]["metrics"]["verifier_status"] == "failed"
+    assert refit.payload["post_refit_candidate"]["post_snap_loss"] < refit.payload["pre_refit_candidate"]["post_snap_loss"]
+    assert any(item["changed"] for item in refit.payload["refittable_constants"])
+
+
+def test_exact_candidate_payload_keeps_inline_symbolic_expression_for_small_ast(monkeypatch):
+    expression = Eml(Var("x"), Const(1.0))
+    monkeypatch.setattr(benchmark_module, "SYMBOLIC_INLINE_NODE_BUDGET", 255)
+
+    payload = benchmark_module._exact_candidate_payload(
+        expression,
+        verification=None,
+        source="test_candidate",
+        post_snap_loss=0.0,
+    )
+
+    assert payload["symbolic_expression"] == "exp(x)"
+    assert payload["symbolic_expression_render"]["status"] == "rendered"
+    assert payload["symbolic_expression_render"]["mode"] == "inline"
+
+
+def test_exact_candidate_payload_omits_symbolic_expression_when_guard_times_out(monkeypatch):
+    expression: Eml | Var | Const = Eml(Var("x"), Const(1.0))
+    for _ in range(130):
+        expression = Eml(expression, Const(1.0))
+
+    monkeypatch.setattr(
+        benchmark_module,
+        "_render_symbolic_expression_subprocess",
+        lambda document, *, timeout_seconds: {
+            "status": "omitted_timeout",
+            "mode": "subprocess",
+            "timeout_seconds": timeout_seconds,
+            "detail": "timed out in test",
+        },
+    )
+
+    payload = benchmark_module._exact_candidate_payload(
+        expression,
+        verification=None,
+        source="test_candidate",
+        post_snap_loss=0.0,
+    )
+
+    assert payload["symbolic_expression"] is None
+    assert payload["symbolic_expression_render"]["status"] == "omitted_timeout"
+    assert payload["symbolic_expression_render"]["mode"] == "subprocess"
+    assert payload["ast"]["metadata"]["node_count"] == expression.node_count()
+
+
 def test_depth_curve_runner_records_blind_failure_and_perturbed_recovery(tmp_path):
     base = builtin_suite("proof-depth-curve")
     suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
@@ -662,15 +753,19 @@ def test_for_demo_diagnostic_subset_preserves_unsupported_formula(tmp_path):
     assert result.results[0].payload["compiled_eml"]["diagnostic"]["strict"]["reason"] == "unsupported_operator"
 
 
-def test_shockley_compile_moves_to_verified_compiled_ast(tmp_path):
+def test_shockley_warm_start_moves_to_verified_recovered_artifact(tmp_path):
     base = builtin_suite("v1.3-standard")
     suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
 
-    result = run_benchmark_suite(suite, run_filter=RunFilter(case_ids=("shockley-compile",)))
+    result = run_benchmark_suite(suite, run_filter=RunFilter(case_ids=("shockley-warm",)))
 
     assert len(result.results) == 1
-    assert result.results[0].status == "recovered"
-    assert result.results[0].payload["evidence_class"] == "compile_only_verified"
+    assert result.results[0].status == "same_ast_return"
+    assert result.results[0].payload["claim_status"] == "recovered"
+    assert result.results[0].payload["evidence_class"] == "same_ast"
     compiled = result.results[0].payload["compiled_eml"]
     assert compiled["metadata"]["depth"] <= 13
-    assert any(entry["rule"] == "scaled_exp_minus_one_template" for entry in compiled["metadata"]["trace"])
+    assert compiled["metadata"]["macro_diagnostics"]["hits"] == ["scaled_exp_minus_one_template"]
+    assert result.results[0].payload["stage_statuses"]["compiled_seed"] == "recovered"
+    assert result.results[0].payload["stage_statuses"]["warm_start_attempt"] == "same_ast_return"
+    assert result.results[0].payload["stage_statuses"]["trained_exact_recovery"] == "recovered"

@@ -4,14 +4,14 @@
 **Updated:** 2026-04-16
 **Granularity:** Coarse
 **Mode:** YOLO
-**Current milestone:** v1.6 Hybrid Search Pipeline and Exact Candidate Recovery
-**Coverage:** 19 v1.6 requirements mapped, 0 unmapped
+**Current milestone:** Planning next milestone
+**Coverage:** No active milestone requirements yet
 
 ## Overview
 
-v1.5 proved the current system's boundaries honestly. The repo now has strong representation, verification, artifact discipline, and bounded basin recovery evidence, but it also has direct proof that blind discovery remains bottlenecked by the search pipeline rather than by EML representation itself.
+Milestone v1.6 is shipped. The project now has a verifier-gated hybrid recovery pipeline, regenerated proof evidence, archived milestone requirements, and an authoritative `artifacts/proof/v1.6` bundle for paper work.
 
-v1.6 upgrades the engine from a soft optimizer with one greedy final snap into a verifier-gated hybrid recovery pipeline. The milestone focuses on exact-candidate selection, target-free discrete cleanup, post-snap constant refit, compiler shortening, and regression evidence that compares against archived v1.5 and v1.4 artifacts without rewriting history.
+The next milestone should be defined explicitly before new implementation work starts. Given the current project goal, the recommended next milestone is a paper package: claims-to-evidence table, manuscript outline, figures/tables selected from archived artifacts, and any targeted external-baseline or ablation work needed to support the paper honestly.
 
 ## Milestones
 
@@ -20,138 +20,48 @@ v1.6 upgrades the engine from a soft optimizer with one greedy final snap into a
 - **v1.2 Training Benchmark and Recovery Evidence** - Phases 14-18 complete (completed 2026-04-15; archive: `.planning/milestones/v1.2-ROADMAP.md`)
 - **v1.3 Benchmark Campaign and Evidence Report** - Phases 19-23 complete (completed 2026-04-15; archive: `.planning/milestones/v1.3-ROADMAP.md`)
 - **v1.4 Recovery Performance Improvements** - Phases 24-28 complete (completed 2026-04-15; archive: `.planning/milestones/v1.4-ROADMAP.md`)
-- **v1.5 Training Proof and Recovery Guarantees** - Phases 29-33 complete (completed 2026-04-16; archive: `.planning/milestones/v1.5-ROADMAP.md`; audit: `.planning/v1.5-MILESTONE-AUDIT.md`)
-- **v1.6 Hybrid Search Pipeline and Exact Candidate Recovery** - Phases 34-35 complete, Phases 36-38 planned
+- **v1.5 Training Proof and Recovery Guarantees** - Phases 29-33 complete (completed 2026-04-16; archive: `.planning/milestones/v1.5-ROADMAP.md`)
+- **v1.6 Hybrid Search Pipeline and Exact Candidate Recovery** - Phases 34-38 complete (completed 2026-04-16; archive: `.planning/milestones/v1.6-ROADMAP.md`)
 
 ## Completed Milestone Context
 
-| Phase | Name | Status |
-|-------|------|--------|
-| 1-7 | v1.0 MVP | Complete |
-| 8-13 | v1.1 EML Compiler and Warm Starts | Complete |
-| 14-18 | v1.2 Training Benchmark and Recovery Evidence | Complete |
-| 19-23 | v1.3 Benchmark Campaign and Evidence Report | Complete |
-| 24-28 | v1.4 Recovery Performance Improvements | Complete |
-| 29-33 | v1.5 Training Proof and Recovery Guarantees | Complete |
+| Phase Range | Milestone | Status | Archive |
+|-------------|-----------|--------|---------|
+| 1-7 | v1.0 MVP | Complete | Historical planning pre-archive |
+| 8-13 | v1.1 EML Compiler and Warm Starts | Complete | `.planning/milestones/v1.1-ROADMAP.md` |
+| 14-18 | v1.2 Training Benchmark and Recovery Evidence | Complete | `.planning/milestones/v1.2-ROADMAP.md` |
+| 19-23 | v1.3 Benchmark Campaign and Evidence Report | Complete | `.planning/milestones/v1.3-ROADMAP.md` |
+| 24-28 | v1.4 Recovery Performance Improvements | Complete | `.planning/milestones/v1.4-ROADMAP.md` |
+| 29-33 | v1.5 Training Proof and Recovery Guarantees | Complete | `.planning/milestones/v1.5-ROADMAP.md` |
+| 34-38 | v1.6 Hybrid Search Pipeline and Exact Candidate Recovery | Complete | `.planning/milestones/v1.6-ROADMAP.md` |
 
-## Phases
+## Active Phases
 
-**Phase Numbering:**
-- v1.6 continues from completed Phase 33 and starts at Phase 34.
-- Integer phases are planned milestone work.
-- Decimal phases can be inserted later for urgent gap closure.
+No active phases. Start the next milestone with `$gsd-new-milestone`.
 
-- [x] **Phase 34: Exact Candidate Pool and Checkpoint Snapping** - Replace soft-loss-only winner selection with verifier-gated exact-candidate pooling across restarts and late hardening checkpoints. (requirements: HARD-01, HARD-02, HARD-03, HARD-04)
-- [x] **Phase 35: Snap-Neighborhood Discrete Cleanup** - Add target-free low-margin beam expansion and local discrete repair around failed snapped candidates. (requirements: DISC-01, DISC-02, DISC-03, DISC-04)
-- [ ] **Phase 36: Post-Snap Constant Refit and Numerical Stability** - Freeze snapped structures for coefficient refit and expand training-time numerical/domain controls for `exp` and `log` sensitive paths. (requirements: REFI-01, REFI-02, STAB-01, STAB-02)
-- [ ] **Phase 37: Compiler Macro Shortening and Warm-Start Coverage** - Add validated short-macro compiler shortcuts and measure their depth/node impact on warm-startable formulas. (requirements: COMP-01, COMP-02, COMP-03)
-- [ ] **Phase 38: Hybrid Recovery Evaluation and Regression Lockdown** - Re-run proof and campaign evidence with honest regime separation, weak-dominance tests, and archived baseline comparisons. (requirements: EVAL-01, EVAL-02, EVAL-03, EVAL-04)
+## Recommended Next Milestone
 
-## Phase Details
+**Paper Package and Publication Evidence**
 
-### Phase 34: Exact Candidate Pool and Checkpoint Snapping
-**Goal**: Users receive a final exact tree selected from a verifier-gated pool of snapped candidates rather than from the single minimum soft-loss endpoint.
-**Depends on**: Phase 33
-**Requirements**: HARD-01, HARD-02, HARD-03, HARD-04
-**Success Criteria** (what must be TRUE):
-  1. Training includes an explicit late hardening window that can emit exact snaps at selected checkpoints without changing faithful verification semantics.
-  2. Every restart records snapped exact candidates plus provenance, margins, and exact-loss metrics.
-  3. Final selection ranks exact candidates by verifier-owned criteria first and keeps the old final-snap candidate available as fallback.
-  4. CLI and run artifacts show which restart or checkpoint produced the winning exact candidate and which candidate the old selector would have chosen.
+Likely goals:
 
-### Phase 35: Snap-Neighborhood Discrete Cleanup
-**Goal**: Users can recover near-miss snaps through bounded target-free discrete expansion instead of relying on a single greedy slotwise argmax.
-**Depends on**: Phase 34
-**Requirements**: DISC-01, DISC-02, DISC-03, DISC-04
-**Success Criteria** (what must be TRUE):
-  1. Low-margin active slots can spawn bounded top-k beam variants with exact AST deduplication and provenance.
-  2. Local discrete repair works without access to the target AST and can explore snap-neighborhood edits around failed candidates.
-  3. Reports show which slots or subtrees changed, their margins, and how candidate quality changed after cleanup.
-  4. The original snapped candidate remains available as fallback whenever cleanup fails to improve verifier-owned ranking.
-
-### Phase 36: Post-Snap Constant Refit and Numerical Stability
-**Goal**: Users can improve structurally correct snapped candidates through post-snap coefficient refit while getting better training diagnostics for domain and numerical failures.
-**Depends on**: Phase 34, Phase 35
-**Requirements**: REFI-01, REFI-02, STAB-01, STAB-02
-**Success Criteria** (what must be TRUE):
-  1. Snapped exact trees can expose and refit literal constants while keeping discrete structure frozen.
-  2. Pre-refit and post-refit exact candidates are both preserved, and fallback acceptance rules prevent declared benchmark regressions.
-  3. Training diagnostics include `exp` overflow, `log`-domain violations, non-finite intermediates, clamp counts, and branch/domain anomaly summaries.
-  4. Positive-domain-safe penalties or parameterizations can be enabled during training without changing faithful verifier semantics after snapping.
-
-### Phase 37: Compiler Macro Shortening and Warm-Start Coverage
-**Goal**: Users can warm-start more formulas from shorter exact EML trees without loosening compiler correctness guarantees.
-**Depends on**: Phase 34, Phase 36
-**Requirements**: COMP-01, COMP-02, COMP-03
-**Success Criteria** (what must be TRUE):
-  1. Compiler tries validated short macros for canonical primitives and motifs before generic template expansion.
-  2. Diagnostics report macro hits, misses, and depth/node deltas against the previous compiler output.
-  3. Warm-start coverage expands for currently depth-limited formulas while unsupported cases still fail closed when no validated macro applies.
-  4. Regression tests lock canonical low-depth identities such as `log` and selected arithmetic motifs.
-
-### Phase 38: Hybrid Recovery Evaluation and Regression Lockdown
-**Goal**: Users can compare the upgraded hybrid pipeline against archived baselines with honest reporting about what improved and what remains unresolved.
-**Depends on**: Phase 34, Phase 35, Phase 36, Phase 37
-**Requirements**: EVAL-01, EVAL-02, EVAL-03, EVAL-04
-**Success Criteria** (what must be TRUE):
-  1. Proof and campaign suites keep pure blind, scaffolded blind, compile-only, warm-start, and perturbed-basin modes separate in both raw artifacts and aggregate reports.
-  2. v1.6 evidence compares directly against archived v1.5 proof and archived v1.4 campaign baselines without overwriting those milestone outputs.
-  3. Regression tests fail if candidate pooling, discrete cleanup, refit, or macro shortcuts perform worse than fallback exact-candidate behavior on declared benchmark cases.
-  4. Final docs and reports distinguish weak-dominance claims from likely-improvement claims and avoid overstating blind-discovery capability.
-
-## Dependency Order
-
-```text
-Phase 33 -> Phase 34 -> Phase 35 -> Phase 36 -> Phase 38
-Phase 34 -> Phase 37 -> Phase 38
-Phase 36 -> Phase 37
-```
-
-Phase 34 establishes the exact-candidate pool and fallback-preserving selector that later stages depend on. Phase 35 adds the target-free discrete cleanup stage on top of those candidate artifacts. Phase 36 then refits constants and hardens numerical/domain behavior for the discrete pipeline. Phase 37 shortens compiled trees and expands warm-start coverage using the new candidate handling and diagnostics. Phase 38 reruns proof and campaign evidence and locks the milestone with regression tests and honest reporting.
-
-## Requirement Coverage
-
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| HARD-01 | Phase 34 | Complete |
-| HARD-02 | Phase 34 | Complete |
-| HARD-03 | Phase 34 | Complete |
-| HARD-04 | Phase 34 | Complete |
-| DISC-01 | Phase 35 | Complete |
-| DISC-02 | Phase 35 | Complete |
-| DISC-03 | Phase 35 | Complete |
-| DISC-04 | Phase 35 | Complete |
-| REFI-01 | Phase 36 | Pending |
-| REFI-02 | Phase 36 | Pending |
-| STAB-01 | Phase 36 | Pending |
-| STAB-02 | Phase 36 | Pending |
-| COMP-01 | Phase 37 | Pending |
-| COMP-02 | Phase 37 | Pending |
-| COMP-03 | Phase 37 | Pending |
-| EVAL-01 | Phase 38 | Pending |
-| EVAL-02 | Phase 38 | Pending |
-| EVAL-03 | Phase 38 | Pending |
-| EVAL-04 | Phase 38 | Pending |
-
-**Coverage:** 19/19 v1.6 requirements mapped. No orphaned requirements. No duplicate phase assignments.
+- Build a claims-to-evidence table from `artifacts/proof/v1.6`, archived campaigns, and implementation docs.
+- Draft a manuscript outline that separates EML representation, differentiable training, snapping, discrete cleanup, compiler warm starts, and verification.
+- Select stable figures/tables from the archived proof/campaign reports.
+- Identify the smallest external-baseline or ablation work needed before paper submission.
+- Keep negative results explicit: pure blind recovery remains weak beyond shallow cases, while scaffolded, perturbed-basin, compiler-assisted, and verifier-gated regimes are stronger.
 
 ## Progress
 
-**Execution Order:** Phase 34 -> Phase 35 -> Phase 36 -> Phase 37 -> Phase 38
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1-7. v1.0 MVP | Complete | Complete | 2026-04-15 |
-| 8-13. v1.1 EML Compiler and Warm Starts | Complete | Complete | 2026-04-15 |
-| 14-18. v1.2 Training Benchmark and Recovery Evidence | Complete | Complete | 2026-04-15 |
-| 19-23. v1.3 Benchmark Campaign and Evidence Report | Complete | Complete | 2026-04-15 |
-| 24-28. v1.4 Recovery Performance Improvements | Complete | Complete | 2026-04-15 |
-| 29-33. v1.5 Training Proof and Recovery Guarantees | Complete | Complete | 2026-04-16 |
-| 34. Exact Candidate Pool and Checkpoint Snapping | 1/1 | Complete | 2026-04-16 |
-| 35. Snap-Neighborhood Discrete Cleanup | 1/1 | Complete | 2026-04-16 |
-| 36. Post-Snap Constant Refit and Numerical Stability | 0/0 | Pending | — |
-| 37. Compiler Macro Shortening and Warm-Start Coverage | 0/0 | Pending | — |
-| 38. Hybrid Recovery Evaluation and Regression Lockdown | 0/0 | Pending | — |
+| Milestone | Phases | Status | Completed |
+|-----------|--------|--------|-----------|
+| v1.0 MVP | 1-7 | Complete | 2026-04-15 |
+| v1.1 EML Compiler and Warm Starts | 8-13 | Complete | 2026-04-15 |
+| v1.2 Training Benchmark and Recovery Evidence | 14-18 | Complete | 2026-04-15 |
+| v1.3 Benchmark Campaign and Evidence Report | 19-23 | Complete | 2026-04-15 |
+| v1.4 Recovery Performance Improvements | 24-28 | Complete | 2026-04-15 |
+| v1.5 Training Proof and Recovery Guarantees | 29-33 | Complete | 2026-04-16 |
+| v1.6 Hybrid Search Pipeline and Exact Candidate Recovery | 34-38 | Complete | 2026-04-16 |
 
 ---
-*Roadmap updated: 2026-04-16 after completing Phase 35 discrete cleanup and advancing milestone v1.6 to Phase 36*
+*Roadmap updated: 2026-04-16 after archiving milestone v1.6*

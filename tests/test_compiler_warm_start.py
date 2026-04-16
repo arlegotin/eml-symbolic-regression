@@ -52,6 +52,29 @@ def test_compile_shockley_uses_lower_depth_template():
     assert result.validation.passed
     assert result.metadata.depth <= 13
     assert any(entry.rule == "scaled_exp_minus_one_template" for entry in result.metadata.trace)
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["scaled_exp_minus_one_template"]
+    assert result.metadata.macro_diagnostics["depth_delta"] > 0
+    assert result.metadata.macro_diagnostics["node_delta"] > 0
+
+
+def test_michaelis_relaxed_diagnostic_reports_direct_division_macro():
+    spec = get_demo("michaelis_menten")
+    splits = spec.make_splits(points=24, seed=0)
+    diagnostic = diagnose_compile_expression(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+
+    assert diagnostic["status"] == "unsupported"
+    assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
+    relaxed_metadata = diagnostic["relaxed"]["metadata"]
+    macro = relaxed_metadata["macro_diagnostics"]
+    assert relaxed_metadata["depth"] <= 14
+    assert macro["hits"] == ["direct_division_template"]
+    assert macro["depth_delta"] > 0
+    assert macro["node_delta"] > 0
 
 
 def test_compiler_fail_closed_negative_cases():
@@ -87,6 +110,10 @@ def test_compiler_diagnostics_include_relaxed_depth_metadata():
     assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
     assert diagnostic["relaxed"]["metadata"]["depth"] > 13
     assert diagnostic["relaxed"]["metadata"]["trace"]
+    macro = diagnostic["relaxed"]["metadata"]["macro_diagnostics"]
+    assert set(macro["hits"]) == {"scaled_exp_minus_one_template", "direct_division_template"}
+    assert macro["depth_delta"] > 0
+    assert macro["node_delta"] > 0
 
 
 def test_damped_oscillator_diagnostic_defers_unsupported_cos():
@@ -227,6 +254,36 @@ def test_cli_warm_start_promotes_beer_lambert_only_after_verification(tmp_path):
     assert payload["stage_statuses"]["trained_exact_recovery"] == "recovered"
 
 
+def test_cli_warm_start_promotes_shockley_after_macro_shortening(tmp_path):
+    output = tmp_path / "shockley-warm.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "demo",
+            "shockley",
+            "--warm-start-eml",
+            "--points",
+            "24",
+            "--output",
+            str(output),
+        ],
+        check=True,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+
+    assert "compiled_seed=recovered" in result.stdout
+    payload = json.loads(output.read_text())
+    assert payload["claim_status"] == "recovered"
+    assert payload["stage_statuses"]["compiled_seed"] == "recovered"
+    assert payload["stage_statuses"]["warm_start_attempt"] == "same_ast_return"
+    assert payload["stage_statuses"]["trained_exact_recovery"] == "recovered"
+    assert payload["compiled_eml"]["metadata"]["macro_diagnostics"]["hits"] == ["scaled_exp_minus_one_template"]
+
+
 def test_cli_reports_michaelis_menten_depth_gate_without_promotion(tmp_path):
     output = tmp_path / "mm-warm.json"
     subprocess.run(
@@ -251,6 +308,9 @@ def test_cli_reports_michaelis_menten_depth_gate_without_promotion(tmp_path):
     assert payload["claim_status"] == "verified_showcase"
     assert payload["stage_statuses"]["compiled_seed"] == "unsupported"
     assert payload["warm_start_eml"]["status"] == "unsupported"
+    relaxed_macro = payload["compiled_eml"]["diagnostic"]["relaxed"]["metadata"]["macro_diagnostics"]
+    assert relaxed_macro["hits"] == ["direct_division_template"]
+    assert relaxed_macro["depth_delta"] > 0
 
 
 def test_cli_reports_planck_as_stretch_without_promotion(tmp_path):
@@ -278,3 +338,6 @@ def test_cli_reports_planck_as_stretch_without_promotion(tmp_path):
     assert payload["stage_statuses"]["stretch"] == "reported"
     assert payload["stretch"]["guaranteed_trained_recovery"] is False
     assert payload["warm_start_eml"]["status"] == "unsupported"
+    relaxed_macro = payload["compiled_eml"]["diagnostic"]["relaxed"]["metadata"]["macro_diagnostics"]
+    assert set(relaxed_macro["hits"]) == {"scaled_exp_minus_one_template", "direct_division_template"}
+    assert relaxed_macro["depth_delta"] > 0

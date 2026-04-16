@@ -1,24 +1,24 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.6
-milestone_name: hybrid search pipeline and exact candidate recovery
-current_phase: 36
-status: ready
-stopped_at: Phase 35 complete; Phase 36 is ready for discussion and planning
-last_updated: "2026-04-16T10:50:51Z"
-last_activity: 2026-04-16 -- Phase 35 completed; target-free discrete cleanup landed
+milestone_name: Hybrid Search Pipeline and Exact Candidate Recovery
+current_phase: null
+status: milestone_complete
+stopped_at: v1.6 shipped, archived, and ready for next milestone planning
+last_updated: "2026-04-16T18:25:32Z"
+last_activity: 2026-04-16 -- v1.6 archived after final proof bundle verification
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 40
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 36
+**Current phase:** None
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,21 +26,21 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 35 is complete — target-free discrete cleanup is in place and Phase 36 is ready
+**Current focus:** v1.6 is shipped and archived; next recommended milestone is the paper package and publication evidence.
 
 ## Current Position
 
-Phase: 36 (Post-Snap Constant Refit and Numerical Stability) — NOT STARTED
+Phase: None — v1.6 milestone complete
 Plan: —
-Status: Ready for phase discussion/planning
-Last activity: 2026-04-16 -- Phase 35 completed; target-free discrete cleanup landed
-Progress: [####......] 40% by completed phases (v1.6: 2/5 planned)
+Status: Milestone complete; archives are finalized and the next action is paper-milestone planning
+Last activity: 2026-04-16 -- v1.6 archived after final proof bundle verification
+Progress: [##########] 100% by completed phases (v1.6: 5/5 planned)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: Historical v1 through v1.5 milestones complete, plus 1 plan completed in v1.6.
+- Total plans completed: Historical v1 through v1.5 milestones complete, plus 5 plans completed in v1.6.
 - Average duration: Not tracked
 - Total execution time: Not tracked
 
@@ -48,7 +48,7 @@ Progress: [####......] 40% by completed phases (v1.6: 2/5 planned)
 
 - v1.5 proved that representation and verifier contracts are strong while pure-blind shallow recovery remains weak (`2/18`) and deeper blind recovery degrades after depth 3.
 - v1.5 scaffolded shallow proof reached `18/18`, and perturbed basin proof reached `9/9`, showing that basin return is much stronger than blind discovery.
-- v1.6 focuses on search-quality upgrades that can weakly dominate the current exact-candidate selector while keeping archived baselines intact.
+- v1.6 delivered search-quality upgrades that weakly dominate the prior exact-candidate selector on declared paths while keeping archived baselines intact.
 
 ## Artifacts
 
@@ -59,16 +59,18 @@ Progress: [####......] 40% by completed phases (v1.6: 2/5 planned)
 | Milestone log | `.planning/MILESTONES.md` | Complete |
 | v1.4 comparison report | `artifacts/campaigns/v1.4-comparison/comparison.md` | Complete |
 | v1.5 proof report | `artifacts/proof/v1.5/proof-report.md` | Complete |
+| v1.6 proof report | `artifacts/proof/v1.6/proof-report.md` | Complete |
+| v1.6 proof manifest and anchor locks | `artifacts/proof/v1.6/proof-campaign.json`, `artifacts/proof/v1.6/anchor-locks.json` | Complete |
 | v1.5 milestone audit | `.planning/v1.5-MILESTONE-AUDIT.md` | Complete |
 | v1.5 archived requirements | `.planning/milestones/v1.5-REQUIREMENTS.md` | Complete |
 | v1.5 archived roadmap | `.planning/milestones/v1.5-ROADMAP.md` | Complete |
 | v1.5 archived phase context | `.planning/milestones/v1.5-phases/` | Complete |
-| v1.6 requirements | `.planning/REQUIREMENTS.md` | Complete |
-| v1.6 roadmap | `.planning/ROADMAP.md` | Complete |
-| Phase 34 planning and execution artifacts | `.planning/phases/34-exact-candidate-pool-and-checkpoint-snapping/` | Complete |
-| Phase 35 planning and execution artifacts | `.planning/phases/35-snap-neighborhood-discrete-cleanup/` | Complete |
+| v1.6 archived requirements | `.planning/milestones/v1.6-REQUIREMENTS.md` | Complete |
+| v1.6 archived roadmap | `.planning/milestones/v1.6-ROADMAP.md` | Complete |
+| v1.6 milestone audit | `.planning/milestones/v1.6-MILESTONE-AUDIT.md` | Complete |
+| v1.6 archived phase artifacts | `.planning/milestones/v1.6-phases/` | Complete |
 
-## Current Milestone
+## Completed Milestone
 
 **v1.6: Hybrid Search Pipeline and Exact Candidate Recovery**
 
@@ -82,15 +84,29 @@ Target features:
 - Short compiler macros and wider warm-start coverage with fail-closed fallback preserved.
 - Honest proof and campaign reruns against archived v1.5 and v1.4 baselines.
 
+## Next Recommended Milestone
+
+**Paper Package and Publication Evidence**
+
+Goal: Turn the current implementation and archived evidence into a defensible manuscript package.
+
+Likely work:
+
+- Claims-to-evidence table grounded in `artifacts/proof/v1.6/` and archived campaigns.
+- Manuscript outline and first paper draft.
+- Stable figure/table selection from proof and campaign reports.
+- External-baseline or ablation decision before submission.
+- Limitations section that keeps pure-blind weakness explicit.
+
 ## Phase Status
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
 | 34 | Exact Candidate Pool and Checkpoint Snapping | Complete | HARD-01, HARD-02, HARD-03, HARD-04 |
 | 35 | Snap-Neighborhood Discrete Cleanup | Complete | DISC-01, DISC-02, DISC-03, DISC-04 |
-| 36 | Post-Snap Constant Refit and Numerical Stability | Pending | REFI-01, REFI-02, STAB-01, STAB-02 |
-| 37 | Compiler Macro Shortening and Warm-Start Coverage | Pending | COMP-01, COMP-02, COMP-03 |
-| 38 | Hybrid Recovery Evaluation and Regression Lockdown | Pending | EVAL-01, EVAL-02, EVAL-03, EVAL-04 |
+| 36 | Post-Snap Constant Refit and Numerical Stability | Complete | REFI-01, REFI-02, STAB-01, STAB-02 |
+| 37 | Compiler Macro Shortening and Warm-Start Coverage | Complete | COMP-01, COMP-02, COMP-03 |
+| 38 | Hybrid Recovery Evaluation and Regression Lockdown | Complete | EVAL-01, EVAL-02, EVAL-03, EVAL-04 |
 
 ## Accumulated Context
 
@@ -112,6 +128,10 @@ Target features:
 - v1.6 will prioritize weak-dominance upgrades first: exact-candidate pooling, discrete cleanup, refit, and compiler shortening must preserve the current exact candidate as fallback on declared benchmark paths.
 - Phase 34 added explicit late hardening checkpoints, retained exact-candidate pooling, verifier-gated selection, and serialized legacy fallback provenance across blind, warm-start, basin, benchmark, and CLI flows.
 - Phase 35 added replayable active-slot alternatives, bounded exact-AST-deduplicated neighborhood expansion, target-free cleanup, and repair artifacts for blind, warm-start, and perturbed-basin flows while preserving the original selected candidate manifest.
+- Phase 36 added frozen exact-tree constant refit, pre/post refit benchmark artifacts, richer exp/log anomaly stats, and optional training-only log-safety penalties while keeping verification semantics faithful after snapping.
+- Phase 37 added explicit compiler macro diagnostics, a direct-division shortening path for true denominator motifs, CLI parity for unsupported compiler diagnostics, and verified Shockley warm-start coverage in the standard benchmark matrix while Michaelis-Menten and Planck remain fail-closed at the shipped compile gate.
+- Phase 38 added explicit regime summaries to campaign/proof reports, generic comparison lock manifests, corrected measured proof verdict labeling, and aggregate-level regression locks for selection/fallback/refit metrics.
+- The final v1.6 proof bundle was regenerated from the latest code state after fixing pure-blind report pluralization; manifest counts match campaign aggregates, pure-blind reports `2/18` threshold-eligible pure blind recoveries plus one repaired candidate, proof-basin reports `9/9` same-AST perturbed-tree returns, and anchor locks cover the five current proof campaigns plus v1.5/v1.4 anchors.
 
 ### Pending Todos
 
@@ -130,8 +150,8 @@ The milestone intentionally does not claim universal blind recovery of arbitrary
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: Phase 35 complete; Phase 36 is ready for discussion and planning
+Stopped at: v1.6 shipped, archived, and ready for next milestone planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after completing Phase 35 and advancing milestone v1.6 to Phase 36*
+*Last updated: 2026-04-16 after archiving milestone v1.6*

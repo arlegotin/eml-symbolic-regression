@@ -13,7 +13,7 @@ import numpy as np
 from .benchmark import START_MODES, RunFilter, list_builtin_suites, load_suite, run_benchmark_suite, write_aggregate_reports
 from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_presets, run_campaign
 from .cleanup import cleanup_candidate
-from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate
+from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
 from .datasets import demo_specs, get_demo, proof_dataset_manifest
 from .diagnostics import (
     DEFAULT_BASELINE_CAMPAIGNS,
@@ -119,7 +119,11 @@ def run_demo(args: argparse.Namespace) -> int:
             payload["compiled_eml_verification"] = compiled_verification.as_dict()
             stage_statuses["compiled_seed"] = compiled_verification.status
         except UnsupportedExpression as exc:
-            payload["compiled_eml"] = {"status": "unsupported", **exc.as_dict()}
+            payload["compiled_eml"] = {
+                "status": "unsupported",
+                **exc.as_dict(),
+                "diagnostic": diagnose_compile_expression(source_expr, compiler_config, validation_inputs),
+            }
             stage_statuses["compiled_seed"] = "unsupported"
 
     if args.warm_start_eml:
@@ -387,10 +391,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Compile, embed, perturb, train, snap, and verify a compiler warm start.",
     )
     demo.add_argument("--constant-policy", choices=("basis_only", "literal_constants"), default="literal_constants")
-    demo.add_argument("--max-compile-depth", type=int, default=12)
+    demo.add_argument("--max-compile-depth", type=int, default=13)
     demo.add_argument("--max-compile-nodes", type=int, default=256)
     demo.add_argument("--max-power", type=int, default=3)
-    demo.add_argument("--max-warm-depth", type=int, default=10)
+    demo.add_argument("--max-warm-depth", type=int, default=14)
     demo.add_argument("--warm-depth", type=int, default=0, help="Warm-start tree depth; 0 means compiled depth.")
     demo.add_argument("--warm-steps", type=int, default=1)
     demo.add_argument("--warm-restarts", type=int, default=1)
@@ -442,7 +446,7 @@ def build_parser() -> argparse.ArgumentParser:
     campaign.add_argument("--perturbation-noise", type=float, action="append", help="Only run this perturbation noise. Repeatable.")
     campaign.set_defaults(func=run_campaign_command)
 
-    proof_campaign = sub.add_parser("proof-campaign", help="Run the full v1.5 proof bundle and write a claim report.")
+    proof_campaign = sub.add_parser("proof-campaign", help="Run the current proof bundle and write a claim report.")
     proof_campaign.add_argument("--output-root", default=str(DEFAULT_PROOF_OUTPUT_ROOT), help="Directory that receives proof bundle outputs.")
     proof_campaign.add_argument("--overwrite", action="store_true", help="Allow writing into an existing proof bundle root.")
     proof_campaign.add_argument("--formula", action="append", help="Only run this formula ID across every proof preset. Repeatable.")
@@ -457,7 +461,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     proof_campaign.set_defaults(func=run_proof_campaign_command)
 
-    diagnostics = sub.add_parser("diagnostics", help="Inspect v1.3 baselines and rerun focused diagnostic subsets.")
+    diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)
 
     triage = diagnostics_sub.add_parser("triage", help="Write baseline failure triage reports.")
@@ -481,7 +485,7 @@ def build_parser() -> argparse.ArgumentParser:
     compare = diagnostics_sub.add_parser("compare", help="Compare candidate campaign folders against baselines.")
     compare.add_argument("--baseline", action="append", required=True, help="Baseline campaign folder. Repeat with matching --candidate.")
     compare.add_argument("--candidate", action="append", required=True, help="Candidate campaign folder. Repeat with matching --baseline.")
-    compare.add_argument("--output-dir", default="artifacts/campaigns/v1.4-comparison", help="Directory for comparison outputs.")
+    compare.add_argument("--output-dir", default="artifacts/campaigns/comparison", help="Directory for comparison outputs.")
     compare.set_defaults(func=diagnostics_compare_command)
 
     basin_bound = diagnostics_sub.add_parser("basin-bound", help="Write Beer-Lambert perturbed-basin bound evidence reports.")

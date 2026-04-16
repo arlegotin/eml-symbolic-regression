@@ -45,6 +45,52 @@
 
 ---
 
+## Milestone: v1.6 — Hybrid Search Pipeline and Exact Candidate Recovery
+
+**Shipped:** 2026-04-16
+**Phases:** 5 | **Plans:** 5 | **Sessions:** 2
+
+### What Was Built
+
+- Verifier-gated exact-candidate pooling across restarts and hardening checkpoints.
+- Target-free low-margin snap-neighborhood cleanup with fallback-preserving exact candidate artifacts.
+- Post-snap constant refit and richer `exp`/`log` anomaly diagnostics.
+- Macro-aware compiler shortening with conservative warm-start coverage expansion.
+- Regime-aware proof/campaign reports, immutable anchor locks, and final `artifacts/proof/v1.6` evidence bundle.
+
+### What Worked
+
+- Treating the optimizer as a candidate generator kept final recovery decisions verifier-owned.
+- Preserving fallback candidates made hybrid-stage upgrades safer to evaluate.
+- Report-level regression tests caught publication-facing truthfulness issues before closeout.
+- Checking report mtimes and aggregates prevented mixed-provenance proof artifacts from being mistaken for final evidence.
+
+### What Was Inefficient
+
+- The final proof bundle had to be rerun multiple times because report prose defects were found only during artifact inspection.
+- The GSD `audit-open` command failed with `output is not defined`, so open-artifact audit could not be used as intended.
+- Large proof/campaign artifacts make closeout slower and should be frozen deliberately before paper work begins.
+
+### Patterns Established
+
+- Every recovery claim must identify its evidence regime: pure blind, scaffolded blind, warm start, compile-only, catalog, or perturbed basin.
+- Human-readable reports must be checked against aggregate JSON before they are cited.
+- Publication evidence should be generated from a final code state and then locked with hashes.
+
+### Key Lessons
+
+1. The paper should frame EML training as a verified pipeline with separated evidence regimes, not as universal blind symbolic regression.
+2. Pure-blind weakness is a useful scientific result and should remain visible in the manuscript.
+3. Claims-to-evidence mapping should happen before any further optimizer work.
+
+### Cost Observations
+
+- Model mix: local Codex orchestration with focused terminal verification.
+- Sessions: 2
+- Notable: The long proof reruns were worth doing before tagging because they caught a final publication-facing typo and locked the authoritative evidence bundle.
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -54,6 +100,7 @@
 | v1.1 | 1 | 6 | Compiler warm starts moved claims from catalog verification to trained exact EML recovery. |
 | v1.2 | 1 | 5 | Benchmark evidence replaced anecdotal training checks. |
 | v1.3 | 1 | 5 | Campaign reports made benchmark evidence presentation-ready. |
+| v1.6 | 2 | 5 | Hybrid exact-candidate recovery and regime-aware proof evidence became paper-grade. |
 
 ### Cumulative Quality
 
@@ -62,9 +109,11 @@
 | v1.1 | 24 | Focused regression coverage | Compiler metadata and warm-start manifests |
 | v1.2 | 38 | Benchmark contract and runner coverage | Aggregate Markdown evidence |
 | v1.3 | 45 | Campaign, CSV, plot, report, and CLI coverage | CSV export, SVG figures, Markdown report |
+| v1.6 | 120+ | Candidate pooling, cleanup, refit, compiler, campaign, proof, and report coverage | Hash-locked proof and comparison artifacts |
 
 ### Top Lessons
 
 1. Recovery claims stay credible only when the verifier owns the final status.
 2. Measurement should precede optimizer changes when the failure modes are not yet clear.
 3. Reproducible artifacts are more useful than one-off demo output for this project.
+4. Manuscript claims should be written from aggregate-backed evidence rows, not from narrative report prose alone.

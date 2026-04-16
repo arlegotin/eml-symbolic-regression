@@ -42,15 +42,24 @@ def write_campaign_comparison(
     candidate_dirs: Iterable[Path],
     output_dir: Path,
 ) -> dict[str, Path]:
-    """Write before/after comparison artifacts for campaign directory pairs."""
+    """Write comparison artifacts plus immutable lock metadata for campaign directory pairs."""
 
     output_dir.mkdir(parents=True, exist_ok=True)
     comparison = build_campaign_comparison(tuple(baseline_dirs), tuple(candidate_dirs))
     json_path = output_dir / "comparison.json"
     markdown_path = output_dir / "comparison.md"
+    lock_path = output_dir / "comparison-lock.json"
     _write_json(json_path, comparison)
     markdown_path.write_text(render_campaign_comparison_markdown(comparison), encoding="utf-8")
-    return {"json": json_path, "markdown": markdown_path}
+    _write_json(
+        lock_path,
+        {
+            "schema": "eml.campaign_comparison_lock.v1",
+            "baseline_locks": comparison["baseline_locks"],
+            "candidate_locks": comparison["candidate_locks"],
+        },
+    )
+    return {"json": json_path, "markdown": markdown_path, "lock_json": lock_path}
 
 
 def build_perturbed_basin_bound_report(
@@ -240,6 +249,8 @@ def build_campaign_comparison(baseline_dirs: tuple[Path, ...], candidate_dirs: t
             }
             for baseline, candidate in zip(baseline_campaigns, candidate_campaigns)
         ],
+        "baseline_locks": [_baseline_lock(campaign) for campaign in baseline_campaigns],
+        "candidate_locks": [_baseline_lock(campaign) for campaign in candidate_campaigns],
         "categories": categories,
         "reproduce_command": _comparison_command(baseline_dirs, candidate_dirs),
     }
@@ -477,13 +488,13 @@ def render_baseline_triage_markdown(triage: Mapping[str, Any]) -> str:
 
 def render_campaign_comparison_markdown(comparison: Mapping[str, Any]) -> str:
     lines = [
-        "# v1.4 Before/After Campaign Comparison",
+        "# Campaign Comparison Report",
         "",
-        "Compares v1.4 campaign outputs against committed v1.3 baselines.",
+        "Compares candidate campaign outputs against archived baseline campaign outputs without merging their denominators.",
         "",
         "## Reproduce",
         "",
-        "Run this command from a clean checkout after v1.4 campaign folders exist:",
+        "Run this command from a clean checkout after the baseline and candidate campaign folders exist:",
         "",
         "```bash",
         comparison["reproduce_command"],
@@ -496,6 +507,25 @@ def render_campaign_comparison_markdown(comparison: Mapping[str, Any]) -> str:
     ]
     for pair in comparison["campaign_pairs"]:
         lines.append(f"| {pair['baseline']['path']} | {pair['candidate']['path']} |")
+
+    lines.extend(
+        [
+            "",
+            "## Anchor Locks",
+            "",
+            "### Baselines",
+            "",
+            "| Campaign | File | SHA-256 |",
+            "|----------|------|---------|",
+        ]
+    )
+    for campaign in comparison.get("baseline_locks", []):
+        for file_info in campaign.get("files", []):
+            lines.append(f"| {campaign['label']} | {file_info['path']} | `{file_info['sha256']}` |")
+    lines.extend(["", "### Candidates", "", "| Campaign | File | SHA-256 |", "|----------|------|---------|"])
+    for campaign in comparison.get("candidate_locks", []):
+        for file_info in campaign.get("files", []):
+            lines.append(f"| {campaign['label']} | {file_info['path']} | `{file_info['sha256']}` |")
 
     lines.extend(
         [
@@ -974,7 +1004,7 @@ def _comparison_command(baseline_dirs: tuple[Path, ...], candidate_dirs: tuple[P
     parts = ["PYTHONPATH=src", "python", "-m", "eml_symbolic_regression.cli", "diagnostics", "compare"]
     for baseline, candidate in zip(baseline_dirs, candidate_dirs):
         parts.extend(["--baseline", str(baseline), "--candidate", str(candidate)])
-    parts.extend(["--output-dir", "artifacts/campaigns/v1.4-comparison"])
+    parts.extend(["--output-dir", "artifacts/campaigns/comparison"])
     return " ".join(parts)
 
 

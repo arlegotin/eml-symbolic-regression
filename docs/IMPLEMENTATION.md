@@ -14,7 +14,7 @@ The package follows the roadmap in `.planning/ROADMAP.md`:
 8. `compiler.py` compiles a whitelisted SymPy subset into the existing exact EML `Expr` AST.
 9. `master_tree.py` also supports literal-constant terminal banks, AST-to-logit embedding, replayable slot alternatives, and exact neighborhood expansion helpers.
 10. `warm_start.py` embeds compiled ASTs, records deterministic perturbation metadata, trains through `fit_eml_tree()`, and classifies the post-snap outcome.
-11. `benchmark.py` defines repeatable benchmark suites, run execution, per-run artifacts, aggregate evidence reports, and recovery/failure taxonomy.
+11. `benchmark.py` defines repeatable benchmark suites, run execution, post-snap constant refit, per-run artifacts, aggregate evidence reports, and recovery/failure taxonomy.
 12. `campaign.py` defines campaign presets, guarded output folders, CSV exports, SVG figures, and `report.md` assembly.
 13. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
 
@@ -33,6 +33,8 @@ Compiler output is also not enough by itself. A compiled seed can verify as an e
 
 If that selected exact candidate still fails, benchmark flows can now run a bounded target-free cleanup stage over serialized low-margin slot alternatives. Cleanup never overwrites the original selected candidate in place; it records attempted edits and only promotes a repaired candidate when verifier-owned ranking improves.
 
+If the resulting exact candidate contains literal constants beyond the canonical `1` basis, benchmark flows can also run a frozen-structure post-snap refit stage. Refit exposes those literal leaves by stable AST path, keeps originally real constants on the real axis, records both pre-refit and post-refit exact candidates, and only promotes the refit candidate when verifier-owned ranking improves or matches the preserved fallback.
+
 ## Compiler Contract
 
 The compiler accepts a deliberately narrow SymPy subset:
@@ -45,6 +47,8 @@ The compiler accepts a deliberately narrow SymPy subset:
 Unsupported functions, unknown variables, unsafe constants, excessive powers, and depth/node budget excesses raise `UnsupportedExpression` with a machine-readable reason code. Every compiled result includes source expression, normalized expression, variables, constants, assumptions, rule trace, depth, and node count.
 
 `literal_constants` means fixed coefficients such as `-0.8`, `0.5`, and `2` are inserted as terminal constants and reported as such. It is not a pure `{1, eml}` synthesis claim.
+
+The compiler now routes supported shortcuts through an explicit macro layer. Current macro rules are `scaled_exp_minus_one_template` for Shockley-style `scale * (exp(a) - 1)` shapes and `direct_division_template` for true numerator-over-denominator motifs such as Michaelis-Menten. Compiler metadata records macro hits, misses, and the depth/node delta against a no-macro baseline so a shortcut can be audited instead of hidden behind an ad hoc branch.
 
 ## Warm Starts
 
@@ -85,6 +89,16 @@ Each run writes schema `eml.benchmark_run.v1` with:
 - structured errors for unsupported or failed execution paths.
 
 When a blind, warm-start, or perturbed-basin exact candidate fails verification, the run artifact can now include a `repair` section with attempted slot or subtree edits, their margins/probability gaps, accepted moves, and the repaired verifier report if cleanup wins. The original selected and fallback candidates from the optimizer manifest remain intact for weak-dominance comparisons.
+
+Run artifacts can also include a `refit` section. That section records:
+
+- the pre-refit exact candidate and its verifier-owned metrics,
+- the post-refit exact candidate with updated literal coefficients,
+- the constant-path diff for every refittable literal,
+- the final anomaly summary from refit optimization,
+- and the accept/reject decision against the preserved fallback candidate.
+
+Training anomaly summaries now distinguish `exp` clamp counts from `exp` overflow pressure, and they separately record `log` small-magnitude inputs, non-positive-real inputs, branch-cut hits, non-finite log inputs, and any training-only log-safety penalty that was applied.
 
 Aggregate reports use schema `eml.benchmark_aggregate.v1` and are written as both JSON and Markdown. Recovery rates are grouped by formula, start mode, perturbation level, depth, and seed group. `claim_status == "recovered"` is the only source of verifier-owned recovery counts.
 
@@ -153,10 +167,11 @@ The built-in demos mirror `sources/FOR_DEMO.md`:
 
 `exp` and `log` are exact EML candidates. The remaining demos are catalog showcase formulas with verifier reports, ready for future EML warm-start/curriculum work.
 
-Beer-Lambert now has a compiler-driven warm-start path:
+Beer-Lambert and Shockley now have compiler-driven warm-start paths:
 
 ```bash
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --warm-start-eml
+PYTHONPATH=src python -m eml_symbolic_regression.cli demo shockley --warm-start-eml --points 24
 ```
 
-At the default gates, Michaelis-Menten and Planck remain honest stretch reports: their catalog formulas verify, but their compiler/warm-start stages report unsupported depth instead of promotion.
+At the default gates, Michaelis-Menten and Planck remain honest stretch reports: their catalog formulas verify, the relaxed compiler diagnostics show the macro-shortened exact trees, but the shipped compile/warm-start stages still report unsupported depth instead of promotion.

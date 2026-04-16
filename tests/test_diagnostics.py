@@ -223,9 +223,15 @@ def test_campaign_comparison_writes_deltas_and_verdicts(tmp_path):
     paths = write_campaign_comparison((baseline,), (candidate,), tmp_path / "comparison")
     comparison = json.loads(paths["json"].read_text(encoding="utf-8"))
     markdown = paths["markdown"].read_text(encoding="utf-8")
+    lock = json.loads(paths["lock_json"].read_text(encoding="utf-8"))
 
     assert comparison["categories"]["overall"]["verdict"] == "improved"
     assert comparison["categories"]["blind_recovery"]["verdict"] == "improved"
     assert comparison["categories"]["compiler_coverage"]["verdict"] == "improved"
     assert comparison["categories"]["overall"]["delta"]["verifier_recovery_rate"] > 0
+    assert comparison["baseline_locks"]
+    assert comparison["candidate_locks"]
+    assert lock["baseline_locks"][0]["files"][0]["sha256"]
+    assert "# Campaign Comparison Report" in markdown
+    assert "## Anchor Locks" in markdown
     assert "diagnostics compare" in markdown

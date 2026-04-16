@@ -1,0 +1,5077 @@
+{
+  "budget": {
+    "clamp_exp_real": 40.0,
+    "constants": [
+      "1"
+    ],
+    "depth": 2,
+    "hardening_emit_interval": 2,
+    "hardening_steps": 4,
+    "hardening_temperature_end": 0.02,
+    "log_domain_epsilon": 1e-09,
+    "log_safety_imag_tolerance": 1e-06,
+    "log_safety_margin": 1e-06,
+    "log_safety_weight": 0.0,
+    "lr": 0.05,
+    "max_compile_depth": 13,
+    "max_compile_nodes": 256,
+    "max_power": 3,
+    "max_warm_depth": 14,
+    "refit_lr": 0.02,
+    "refit_steps": 80,
+    "restarts": 1,
+    "scaffold_initializers": [
+      "exp",
+      "log",
+      "scaled_exp"
+    ],
+    "steps": 8,
+    "warm_depth": 0,
+    "warm_restarts": 1,
+    "warm_steps": 16
+  },
+  "claim_class": "bounded_training_proof",
+  "claim_id": "paper-perturbed-true-tree-basin",
+  "claim_status": "recovered",
+  "dataset": {
+    "points": 12,
+    "tolerance": 1e-08
+  },
+  "dataset_manifest": {
+    "formula_id": "basin_depth2_exp_exp",
+    "manifest_sha256": "1677cca12ce55a44469b7d18b905e6a5430cf8bc18a3b6eb3bde1ac745e49a6a",
+    "points": 12,
+    "provenance": {
+      "candidate_name": "exact_eml",
+      "description": "Phase 31 deterministic exact EML basin target basin_depth2_exp_exp.",
+      "formula_id": "basin_depth2_exp_exp",
+      "normalized_dimensionless": true,
+      "source_document": "sources/NORTH_STAR.md",
+      "source_linkage": "Phase 31 deterministic exact EML basin inventory: depth-2 nested exp identity",
+      "symbolic_expression": "exp(exp(x))",
+      "variable": "x"
+    },
+    "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+    "schema": "eml.proof_dataset_manifest.v1",
+    "seed": 0,
+    "splits": [
+      {
+        "count": 12,
+        "domain": [
+          -0.8,
+          0.2
+        ],
+        "input_sha256": "96776eec87ee55a968b51f99261af749aeb87c0d85f808bcf8238ca1be2dec8e",
+        "name": "train",
+        "target_sha256": "ecd2109eb131babfdb964142e363159635a3e1f5a763bf5815677cac05516afc"
+      },
+      {
+        "count": 16,
+        "domain": [
+          -0.7,
+          0.1
+        ],
+        "input_sha256": "5ca405ec40edd7ee23970c1513075f726ab18556f804bcd2aa605c5df9c6816b",
+        "name": "heldout",
+        "target_sha256": "cb760d81571a6740f9716dc387ad8f9588cc34c8e9c313620861ff985ddc1f79"
+      },
+      {
+        "count": 16,
+        "domain": [
+          0.3,
+          0.5
+        ],
+        "input_sha256": "19d0bdf1aa0c9799e129c26ec4824c5511b1d0a6e61a05ca8e6d190280664f7d",
+        "name": "extrapolation",
+        "target_sha256": "4b1130ef45c7246e8c644d08fa00ec26bf930fe9d4376ddfa44649d36b6e4cbc"
+      }
+    ],
+    "tolerance": 1e-08,
+    "variable": "x"
+  },
+  "environment": {
+    "code_version": "c89610e",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "evidence_class": "perturbed_true_tree_recovered",
+  "metrics": {
+    "active_slot_count": 4,
+    "anomaly_clamp_count": 0,
+    "anomaly_exp_overflow_count": 0,
+    "anomaly_log_branch_cut_count": 9,
+    "anomaly_log_non_finite_input_count": 0,
+    "anomaly_log_non_positive_real_count": 9,
+    "anomaly_log_safety_penalty": 0.0,
+    "anomaly_log_small_magnitude_count": 0,
+    "best_loss": 1.1649356994016893e-208,
+    "candidate_pool_size": 4,
+    "changed_slot_count": 0,
+    "fallback_candidate_attempt_index": 0,
+    "fallback_candidate_checkpoint_index": null,
+    "fallback_candidate_id": "attempt-000-legacy-final-snap",
+    "fallback_candidate_source": "legacy_final_snap",
+    "fallback_post_snap_loss": 0.0,
+    "high_precision_max_error": 0.0,
+    "legacy_best_loss": 1.1649356994016893e-208,
+    "post_snap_loss": 0.0,
+    "refit_accepted": false,
+    "refit_constant_count": 0,
+    "refit_post_snap_loss": null,
+    "refit_status": "not_attempted",
+    "refit_verifier_status": null,
+    "repair_accepted_move_count": 0,
+    "repair_move_count": 0,
+    "repair_status": "not_attempted",
+    "repair_variant_count": null,
+    "repair_verifier_status": null,
+    "scaffold_coefficient": null,
+    "scaffold_source": "perturbed_true_tree",
+    "scaffold_strategy": null,
+    "selected_candidate_attempt_index": 0,
+    "selected_candidate_checkpoint_index": 0,
+    "selected_candidate_id": "attempt-000-hardening-00",
+    "selected_candidate_source": "hardening_checkpoint",
+    "selection_mode": "verifier_gated_exact_candidate_pool",
+    "snap_active_node_count": 5,
+    "snap_min_margin": 1.0,
+    "verifier_status": "recovered",
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "perturbed_true_tree": {
+    "diagnosis": {
+      "active_slot_count": 4,
+      "best_loss": 1.1649356994016893e-208,
+      "changed_slot_count": 0,
+      "mechanism": "same_ast_return",
+      "post_snap_loss": 0.0,
+      "return_kind": "same_ast_return",
+      "snap_min_margin": 1.0,
+      "status": "recovered",
+      "verifier_status": "recovered"
+    },
+    "embedding": {
+      "assignments": [
+        {
+          "choice": "child",
+          "slot": "root.left"
+        },
+        {
+          "choice": "var:x",
+          "slot": "root.L.left"
+        },
+        {
+          "choice": "const:1",
+          "slot": "root.L.right"
+        },
+        {
+          "choice": "const:1",
+          "slot": "root.right"
+        }
+      ],
+      "diagnostics": [],
+      "round_trip_equal": true,
+      "snap": {
+        "active_node_count": 5,
+        "ast": {
+          "metadata": {
+            "depth": 2,
+            "node_count": 5,
+            "source": "exact_ast"
+          },
+          "root": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          },
+          "schema": "eml.ast.v1",
+          "semantics": {
+            "constant_basis": [
+              "1"
+            ],
+            "log_branch": "principal",
+            "operator": "exp(x)-log(y)",
+            "verification_mode": "canonical"
+          },
+          "variables": [
+            "x"
+          ]
+        },
+        "decisions": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "path": "root.L",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root.L",
+            "probability": 1.0,
+            "side": "right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "right"
+          }
+        ],
+        "min_margin": 1.0
+      },
+      "success": true
+    },
+    "optimizer": {
+      "best_loss": 1.1649356994016893e-208,
+      "best_restart": {
+        "attempt_kind": "random",
+        "best_fit_loss": 1.1649356994016893e-208,
+        "candidate_ids": [
+          "attempt-000-legacy-final-snap",
+          "attempt-000-hardening-00",
+          "attempt-000-hardening-01",
+          "attempt-000-hardening-02"
+        ],
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "inf_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 3.392284925491948,
+              "max_exp_real": 1.2215037136625142,
+              "nan_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "inf_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 1.2215037136625142,
+              "max_exp_real": 0.7997485395578132,
+              "nan_count": 0
+            },
+            "root.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "inf_count": 0,
+              "log_branch_cut_count": 9,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 9,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 5.172996141519654,
+              "max_exp_real": 0.7997485395578132,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "exp_overflow_count": 0,
+          "inf_count": 0,
+          "log_branch_cut_count": 9,
+          "log_non_finite_input_count": 0,
+          "log_non_positive_real_count": 9,
+          "log_safety_penalty": 0.0,
+          "log_small_magnitude_count": 0,
+          "max_abs": 5.172996141519654,
+          "max_exp_real": 1.2215037136625142,
+          "nan_count": 0
+        },
+        "hardening_steps_completed": 4,
+        "initialization": {
+          "embedding": {
+            "assignments": [
+              {
+                "choice": "child",
+                "slot": "root.left"
+              },
+              {
+                "choice": "var:x",
+                "slot": "root.L.left"
+              },
+              {
+                "choice": "const:1",
+                "slot": "root.L.right"
+              },
+              {
+                "choice": "const:1",
+                "slot": "root.right"
+              }
+            ],
+            "diagnostics": [],
+            "round_trip_equal": true,
+            "snap": {
+              "active_node_count": 5,
+              "ast": {
+                "metadata": {
+                  "depth": 2,
+                  "node_count": 5,
+                  "source": "exact_ast"
+                },
+                "root": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "var",
+                      "name": "x"
+                    },
+                    "right": {
+                      "kind": "const",
+                      "value": "1"
+                    }
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "schema": "eml.ast.v1",
+                "semantics": {
+                  "constant_basis": [
+                    "1"
+                  ],
+                  "log_branch": "principal",
+                  "operator": "exp(x)-log(y)",
+                  "verification_mode": "canonical"
+                },
+                "variables": [
+                  "x"
+                ]
+              },
+              "decisions": [
+                {
+                  "choice": "child",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "var:x",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "right"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "right"
+                }
+              ],
+              "min_margin": 1.0
+            },
+            "success": true
+          },
+          "kind": "perturbed_true_tree",
+          "perturbation": {
+            "active_slot_changes": [
+              {
+                "changed": false,
+                "embedded_choice": "child",
+                "post_choice": "child",
+                "pre_choice": "child",
+                "slot": "root.left"
+              },
+              {
+                "changed": false,
+                "embedded_choice": "var:x",
+                "post_choice": "var:x",
+                "pre_choice": "var:x",
+                "slot": "root.L.left"
+              },
+              {
+                "changed": false,
+                "embedded_choice": "const:1",
+                "post_choice": "const:1",
+                "pre_choice": "const:1",
+                "slot": "root.L.right"
+              },
+              {
+                "changed": false,
+                "embedded_choice": "const:1",
+                "post_choice": "const:1",
+                "pre_choice": "const:1",
+                "slot": "root.right"
+              }
+            ],
+            "config": {
+              "noise_scale": 0.05,
+              "seed": 0
+            },
+            "post_snap": {
+              "active_node_count": 5,
+              "ast": {
+                "metadata": {
+                  "depth": 2,
+                  "node_count": 5,
+                  "source": "exact_ast"
+                },
+                "root": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "var",
+                      "name": "x"
+                    },
+                    "right": {
+                      "kind": "const",
+                      "value": "1"
+                    }
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "schema": "eml.ast.v1",
+                "semantics": {
+                  "constant_basis": [
+                    "1"
+                  ],
+                  "log_branch": "principal",
+                  "operator": "exp(x)-log(y)",
+                  "verification_mode": "canonical"
+                },
+                "variables": [
+                  "x"
+                ]
+              },
+              "decisions": [
+                {
+                  "choice": "child",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "var:x",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "right"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "right"
+                }
+              ],
+              "min_margin": 1.0
+            },
+            "pre_snap": {
+              "active_node_count": 5,
+              "ast": {
+                "metadata": {
+                  "depth": 2,
+                  "node_count": 5,
+                  "source": "exact_ast"
+                },
+                "root": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "var",
+                      "name": "x"
+                    },
+                    "right": {
+                      "kind": "const",
+                      "value": "1"
+                    }
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "schema": "eml.ast.v1",
+                "semantics": {
+                  "constant_basis": [
+                    "1"
+                  ],
+                  "log_branch": "principal",
+                  "operator": "exp(x)-log(y)",
+                  "verification_mode": "canonical"
+                },
+                "variables": [
+                  "x"
+                ]
+              },
+              "decisions": [
+                {
+                  "choice": "child",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "var:x",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "right"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "right"
+                }
+              ],
+              "min_margin": 1.0
+            }
+          },
+          "restart": 0,
+          "seed": 0
+        },
+        "legacy_candidate_id": "attempt-000-legacy-final-snap",
+        "random_restart": 0,
+        "restart": 0,
+        "seed": 0,
+        "steps_completed": 16
+      },
+      "candidates": [
+        {
+          "active_slot_count": 4,
+          "attempt_index": 0,
+          "attempt_kind": "random",
+          "best_fit_loss": 1.1649356994016893e-208,
+          "candidate_id": "attempt-000-hardening-00",
+          "checkpoint_index": 0,
+          "global_step": 16,
+          "hardening_step": 0,
+          "low_margin_slot_count": 0,
+          "lowest_margin_slots": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.L.left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.L.right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.right"
+            }
+          ],
+          "post_snap_loss": 0.0,
+          "random_restart": 0,
+          "seed": 0,
+          "selection_metrics": {
+            "complexity": 5,
+            "extrapolation_max_abs_error": 0.0,
+            "heldout_max_abs_error": 0.0,
+            "high_precision_max_error": 0.0,
+            "post_snap_loss": 0.0,
+            "soft_fit_loss": 1.1649356994016893e-208,
+            "status_rank": 0,
+            "verifier_status": "recovered"
+          },
+          "slot_alternatives": [
+            {
+              "alternatives": [
+                {
+                  "choice": "const:1",
+                  "probability": 8.568249856878353e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                }
+              ],
+              "current_choice": "var:x",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.L.left"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "var:x",
+                  "probability": 8.895923788191444e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                }
+              ],
+              "current_choice": "const:1",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.L.right"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "const:1",
+                  "probability": 1.0546422642218981e-26,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                },
+                {
+                  "choice": "var:x",
+                  "probability": 9.622128199046307e-27,
+                  "probability_gap": 1.0,
+                  "rank": 2
+                }
+              ],
+              "current_choice": "child",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.left"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "var:x",
+                  "probability": 8.061904093646731e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                },
+                {
+                  "choice": "child",
+                  "descendant_assignments": [
+                    {
+                      "choice": "var:x",
+                      "slot": "root.R.left"
+                    },
+                    {
+                      "choice": "var:x",
+                      "slot": "root.R.right"
+                    }
+                  ],
+                  "probability": 7.93629162148884e-27,
+                  "probability_gap": 1.0,
+                  "rank": 2,
+                  "subtree_root": "root.R"
+                }
+              ],
+              "current_choice": "const:1",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.right"
+            }
+          ],
+          "snap": {
+            "active_node_count": 5,
+            "ast": {
+              "metadata": {
+                "depth": 2,
+                "node_count": 5,
+                "source": "exact_ast"
+              },
+              "root": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "schema": "eml.ast.v1",
+              "semantics": {
+                "constant_basis": [
+                  "1"
+                ],
+                "log_branch": "principal",
+                "operator": "exp(x)-log(y)",
+                "verification_mode": "canonical"
+              },
+              "variables": [
+                "x"
+              ]
+            },
+            "decisions": [
+              {
+                "choice": "child",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "var:x",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "right"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "right"
+              }
+            ],
+            "min_margin": 1.0
+          },
+          "source": "hardening_checkpoint",
+          "temperature": 0.25,
+          "verification": {
+            "candidate_kind": "exact_eml",
+            "high_precision_max_error": 0.0,
+            "high_precision_status": "performed",
+            "reason": "verified",
+            "split_results": [
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "train",
+                "passed": true
+              },
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "heldout",
+                "passed": true
+              },
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "extrapolation",
+                "passed": true
+              }
+            ],
+            "status": "recovered",
+            "tolerance": 1e-08
+          }
+        },
+        {
+          "active_slot_count": 4,
+          "attempt_index": 0,
+          "attempt_kind": "random",
+          "best_fit_loss": 1.1649356994016893e-208,
+          "candidate_id": "attempt-000-hardening-01",
+          "checkpoint_index": 1,
+          "global_step": 18,
+          "hardening_step": 2,
+          "low_margin_slot_count": 0,
+          "lowest_margin_slots": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.L.left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.L.right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.right"
+            }
+          ],
+          "post_snap_loss": 0.0,
+          "random_restart": 0,
+          "seed": 0,
+          "selection_metrics": {
+            "complexity": 5,
+            "extrapolation_max_abs_error": 0.0,
+            "heldout_max_abs_error": 0.0,
+            "high_precision_max_error": 0.0,
+            "post_snap_loss": 0.0,
+            "soft_fit_loss": 1.1649356994016893e-208,
+            "status_rank": 0,
+            "verifier_status": "recovered"
+          },
+          "slot_alternatives": [
+            {
+              "alternatives": [
+                {
+                  "choice": "const:1",
+                  "probability": 8.568249851810124e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                }
+              ],
+              "current_choice": "var:x",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.L.left"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "var:x",
+                  "probability": 8.895923782828764e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                }
+              ],
+              "current_choice": "const:1",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.L.right"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "const:1",
+                  "probability": 1.054642263202135e-26,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                },
+                {
+                  "choice": "var:x",
+                  "probability": 9.622128189884542e-27,
+                  "probability_gap": 1.0,
+                  "rank": 2
+                }
+              ],
+              "current_choice": "child",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.left"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "var:x",
+                  "probability": 8.061904086720267e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                },
+                {
+                  "choice": "child",
+                  "descendant_assignments": [
+                    {
+                      "choice": "var:x",
+                      "slot": "root.R.left"
+                    },
+                    {
+                      "choice": "var:x",
+                      "slot": "root.R.right"
+                    }
+                  ],
+                  "probability": 7.936291614680278e-27,
+                  "probability_gap": 1.0,
+                  "rank": 2,
+                  "subtree_root": "root.R"
+                }
+              ],
+              "current_choice": "const:1",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.right"
+            }
+          ],
+          "snap": {
+            "active_node_count": 5,
+            "ast": {
+              "metadata": {
+                "depth": 2,
+                "node_count": 5,
+                "source": "exact_ast"
+              },
+              "root": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "schema": "eml.ast.v1",
+              "semantics": {
+                "constant_basis": [
+                  "1"
+                ],
+                "log_branch": "principal",
+                "operator": "exp(x)-log(y)",
+                "verification_mode": "canonical"
+              },
+              "variables": [
+                "x"
+              ]
+            },
+            "decisions": [
+              {
+                "choice": "child",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "var:x",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "right"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "right"
+              }
+            ],
+            "min_margin": 1.0
+          },
+          "source": "hardening_checkpoint",
+          "temperature": 0.09666666666666668,
+          "verification": {
+            "candidate_kind": "exact_eml",
+            "high_precision_max_error": 0.0,
+            "high_precision_status": "performed",
+            "reason": "verified",
+            "split_results": [
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "train",
+                "passed": true
+              },
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "heldout",
+                "passed": true
+              },
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "extrapolation",
+                "passed": true
+              }
+            ],
+            "status": "recovered",
+            "tolerance": 1e-08
+          }
+        },
+        {
+          "active_slot_count": 4,
+          "attempt_index": 0,
+          "attempt_kind": "random",
+          "best_fit_loss": 1.1649356994016893e-208,
+          "candidate_id": "attempt-000-hardening-02",
+          "checkpoint_index": 2,
+          "global_step": 19,
+          "hardening_step": 3,
+          "low_margin_slot_count": 0,
+          "lowest_margin_slots": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.L.left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.L.right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.right"
+            }
+          ],
+          "post_snap_loss": 0.0,
+          "random_restart": 0,
+          "seed": 0,
+          "selection_metrics": {
+            "complexity": 5,
+            "extrapolation_max_abs_error": 0.0,
+            "heldout_max_abs_error": 0.0,
+            "high_precision_max_error": 0.0,
+            "post_snap_loss": 0.0,
+            "soft_fit_loss": 1.1649356994016893e-208,
+            "status_rank": 0,
+            "verifier_status": "recovered"
+          },
+          "slot_alternatives": [
+            {
+              "alternatives": [
+                {
+                  "choice": "const:1",
+                  "probability": 8.56824984970224e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                }
+              ],
+              "current_choice": "var:x",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.L.left"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "var:x",
+                  "probability": 8.895923780598485e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                }
+              ],
+              "current_choice": "const:1",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.L.right"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "const:1",
+                  "probability": 1.0546422627780225e-26,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                },
+                {
+                  "choice": "var:x",
+                  "probability": 9.62212818607432e-27,
+                  "probability_gap": 1.0,
+                  "rank": 2
+                }
+              ],
+              "current_choice": "child",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.left"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "var:x",
+                  "probability": 8.061904083839548e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                },
+                {
+                  "choice": "child",
+                  "descendant_assignments": [
+                    {
+                      "choice": "var:x",
+                      "slot": "root.R.left"
+                    },
+                    {
+                      "choice": "var:x",
+                      "slot": "root.R.right"
+                    }
+                  ],
+                  "probability": 7.936291611848617e-27,
+                  "probability_gap": 1.0,
+                  "rank": 2,
+                  "subtree_root": "root.R"
+                }
+              ],
+              "current_choice": "const:1",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.right"
+            }
+          ],
+          "snap": {
+            "active_node_count": 5,
+            "ast": {
+              "metadata": {
+                "depth": 2,
+                "node_count": 5,
+                "source": "exact_ast"
+              },
+              "root": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "schema": "eml.ast.v1",
+              "semantics": {
+                "constant_basis": [
+                  "1"
+                ],
+                "log_branch": "principal",
+                "operator": "exp(x)-log(y)",
+                "verification_mode": "canonical"
+              },
+              "variables": [
+                "x"
+              ]
+            },
+            "decisions": [
+              {
+                "choice": "child",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "var:x",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "right"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "right"
+              }
+            ],
+            "min_margin": 1.0
+          },
+          "source": "hardening_checkpoint",
+          "temperature": 0.01999999999999999,
+          "verification": {
+            "candidate_kind": "exact_eml",
+            "high_precision_max_error": 0.0,
+            "high_precision_status": "performed",
+            "reason": "verified",
+            "split_results": [
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "train",
+                "passed": true
+              },
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "heldout",
+                "passed": true
+              },
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "extrapolation",
+                "passed": true
+              }
+            ],
+            "status": "recovered",
+            "tolerance": 1e-08
+          }
+        },
+        {
+          "active_slot_count": 4,
+          "attempt_index": 0,
+          "attempt_kind": "random",
+          "best_fit_loss": 1.1649356994016893e-208,
+          "candidate_id": "attempt-000-legacy-final-snap",
+          "checkpoint_index": null,
+          "global_step": 15,
+          "hardening_step": null,
+          "low_margin_slot_count": 0,
+          "lowest_margin_slots": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.L.left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.L.right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "probability": 1.0,
+              "slot": "root.right"
+            }
+          ],
+          "post_snap_loss": 0.0,
+          "random_restart": 0,
+          "seed": 0,
+          "selection_metrics": {
+            "complexity": 5,
+            "extrapolation_max_abs_error": 0.0,
+            "heldout_max_abs_error": 0.0,
+            "high_precision_max_error": 0.0,
+            "post_snap_loss": 0.0,
+            "soft_fit_loss": 1.1649356994016893e-208,
+            "status_rank": 0,
+            "verifier_status": "recovered"
+          },
+          "slot_alternatives": [
+            {
+              "alternatives": [
+                {
+                  "choice": "const:1",
+                  "probability": 8.568249859926546e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                }
+              ],
+              "current_choice": "var:x",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.L.left"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "var:x",
+                  "probability": 8.895923791416827e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                }
+              ],
+              "current_choice": "const:1",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.L.right"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "const:1",
+                  "probability": 1.0546422648352336e-26,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                },
+                {
+                  "choice": "var:x",
+                  "probability": 9.622128204556532e-27,
+                  "probability_gap": 1.0,
+                  "rank": 2
+                }
+              ],
+              "current_choice": "child",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.left"
+            },
+            {
+              "alternatives": [
+                {
+                  "choice": "var:x",
+                  "probability": 8.061904097812714e-27,
+                  "probability_gap": 1.0,
+                  "rank": 1
+                },
+                {
+                  "choice": "child",
+                  "descendant_assignments": [
+                    {
+                      "choice": "var:x",
+                      "slot": "root.R.left"
+                    },
+                    {
+                      "choice": "var:x",
+                      "slot": "root.R.right"
+                    }
+                  ],
+                  "probability": 7.936291625583824e-27,
+                  "probability_gap": 1.0,
+                  "rank": 2,
+                  "subtree_root": "root.R"
+                }
+              ],
+              "current_choice": "const:1",
+              "current_margin": 1.0,
+              "current_probability": 1.0,
+              "slot": "root.right"
+            }
+          ],
+          "snap": {
+            "active_node_count": 5,
+            "ast": {
+              "metadata": {
+                "depth": 2,
+                "node_count": 5,
+                "source": "exact_ast"
+              },
+              "root": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "schema": "eml.ast.v1",
+              "semantics": {
+                "constant_basis": [
+                  "1"
+                ],
+                "log_branch": "principal",
+                "operator": "exp(x)-log(y)",
+                "verification_mode": "canonical"
+              },
+              "variables": [
+                "x"
+              ]
+            },
+            "decisions": [
+              {
+                "choice": "child",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "var:x",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "right"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "right"
+              }
+            ],
+            "min_margin": 1.0
+          },
+          "source": "legacy_final_snap",
+          "temperature": 0.25,
+          "verification": {
+            "candidate_kind": "exact_eml",
+            "high_precision_max_error": 0.0,
+            "high_precision_status": "performed",
+            "reason": "verified",
+            "split_results": [
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "train",
+                "passed": true
+              },
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "heldout",
+                "passed": true
+              },
+              {
+                "max_abs_error": 0.0,
+                "max_imag_residue": 0.0,
+                "mse": 0.0,
+                "name": "extrapolation",
+                "passed": true
+              }
+            ],
+            "status": "recovered",
+            "tolerance": 1e-08
+          }
+        }
+      ],
+      "config": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "entropy_weight": 0.001,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_initializers": [],
+        "seed": 0,
+        "size_weight": 0.0001,
+        "steps": 16,
+        "temperature_end": 0.25,
+        "temperature_start": 2.0,
+        "variables": [
+          "x"
+        ]
+      },
+      "fallback_candidate": {
+        "active_slot_count": 4,
+        "attempt_index": 0,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.1649356994016893e-208,
+        "candidate_id": "attempt-000-legacy-final-snap",
+        "checkpoint_index": null,
+        "global_step": 15,
+        "hardening_step": null,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 0.0,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 5,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 0.0,
+          "soft_fit_loss": 1.1649356994016893e-208,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.568249859926546e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.895923791416827e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 1.0546422648352336e-26,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 9.622128204556532e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.061904097812714e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 7.936291625583824e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 5,
+          "ast": {
+            "metadata": {
+              "depth": 2,
+              "node_count": 5,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "var",
+                  "name": "x"
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "legacy_final_snap",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      },
+      "legacy_best_loss": 1.1649356994016893e-208,
+      "post_snap_loss": 0.0,
+      "restarts": [
+        {
+          "attempt_kind": "random",
+          "best_fit_loss": 1.1649356994016893e-208,
+          "candidate_ids": [
+            "attempt-000-legacy-final-snap",
+            "attempt-000-hardening-00",
+            "attempt-000-hardening-01",
+            "attempt-000-hardening-02"
+          ],
+          "final_anomalies": {
+            "by_node": {
+              "root": {
+                "clamp_count": 0,
+                "exp_overflow_count": 0,
+                "inf_count": 0,
+                "log_branch_cut_count": 0,
+                "log_non_finite_input_count": 0,
+                "log_non_positive_real_count": 0,
+                "log_safety_penalty": 0.0,
+                "log_small_magnitude_count": 0,
+                "max_abs": 3.392284925491948,
+                "max_exp_real": 1.2215037136625142,
+                "nan_count": 0
+              },
+              "root.L": {
+                "clamp_count": 0,
+                "exp_overflow_count": 0,
+                "inf_count": 0,
+                "log_branch_cut_count": 0,
+                "log_non_finite_input_count": 0,
+                "log_non_positive_real_count": 0,
+                "log_safety_penalty": 0.0,
+                "log_small_magnitude_count": 0,
+                "max_abs": 1.2215037136625142,
+                "max_exp_real": 0.7997485395578132,
+                "nan_count": 0
+              },
+              "root.R": {
+                "clamp_count": 0,
+                "exp_overflow_count": 0,
+                "inf_count": 0,
+                "log_branch_cut_count": 9,
+                "log_non_finite_input_count": 0,
+                "log_non_positive_real_count": 9,
+                "log_safety_penalty": 0.0,
+                "log_small_magnitude_count": 0,
+                "max_abs": 5.172996141519654,
+                "max_exp_real": 0.7997485395578132,
+                "nan_count": 0
+              }
+            },
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "inf_count": 0,
+            "log_branch_cut_count": 9,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 9,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 5.172996141519654,
+            "max_exp_real": 1.2215037136625142,
+            "nan_count": 0
+          },
+          "hardening_steps_completed": 4,
+          "initialization": {
+            "embedding": {
+              "assignments": [
+                {
+                  "choice": "child",
+                  "slot": "root.left"
+                },
+                {
+                  "choice": "var:x",
+                  "slot": "root.L.left"
+                },
+                {
+                  "choice": "const:1",
+                  "slot": "root.L.right"
+                },
+                {
+                  "choice": "const:1",
+                  "slot": "root.right"
+                }
+              ],
+              "diagnostics": [],
+              "round_trip_equal": true,
+              "snap": {
+                "active_node_count": 5,
+                "ast": {
+                  "metadata": {
+                    "depth": 2,
+                    "node_count": 5,
+                    "source": "exact_ast"
+                  },
+                  "root": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "eml",
+                      "left": {
+                        "kind": "var",
+                        "name": "x"
+                      },
+                      "right": {
+                        "kind": "const",
+                        "value": "1"
+                      }
+                    },
+                    "right": {
+                      "kind": "const",
+                      "value": "1"
+                    }
+                  },
+                  "schema": "eml.ast.v1",
+                  "semantics": {
+                    "constant_basis": [
+                      "1"
+                    ],
+                    "log_branch": "principal",
+                    "operator": "exp(x)-log(y)",
+                    "verification_mode": "canonical"
+                  },
+                  "variables": [
+                    "x"
+                  ]
+                },
+                "decisions": [
+                  {
+                    "choice": "child",
+                    "margin": 1.0,
+                    "path": "root",
+                    "probability": 1.0,
+                    "side": "left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "margin": 1.0,
+                    "path": "root.L",
+                    "probability": 1.0,
+                    "side": "left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "margin": 1.0,
+                    "path": "root.L",
+                    "probability": 1.0,
+                    "side": "right"
+                  },
+                  {
+                    "choice": "const:1",
+                    "margin": 1.0,
+                    "path": "root",
+                    "probability": 1.0,
+                    "side": "right"
+                  }
+                ],
+                "min_margin": 1.0
+              },
+              "success": true
+            },
+            "kind": "perturbed_true_tree",
+            "perturbation": {
+              "active_slot_changes": [
+                {
+                  "changed": false,
+                  "embedded_choice": "child",
+                  "post_choice": "child",
+                  "pre_choice": "child",
+                  "slot": "root.left"
+                },
+                {
+                  "changed": false,
+                  "embedded_choice": "var:x",
+                  "post_choice": "var:x",
+                  "pre_choice": "var:x",
+                  "slot": "root.L.left"
+                },
+                {
+                  "changed": false,
+                  "embedded_choice": "const:1",
+                  "post_choice": "const:1",
+                  "pre_choice": "const:1",
+                  "slot": "root.L.right"
+                },
+                {
+                  "changed": false,
+                  "embedded_choice": "const:1",
+                  "post_choice": "const:1",
+                  "pre_choice": "const:1",
+                  "slot": "root.right"
+                }
+              ],
+              "config": {
+                "noise_scale": 0.05,
+                "seed": 0
+              },
+              "post_snap": {
+                "active_node_count": 5,
+                "ast": {
+                  "metadata": {
+                    "depth": 2,
+                    "node_count": 5,
+                    "source": "exact_ast"
+                  },
+                  "root": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "eml",
+                      "left": {
+                        "kind": "var",
+                        "name": "x"
+                      },
+                      "right": {
+                        "kind": "const",
+                        "value": "1"
+                      }
+                    },
+                    "right": {
+                      "kind": "const",
+                      "value": "1"
+                    }
+                  },
+                  "schema": "eml.ast.v1",
+                  "semantics": {
+                    "constant_basis": [
+                      "1"
+                    ],
+                    "log_branch": "principal",
+                    "operator": "exp(x)-log(y)",
+                    "verification_mode": "canonical"
+                  },
+                  "variables": [
+                    "x"
+                  ]
+                },
+                "decisions": [
+                  {
+                    "choice": "child",
+                    "margin": 1.0,
+                    "path": "root",
+                    "probability": 1.0,
+                    "side": "left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "margin": 1.0,
+                    "path": "root.L",
+                    "probability": 1.0,
+                    "side": "left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "margin": 1.0,
+                    "path": "root.L",
+                    "probability": 1.0,
+                    "side": "right"
+                  },
+                  {
+                    "choice": "const:1",
+                    "margin": 1.0,
+                    "path": "root",
+                    "probability": 1.0,
+                    "side": "right"
+                  }
+                ],
+                "min_margin": 1.0
+              },
+              "pre_snap": {
+                "active_node_count": 5,
+                "ast": {
+                  "metadata": {
+                    "depth": 2,
+                    "node_count": 5,
+                    "source": "exact_ast"
+                  },
+                  "root": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "eml",
+                      "left": {
+                        "kind": "var",
+                        "name": "x"
+                      },
+                      "right": {
+                        "kind": "const",
+                        "value": "1"
+                      }
+                    },
+                    "right": {
+                      "kind": "const",
+                      "value": "1"
+                    }
+                  },
+                  "schema": "eml.ast.v1",
+                  "semantics": {
+                    "constant_basis": [
+                      "1"
+                    ],
+                    "log_branch": "principal",
+                    "operator": "exp(x)-log(y)",
+                    "verification_mode": "canonical"
+                  },
+                  "variables": [
+                    "x"
+                  ]
+                },
+                "decisions": [
+                  {
+                    "choice": "child",
+                    "margin": 1.0,
+                    "path": "root",
+                    "probability": 1.0,
+                    "side": "left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "margin": 1.0,
+                    "path": "root.L",
+                    "probability": 1.0,
+                    "side": "left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "margin": 1.0,
+                    "path": "root.L",
+                    "probability": 1.0,
+                    "side": "right"
+                  },
+                  {
+                    "choice": "const:1",
+                    "margin": 1.0,
+                    "path": "root",
+                    "probability": 1.0,
+                    "side": "right"
+                  }
+                ],
+                "min_margin": 1.0
+              }
+            },
+            "restart": 0,
+            "seed": 0
+          },
+          "legacy_candidate_id": "attempt-000-legacy-final-snap",
+          "random_restart": 0,
+          "restart": 0,
+          "seed": 0,
+          "steps_completed": 16
+        }
+      ],
+      "schema": "eml.run_manifest.v1",
+      "selected_candidate": {
+        "active_slot_count": 4,
+        "attempt_index": 0,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.1649356994016893e-208,
+        "candidate_id": "attempt-000-hardening-00",
+        "checkpoint_index": 0,
+        "global_step": 16,
+        "hardening_step": 0,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 0.0,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 5,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 0.0,
+          "soft_fit_loss": 1.1649356994016893e-208,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.568249856878353e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.895923788191444e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 1.0546422642218981e-26,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 9.622128199046307e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.061904093646731e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 7.93629162148884e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 5,
+          "ast": {
+            "metadata": {
+              "depth": 2,
+              "node_count": 5,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "var",
+                  "name": "x"
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      },
+      "selection": {
+        "candidate_count": 4,
+        "fallback_attempt_index": 0,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_source": "legacy_final_snap",
+        "mode": "verifier_gated_exact_candidate_pool",
+        "selected_attempt_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_source": "hardening_checkpoint"
+      },
+      "snap": {
+        "active_node_count": 5,
+        "ast": {
+          "metadata": {
+            "depth": 2,
+            "node_count": 5,
+            "source": "exact_ast"
+          },
+          "root": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          },
+          "schema": "eml.ast.v1",
+          "semantics": {
+            "constant_basis": [
+              "1"
+            ],
+            "log_branch": "principal",
+            "operator": "exp(x)-log(y)",
+            "verification_mode": "canonical"
+          },
+          "variables": [
+            "x"
+          ]
+        },
+        "decisions": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "path": "root.L",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root.L",
+            "probability": 1.0,
+            "side": "right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "right"
+          }
+        ],
+        "min_margin": 1.0
+      },
+      "status": "snapped_candidate"
+    },
+    "perturbation_config": {
+      "noise_scale": 0.05,
+      "seed": 0
+    },
+    "raw_status": "recovered",
+    "return_kind": "same_ast_return",
+    "schema": "eml.perturbed_true_tree_manifest.v1",
+    "status": "recovered",
+    "target_ast": {
+      "metadata": {
+        "depth": 2,
+        "node_count": 5,
+        "source": "perturbed_true_tree_target"
+      },
+      "root": {
+        "kind": "eml",
+        "left": {
+          "kind": "eml",
+          "left": {
+            "kind": "var",
+            "name": "x"
+          },
+          "right": {
+            "kind": "const",
+            "value": "1"
+          }
+        },
+        "right": {
+          "kind": "const",
+          "value": "1"
+        }
+      },
+      "schema": "eml.ast.v1",
+      "semantics": {
+        "constant_basis": [
+          "1"
+        ],
+        "log_branch": "principal",
+        "operator": "exp(x)-log(y)",
+        "verification_mode": "canonical"
+      },
+      "variables": [
+        "x"
+      ]
+    },
+    "target_metadata": {
+      "formula_id": "basin_depth2_exp_exp",
+      "source": "demo_spec_exact_eml"
+    },
+    "terminal_bank": {
+      "constants": [
+        "1"
+      ],
+      "variables": [
+        "x"
+      ]
+    },
+    "verification": {
+      "candidate_kind": "exact_eml",
+      "high_precision_max_error": 0.0,
+      "high_precision_status": "performed",
+      "reason": "verified",
+      "split_results": [
+        {
+          "max_abs_error": 0.0,
+          "max_imag_residue": 0.0,
+          "mse": 0.0,
+          "name": "train",
+          "passed": true
+        },
+        {
+          "max_abs_error": 0.0,
+          "max_imag_residue": 0.0,
+          "mse": 0.0,
+          "name": "heldout",
+          "passed": true
+        },
+        {
+          "max_abs_error": 0.0,
+          "max_imag_residue": 0.0,
+          "mse": 0.0,
+          "name": "extrapolation",
+          "passed": true
+        }
+      ],
+      "status": "recovered",
+      "tolerance": 1e-08
+    }
+  },
+  "provenance": {
+    "candidate_name": "exact_eml",
+    "description": "Phase 31 deterministic exact EML basin target basin_depth2_exp_exp.",
+    "formula_id": "basin_depth2_exp_exp",
+    "normalized_dimensionless": true,
+    "source_document": "sources/NORTH_STAR.md",
+    "source_linkage": "Phase 31 deterministic exact EML basin inventory: depth-2 nested exp identity",
+    "symbolic_expression": "exp(exp(x))",
+    "variable": "x"
+  },
+  "raw_status": "recovered",
+  "refit": {
+    "accepted": false,
+    "fixed_constants": [
+      {
+        "after": "1",
+        "before": "1",
+        "changed": false,
+        "path": "root.L.R",
+        "refittable": false
+      },
+      {
+        "after": "1",
+        "before": "1",
+        "changed": false,
+        "path": "root.R",
+        "refittable": false
+      }
+    ],
+    "post_refit_candidate": null,
+    "pre_refit_candidate": {
+      "ast": {
+        "metadata": {
+          "depth": 2,
+          "node_count": 5,
+          "source": "perturbed_true_tree_candidate"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "eml",
+            "left": {
+              "kind": "var",
+              "name": "x"
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "const",
+            "value": "1"
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "constants": [
+        {
+          "after": "1",
+          "before": "1",
+          "changed": false,
+          "path": "root.L.R",
+          "refittable": false
+        },
+        {
+          "after": "1",
+          "before": "1",
+          "changed": false,
+          "path": "root.R",
+          "refittable": false
+        }
+      ],
+      "metrics": {
+        "complexity": 5,
+        "extrapolation_max_abs_error": 0.0,
+        "heldout_max_abs_error": 0.0,
+        "high_precision_max_error": 0.0,
+        "post_snap_loss": 0.0,
+        "status_rank": 0,
+        "verifier_status": "recovered"
+      },
+      "post_snap_loss": 0.0,
+      "source": "perturbed_true_tree_candidate",
+      "symbolic_expression": "exp(exp(x))",
+      "symbolic_expression_render": {
+        "depth": 2,
+        "mode": "subprocess",
+        "node_count": 5,
+        "status": "rendered",
+        "timeout_seconds": 2.0
+      },
+      "verification": {
+        "candidate_kind": "exact_eml",
+        "high_precision_max_error": 0.0,
+        "high_precision_status": "performed",
+        "reason": "verified",
+        "split_results": [
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "train",
+            "passed": true
+          },
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "heldout",
+            "passed": true
+          },
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "extrapolation",
+            "passed": true
+          }
+        ],
+        "status": "recovered",
+        "tolerance": 1e-08
+      }
+    },
+    "reason": "no_refittable_constants",
+    "refittable_constants": [],
+    "selected_candidate": "pre_refit",
+    "status": "not_attempted"
+  },
+  "repair": null,
+  "repair_status": "not_attempted",
+  "return_kind": "same_ast_return",
+  "run": {
+    "artifact_path": "artifacts/proof/v1.6/campaigns/proof-basin/runs/proof-perturbed-basin/proof-perturbed-basin-basin-depth2-perturbed-8032a3545f71.json",
+    "case_id": "basin-depth2-perturbed",
+    "claim_id": "paper-perturbed-true-tree-basin",
+    "dataset": {
+      "points": 12,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": true,
+    "formula": "basin_depth2_exp_exp",
+    "optimizer": {
+      "clamp_exp_real": 40.0,
+      "constants": [
+        "1"
+      ],
+      "depth": 2,
+      "hardening_emit_interval": 2,
+      "hardening_steps": 4,
+      "hardening_temperature_end": 0.02,
+      "log_domain_epsilon": 1e-09,
+      "log_safety_imag_tolerance": 1e-06,
+      "log_safety_margin": 1e-06,
+      "log_safety_weight": 0.0,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 14,
+      "refit_lr": 0.02,
+      "refit_steps": 80,
+      "restarts": 1,
+      "scaffold_initializers": [
+        "exp",
+        "log",
+        "scaled_exp"
+      ],
+      "steps": 8,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 16
+    },
+    "perturbation_noise": 0.05,
+    "run_id": "proof-perturbed-basin-basin-depth2-perturbed-8032a3545f71",
+    "seed": 0,
+    "start_mode": "perturbed_tree",
+    "suite_id": "proof-perturbed-basin",
+    "tags": [
+      "v1.5",
+      "proof",
+      "bounded",
+      "perturbed_tree"
+    ],
+    "threshold_policy_id": "bounded_100_percent",
+    "training_mode": "perturbed_true_tree_training"
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "perturbed_true_tree_attempt": "recovered",
+    "post_snap_refit": "not_attempted",
+    "trained_exact_recovery": "recovered"
+  },
+  "status": "recovered",
+  "target_eml": {
+    "metadata": {
+      "depth": 2,
+      "node_count": 5,
+      "source": "demo_spec_exact_eml"
+    },
+    "root": {
+      "kind": "eml",
+      "left": {
+        "kind": "eml",
+        "left": {
+          "kind": "var",
+          "name": "x"
+        },
+        "right": {
+          "kind": "const",
+          "value": "1"
+        }
+      },
+      "right": {
+        "kind": "const",
+        "value": "1"
+      }
+    },
+    "schema": "eml.ast.v1",
+    "semantics": {
+      "constant_basis": [
+        "1"
+      ],
+      "log_branch": "principal",
+      "operator": "exp(x)-log(y)",
+      "verification_mode": "canonical"
+    },
+    "variables": [
+      "x"
+    ]
+  },
+  "threshold": {
+    "allowed_evidence_classes": [
+      "blind_training_recovered",
+      "compiler_warm_start_recovered",
+      "perturbed_true_tree_recovered",
+      "repaired_candidate",
+      "verified_equivalent"
+    ],
+    "description": "Declared bounded proof suites pass only at 100% verifier-owned training recovery.",
+    "fail_on_execution_error": true,
+    "fail_on_unsupported": true,
+    "id": "bounded_100_percent",
+    "policy_type": "bounded_rate",
+    "required_rate": 1.0
+  },
+  "timing": {
+    "elapsed_seconds": 1.0727302500163205
+  },
+  "trained_eml_candidate": {
+    "best_loss": 1.1649356994016893e-208,
+    "best_restart": {
+      "attempt_kind": "random",
+      "best_fit_loss": 1.1649356994016893e-208,
+      "candidate_ids": [
+        "attempt-000-legacy-final-snap",
+        "attempt-000-hardening-00",
+        "attempt-000-hardening-01",
+        "attempt-000-hardening-02"
+      ],
+      "final_anomalies": {
+        "by_node": {
+          "root": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "inf_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 3.392284925491948,
+            "max_exp_real": 1.2215037136625142,
+            "nan_count": 0
+          },
+          "root.L": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "inf_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 1.2215037136625142,
+            "max_exp_real": 0.7997485395578132,
+            "nan_count": 0
+          },
+          "root.R": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "inf_count": 0,
+            "log_branch_cut_count": 9,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 9,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 5.172996141519654,
+            "max_exp_real": 0.7997485395578132,
+            "nan_count": 0
+          }
+        },
+        "clamp_count": 0,
+        "exp_overflow_count": 0,
+        "inf_count": 0,
+        "log_branch_cut_count": 9,
+        "log_non_finite_input_count": 0,
+        "log_non_positive_real_count": 9,
+        "log_safety_penalty": 0.0,
+        "log_small_magnitude_count": 0,
+        "max_abs": 5.172996141519654,
+        "max_exp_real": 1.2215037136625142,
+        "nan_count": 0
+      },
+      "hardening_steps_completed": 4,
+      "initialization": {
+        "embedding": {
+          "assignments": [
+            {
+              "choice": "child",
+              "slot": "root.left"
+            },
+            {
+              "choice": "var:x",
+              "slot": "root.L.left"
+            },
+            {
+              "choice": "const:1",
+              "slot": "root.L.right"
+            },
+            {
+              "choice": "const:1",
+              "slot": "root.right"
+            }
+          ],
+          "diagnostics": [],
+          "round_trip_equal": true,
+          "snap": {
+            "active_node_count": 5,
+            "ast": {
+              "metadata": {
+                "depth": 2,
+                "node_count": 5,
+                "source": "exact_ast"
+              },
+              "root": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "schema": "eml.ast.v1",
+              "semantics": {
+                "constant_basis": [
+                  "1"
+                ],
+                "log_branch": "principal",
+                "operator": "exp(x)-log(y)",
+                "verification_mode": "canonical"
+              },
+              "variables": [
+                "x"
+              ]
+            },
+            "decisions": [
+              {
+                "choice": "child",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "var:x",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "right"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "right"
+              }
+            ],
+            "min_margin": 1.0
+          },
+          "success": true
+        },
+        "kind": "perturbed_true_tree",
+        "perturbation": {
+          "active_slot_changes": [
+            {
+              "changed": false,
+              "embedded_choice": "child",
+              "post_choice": "child",
+              "pre_choice": "child",
+              "slot": "root.left"
+            },
+            {
+              "changed": false,
+              "embedded_choice": "var:x",
+              "post_choice": "var:x",
+              "pre_choice": "var:x",
+              "slot": "root.L.left"
+            },
+            {
+              "changed": false,
+              "embedded_choice": "const:1",
+              "post_choice": "const:1",
+              "pre_choice": "const:1",
+              "slot": "root.L.right"
+            },
+            {
+              "changed": false,
+              "embedded_choice": "const:1",
+              "post_choice": "const:1",
+              "pre_choice": "const:1",
+              "slot": "root.right"
+            }
+          ],
+          "config": {
+            "noise_scale": 0.05,
+            "seed": 0
+          },
+          "post_snap": {
+            "active_node_count": 5,
+            "ast": {
+              "metadata": {
+                "depth": 2,
+                "node_count": 5,
+                "source": "exact_ast"
+              },
+              "root": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "schema": "eml.ast.v1",
+              "semantics": {
+                "constant_basis": [
+                  "1"
+                ],
+                "log_branch": "principal",
+                "operator": "exp(x)-log(y)",
+                "verification_mode": "canonical"
+              },
+              "variables": [
+                "x"
+              ]
+            },
+            "decisions": [
+              {
+                "choice": "child",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "var:x",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "right"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "right"
+              }
+            ],
+            "min_margin": 1.0
+          },
+          "pre_snap": {
+            "active_node_count": 5,
+            "ast": {
+              "metadata": {
+                "depth": 2,
+                "node_count": 5,
+                "source": "exact_ast"
+              },
+              "root": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "schema": "eml.ast.v1",
+              "semantics": {
+                "constant_basis": [
+                  "1"
+                ],
+                "log_branch": "principal",
+                "operator": "exp(x)-log(y)",
+                "verification_mode": "canonical"
+              },
+              "variables": [
+                "x"
+              ]
+            },
+            "decisions": [
+              {
+                "choice": "child",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "var:x",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "left"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root.L",
+                "probability": 1.0,
+                "side": "right"
+              },
+              {
+                "choice": "const:1",
+                "margin": 1.0,
+                "path": "root",
+                "probability": 1.0,
+                "side": "right"
+              }
+            ],
+            "min_margin": 1.0
+          }
+        },
+        "restart": 0,
+        "seed": 0
+      },
+      "legacy_candidate_id": "attempt-000-legacy-final-snap",
+      "random_restart": 0,
+      "restart": 0,
+      "seed": 0,
+      "steps_completed": 16
+    },
+    "candidates": [
+      {
+        "active_slot_count": 4,
+        "attempt_index": 0,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.1649356994016893e-208,
+        "candidate_id": "attempt-000-hardening-00",
+        "checkpoint_index": 0,
+        "global_step": 16,
+        "hardening_step": 0,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 0.0,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 5,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 0.0,
+          "soft_fit_loss": 1.1649356994016893e-208,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.568249856878353e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.895923788191444e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 1.0546422642218981e-26,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 9.622128199046307e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.061904093646731e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 7.93629162148884e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 5,
+          "ast": {
+            "metadata": {
+              "depth": 2,
+              "node_count": 5,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "var",
+                  "name": "x"
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 4,
+        "attempt_index": 0,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.1649356994016893e-208,
+        "candidate_id": "attempt-000-hardening-01",
+        "checkpoint_index": 1,
+        "global_step": 18,
+        "hardening_step": 2,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 0.0,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 5,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 0.0,
+          "soft_fit_loss": 1.1649356994016893e-208,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.568249851810124e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.895923782828764e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 1.054642263202135e-26,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 9.622128189884542e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.061904086720267e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 7.936291614680278e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 5,
+          "ast": {
+            "metadata": {
+              "depth": 2,
+              "node_count": 5,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "var",
+                  "name": "x"
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.09666666666666668,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 4,
+        "attempt_index": 0,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.1649356994016893e-208,
+        "candidate_id": "attempt-000-hardening-02",
+        "checkpoint_index": 2,
+        "global_step": 19,
+        "hardening_step": 3,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 0.0,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 5,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 0.0,
+          "soft_fit_loss": 1.1649356994016893e-208,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.56824984970224e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.895923780598485e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 1.0546422627780225e-26,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 9.62212818607432e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.061904083839548e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 7.936291611848617e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 5,
+          "ast": {
+            "metadata": {
+              "depth": 2,
+              "node_count": 5,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "var",
+                  "name": "x"
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.01999999999999999,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 4,
+        "attempt_index": 0,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.1649356994016893e-208,
+        "candidate_id": "attempt-000-legacy-final-snap",
+        "checkpoint_index": null,
+        "global_step": 15,
+        "hardening_step": null,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 0.0,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 5,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 0.0,
+          "soft_fit_loss": 1.1649356994016893e-208,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.568249859926546e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.895923791416827e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 1.0546422648352336e-26,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 9.622128204556532e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.061904097812714e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 7.936291625583824e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 5,
+          "ast": {
+            "metadata": {
+              "depth": 2,
+              "node_count": 5,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "var",
+                  "name": "x"
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "legacy_final_snap",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      }
+    ],
+    "config": {
+      "clamp_exp_real": 40.0,
+      "constants": [
+        "1"
+      ],
+      "depth": 2,
+      "entropy_weight": 0.001,
+      "hardening_emit_interval": 2,
+      "hardening_steps": 4,
+      "hardening_temperature_end": 0.02,
+      "log_domain_epsilon": 1e-09,
+      "log_safety_imag_tolerance": 1e-06,
+      "log_safety_margin": 1e-06,
+      "log_safety_weight": 0.0,
+      "lr": 0.05,
+      "refit_lr": 0.02,
+      "refit_steps": 80,
+      "restarts": 1,
+      "scaffold_initializers": [],
+      "seed": 0,
+      "size_weight": 0.0001,
+      "steps": 16,
+      "temperature_end": 0.25,
+      "temperature_start": 2.0,
+      "variables": [
+        "x"
+      ]
+    },
+    "fallback_candidate": {
+      "active_slot_count": 4,
+      "attempt_index": 0,
+      "attempt_kind": "random",
+      "best_fit_loss": 1.1649356994016893e-208,
+      "candidate_id": "attempt-000-legacy-final-snap",
+      "checkpoint_index": null,
+      "global_step": 15,
+      "hardening_step": null,
+      "low_margin_slot_count": 0,
+      "lowest_margin_slots": [
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.left"
+        },
+        {
+          "choice": "var:x",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.L.left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.L.right"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.right"
+        }
+      ],
+      "post_snap_loss": 0.0,
+      "random_restart": 0,
+      "seed": 0,
+      "selection_metrics": {
+        "complexity": 5,
+        "extrapolation_max_abs_error": 0.0,
+        "heldout_max_abs_error": 0.0,
+        "high_precision_max_error": 0.0,
+        "post_snap_loss": 0.0,
+        "soft_fit_loss": 1.1649356994016893e-208,
+        "status_rank": 0,
+        "verifier_status": "recovered"
+      },
+      "slot_alternatives": [
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 8.568249859926546e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            }
+          ],
+          "current_choice": "var:x",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.L.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.895923791416827e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.L.right"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 1.0546422648352336e-26,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "var:x",
+              "probability": 9.622128204556532e-27,
+              "probability_gap": 1.0,
+              "rank": 2
+            }
+          ],
+          "current_choice": "child",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.061904097812714e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "child",
+              "descendant_assignments": [
+                {
+                  "choice": "var:x",
+                  "slot": "root.R.left"
+                },
+                {
+                  "choice": "var:x",
+                  "slot": "root.R.right"
+                }
+              ],
+              "probability": 7.936291625583824e-27,
+              "probability_gap": 1.0,
+              "rank": 2,
+              "subtree_root": "root.R"
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.right"
+        }
+      ],
+      "snap": {
+        "active_node_count": 5,
+        "ast": {
+          "metadata": {
+            "depth": 2,
+            "node_count": 5,
+            "source": "exact_ast"
+          },
+          "root": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          },
+          "schema": "eml.ast.v1",
+          "semantics": {
+            "constant_basis": [
+              "1"
+            ],
+            "log_branch": "principal",
+            "operator": "exp(x)-log(y)",
+            "verification_mode": "canonical"
+          },
+          "variables": [
+            "x"
+          ]
+        },
+        "decisions": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "path": "root.L",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root.L",
+            "probability": 1.0,
+            "side": "right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "right"
+          }
+        ],
+        "min_margin": 1.0
+      },
+      "source": "legacy_final_snap",
+      "temperature": 0.25,
+      "verification": {
+        "candidate_kind": "exact_eml",
+        "high_precision_max_error": 0.0,
+        "high_precision_status": "performed",
+        "reason": "verified",
+        "split_results": [
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "train",
+            "passed": true
+          },
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "heldout",
+            "passed": true
+          },
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "extrapolation",
+            "passed": true
+          }
+        ],
+        "status": "recovered",
+        "tolerance": 1e-08
+      }
+    },
+    "legacy_best_loss": 1.1649356994016893e-208,
+    "post_snap_loss": 0.0,
+    "restarts": [
+      {
+        "attempt_kind": "random",
+        "best_fit_loss": 1.1649356994016893e-208,
+        "candidate_ids": [
+          "attempt-000-legacy-final-snap",
+          "attempt-000-hardening-00",
+          "attempt-000-hardening-01",
+          "attempt-000-hardening-02"
+        ],
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "inf_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 3.392284925491948,
+              "max_exp_real": 1.2215037136625142,
+              "nan_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "inf_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 1.2215037136625142,
+              "max_exp_real": 0.7997485395578132,
+              "nan_count": 0
+            },
+            "root.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "inf_count": 0,
+              "log_branch_cut_count": 9,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 9,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 5.172996141519654,
+              "max_exp_real": 0.7997485395578132,
+              "nan_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "exp_overflow_count": 0,
+          "inf_count": 0,
+          "log_branch_cut_count": 9,
+          "log_non_finite_input_count": 0,
+          "log_non_positive_real_count": 9,
+          "log_safety_penalty": 0.0,
+          "log_small_magnitude_count": 0,
+          "max_abs": 5.172996141519654,
+          "max_exp_real": 1.2215037136625142,
+          "nan_count": 0
+        },
+        "hardening_steps_completed": 4,
+        "initialization": {
+          "embedding": {
+            "assignments": [
+              {
+                "choice": "child",
+                "slot": "root.left"
+              },
+              {
+                "choice": "var:x",
+                "slot": "root.L.left"
+              },
+              {
+                "choice": "const:1",
+                "slot": "root.L.right"
+              },
+              {
+                "choice": "const:1",
+                "slot": "root.right"
+              }
+            ],
+            "diagnostics": [],
+            "round_trip_equal": true,
+            "snap": {
+              "active_node_count": 5,
+              "ast": {
+                "metadata": {
+                  "depth": 2,
+                  "node_count": 5,
+                  "source": "exact_ast"
+                },
+                "root": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "var",
+                      "name": "x"
+                    },
+                    "right": {
+                      "kind": "const",
+                      "value": "1"
+                    }
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "schema": "eml.ast.v1",
+                "semantics": {
+                  "constant_basis": [
+                    "1"
+                  ],
+                  "log_branch": "principal",
+                  "operator": "exp(x)-log(y)",
+                  "verification_mode": "canonical"
+                },
+                "variables": [
+                  "x"
+                ]
+              },
+              "decisions": [
+                {
+                  "choice": "child",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "var:x",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "right"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "right"
+                }
+              ],
+              "min_margin": 1.0
+            },
+            "success": true
+          },
+          "kind": "perturbed_true_tree",
+          "perturbation": {
+            "active_slot_changes": [
+              {
+                "changed": false,
+                "embedded_choice": "child",
+                "post_choice": "child",
+                "pre_choice": "child",
+                "slot": "root.left"
+              },
+              {
+                "changed": false,
+                "embedded_choice": "var:x",
+                "post_choice": "var:x",
+                "pre_choice": "var:x",
+                "slot": "root.L.left"
+              },
+              {
+                "changed": false,
+                "embedded_choice": "const:1",
+                "post_choice": "const:1",
+                "pre_choice": "const:1",
+                "slot": "root.L.right"
+              },
+              {
+                "changed": false,
+                "embedded_choice": "const:1",
+                "post_choice": "const:1",
+                "pre_choice": "const:1",
+                "slot": "root.right"
+              }
+            ],
+            "config": {
+              "noise_scale": 0.05,
+              "seed": 0
+            },
+            "post_snap": {
+              "active_node_count": 5,
+              "ast": {
+                "metadata": {
+                  "depth": 2,
+                  "node_count": 5,
+                  "source": "exact_ast"
+                },
+                "root": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "var",
+                      "name": "x"
+                    },
+                    "right": {
+                      "kind": "const",
+                      "value": "1"
+                    }
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "schema": "eml.ast.v1",
+                "semantics": {
+                  "constant_basis": [
+                    "1"
+                  ],
+                  "log_branch": "principal",
+                  "operator": "exp(x)-log(y)",
+                  "verification_mode": "canonical"
+                },
+                "variables": [
+                  "x"
+                ]
+              },
+              "decisions": [
+                {
+                  "choice": "child",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "var:x",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "right"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "right"
+                }
+              ],
+              "min_margin": 1.0
+            },
+            "pre_snap": {
+              "active_node_count": 5,
+              "ast": {
+                "metadata": {
+                  "depth": 2,
+                  "node_count": 5,
+                  "source": "exact_ast"
+                },
+                "root": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "eml",
+                    "left": {
+                      "kind": "var",
+                      "name": "x"
+                    },
+                    "right": {
+                      "kind": "const",
+                      "value": "1"
+                    }
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "schema": "eml.ast.v1",
+                "semantics": {
+                  "constant_basis": [
+                    "1"
+                  ],
+                  "log_branch": "principal",
+                  "operator": "exp(x)-log(y)",
+                  "verification_mode": "canonical"
+                },
+                "variables": [
+                  "x"
+                ]
+              },
+              "decisions": [
+                {
+                  "choice": "child",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "var:x",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "left"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root.L",
+                  "probability": 1.0,
+                  "side": "right"
+                },
+                {
+                  "choice": "const:1",
+                  "margin": 1.0,
+                  "path": "root",
+                  "probability": 1.0,
+                  "side": "right"
+                }
+              ],
+              "min_margin": 1.0
+            }
+          },
+          "restart": 0,
+          "seed": 0
+        },
+        "legacy_candidate_id": "attempt-000-legacy-final-snap",
+        "random_restart": 0,
+        "restart": 0,
+        "seed": 0,
+        "steps_completed": 16
+      }
+    ],
+    "schema": "eml.run_manifest.v1",
+    "selected_candidate": {
+      "active_slot_count": 4,
+      "attempt_index": 0,
+      "attempt_kind": "random",
+      "best_fit_loss": 1.1649356994016893e-208,
+      "candidate_id": "attempt-000-hardening-00",
+      "checkpoint_index": 0,
+      "global_step": 16,
+      "hardening_step": 0,
+      "low_margin_slot_count": 0,
+      "lowest_margin_slots": [
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.left"
+        },
+        {
+          "choice": "var:x",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.L.left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.L.right"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.right"
+        }
+      ],
+      "post_snap_loss": 0.0,
+      "random_restart": 0,
+      "seed": 0,
+      "selection_metrics": {
+        "complexity": 5,
+        "extrapolation_max_abs_error": 0.0,
+        "heldout_max_abs_error": 0.0,
+        "high_precision_max_error": 0.0,
+        "post_snap_loss": 0.0,
+        "soft_fit_loss": 1.1649356994016893e-208,
+        "status_rank": 0,
+        "verifier_status": "recovered"
+      },
+      "slot_alternatives": [
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 8.568249856878353e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            }
+          ],
+          "current_choice": "var:x",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.L.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.895923788191444e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.L.right"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 1.0546422642218981e-26,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "var:x",
+              "probability": 9.622128199046307e-27,
+              "probability_gap": 1.0,
+              "rank": 2
+            }
+          ],
+          "current_choice": "child",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.061904093646731e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "child",
+              "descendant_assignments": [
+                {
+                  "choice": "var:x",
+                  "slot": "root.R.left"
+                },
+                {
+                  "choice": "var:x",
+                  "slot": "root.R.right"
+                }
+              ],
+              "probability": 7.93629162148884e-27,
+              "probability_gap": 1.0,
+              "rank": 2,
+              "subtree_root": "root.R"
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.right"
+        }
+      ],
+      "snap": {
+        "active_node_count": 5,
+        "ast": {
+          "metadata": {
+            "depth": 2,
+            "node_count": 5,
+            "source": "exact_ast"
+          },
+          "root": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          },
+          "schema": "eml.ast.v1",
+          "semantics": {
+            "constant_basis": [
+              "1"
+            ],
+            "log_branch": "principal",
+            "operator": "exp(x)-log(y)",
+            "verification_mode": "canonical"
+          },
+          "variables": [
+            "x"
+          ]
+        },
+        "decisions": [
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "path": "root.L",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root.L",
+            "probability": 1.0,
+            "side": "right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "right"
+          }
+        ],
+        "min_margin": 1.0
+      },
+      "source": "hardening_checkpoint",
+      "temperature": 0.25,
+      "verification": {
+        "candidate_kind": "exact_eml",
+        "high_precision_max_error": 0.0,
+        "high_precision_status": "performed",
+        "reason": "verified",
+        "split_results": [
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "train",
+            "passed": true
+          },
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "heldout",
+            "passed": true
+          },
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "extrapolation",
+            "passed": true
+          }
+        ],
+        "status": "recovered",
+        "tolerance": 1e-08
+      }
+    },
+    "selection": {
+      "candidate_count": 4,
+      "fallback_attempt_index": 0,
+      "fallback_candidate_id": "attempt-000-legacy-final-snap",
+      "fallback_source": "legacy_final_snap",
+      "mode": "verifier_gated_exact_candidate_pool",
+      "selected_attempt_index": 0,
+      "selected_candidate_id": "attempt-000-hardening-00",
+      "selected_source": "hardening_checkpoint"
+    },
+    "snap": {
+      "active_node_count": 5,
+      "ast": {
+        "metadata": {
+          "depth": 2,
+          "node_count": 5,
+          "source": "exact_ast"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "eml",
+            "left": {
+              "kind": "var",
+              "name": "x"
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          },
+          "right": {
+            "kind": "const",
+            "value": "1"
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "decisions": [
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "path": "root",
+          "probability": 1.0,
+          "side": "left"
+        },
+        {
+          "choice": "var:x",
+          "margin": 1.0,
+          "path": "root.L",
+          "probability": 1.0,
+          "side": "left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "path": "root.L",
+          "probability": 1.0,
+          "side": "right"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "path": "root",
+          "probability": 1.0,
+          "side": "right"
+        }
+      ],
+      "min_margin": 1.0
+    },
+    "status": "snapped_candidate"
+  },
+  "trained_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": 0.0,
+    "high_precision_status": "performed",
+    "reason": "verified",
+    "split_results": [
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "train",
+        "passed": true
+      },
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "heldout",
+        "passed": true
+      },
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "extrapolation",
+        "passed": true
+      }
+    ],
+    "status": "recovered",
+    "tolerance": 1e-08
+  },
+  "training_mode": "perturbed_true_tree_training"
+}

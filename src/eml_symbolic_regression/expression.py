@@ -10,7 +10,7 @@ import numpy as np
 import sympy as sp
 import torch
 
-from .semantics import eml_numpy, eml_torch
+from .semantics import AnomalyStats, TrainingSemanticsConfig, eml_numpy, eml_torch
 
 AST_SCHEMA = "eml.ast.v1"
 
@@ -44,6 +44,15 @@ class Candidate(Protocol):
         ...
 
 
+@dataclass(frozen=True)
+class ConstantOccurrence:
+    """A literal constant occurrence inside an exact AST."""
+
+    path: str
+    value: complex
+    refittable: bool
+
+
 class Expr:
     """Base class for exact EML AST nodes."""
 
@@ -52,7 +61,16 @@ class Expr:
     def evaluate_numpy(self, context: Mapping[str, Any]) -> np.ndarray:
         raise NotImplementedError
 
-    def evaluate_torch(self, context: Mapping[str, torch.Tensor], *, training: bool = False) -> torch.Tensor:
+    def evaluate_torch(
+        self,
+        context: Mapping[str, torch.Tensor],
+        *,
+        training: bool = False,
+        stats: AnomalyStats | None = None,
+        semantics: TrainingSemanticsConfig | None = None,
+        constant_overrides: Mapping[str, torch.Tensor] | None = None,
+        node: str = "root",
+    ) -> torch.Tensor:
         raise NotImplementedError
 
     def evaluate_mpmath(self, context: Mapping[str, Any]) -> mp.mpc:
@@ -96,6 +114,12 @@ class Expr:
     def constants(self) -> set[complex]:
         raise NotImplementedError
 
+    def constant_occurrences(self, *, path: str = "root", fixed_basis: tuple[complex, ...] = (1.0 + 0.0j,)) -> tuple[ConstantOccurrence, ...]:
+        raise NotImplementedError
+
+    def with_constant_updates(self, updates: Mapping[str, complex], *, path: str = "root") -> "Expr":
+        raise NotImplementedError
+
 
 def _constant_like(context: Mapping[str, Any], value: complex) -> np.ndarray:
     if context:
@@ -118,7 +142,19 @@ class Const(Expr):
     def evaluate_numpy(self, context: Mapping[str, Any]) -> np.ndarray:
         return _constant_like(context, self.value)
 
-    def evaluate_torch(self, context: Mapping[str, torch.Tensor], *, training: bool = False) -> torch.Tensor:
+    def evaluate_torch(
+        self,
+        context: Mapping[str, torch.Tensor],
+        *,
+        training: bool = False,
+        stats: AnomalyStats | None = None,
+        semantics: TrainingSemanticsConfig | None = None,
+        constant_overrides: Mapping[str, torch.Tensor] | None = None,
+        node: str = "root",
+    ) -> torch.Tensor:
+        if constant_overrides is not None and node in constant_overrides:
+            value = constant_overrides[node]
+            return value.to(dtype=torch.complex128) if isinstance(value, torch.Tensor) else _constant_like_torch(context, complex(value))
         return _constant_like_torch(context, self.value)
 
     def evaluate_mpmath(self, context: Mapping[str, Any]) -> mp.mpc:
@@ -144,6 +180,20 @@ class Const(Expr):
     def constants(self) -> set[complex]:
         return {complex(self.value)}
 
+    def constant_occurrences(
+        self,
+        *,
+        path: str = "root",
+        fixed_basis: tuple[complex, ...] = (1.0 + 0.0j,),
+    ) -> tuple[ConstantOccurrence, ...]:
+        basis = tuple(complex(value) for value in fixed_basis)
+        return (ConstantOccurrence(path=path, value=complex(self.value), refittable=complex(self.value) not in basis),)
+
+    def with_constant_updates(self, updates: Mapping[str, complex], *, path: str = "root") -> "Expr":
+        if path not in updates:
+            return self
+        return Const(complex(updates[path]))
+
 
 @dataclass(frozen=True)
 class Var(Expr):
@@ -152,7 +202,16 @@ class Var(Expr):
     def evaluate_numpy(self, context: Mapping[str, Any]) -> np.ndarray:
         return np.asarray(context[self.name], dtype=np.complex128)
 
-    def evaluate_torch(self, context: Mapping[str, torch.Tensor], *, training: bool = False) -> torch.Tensor:
+    def evaluate_torch(
+        self,
+        context: Mapping[str, torch.Tensor],
+        *,
+        training: bool = False,
+        stats: AnomalyStats | None = None,
+        semantics: TrainingSemanticsConfig | None = None,
+        constant_overrides: Mapping[str, torch.Tensor] | None = None,
+        node: str = "root",
+    ) -> torch.Tensor:
         return context[self.name].to(dtype=torch.complex128)
 
     def evaluate_mpmath(self, context: Mapping[str, Any]) -> mp.mpc:
@@ -176,6 +235,17 @@ class Var(Expr):
     def constants(self) -> set[complex]:
         return set()
 
+    def constant_occurrences(
+        self,
+        *,
+        path: str = "root",
+        fixed_basis: tuple[complex, ...] = (1.0 + 0.0j,),
+    ) -> tuple[ConstantOccurrence, ...]:
+        return ()
+
+    def with_constant_updates(self, updates: Mapping[str, complex], *, path: str = "root") -> "Expr":
+        return self
+
 
 @dataclass(frozen=True)
 class Eml(Expr):
@@ -185,11 +255,37 @@ class Eml(Expr):
     def evaluate_numpy(self, context: Mapping[str, Any]) -> np.ndarray:
         return eml_numpy(self.left.evaluate_numpy(context), self.right.evaluate_numpy(context))
 
-    def evaluate_torch(self, context: Mapping[str, torch.Tensor], *, training: bool = False) -> torch.Tensor:
+    def evaluate_torch(
+        self,
+        context: Mapping[str, torch.Tensor],
+        *,
+        training: bool = False,
+        stats: AnomalyStats | None = None,
+        semantics: TrainingSemanticsConfig | None = None,
+        constant_overrides: Mapping[str, torch.Tensor] | None = None,
+        node: str = "root",
+    ) -> torch.Tensor:
         return eml_torch(
-            self.left.evaluate_torch(context, training=training),
-            self.right.evaluate_torch(context, training=training),
+            self.left.evaluate_torch(
+                context,
+                training=training,
+                stats=stats,
+                semantics=semantics,
+                constant_overrides=constant_overrides,
+                node=f"{node}.L",
+            ),
+            self.right.evaluate_torch(
+                context,
+                training=training,
+                stats=stats,
+                semantics=semantics,
+                constant_overrides=constant_overrides,
+                node=f"{node}.R",
+            ),
             training=training,
+            semantics=semantics,
+            stats=stats,
+            node=node,
         )
 
     def evaluate_mpmath(self, context: Mapping[str, Any]) -> mp.mpc:
@@ -212,6 +308,23 @@ class Eml(Expr):
 
     def constants(self) -> set[complex]:
         return self.left.constants() | self.right.constants()
+
+    def constant_occurrences(
+        self,
+        *,
+        path: str = "root",
+        fixed_basis: tuple[complex, ...] = (1.0 + 0.0j,),
+    ) -> tuple[ConstantOccurrence, ...]:
+        return (
+            *self.left.constant_occurrences(path=f"{path}.L", fixed_basis=fixed_basis),
+            *self.right.constant_occurrences(path=f"{path}.R", fixed_basis=fixed_basis),
+        )
+
+    def with_constant_updates(self, updates: Mapping[str, complex], *, path: str = "root") -> "Expr":
+        return Eml(
+            self.left.with_constant_updates(updates, path=f"{path}.L"),
+            self.right.with_constant_updates(updates, path=f"{path}.R"),
+        )
 
 
 def expr_from_node(node: Mapping[str, Any]) -> Expr:

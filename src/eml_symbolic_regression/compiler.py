@@ -30,6 +30,7 @@ class CompilerConfig:
     max_nodes: int = 256
     max_power: int = 3
     validation_tolerance: float = 1e-8
+    enable_macros: bool = True
 
 
 @dataclass(frozen=True)
@@ -62,6 +63,7 @@ class CompileMetadata:
     assumptions: tuple[str, ...]
     trace: tuple[RuleTrace, ...]
     unsupported_reason: str | None = None
+    macro_diagnostics: Mapping[str, Any] | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -75,6 +77,7 @@ class CompileMetadata:
             "assumptions": list(self.assumptions),
             "trace": [entry.as_dict() for entry in self.trace],
             "unsupported_reason": self.unsupported_reason,
+            "macro_diagnostics": dict(self.macro_diagnostics) if self.macro_diagnostics is not None else None,
         }
 
 
@@ -113,6 +116,12 @@ class CompileResult:
             ),
             "validation": self.validation.as_dict() if self.validation else None,
         }
+
+
+MACRO_RULES = (
+    "direct_division_template",
+    "scaled_exp_minus_one_template",
+)
 
 
 class UnsupportedExpression(ValueError):
@@ -241,9 +250,41 @@ class _Compiler:
         )
 
     def _compile_special(self, expr: sp.Expr) -> Expr | None:
+        if not self.config.enable_macros:
+            return None
+        if isinstance(expr, sp.Mul):
+            macro = self._compile_direct_division(expr)
+            if macro is not None:
+                return macro
         if isinstance(expr, sp.Add):
             return self._compile_scaled_exp_minus_one(expr)
         return None
+
+    def _compile_direct_division(self, expr: sp.Mul) -> Expr | None:
+        numerator_factors: list[sp.Expr] = []
+        denominator_factors: list[sp.Expr] = []
+        for factor in expr.args:
+            if isinstance(factor, sp.Pow) and factor.exp == -1:
+                denominator_factors.append(factor.base)
+            else:
+                numerator_factors.append(factor)
+        if not denominator_factors:
+            return None
+        numerator = sp.Mul(*numerator_factors)
+        if sp.simplify(numerator - 1) == 0:
+            return None
+        denominator = sp.Mul(*denominator_factors)
+        try:
+            compiled_numerator = self.compile(numerator)
+            compiled_denominator = self.compile(denominator)
+        except UnsupportedExpression:
+            return None
+        self.assumptions.append("direct division shortcut lowers numerator/denominator once before exact divide identity")
+        return self._record(
+            "direct_division_template",
+            expr,
+            divide_expr(compiled_numerator, compiled_denominator),
+        )
 
     def _compile_scaled_exp_minus_one(self, expr: sp.Add) -> Expr | None:
         terms = list(expr.args)
@@ -327,6 +368,8 @@ def compile_sympy_expression(expression: sp.Expr | str, config: CompilerConfig |
     compiler = _Compiler(CompilerConfig(**{**config.__dict__, "variables": tuple(variables)}))
     compiled = compiler.compile(source)
     constants = tuple(sorted(compiled.constants(), key=lambda value: (value.real, value.imag)))
+    macro_hits = tuple(dict.fromkeys(entry.rule for entry in compiler.trace if entry.rule in MACRO_RULES))
+    macro_diagnostics = _macro_diagnostics(source, config, compiled, macro_hits) if config.enable_macros else None
 
     if compiled.depth() > config.max_depth:
         raise UnsupportedExpression(
@@ -351,8 +394,40 @@ def compile_sympy_expression(expression: sp.Expr | str, config: CompilerConfig |
         node_count=compiled.node_count(),
         assumptions=tuple(dict.fromkeys(compiler.assumptions)),
         trace=tuple(compiler.trace),
+        macro_diagnostics=macro_diagnostics,
     )
     return CompileResult(compiled, metadata)
+
+
+def _macro_diagnostics(
+    source: sp.Expr,
+    config: CompilerConfig,
+    compiled: Expr,
+    macro_hits: tuple[str, ...],
+) -> dict[str, Any]:
+    baseline_depth: int | None = None
+    baseline_nodes: int | None = None
+    if macro_hits:
+        baseline_config = CompilerConfig(
+            variables=config.variables,
+            constant_policy=config.constant_policy,
+            max_depth=max(config.max_depth * 4, compiled.depth() + 32),
+            max_nodes=max(config.max_nodes * 4, compiled.node_count() + 512),
+            max_power=config.max_power,
+            validation_tolerance=config.validation_tolerance,
+            enable_macros=False,
+        )
+        baseline = compile_sympy_expression(source, baseline_config)
+        baseline_depth = baseline.metadata.depth
+        baseline_nodes = baseline.metadata.node_count
+    return {
+        "hits": list(macro_hits),
+        "misses": [rule for rule in MACRO_RULES if rule not in macro_hits],
+        "baseline_depth": baseline_depth,
+        "baseline_node_count": baseline_nodes,
+        "depth_delta": baseline_depth - compiled.depth() if baseline_depth is not None else 0,
+        "node_delta": baseline_nodes - compiled.node_count() if baseline_nodes is not None else 0,
+    }
 
 
 def default_validation_inputs(variables: Sequence[str], points: int = 8) -> dict[str, np.ndarray]:

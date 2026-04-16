@@ -10,7 +10,7 @@ import torch
 
 from .expression import format_constant_value
 from .master_tree import ActiveSlotAlternatives, SnapDecision, SnapResult, SoftEMLTree, constant_label
-from .semantics import AnomalyStats, as_complex_tensor, mse_complex_numpy
+from .semantics import AnomalyStats, TrainingSemanticsConfig, as_complex_tensor, mse_complex_numpy
 from .verify import DataSplit, VerificationReport, verify_candidate
 
 
@@ -29,8 +29,24 @@ class TrainingConfig:
     hardening_emit_interval: int = 2
     entropy_weight: float = 1e-3
     size_weight: float = 1e-4
+    clamp_exp_real: float = 40.0
+    log_domain_epsilon: float = 1e-9
+    log_safety_weight: float = 0.0
+    log_safety_margin: float = 1e-6
+    log_safety_imag_tolerance: float = 1e-6
+    refit_steps: int = 80
+    refit_lr: float = 0.02
     seed: int = 0
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
+
+    def semantics_config(self) -> TrainingSemanticsConfig:
+        return TrainingSemanticsConfig(
+            clamp_exp_real=self.clamp_exp_real,
+            log_domain_epsilon=self.log_domain_epsilon,
+            log_safety_weight=self.log_safety_weight,
+            log_safety_margin=self.log_safety_margin,
+            log_safety_imag_tolerance=self.log_safety_imag_tolerance,
+        )
 
 
 @dataclass(frozen=True)
@@ -133,11 +149,17 @@ def _train_step(
 ) -> tuple[float | None, AnomalyStats]:
     optimizer.zero_grad()
     stats = AnomalyStats()
-    pred = model(tensor_inputs, temperature=temperature, training_semantics=True, stats=stats)
+    pred = model(
+        tensor_inputs,
+        temperature=temperature,
+        training_semantics=True,
+        stats=stats,
+        semantics=config.semantics_config(),
+    )
     fit_loss = torch.mean(torch.abs(pred - target_tensor) ** 2)
     entropy = model.gate_entropy(temperature)
     size = model.expected_child_use(temperature)
-    loss = fit_loss + config.entropy_weight * entropy + config.size_weight * size
+    loss = fit_loss + config.entropy_weight * entropy + config.size_weight * size + stats.training_penalty(device=fit_loss.device)
     if not torch.isfinite(loss):
         return None, stats
     loss.backward()

@@ -1,0 +1,715 @@
+{
+  "counts": {
+    "evidence_classes": {
+      "snapped_but_failed": 1
+    },
+    "execution_error": 0,
+    "failed": 1,
+    "repaired_candidate": 0,
+    "same_ast_return": 0,
+    "total": 1,
+    "unsupported": 0,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 0,
+    "verifier_recovery_rate": 0.0
+  },
+  "depth_curve": [],
+  "environment": {
+    "code_version": "6fd9d8a",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-16T13:43:05.372452+00:00",
+  "groups": {
+    "depth": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "9",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "evidence_class": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "snapped_but_failed",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "formula": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "scaled_exp_growth",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "0.0",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "raw_status": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "repair_status": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "not_repaired",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "return_kind": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "seed_group": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "all",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "start_mode": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "blind",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/benchmarks/verify-scaled-exp-growth-seed0/v1.5-shallow-pure-blind/v1-5-shallow-pure-blind-shallow-scaled-exp-growth-pure-blind-9f934ff0ec8a.json",
+      "case_id": "shallow-scaled-exp-growth-pure-blind",
+      "claim_class": "measured_training_boundary",
+      "claim_id": "paper-shallow-blind-recovery",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "scaled_exp_growth",
+        "manifest_sha256": "c09f30525dfeef57ff74e8bb819d68242e78cdcb0fbd7c97ede7418c0a6a2fcb",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "scaled_exp_growth_catalog",
+          "description": "Phase 30 signed/scaled exponential proof target with a positive exponent coefficient.",
+          "formula_id": "scaled_exp_growth",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(0.4*x) coefficient-growth variant",
+          "symbolic_expression": "exp(0.4*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              -2.0,
+              2.0
+            ],
+            "input_sha256": "961ec3614a3ecc5bba8138d5c58ed83bd88a5ba408348f3507a8ea0a5281aa15",
+            "name": "train",
+            "target_sha256": "baa83931c28ff20a64083af122bf0623dfa30a6a338ff6ad2f962d04be278b68"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -1.7,
+              1.7
+            ],
+            "input_sha256": "570a565157111c4a7169d6fad142f9b87f7361204cd05f0e9a383ba5b5bf89ab",
+            "name": "heldout",
+            "target_sha256": "5b6330da4e5aeeb150756ef494f092a956a815764e3266e455cd1a7afeebc46a"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.1,
+              3.2
+            ],
+            "input_sha256": "74db1061db58222b9beece1cab8b5ac4129636cdc7ed489f49515ad0703494da",
+            "name": "extrapolation",
+            "target_sha256": "0460dded767153263359bdd6cd61e9f5af96398254acb9d9e3e72a599220e1b3"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "scaled_exp_growth",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 282,
+        "anomaly_exp_overflow_count": 263,
+        "anomaly_log_branch_cut_count": 2241,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 2380,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 3,
+        "best_loss": 12.56139164229063,
+        "candidate_pool_size": 8,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 5.761816499780788,
+        "high_precision_max_error": 4.8215276200613575,
+        "legacy_best_loss": 12.56139164229063,
+        "post_snap_loss": 5.761816499780788,
+        "refit_accepted": true,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 0.2710732727697002,
+        "refit_status": "accepted",
+        "refit_verifier_status": "failed",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 40,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 24,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 0.01099455976171404,
+        "verifier_status": "failed",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "0.4"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "scaled_exp_growth_catalog",
+        "description": "Phase 30 signed/scaled exponential proof target with a positive exponent coefficient.",
+        "formula_id": "scaled_exp_growth",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(0.4*x) coefficient-growth variant",
+        "symbolic_expression": "exp(0.4*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-pure-blind-shallow-scaled-exp-growth-pure-blind-9f934ff0ec8a",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "accepted"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.5-shallow-pure-blind",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered"
+        ],
+        "description": "Pure random-initialized blind suites report measured recovery without a 100% pass target.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_pure_blind_recovery",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_pure_blind_recovery",
+      "training_mode": "blind_training"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/benchmarks/verify-scaled-exp-growth-seed0",
+    "cases": [
+      {
+        "claim_id": "paper-shallow-blind-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "exp",
+        "id": "shallow-exp-pure-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 1,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "pure_blind"
+        ],
+        "threshold_policy_id": "measured_pure_blind_recovery",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-blind-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "log",
+        "id": "shallow-log-pure-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 3,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "pure_blind"
+        ],
+        "threshold_policy_id": "measured_pure_blind_recovery",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-blind-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "radioactive_decay",
+        "id": "shallow-radioactive-decay-pure-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "-0.4"
+          ],
+          "depth": 9,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "pure_blind"
+        ],
+        "threshold_policy_id": "measured_pure_blind_recovery",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-blind-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "beer_lambert",
+        "id": "shallow-beer-lambert-pure-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "-0.8"
+          ],
+          "depth": 9,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "pure_blind"
+        ],
+        "threshold_policy_id": "measured_pure_blind_recovery",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-blind-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "scaled_exp_growth",
+        "id": "shallow-scaled-exp-growth-pure-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "0.4"
+          ],
+          "depth": 9,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "pure_blind"
+        ],
+        "threshold_policy_id": "measured_pure_blind_recovery",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-blind-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "scaled_exp_fast_decay",
+        "id": "shallow-scaled-exp-fast-decay-pure-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "-1.2"
+          ],
+          "depth": 9,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "pure_blind"
+        ],
+        "threshold_policy_id": "measured_pure_blind_recovery",
+        "training_mode": "blind_training"
+      }
+    ],
+    "description": "Measured v1.5 pure random-initialized shallow blind suite with scaffold initializers disabled.",
+    "id": "v1.5-shallow-pure-blind",
+    "schema": "eml.benchmark_suite.v1"
+  },
+  "thresholds": [
+    {
+      "claim_class": "measured_training_boundary",
+      "claim_id": "paper-shallow-blind-recovery",
+      "eligible": 1,
+      "evidence_classes": {
+        "snapped_but_failed": 1
+      },
+      "failed": 1,
+      "passed": 0,
+      "rate": 0.0,
+      "required_rate": null,
+      "status": "reported",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered"
+        ],
+        "description": "Pure random-initialized blind suites report measured recovery without a 100% pass target.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_pure_blind_recovery",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_pure_blind_recovery"
+    }
+  ]
+}

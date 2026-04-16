@@ -94,6 +94,36 @@ def test_aggregate_evidence_separates_unsupported_and_same_ast(tmp_path):
     assert {run["classification"] for run in aggregate["runs"]} == {"same_ast_warm_start_return", "unsupported"}
 
 
+def test_aggregate_run_rows_preserve_hybrid_selection_and_refit_metrics():
+    suite = BenchmarkSuite("synthetic-proof", "synthetic proof aggregate", ())
+    result = _synthetic_result(
+        case_id="hybrid-lock",
+        start_mode="blind",
+        training_mode="blind_training",
+        evidence_class="blind_training_recovered",
+    )
+    result.payload["metrics"].update(
+        {
+            "selected_candidate_id": "selected-7",
+            "fallback_candidate_id": "fallback-3",
+            "selection_mode": "verifier_gated_exact_candidate_pool",
+            "refit_status": "accepted",
+            "refit_accepted": True,
+            "refit_constant_count": 2,
+        }
+    )
+
+    aggregate = aggregate_evidence(SimpleNamespace(suite=suite, results=(result,)))
+    metrics = aggregate["runs"][0]["metrics"]
+
+    assert metrics["selected_candidate_id"] == "selected-7"
+    assert metrics["fallback_candidate_id"] == "fallback-3"
+    assert metrics["selection_mode"] == "verifier_gated_exact_candidate_pool"
+    assert metrics["refit_status"] == "accepted"
+    assert metrics["refit_accepted"] is True
+    assert metrics["refit_constant_count"] == 2
+
+
 def test_warm_start_depth_gate_overrides_compiled_seed_claim_status(tmp_path):
     case = BenchmarkCase.from_mapping(
         {

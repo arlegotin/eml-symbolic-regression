@@ -1,0 +1,235 @@
+{
+  "budget": {
+    "clamp_exp_real": 40.0,
+    "constants": [
+      "1"
+    ],
+    "depth": 2,
+    "hardening_emit_interval": 2,
+    "hardening_steps": 4,
+    "hardening_temperature_end": 0.02,
+    "log_domain_epsilon": 1e-09,
+    "log_safety_imag_tolerance": 1e-06,
+    "log_safety_margin": 1e-06,
+    "log_safety_weight": 0.0,
+    "lr": 0.05,
+    "max_compile_depth": 13,
+    "max_compile_nodes": 256,
+    "max_power": 3,
+    "max_warm_depth": 14,
+    "refit_lr": 0.02,
+    "refit_steps": 80,
+    "restarts": 1,
+    "scaffold_initializers": [
+      "exp",
+      "log",
+      "scaled_exp"
+    ],
+    "steps": 8,
+    "warm_depth": 0,
+    "warm_restarts": 1,
+    "warm_steps": 8
+  },
+  "claim_class": null,
+  "claim_id": null,
+  "claim_status": "unsupported",
+  "compiled_eml": {
+    "detail": "operator cos is not in the v1.1 compiler subset",
+    "diagnostic": {
+      "relaxed_error": {
+        "detail": "operator cos is not in the v1.1 compiler subset",
+        "expression": "cos(2.5*t + 0.2)",
+        "reason": "unsupported_operator"
+      },
+      "schema": "eml.compiler_diagnostic.v1",
+      "status": "unsupported",
+      "strict": {
+        "detail": "operator cos is not in the v1.1 compiler subset",
+        "expression": "cos(2.5*t + 0.2)",
+        "reason": "unsupported_operator"
+      }
+    },
+    "expression": "cos(2.5*t + 0.2)",
+    "reason": "unsupported_operator",
+    "status": "unsupported"
+  },
+  "dataset": {
+    "points": 24,
+    "tolerance": 1e-08
+  },
+  "dataset_manifest": {
+    "formula_id": "damped_oscillator",
+    "manifest_sha256": "e4676aeae229ed7091ac2cf67d1065a3851e81a85d9292b2972023618be7db12",
+    "points": 24,
+    "provenance": {
+      "candidate_name": "damped_oscillator_catalog",
+      "description": "Stretch demo: oscillation plus decay.",
+      "formula_id": "damped_oscillator",
+      "normalized_dimensionless": true,
+      "source_document": "sources/FOR_DEMO.md",
+      "source_linkage": "Damped harmonic oscillator headline time-series symbolic-recovery demo",
+      "symbolic_expression": "exp(-0.15*t)*cos(2.5*t + 0.2)",
+      "variable": "t"
+    },
+    "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+    "schema": "eml.proof_dataset_manifest.v1",
+    "seed": 0,
+    "splits": [
+      {
+        "count": 24,
+        "domain": [
+          0.0,
+          6.0
+        ],
+        "input_sha256": "123b6388a15cef701b92915ff0c25efd3eed94ee38b7233e463c555e05de280a",
+        "name": "train",
+        "target_sha256": "1531a298615639b9608f1c0b1c9d02ac272b080763af289c85c0a0d1fef1bc07"
+      },
+      {
+        "count": 16,
+        "domain": [
+          0.05,
+          5.8
+        ],
+        "input_sha256": "bdb59400fffd1ccdfcf5c39347a953cccbf4d7507583207bb707f3af530d93e1",
+        "name": "heldout",
+        "target_sha256": "5f069cb12928f12832f8896da960a09ac6756eab6c356367e54830535b5d54e7"
+      },
+      {
+        "count": 16,
+        "domain": [
+          6.1,
+          8.0
+        ],
+        "input_sha256": "73e2d7f8d439ec5365005803b1e82815a6b3ae159e082cac9abf037368c9e6ff",
+        "name": "extrapolation",
+        "target_sha256": "059736ccd12f93f4cc19928d18657d0b541b2e90fefafc1a3079b39430e44352"
+      }
+    ],
+    "tolerance": 1e-08,
+    "variable": "t"
+  },
+  "environment": {
+    "code_version": "6fd9d8a",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "evidence_class": "unsupported",
+  "metrics": {
+    "active_slot_count": null,
+    "anomaly_clamp_count": null,
+    "anomaly_exp_overflow_count": null,
+    "anomaly_log_branch_cut_count": null,
+    "anomaly_log_non_finite_input_count": null,
+    "anomaly_log_non_positive_real_count": null,
+    "anomaly_log_safety_penalty": null,
+    "anomaly_log_small_magnitude_count": null,
+    "best_loss": null,
+    "candidate_pool_size": null,
+    "changed_slot_count": null,
+    "fallback_candidate_attempt_index": null,
+    "fallback_candidate_checkpoint_index": null,
+    "fallback_candidate_id": null,
+    "fallback_candidate_source": null,
+    "fallback_post_snap_loss": null,
+    "high_precision_max_error": null,
+    "legacy_best_loss": null,
+    "post_snap_loss": null,
+    "refit_accepted": null,
+    "refit_constant_count": 0,
+    "refit_post_snap_loss": null,
+    "refit_status": null,
+    "refit_verifier_status": null,
+    "repair_accepted_move_count": 0,
+    "repair_move_count": 0,
+    "repair_status": null,
+    "repair_variant_count": null,
+    "repair_verifier_status": null,
+    "scaffold_coefficient": null,
+    "scaffold_source": null,
+    "scaffold_strategy": null,
+    "selected_candidate_attempt_index": null,
+    "selected_candidate_checkpoint_index": null,
+    "selected_candidate_id": null,
+    "selected_candidate_source": null,
+    "selection_mode": null,
+    "snap_active_node_count": null,
+    "snap_min_margin": null,
+    "verifier_status": null,
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "provenance": {
+    "candidate_name": "damped_oscillator_catalog",
+    "description": "Stretch demo: oscillation plus decay.",
+    "formula_id": "damped_oscillator",
+    "normalized_dimensionless": true,
+    "source_document": "sources/FOR_DEMO.md",
+    "source_linkage": "Damped harmonic oscillator headline time-series symbolic-recovery demo",
+    "symbolic_expression": "exp(-0.15*t)*cos(2.5*t + 0.2)",
+    "variable": "t"
+  },
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.6-showcase/runs/v1.3-showcase/v1-3-showcase-damped-oscillator-compile-5bbd87a8b2d5.json",
+    "case_id": "damped-oscillator-compile",
+    "claim_id": null,
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "damped_oscillator",
+    "optimizer": {
+      "clamp_exp_real": 40.0,
+      "constants": [
+        "1"
+      ],
+      "depth": 2,
+      "hardening_emit_interval": 2,
+      "hardening_steps": 4,
+      "hardening_temperature_end": 0.02,
+      "log_domain_epsilon": 1e-09,
+      "log_safety_imag_tolerance": 1e-06,
+      "log_safety_margin": 1e-06,
+      "log_safety_weight": 0.0,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 14,
+      "refit_lr": 0.02,
+      "refit_steps": 80,
+      "restarts": 1,
+      "scaffold_initializers": [
+        "exp",
+        "log",
+        "scaled_exp"
+      ],
+      "steps": 8,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-3-showcase-damped-oscillator-compile-5bbd87a8b2d5",
+    "seed": 0,
+    "start_mode": "compile",
+    "suite_id": "v1.3-showcase",
+    "tags": [
+      "stretch",
+      "for_demo"
+    ],
+    "threshold_policy_id": null,
+    "training_mode": "compile_only_verification"
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "compiled_seed": "unsupported"
+  },
+  "status": "unsupported",
+  "threshold": null,
+  "timing": {
+    "elapsed_seconds": 0.026437791995704174
+  },
+  "training_mode": "compile_only_verification"
+}

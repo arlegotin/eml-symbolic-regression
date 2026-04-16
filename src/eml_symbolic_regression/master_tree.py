@@ -9,7 +9,7 @@ from typing import Any, Mapping, Sequence
 import torch
 
 from .expression import Const, Eml, Expr, Var
-from .semantics import AnomalyStats, as_complex_tensor, eml_torch
+from .semantics import AnomalyStats, TrainingSemanticsConfig, as_complex_tensor, eml_torch
 
 
 def _canonical_constant(value: complex) -> complex:
@@ -291,6 +291,7 @@ class _SoftNode(torch.nn.Module):
         temperature: float,
         training_semantics: bool,
         stats: AnomalyStats | None,
+        semantics: TrainingSemanticsConfig | None = None,
     ) -> torch.Tensor:
         left_candidates = self._base_tensors(context)
         right_candidates = self._base_tensors(context)
@@ -301,6 +302,7 @@ class _SoftNode(torch.nn.Module):
                     temperature=temperature,
                     training_semantics=training_semantics,
                     stats=stats,
+                    semantics=semantics,
                 )
             )
         if self.right_child is not None:
@@ -310,11 +312,12 @@ class _SoftNode(torch.nn.Module):
                     temperature=temperature,
                     training_semantics=training_semantics,
                     stats=stats,
+                    semantics=semantics,
                 )
             )
         left, _ = self._slot_value(self.left_logits, left_candidates, temperature)
         right, _ = self._slot_value(self.right_logits, right_candidates, temperature)
-        return eml_torch(left, right, training=training_semantics, stats=stats, node=self.path)
+        return eml_torch(left, right, training=training_semantics, semantics=semantics, stats=stats, node=self.path)
 
     def gate_entropy(self, temperature: float = 1.0) -> torch.Tensor:
         entropy = torch.tensor(0.0, dtype=torch.float64, device=self.left_logits.device)
@@ -412,6 +415,7 @@ class SoftEMLTree(torch.nn.Module):
         temperature: float = 1.0,
         training_semantics: bool = True,
         stats: AnomalyStats | None = None,
+        semantics: TrainingSemanticsConfig | None = None,
     ) -> torch.Tensor:
         tensor_context = {name: as_complex_tensor(value) for name, value in context.items()}
         return self.root(
@@ -419,6 +423,7 @@ class SoftEMLTree(torch.nn.Module):
             temperature=temperature,
             training_semantics=training_semantics,
             stats=stats,
+            semantics=semantics,
         )
 
     def slot_catalog(self) -> dict[str, list[str]]:

@@ -334,8 +334,8 @@ def write_campaign_report(
         "|--------|-------|",
         f"| Total runs | {headline['total_runs']} |",
         f"| Verifier recovered | {headline['verifier_recovered']} ({headline['verifier_recovery_rate']:.1%}) |",
-        f"| Same-AST warm-start returns | {headline['same_ast_return']} ({headline['same_ast_return_rate']:.1%}) |",
-        f"| Verified equivalent warm-start recoveries | {headline['verified_equivalent_ast']} |",
+        f"| Same-AST exact returns | {headline['same_ast_return']} ({headline['same_ast_return_rate']:.1%}) |",
+        f"| Verified-equivalent exact returns | {headline['verified_equivalent_ast']} |",
         f"| Unsupported | {headline['unsupported']} ({headline['unsupported_rate']:.1%}) |",
         f"| Failed | {headline['failed']} ({headline['failure_rate']:.1%}) |",
         f"| Median best soft loss | {_format_optional(headline['median_best_loss'])} |",
@@ -343,6 +343,7 @@ def write_campaign_report(
         f"| Median runtime seconds | {_format_optional(headline['median_runtime_seconds'])} |",
         "",
     ]
+    lines.extend(_regime_summary_section(runs))
     lines.extend(_proof_contract_section(runs, aggregate))
     lines.extend(_depth_curve_report_section(aggregate))
     lines.extend(
@@ -371,7 +372,7 @@ def write_campaign_report(
             "",
             "## What EML Demonstrates Well",
             "",
-            _strengths_paragraph(counts),
+            _strengths_paragraph(runs, counts),
             "",
             "## Limitations",
             "",
@@ -680,8 +681,8 @@ def _count_summary(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
     total = len(runs)
     verifier_recovered = sum(1 for run in runs if run.get("claim_status") == "recovered")
     classes = [_summary_class(run) for run in runs]
-    same_ast = sum(1 for value in classes if value in {"same_ast", "same_ast_warm_start_return"})
-    verified_equivalent = sum(1 for value in classes if value in {"verified_equivalent", "verified_equivalent_warm_start_recovery"})
+    same_ast = sum(1 for run in runs if _is_same_ast_return(run))
+    verified_equivalent = sum(1 for run in runs if _is_verified_equivalent_return(run))
     unsupported = sum(1 for value in classes if value == "unsupported")
     failed = sum(1 for value in classes if value in {"failed", "snapped_but_failed", "soft_fit_only"})
     execution_error = sum(1 for value in classes if value == "execution_failure")
@@ -701,6 +702,21 @@ def _count_summary(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
 
 def _summary_class(run: Mapping[str, Any]) -> str:
     return str(run.get("evidence_class") or run.get("classification") or "unknown")
+
+
+def _count_phrase(count: int, singular: str, plural: str | None = None) -> str:
+    word = singular if count == 1 else (plural or f"{singular}s")
+    return f"{count} {word}"
+
+
+def _is_same_ast_return(run: Mapping[str, Any]) -> bool:
+    values = {str(run.get("classification") or ""), str(run.get("evidence_class") or ""), str(run.get("return_kind") or "")}
+    return bool(values & {"same_ast", "same_ast_return", "same_ast_warm_start_return"})
+
+
+def _is_verified_equivalent_return(run: Mapping[str, Any]) -> bool:
+    values = {str(run.get("classification") or ""), str(run.get("evidence_class") or ""), str(run.get("return_kind") or "")}
+    return bool(values & {"verified_equivalent", "verified_equivalent_ast", "verified_equivalent_warm_start_recovery"})
 
 
 def _headline_metrics(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
@@ -771,18 +787,86 @@ def _write_csv(path: Path, rows: list[Mapping[str, Any]], fieldnames: list[str])
             writer.writerow({key: "" if row.get(key) is None else row.get(key) for key in fieldnames})
 
 
-def _strengths_paragraph(counts: Mapping[str, Any]) -> str:
+def _strengths_paragraph(runs: list[Mapping[str, Any]], counts: Mapping[str, Any]) -> str:
     recovered = int(counts.get("verifier_recovered", 0))
     same_ast = int(counts.get("same_ast_return", 0))
     equivalent = int(counts.get("verified_equivalent_ast", 0))
     total = int(counts.get("total", 0))
+    blind_runs = [run for run in runs if run.get("start_mode") == "blind"]
+    warm_runs = [run for run in runs if run.get("start_mode") == "warm_start"]
+    compile_runs = [run for run in runs if run.get("start_mode") == "compile"]
+    catalog_runs = [run for run in runs if run.get("start_mode") == "catalog"]
+    perturbed_runs = [run for run in runs if run.get("start_mode") == "perturbed_tree"]
+    scaffolded_blind = sum(1 for run in blind_runs if run.get("evidence_class") == "scaffolded_blind_training_recovered")
+    pure_blind = sum(1 for run in blind_runs if run.get("evidence_class") == "blind_training_recovered")
+    repaired = sum(1 for run in runs if run.get("classification") == "repaired_candidate")
+    blind_recovered = sum(1 for run in blind_runs if run.get("claim_status") == "recovered")
+
+    if blind_runs and not (warm_runs or compile_runs or catalog_runs or perturbed_runs):
+        if scaffolded_blind:
+            return (
+                f"This campaign shows the strongest current bounded blind-training behavior in this bundle: "
+                f"{recovered}/{total} blind runs passed verifier-owned recovery, and all {scaffolded_blind} recovered rows are "
+                "scaffolded blind recoveries. Read these results as bounded scaffolded-training evidence, not as pure random-initialized "
+                "blind discovery."
+            )
+        repaired_note = f", plus {_count_phrase(repaired, 'repaired candidate')}" if repaired else ""
+        return (
+            f"This campaign measures the current pure random-initialized blind boundary: "
+            f"{recovered}/{total} blind runs passed verifier-owned recovery, including "
+            f"{_count_phrase(pure_blind, 'threshold-eligible pure blind recovery', 'threshold-eligible pure blind recoveries')}"
+            f"{repaired_note}. "
+            "These rows are recovery-boundary evidence, not warm-start basin evidence."
+        )
+
+    if perturbed_runs and not (blind_runs or warm_runs or compile_runs or catalog_runs):
+        return (
+            f"This campaign isolates the perturbed true-tree basin: {recovered}/{total} perturbed runs passed verifier-owned recovery, "
+            f"with {same_ast} same-AST returns, {equivalent} verified-equivalent returns, and {repaired} repaired candidates. "
+            "Those outcomes demonstrate local basin and repair behavior, not blind-discovery performance."
+        )
+
+    if warm_runs and not (blind_runs or compile_runs or catalog_runs or perturbed_runs):
+        return (
+            f"This campaign isolates warm-start recovery behavior: {recovered}/{total} runs passed verifier-owned recovery, "
+            f"with {same_ast} returns to the same compiled EML AST and {equivalent} verified-equivalent returns. "
+            "Those are recovery and basin checks, not blind-discovery claims."
+        )
+
     return (
-        f"This campaign shows the strongest current behavior when the EML representation is verified after snapping: "
-        f"{recovered}/{total} runs passed verifier-owned recovery. Warm-start runs are especially useful evidence: "
-        f"{same_ast} returned to the same compiled EML AST and {equivalent} produced a different verified-equivalent AST. "
-        "Those are not blind-discovery claims, but they are practical evidence that the paper's uniform EML tree can be "
-        "compiled, embedded, perturbed, optimized, snapped, and independently verified."
+        f"This campaign shows the strongest current mixed-regime behavior when the EML representation is verified after snapping: "
+        f"{recovered}/{total} runs passed verifier-owned recovery. It includes {blind_recovered}/{len(blind_runs) if blind_runs else 0} "
+        f"blind recoveries, {same_ast} same-AST exact returns, and {equivalent} verified-equivalent exact returns. "
+        "Those evidence paths remain separated in the tables so blind discovery, warm-start basin behavior, and non-training diagnostics are "
+        "not merged into one claim."
     )
+
+
+def _regime_summary_section(runs: list[Mapping[str, Any]]) -> list[str]:
+    lines = [
+        "## Regime Summary",
+        "",
+        "| Regime | Runs | Verifier Recovered | Same AST | Verified Equivalent | Unsupported | Failed |",
+        "|--------|------|--------------------|----------|---------------------|-------------|--------|",
+    ]
+    for regime in ("blind", "warm_start", "compile", "catalog", "perturbed_tree"):
+        regime_runs = [run for run in runs if run.get("start_mode") == regime]
+        lines.append(
+            f"| {regime} | {len(regime_runs)} | "
+            f"{sum(1 for run in regime_runs if run.get('claim_status') == 'recovered')} | "
+            f"{sum(1 for run in regime_runs if _is_same_ast_return(run))} | "
+            f"{sum(1 for run in regime_runs if _is_verified_equivalent_return(run))} | "
+            f"{sum(1 for run in regime_runs if run.get('classification') == 'unsupported')} | "
+            f"{sum(1 for run in regime_runs if run.get('classification') in {'failed', 'snapped_but_failed', 'soft_fit_only', 'execution_failure'})} |"
+        )
+    lines.extend(
+        [
+            "",
+            "This table keeps blind, compiler-assisted warm-start, compile-only, catalog, and perturbed-basin evidence visibly separate before any narrative interpretation.",
+            "",
+        ]
+    )
+    return lines
 
 
 def _proof_contract_section(runs: list[Mapping[str, Any]], aggregate: Mapping[str, Any]) -> list[str]:
@@ -878,16 +962,32 @@ def _depth_curve_report_section(aggregate: Mapping[str, Any]) -> list[str]:
 
 def _limitations_section(runs: list[Mapping[str, Any]]) -> str:
     blind_total = sum(1 for run in runs if run.get("start_mode") == "blind")
-    blind_recovered = sum(1 for run in runs if run.get("classification") == "blind_recovery")
-    same_ast = sum(1 for run in runs if run.get("classification") == "same_ast_warm_start_return")
-    equivalent = sum(1 for run in runs if run.get("classification") == "verified_equivalent_warm_start_recovery")
+    blind_recovered = sum(
+        1 for run in runs if run.get("start_mode") == "blind" and run.get("claim_status") == "recovered"
+    )
+    blind_pure_recovered = sum(
+        1 for run in runs if run.get("start_mode") == "blind" and run.get("evidence_class") == "blind_training_recovered"
+    )
+    blind_scaffolded_recovered = sum(
+        1
+        for run in runs
+        if run.get("start_mode") == "blind" and run.get("evidence_class") == "scaffolded_blind_training_recovered"
+    )
+    same_ast = sum(1 for run in runs if _is_same_ast_return(run))
+    equivalent = sum(1 for run in runs if _is_verified_equivalent_return(run))
     unsupported = sum(1 for run in runs if run.get("classification") == "unsupported")
     failed = sum(1 for run in runs if run.get("classification") in {"failed", "snapped_but_failed", "soft_fit_only", "execution_failure"})
+    blind_note = ""
+    if blind_total:
+        blind_note = (
+            f" This campaign records {blind_scaffolded_recovered} scaffolded blind recoveries and "
+            f"{blind_pure_recovered} pure random-initialized blind recoveries; compare declared pure-blind proof suites separately."
+        )
     return "\n".join(
         [
-            f"- Blind recovery: {blind_recovered}/{blind_total} blind runs recovered. Treat this separately from compiler-assisted paths.",
-            f"- Same-AST warm-start return: {same_ast} runs snapped back to the compiled seed; useful basin evidence, not discovery.",
-            f"- Verified-equivalent warm-start recovery: {equivalent} runs snapped to a different exact AST that verified.",
+            f"- Blind training recovery: {blind_recovered}/{blind_total} blind runs recovered.{blind_note}",
+            f"- Same-AST exact return: {same_ast} runs snapped back to the compiled seed or exact target; useful basin evidence, not discovery.",
+            f"- Verified-equivalent exact return: {equivalent} runs snapped to a different exact AST that verified.",
             f"- Unsupported gates: {unsupported} runs were blocked by compiler/depth/operator limits and remain in the denominator.",
             f"- Failed fits: {failed} runs did not pass verifier-owned recovery after training or execution.",
         ]

@@ -44,6 +44,7 @@ class VerificationReport:
     split_results: list[SplitResult]
     high_precision_max_error: float
     tolerance: float
+    high_precision_status: str = "performed"
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -52,6 +53,7 @@ class VerificationReport:
             "reason": self.reason,
             "tolerance": self.tolerance,
             "high_precision_max_error": self.high_precision_max_error,
+            "high_precision_status": self.high_precision_status,
             "split_results": [result.__dict__ for result in self.split_results],
         }
 
@@ -73,6 +75,7 @@ def verify_candidate(
     *,
     tolerance: float = 1e-8,
     high_precision_points: int = 8,
+    high_precision_skip_factor: float = 1e6,
     recovered_requires_exact_eml: bool = True,
 ) -> VerificationReport:
     """Verify a candidate over numeric splits and mpmath point checks."""
@@ -80,6 +83,7 @@ def verify_candidate(
     split_results: list[SplitResult] = []
     all_passed = True
     hp_max = 0.0
+    high_precision_status = "performed"
 
     for split in splits:
         pred = candidate.evaluate_numpy(split.inputs)
@@ -91,6 +95,12 @@ def verify_candidate(
         passed = bool(max_abs <= tolerance)
         all_passed = all_passed and passed
         split_results.append(SplitResult(split.name, max_abs, mse, max_imag, passed))
+        numeric_failure_is_nonfinite = not np.isfinite(max_abs)
+        numeric_failure_is_decisive = (not passed) and (numeric_failure_is_nonfinite or max_abs > tolerance * high_precision_skip_factor)
+        if numeric_failure_is_decisive:
+            high_precision_status = "skipped_numeric_failure"
+            hp_max = float("inf") if numeric_failure_is_nonfinite else max(hp_max, max_abs)
+            continue
 
         for context in split.sample_mpmath_contexts(high_precision_points):
             mp.mp.dps = 80
@@ -108,7 +118,7 @@ def verify_candidate(
     elif all_passed:
         status = "verified_showcase"
         reason = "verified_non_eml_candidate"
-    elif not hp_passed:
+    elif not hp_passed and high_precision_status != "skipped_numeric_failure":
         status = "failed"
         reason = "mpmath_failed"
     else:
@@ -123,4 +133,5 @@ def verify_candidate(
         split_results=split_results,
         high_precision_max_error=hp_max,
         tolerance=tolerance,
+        high_precision_status=high_precision_status,
     )

@@ -1,5 +1,20 @@
 # Milestones
 
+## v1.6 Hybrid Search Pipeline and Exact Candidate Recovery (Shipped: 2026-04-16)
+
+**Phases completed:** 5 phases, 5 plans, 15 tasks
+
+**Key accomplishments:**
+
+- Late-hardening candidate pooling with verifier-ranked exact selection and legacy fallback provenance across blind, warm-start, basin, and CLI flows
+- Bounded target-free cleanup over low-margin exact candidates with fallback-preserving benchmark artifacts
+- Frozen exact-expression constant refit, fallback-preserving artifact wiring, and richer exp/log anomaly diagnostics
+- Macro-aware compiler shortcuts, audited diagnostics, and conservative warm-start coverage expansion
+- Regime-aware reporting, immutable comparison anchors, and aggregate-level hybrid regression locks
+- Final `artifacts/proof/v1.6` evidence bundle regenerated from the latest code state and verified against campaign aggregates, with pure-blind, scaffolded, perturbed-basin, and depth-curve claims kept separate
+
+---
+
 ## v1.5 Training Proof and Recovery Guarantees (Shipped: 2026-04-16)
 
 **Phases completed:** 5 phases, 11 plans, 0 tasks

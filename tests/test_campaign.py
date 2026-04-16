@@ -7,7 +7,9 @@ import pytest
 from eml_symbolic_regression.benchmark import RunFilter, load_suite
 from eml_symbolic_regression.campaign import (
     CampaignOutputExistsError,
+    _limitations_section,
     _reproduction_command,
+    _strengths_paragraph,
     campaign_preset,
     list_campaign_presets,
     run_campaign,
@@ -87,6 +89,7 @@ def test_campaign_presets_map_to_budgeted_suites():
     assert standard.tier == "showcase-default"
     assert {run.start_mode for run in runs} >= {"blind", "warm_start", "compile"}
     assert any(run.case_id == "beer-perturbation-sweep" for run in runs)
+    assert any(run.case_id == "shockley-warm" and run.start_mode == "warm_start" for run in runs)
     assert any(run.formula == "michaelis_menten" for run in runs)
     assert any(run.formula == "planck" for run in runs)
     assert {"radioactive_decay", "logistic", "shockley"} <= {run.formula for run in runs}
@@ -404,6 +407,8 @@ def test_proof_basin_report_names_probe_suite_and_status_taxonomy(tmp_path):
     assert "`return_kind`" in report
     assert "`raw_status`" in report
     assert "`repair_status`" in report
+    assert "| Same-AST exact returns | 1 (50.0%) |" in report
+    assert "| perturbed_tree | 2 | 1 | 1 | 0 | 0 | 1 |" in report
     assert "paper-perturbed-true-tree-basin" in proof_section
     assert "basin-beer-lambert-bound-probes" not in proof_section
 
@@ -467,6 +472,7 @@ def test_campaign_writes_self_contained_report(tmp_path):
 
     assert "# EML Benchmark Campaign Report: smoke" in report
     assert "## Headline Metrics" in report
+    assert "## Regime Summary" in report
     assert "## What EML Demonstrates Well" in report
     assert "## Limitations" in report
     assert "## Next Experiments" in report
@@ -482,6 +488,169 @@ def test_campaign_writes_self_contained_report(tmp_path):
     assert manifest["output"]["report_markdown"].endswith("report.md")
 
 
+def test_limitations_section_counts_scaffolded_blind_recovery_honestly():
+    text = _limitations_section(
+        [
+            {
+                "start_mode": "blind",
+                "claim_status": "recovered",
+                "classification": "recovered",
+                "evidence_class": "scaffolded_blind_training_recovered",
+            },
+            {
+                "start_mode": "blind",
+                "claim_status": "failed",
+                "classification": "snapped_but_failed",
+                "evidence_class": "snapped_but_failed",
+            },
+        ]
+    )
+
+    assert "Blind training recovery: 1/2 blind runs recovered." in text
+    assert "1 scaffolded blind recoveries and 0 pure random-initialized blind recoveries" in text
+
+
+def test_strengths_paragraph_stays_blind_for_blind_only_suite():
+    runs = [
+        {
+            "start_mode": "blind",
+            "claim_status": "recovered",
+            "classification": "recovered",
+            "evidence_class": "scaffolded_blind_training_recovered",
+        }
+    ]
+
+    text = _strengths_paragraph(
+        runs,
+        {
+            "verifier_recovered": 1,
+            "same_ast_return": 0,
+            "verified_equivalent_ast": 0,
+            "total": 1,
+        },
+    )
+
+    assert "bounded blind-training behavior" in text
+    assert "scaffolded blind recoveries" in text
+    assert "Warm-start runs are especially useful evidence" not in text
+
+
+def test_strengths_paragraph_distinguishes_pure_blind_from_repaired_recovery():
+    runs = [
+        {
+            "start_mode": "blind",
+            "claim_status": "recovered",
+            "classification": "recovered",
+            "evidence_class": "blind_training_recovered",
+        },
+        {
+            "start_mode": "blind",
+            "claim_status": "recovered",
+            "classification": "repaired_candidate",
+            "evidence_class": "repaired_candidate",
+        },
+    ]
+
+    text = _strengths_paragraph(
+        runs,
+        {
+            "verifier_recovered": 2,
+            "same_ast_return": 0,
+            "verified_equivalent_ast": 0,
+            "total": 2,
+        },
+    )
+
+    assert "threshold-eligible pure blind recovery" in text
+    assert "including 1 threshold-eligible pure blind recovery" in text
+    assert "plus 1 repaired candidate" in text
+
+
+def test_strengths_paragraph_pluralizes_pure_blind_recoveries():
+    runs = [
+        {
+            "start_mode": "blind",
+            "claim_status": "recovered",
+            "classification": "recovered",
+            "evidence_class": "blind_training_recovered",
+        },
+        {
+            "start_mode": "blind",
+            "claim_status": "recovered",
+            "classification": "recovered",
+            "evidence_class": "blind_training_recovered",
+        },
+    ]
+
+    text = _strengths_paragraph(
+        runs,
+        {
+            "verifier_recovered": 2,
+            "same_ast_return": 0,
+            "verified_equivalent_ast": 0,
+            "total": 2,
+        },
+    )
+
+    assert "including 2 threshold-eligible pure blind recoveries" in text
+    assert "recoverys" not in text
+
+
+def test_strengths_paragraph_describes_perturbed_tree_basin_without_warm_start_language():
+    runs = [
+        {
+            "start_mode": "perturbed_tree",
+            "claim_status": "recovered",
+            "classification": "same_ast_return",
+            "evidence_class": "perturbed_true_tree_recovered",
+        },
+        {
+            "start_mode": "perturbed_tree",
+            "claim_status": "recovered",
+            "classification": "repaired_candidate",
+            "evidence_class": "repaired_candidate",
+        },
+    ]
+
+    text = _strengths_paragraph(
+        runs,
+        {
+            "verifier_recovered": 2,
+            "same_ast_return": 1,
+            "verified_equivalent_ast": 0,
+            "total": 2,
+        },
+    )
+
+    assert "perturbed true-tree basin" in text
+    assert "repaired candidates" in text
+    assert "Warm-start runs are especially useful evidence" not in text
+
+
+def test_limitations_section_counts_perturbed_tree_same_ast_and_repaired_rows():
+    text = _limitations_section(
+        [
+            {
+                "start_mode": "perturbed_tree",
+                "classification": "same_ast_return",
+                "return_kind": "same_ast_return",
+                "claim_status": "recovered",
+                "evidence_class": "perturbed_true_tree_recovered",
+            },
+            {
+                "start_mode": "perturbed_tree",
+                "classification": "repaired_candidate",
+                "return_kind": "verified_equivalent_ast",
+                "claim_status": "recovered",
+                "evidence_class": "repaired_candidate",
+            },
+        ]
+    )
+
+    assert "Same-AST exact return: 1 runs" in text
+    assert "Verified-equivalent exact return: 1 runs" in text
+
+
 def test_proof_campaign_report_separates_threshold_status(tmp_path):
     result = run_campaign(
         "proof-shallow",
@@ -494,6 +663,7 @@ def test_proof_campaign_report_separates_threshold_status(tmp_path):
     manifest = json.loads(result.manifest_path.read_text())
     threshold = manifest["thresholds"][0]
 
+    assert "## Regime Summary" in report
     assert "## Proof Contract" in report
     assert "| Claim | Threshold | Status | Passed | Eligible | Rate |" in report
     assert (

@@ -1,0 +1,3873 @@
+{
+  "counts": {
+    "evidence_classes": {
+      "scaffolded_blind_training_recovered": 18
+    },
+    "execution_error": 0,
+    "failed": 0,
+    "repaired_candidate": 0,
+    "same_ast_return": 0,
+    "total": 18,
+    "unsupported": 0,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 18,
+    "verifier_recovery_rate": 1.0
+  },
+  "depth_curve": [],
+  "environment": {
+    "code_version": "c89610e",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-16T16:22:31.852745+00:00",
+  "groups": {
+    "depth": [
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 3
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "1",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 3,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 3,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 3
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "3",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 3,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 3,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 12
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "9",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 12,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 12,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "evidence_class": [
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 18
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "scaffolded_blind_training_recovered",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 18,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 18,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "formula": [
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 3
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "beer_lambert",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 3,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 3,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 3
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "exp",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 3,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 3,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 3
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "log",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 3,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 3,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 3
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "radioactive_decay",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 3,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 3,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 3
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "scaled_exp_fast_decay",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 3,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 3,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 3
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "scaled_exp_growth",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 3,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 3,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 18
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "0.0",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 18,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 18,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "raw_status": [
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 18
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 18,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 18,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "repair_status": [
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 18
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "not_attempted",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 18,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 18,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "return_kind": [
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 18
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 18,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 18,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "seed_group": [
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 18
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "all",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 18,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 18,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "start_mode": [
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 18
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "blind",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 18,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 18,
+        "verifier_recovery_rate": 1.0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-exp-blind-e5b022c6906d.json",
+      "case_id": "shallow-exp-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "exp",
+        "manifest_sha256": "655388a1adc8c90798742b72d43b06661b0dc270613e23321a785af9c625a3cb",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Paper smoke test: exp(x) = eml(x, 1).",
+          "formula_id": "exp",
+          "normalized_dimensionless": true,
+          "source_document": "sources/paper.pdf",
+          "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+          "symbolic_expression": "exp(x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              -1.0,
+              1.0
+            ],
+            "input_sha256": "816de254507636b2c760a1d7e6fed69cfa396700fd404eb0628a5f5751be4816",
+            "name": "train",
+            "target_sha256": "cd3a50d27d0f80056e65667bd781be4dbcc50e49e5c1a3ba87e9af0c0b5d2b80"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -0.8,
+              0.8
+            ],
+            "input_sha256": "7cba319402b924b52738ed85bfb44228bfb0d6195d8032686f28f26761dd9d72",
+            "name": "heldout",
+            "target_sha256": "7dd332f76643f687c49c7645d02823db1f205d647d8956fb421123d1083e3959"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.05,
+              1.5
+            ],
+            "input_sha256": "af70baad8b615f12a3843c61baa64ea3e9554011140d4ec445e6dd12bce28c7e",
+            "name": "extrapolation",
+            "target_sha256": "a0e9c066dc1078a2cf43719f94c1662a866cc8724e655e1cb345f3e9a6f595fc"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "exp",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 0.0,
+        "candidate_pool_size": 12,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.0,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 0.0,
+        "post_snap_loss": 0.0,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_source": "scaffold_exp",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 3,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 1,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Paper smoke test: exp(x) = eml(x, 1).",
+        "formula_id": "exp",
+        "normalized_dimensionless": true,
+        "source_document": "sources/paper.pdf",
+        "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+        "symbolic_expression": "exp(x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-exp-blind-e5b022c6906d",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-exp-blind-6609115edbe5.json",
+      "case_id": "shallow-exp-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "exp",
+        "manifest_sha256": "c4e2b1c0a78bc57db776470eac8c7d4ec5f1c82743ca96f4d2c08914c4807bbb",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Paper smoke test: exp(x) = eml(x, 1).",
+          "formula_id": "exp",
+          "normalized_dimensionless": true,
+          "source_document": "sources/paper.pdf",
+          "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+          "symbolic_expression": "exp(x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              -1.0,
+              1.0
+            ],
+            "input_sha256": "3256c9b8d51eca3b2817678851c591472e1319df5ab29432d3d1dee5ea0c8ca2",
+            "name": "train",
+            "target_sha256": "140cd54ce8325a59997b171c37da7da4255dcd984cd7e13aac02e78213eafcc0"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -0.8,
+              0.8
+            ],
+            "input_sha256": "9ef298c37cc330feb31c7cdc401e409cb65b895e3b6b265bc6f74f7d113b5b1b",
+            "name": "heldout",
+            "target_sha256": "bb97af743f883571e853e2a37ed140bcb577907410616b64997365961faaf936"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.05,
+              1.5
+            ],
+            "input_sha256": "7d44fe3d395aa8ce65df7ff53ff311e8cf354221b9196c2d4b58011071458cfb",
+            "name": "extrapolation",
+            "target_sha256": "fda9a96b0856c7312bfd3cd28ff29ed85aa9d90160494899a1510f5482fca379"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "exp",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 0.0,
+        "candidate_pool_size": 12,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.0,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 0.0,
+        "post_snap_loss": 0.0,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_source": "scaffold_exp",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 3,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 1,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Paper smoke test: exp(x) = eml(x, 1).",
+        "formula_id": "exp",
+        "normalized_dimensionless": true,
+        "source_document": "sources/paper.pdf",
+        "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+        "symbolic_expression": "exp(x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-exp-blind-6609115edbe5",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-exp-blind-f840e23851e0.json",
+      "case_id": "shallow-exp-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "exp",
+        "manifest_sha256": "dcebf8f5f83659182566fc8c8aca03393d936e454e4c820ec00b74d6779432d0",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Paper smoke test: exp(x) = eml(x, 1).",
+          "formula_id": "exp",
+          "normalized_dimensionless": true,
+          "source_document": "sources/paper.pdf",
+          "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+          "symbolic_expression": "exp(x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 2,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              -1.0,
+              1.0
+            ],
+            "input_sha256": "9d6a6613bef337d2639431e556a8750f8a9f4d104b1cce69bbfb06dd3e401d6b",
+            "name": "train",
+            "target_sha256": "5ccf3c7dfe8c1fcdde86b81e1e5b193f659331db07f5e8afd72f4a40e6cde93b"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -0.8,
+              0.8
+            ],
+            "input_sha256": "1787673e0adb896f5d92d711f25fd52856f5e9f65e984418baafc4ace9839c81",
+            "name": "heldout",
+            "target_sha256": "6b17b81cf6e0c0010450ac6055ab91d01aec9457a1c699d31ea03f2110a3671d"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.05,
+              1.5
+            ],
+            "input_sha256": "4309b8cfcf9b3c35336ba44553c8f96f45aed695808aff6dcf85e93535c27b35",
+            "name": "extrapolation",
+            "target_sha256": "5105da41be20b7f495ab2db1a3c1f7caa14ef26f21c718a9e65be5245ae6a78c"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "exp",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 0.0,
+        "candidate_pool_size": 12,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.0,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 0.0,
+        "post_snap_loss": 0.0,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_source": "scaffold_exp",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 3,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 1,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Paper smoke test: exp(x) = eml(x, 1).",
+        "formula_id": "exp",
+        "normalized_dimensionless": true,
+        "source_document": "sources/paper.pdf",
+        "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+        "symbolic_expression": "exp(x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-exp-blind-f840e23851e0",
+      "seed": 2,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-log-blind-bace3dcddb88.json",
+      "case_id": "shallow-log-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "log",
+        "manifest_sha256": "01c2261015de6d16b8338f86f0a15db26f6eb11ee40e6ca1a6c1c411b6e6236f",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+          "formula_id": "log",
+          "normalized_dimensionless": true,
+          "source_document": "sources/paper.pdf",
+          "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+          "symbolic_expression": "E - log(exp(E)/x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.25,
+              3.0
+            ],
+            "input_sha256": "7a5b866c419951619d1dd5195fb43c2f3064af0ce9ffe8192bfa06c020b5c16e",
+            "name": "train",
+            "target_sha256": "0cb922fd23c70ab813ff04ce2c2852cf1d605235e492eef3b49ab7602babc95a"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.35,
+              2.75
+            ],
+            "input_sha256": "4cd754620d0a85791d28a8c6214907e0e920f8f1ef78f27f5fb741bdb9a5c755",
+            "name": "heldout",
+            "target_sha256": "7ad7fa52c84d6583a32eb307d6a8e7f89a8559012ec2020575f516a0bb3de1ba"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.2
+            ],
+            "input_sha256": "b6acd7d0f09925bf8ce64744517b284bf61d3e737f4ba2d6e20e294e9fc338cb",
+            "name": "extrapolation",
+            "target_sha256": "8f5fa7e7a71bdfad73d7ff921a5e4ebf5f2eee4f266f55b84f1fb1c44c323828"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "log",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 1.6895521363690837e-32,
+        "candidate_pool_size": 16,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 1.6895521363690837e-32,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 1.6895521363690837e-32,
+        "post_snap_loss": 1.6895521363690837e-32,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_source": "scaffold_log",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 3,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+        "formula_id": "log",
+        "normalized_dimensionless": true,
+        "source_document": "sources/paper.pdf",
+        "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+        "symbolic_expression": "E - log(exp(E)/x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-log-blind-bace3dcddb88",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-log-blind-28dcde6891db.json",
+      "case_id": "shallow-log-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "log",
+        "manifest_sha256": "3c8d51619ccd81e420d0691d84e7f72acbc26d920bd64cb2bc22bb2d3c7d11d5",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+          "formula_id": "log",
+          "normalized_dimensionless": true,
+          "source_document": "sources/paper.pdf",
+          "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+          "symbolic_expression": "E - log(exp(E)/x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.25,
+              3.0
+            ],
+            "input_sha256": "157af54c84d1dc7987d3fddd6fd325a0fd024c2890a401714eb49c6383734ecc",
+            "name": "train",
+            "target_sha256": "7397e6aaa6a9f510e5759e30d44b3c0bc0f629f306a0bdfd35d05947879073fa"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.35,
+              2.75
+            ],
+            "input_sha256": "ca5dfd37a598518d55ea0952537de47db3f5e625be95e2eabfc1b324c5651655",
+            "name": "heldout",
+            "target_sha256": "f5f8121708b487cca9a58edbbc1789a98d951b7f8d25f2962996422f8dca72fb"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.2
+            ],
+            "input_sha256": "e97a651f11477ff5cf14d8f5dbabde00f52f9ed389116c7fbfb8cbab22bdac0a",
+            "name": "extrapolation",
+            "target_sha256": "48b1902d9148bb54aba268ee980dc4db5918d3bb4ce40ac6ae32e3f872205d9e"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "log",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 6.892722715029631e-33,
+        "candidate_pool_size": 16,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 6.892722715029631e-33,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 6.892722715029631e-33,
+        "post_snap_loss": 6.892722715029631e-33,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_source": "scaffold_log",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 3,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+        "formula_id": "log",
+        "normalized_dimensionless": true,
+        "source_document": "sources/paper.pdf",
+        "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+        "symbolic_expression": "E - log(exp(E)/x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-log-blind-28dcde6891db",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-log-blind-e2bc0d0a6099.json",
+      "case_id": "shallow-log-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "log",
+        "manifest_sha256": "a7614afefce1f52909d1beacfbb4d7cb3fcd85bdba9486d05c2d11a3e3efabee",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+          "formula_id": "log",
+          "normalized_dimensionless": true,
+          "source_document": "sources/paper.pdf",
+          "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+          "symbolic_expression": "E - log(exp(E)/x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 2,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.25,
+              3.0
+            ],
+            "input_sha256": "541f3fa7db9ef04d8edd8c7015aa2696036e8fba64793ff17c65419bea34f17f",
+            "name": "train",
+            "target_sha256": "c20e4be1a9a201a039623f061e82fe0c96ddbc37e6a8863dc6270d59fb8a424f"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.35,
+              2.75
+            ],
+            "input_sha256": "054e4e9d23cf926662890580d2d5f169ce88bd88292b641fac0fa9e28ef6d037",
+            "name": "heldout",
+            "target_sha256": "c2c571eb979776f78153593f8b5221a1bdd6edf829ef0876186613429fcf2789"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.2
+            ],
+            "input_sha256": "fb6c7551849eaa56c79747bc82af34a6b19e4aa89240c006c51faaf5c1286427",
+            "name": "extrapolation",
+            "target_sha256": "e6111fe75ccfd4ff9b5ca295ee1d3591cbce2d651fcd53f046329fe1336bc7d4"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "log",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 1.1080115711302816e-32,
+        "candidate_pool_size": 16,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 1.1080115711302816e-32,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 1.1080115711302816e-32,
+        "post_snap_loss": 1.1080115711302816e-32,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_source": "scaffold_log",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 3,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+        "formula_id": "log",
+        "normalized_dimensionless": true,
+        "source_document": "sources/paper.pdf",
+        "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+        "symbolic_expression": "E - log(exp(E)/x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-log-blind-e2bc0d0a6099",
+      "seed": 2,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-radioactive-decay-blind-664e6bbfbc45.json",
+      "case_id": "shallow-radioactive-decay-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "radioactive_decay",
+        "manifest_sha256": "be5bd479eef17bcc628e7786fc9afc2b21f4599de00aa5a59da52cc8fb436f2e",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "radioactive_decay_catalog",
+          "description": "FOR_DEMO-style one-term exponential decay baseline.",
+          "formula_id": "radioactive_decay",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+          "symbolic_expression": "exp(-0.4*t)",
+          "variable": "t"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.0,
+              5.0
+            ],
+            "input_sha256": "d3ed0626127fff9044aa474384cb66f34c2f10f90c0ea9945ef46aa7dd43d10b",
+            "name": "train",
+            "target_sha256": "1e95698c5f27715db6b6ba112162c506539453c34cb1301090d342a3fbe86600"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              4.7
+            ],
+            "input_sha256": "28a8ecfc88e6120ebf92775c479f50e377b62692341ba96120ac171518975ecc",
+            "name": "heldout",
+            "target_sha256": "ba4752c7bc5618135e968f25ae39056c716cd8298839c8d3c87107ef1053782c"
+          },
+          {
+            "count": 16,
+            "domain": [
+              5.1,
+              7.0
+            ],
+            "input_sha256": "230ea947f80707991fd7a212417b4ca5d61c06d1d1c0ae1b440db5d606d443cf",
+            "name": "extrapolation",
+            "target_sha256": "87e8b445385ac8910f56b47306f39c63ff62a90d5603a86df3792ea10f24da2a"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "t"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "radioactive_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 177,
+        "anomaly_exp_overflow_count": 177,
+        "anomaly_log_branch_cut_count": 4945,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 4979,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 5.355359632052487e-33,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 5.396942299047743e-33,
+        "high_precision_max_error": 5.330111678895729e-81,
+        "legacy_best_loss": 5.355359632052487e-33,
+        "post_snap_loss": 5.396942299047743e-33,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 5.396942299047743e-33,
+        "refit_status": "rejected",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "-0.4",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "-0.4"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "radioactive_decay_catalog",
+        "description": "FOR_DEMO-style one-term exponential decay baseline.",
+        "formula_id": "radioactive_decay",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+        "symbolic_expression": "exp(-0.4*t)",
+        "variable": "t"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-radioactive-decay-blind-664e6bbfbc45",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-radioactive-decay-blind-ad04079ff0ff.json",
+      "case_id": "shallow-radioactive-decay-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "radioactive_decay",
+        "manifest_sha256": "60197b131fa42a45fcfca43ee5d6f60110e5dc78b3ed20c9184994485bd7b624",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "radioactive_decay_catalog",
+          "description": "FOR_DEMO-style one-term exponential decay baseline.",
+          "formula_id": "radioactive_decay",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+          "symbolic_expression": "exp(-0.4*t)",
+          "variable": "t"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.0,
+              5.0
+            ],
+            "input_sha256": "984e5c896cb69228bfddb96a641057ec8c3f34b67ae400a4c7bc5df59cbb7913",
+            "name": "train",
+            "target_sha256": "757909a66a3401c3b859077e8b781f5dce28a3cf266407ec27eb523d42f2ec60"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              4.7
+            ],
+            "input_sha256": "1b8aeb21208dc9c1b3e6b7cec61bbd6562bda32ec3a39cd287a85a08ab9d65c9",
+            "name": "heldout",
+            "target_sha256": "47e10daac6718afe743d4a1331ecf28f5810946de47e3bf136e6876ac384de2c"
+          },
+          {
+            "count": 16,
+            "domain": [
+              5.1,
+              7.0
+            ],
+            "input_sha256": "7e4af4c07205ea289b43d7a879bf0e7e7b6022d3c5d138dd30e6ebdbd2a6977b",
+            "name": "extrapolation",
+            "target_sha256": "b9d3eca394f26c7b56f2af3e49012ed6da76ba726d70c20befbd0fddd3260048"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "t"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "radioactive_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 230,
+        "anomaly_exp_overflow_count": 207,
+        "anomaly_log_branch_cut_count": 4358,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 4422,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 11,
+        "best_loss": 5.9034099514638206e-33,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 5.9034099514638206e-33,
+        "high_precision_max_error": 5.330082950280995e-81,
+        "legacy_best_loss": 5.9034099514638206e-33,
+        "post_snap_loss": 5.9034099514638206e-33,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 5.9034099514638206e-33,
+        "refit_status": "rejected",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "-0.4",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "-0.4"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "radioactive_decay_catalog",
+        "description": "FOR_DEMO-style one-term exponential decay baseline.",
+        "formula_id": "radioactive_decay",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+        "symbolic_expression": "exp(-0.4*t)",
+        "variable": "t"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-radioactive-decay-blind-ad04079ff0ff",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-radioactive-decay-blind-2aea4e510ed9.json",
+      "case_id": "shallow-radioactive-decay-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "radioactive_decay",
+        "manifest_sha256": "8adbdd755771c4d6d12d57830218868f3524ced478be44d0fc3ecb8bfe27e9ed",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "radioactive_decay_catalog",
+          "description": "FOR_DEMO-style one-term exponential decay baseline.",
+          "formula_id": "radioactive_decay",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+          "symbolic_expression": "exp(-0.4*t)",
+          "variable": "t"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 2,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.0,
+              5.0
+            ],
+            "input_sha256": "55bbbfe221889f481bf1d142da5bfd5c03277701d0ef9ad5bce5110fb8e2ea98",
+            "name": "train",
+            "target_sha256": "0084ed217213a82ff2f78a79d3eca9c726a00c06d138b0d9a4a4ec362d19f22b"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              4.7
+            ],
+            "input_sha256": "b991ccc8754f199f6450093138663f39f3a49a9b6a1ce8530364f7cf9e55e547",
+            "name": "heldout",
+            "target_sha256": "9886f00a5e526484ac5c6c9d954597001280871eb3840251c343a31c6541aff3"
+          },
+          {
+            "count": 16,
+            "domain": [
+              5.1,
+              7.0
+            ],
+            "input_sha256": "9b8fd8caa0fd4a4461ce17b91469fa8d18a9919a776ac01a3b1a6db4ea704347",
+            "name": "extrapolation",
+            "target_sha256": "dfe18be9debea47cbd973262b0912cc0bee63aa996610f5a73bdfe8733302a4c"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "t"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "radioactive_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 236,
+        "anomaly_exp_overflow_count": 205,
+        "anomaly_log_branch_cut_count": 4702,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 4787,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 4.771461650478526e-33,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 4.77146165047869e-33,
+        "high_precision_max_error": 4.938902735758388e-81,
+        "legacy_best_loss": 4.771461650478526e-33,
+        "post_snap_loss": 4.77146165047869e-33,
+        "refit_accepted": true,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 4.77146165047869e-33,
+        "refit_status": "accepted",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "-0.4",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "-0.4"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "radioactive_decay_catalog",
+        "description": "FOR_DEMO-style one-term exponential decay baseline.",
+        "formula_id": "radioactive_decay",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+        "symbolic_expression": "exp(-0.4*t)",
+        "variable": "t"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-radioactive-decay-blind-2aea4e510ed9",
+      "seed": 2,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "accepted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-beer-lambert-blind-98e77d05a5f1.json",
+      "case_id": "shallow-beer-lambert-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "beer_lambert",
+        "manifest_sha256": "aa44ec9d889b6e8e49fb767e360d152329a3b09fc547e96b677554bfd3230e3a",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "beer_lambert_catalog",
+          "description": "High-probability exponential-decay showcase.",
+          "formula_id": "beer_lambert",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+          "symbolic_expression": "exp(-0.8*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.0,
+              3.0
+            ],
+            "input_sha256": "03a51bf9c8fa757af422dc77a1f2fb82b5cfccc51efaa500e6ce3a0a639cc681",
+            "name": "train",
+            "target_sha256": "c9f64551312f48d91b885b80b54d9fcda21889bdd327cd9afb4f288775075a38"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              2.7
+            ],
+            "input_sha256": "06a6aea6d7cf8fdcc08aa33760cdd4cea52d4e2cb547c60cec885b2f0dc5c723",
+            "name": "heldout",
+            "target_sha256": "6f94bcb1395553f26d4def14654a9acd7f949a8ad2beab507419120d6f2b948f"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.5
+            ],
+            "input_sha256": "da0317369f3b77bc77107f021594ec17146ccc2f95529fd40531c19885e1f84a",
+            "name": "extrapolation",
+            "target_sha256": "51e786361ec3cc0f9397a71e03159829bee576edd144f49bf8e959538e9c93b7"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 34,
+        "anomaly_exp_overflow_count": 5,
+        "anomaly_log_branch_cut_count": 4813,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 4909,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 4.7276699230377935e-33,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 4.5219679645283827e-32,
+        "high_precision_max_error": 5.050927765537862e-81,
+        "legacy_best_loss": 4.7276699230377935e-33,
+        "post_snap_loss": 4.5219679645283827e-32,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 4.7276699230377935e-33,
+        "refit_status": "rejected",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "-0.8",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "-0.8"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "beer_lambert_catalog",
+        "description": "High-probability exponential-decay showcase.",
+        "formula_id": "beer_lambert",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+        "symbolic_expression": "exp(-0.8*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-beer-lambert-blind-98e77d05a5f1",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-beer-lambert-blind-5cb3e5e925cf.json",
+      "case_id": "shallow-beer-lambert-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "beer_lambert",
+        "manifest_sha256": "396bd28037b00ca6cd4c5e2c6e626f5b9fbecccd1f5f4b61adfb7ebce40c6ba8",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "beer_lambert_catalog",
+          "description": "High-probability exponential-decay showcase.",
+          "formula_id": "beer_lambert",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+          "symbolic_expression": "exp(-0.8*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.0,
+              3.0
+            ],
+            "input_sha256": "a1a904e4cdeda2fdd1cd8fd792f77985224960dbb44de499d5f2f53b67e7fcab",
+            "name": "train",
+            "target_sha256": "3fc47b22dcf69b2619063c1f53c899d9d19ab422b7a52a7d80952140cba03bed"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              2.7
+            ],
+            "input_sha256": "6dd6fbbd58e38a704c715dbc20c01b17b39f73dae837eb731240307e7b09a522",
+            "name": "heldout",
+            "target_sha256": "7598595cabde90317617874cc2b19950150f30136390fc6dc404a2701f9e5862"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.5
+            ],
+            "input_sha256": "037d1517f69d5ded645787085c575b667eadcfa2d346e3f95de84bac80a191d6",
+            "name": "extrapolation",
+            "target_sha256": "fb6112ae2b7eaab73df45ca18a86256a0a570b539608b44139e59d2bff959a99"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_log_branch_cut_count": 4478,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 4478,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 4.7727008136517964e-33,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 4.5123928104542996e-32,
+        "high_precision_max_error": 4.641851287414603e-81,
+        "legacy_best_loss": 4.7727008136517964e-33,
+        "post_snap_loss": 4.5123928104542996e-32,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 4.806498708234154e-33,
+        "refit_status": "rejected",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "-0.8",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "-0.8"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "beer_lambert_catalog",
+        "description": "High-probability exponential-decay showcase.",
+        "formula_id": "beer_lambert",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+        "symbolic_expression": "exp(-0.8*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-beer-lambert-blind-5cb3e5e925cf",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-beer-lambert-blind-19bae8ae4d64.json",
+      "case_id": "shallow-beer-lambert-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "beer_lambert",
+        "manifest_sha256": "de851c53e04fea4fc0f04950d771639df53e6ac6a44826ddabf5ca3e709d6285",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "beer_lambert_catalog",
+          "description": "High-probability exponential-decay showcase.",
+          "formula_id": "beer_lambert",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+          "symbolic_expression": "exp(-0.8*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 2,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.0,
+              3.0
+            ],
+            "input_sha256": "6050750d166b17f961e483c273536f64c903e8e65b431e7649951ae602ef0f0e",
+            "name": "train",
+            "target_sha256": "534d3fc2d84e14b829b14a91e404e80323c4bcfebcae8a8f62cfd0c5787d7775"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              2.7
+            ],
+            "input_sha256": "703e825b40a45f0c1a61b24e14adaee48fa116deebbaa3857c9067d8ae7ac4ee",
+            "name": "heldout",
+            "target_sha256": "96f941045a27358a2f7a901bc3adace885418b7c3cdee2835f8b7536bb281af3"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.5
+            ],
+            "input_sha256": "793a7f517c4b0dcd3870d82d45e56d343aa9954c1c8a9e4cc1cca96981096727",
+            "name": "extrapolation",
+            "target_sha256": "dd42206d8aff0fa0b1378ca779f01f878516c0ac2f443ca6e11191fb337bdb75"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 19,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_log_branch_cut_count": 4728,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 4798,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 4.900663650396958e-33,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 4.8664014724200687e-32,
+        "high_precision_max_error": 4.981245346746228e-81,
+        "legacy_best_loss": 4.900663650396958e-33,
+        "post_snap_loss": 4.8664014724200687e-32,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 4.9200627882946736e-33,
+        "refit_status": "rejected",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "-0.8",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "-0.8"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "beer_lambert_catalog",
+        "description": "High-probability exponential-decay showcase.",
+        "formula_id": "beer_lambert",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+        "symbolic_expression": "exp(-0.8*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-beer-lambert-blind-19bae8ae4d64",
+      "seed": 2,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-scaled-exp-growth-blind-23ab5fe0faf1.json",
+      "case_id": "shallow-scaled-exp-growth-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "scaled_exp_growth",
+        "manifest_sha256": "c09f30525dfeef57ff74e8bb819d68242e78cdcb0fbd7c97ede7418c0a6a2fcb",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "scaled_exp_growth_catalog",
+          "description": "Phase 30 signed/scaled exponential proof target with a positive exponent coefficient.",
+          "formula_id": "scaled_exp_growth",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(0.4*x) coefficient-growth variant",
+          "symbolic_expression": "exp(0.4*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              -2.0,
+              2.0
+            ],
+            "input_sha256": "961ec3614a3ecc5bba8138d5c58ed83bd88a5ba408348f3507a8ea0a5281aa15",
+            "name": "train",
+            "target_sha256": "baa83931c28ff20a64083af122bf0623dfa30a6a338ff6ad2f962d04be278b68"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -1.7,
+              1.7
+            ],
+            "input_sha256": "570a565157111c4a7169d6fad142f9b87f7361204cd05f0e9a383ba5b5bf89ab",
+            "name": "heldout",
+            "target_sha256": "5b6330da4e5aeeb150756ef494f092a956a815764e3266e455cd1a7afeebc46a"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.1,
+              3.2
+            ],
+            "input_sha256": "74db1061db58222b9beece1cab8b5ac4129636cdc7ed489f49515ad0703494da",
+            "name": "extrapolation",
+            "target_sha256": "0460dded767153263359bdd6cd61e9f5af96398254acb9d9e3e72a599220e1b3"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "scaled_exp_growth",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 9,
+        "anomaly_exp_overflow_count": 9,
+        "anomaly_log_branch_cut_count": 2885,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 2951,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 4.213468769525806e-32,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 8.353098381815343e-32,
+        "high_precision_max_error": 2.1084395886461046e-80,
+        "legacy_best_loss": 4.213468769525806e-32,
+        "post_snap_loss": 8.353098381815343e-32,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 8.353098381815343e-32,
+        "refit_status": "rejected",
+        "refit_verifier_status": "failed",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "0.4",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "0.4"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "scaled_exp_growth_catalog",
+        "description": "Phase 30 signed/scaled exponential proof target with a positive exponent coefficient.",
+        "formula_id": "scaled_exp_growth",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(0.4*x) coefficient-growth variant",
+        "symbolic_expression": "exp(0.4*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-scaled-exp-growth-blind-23ab5fe0faf1",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-scaled-exp-growth-blind-2c3b6cabfaae.json",
+      "case_id": "shallow-scaled-exp-growth-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "scaled_exp_growth",
+        "manifest_sha256": "47ebe1d2f45b21d124bc6f530b80c6abee83c20a600aba83eacd9b462c7f1580",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "scaled_exp_growth_catalog",
+          "description": "Phase 30 signed/scaled exponential proof target with a positive exponent coefficient.",
+          "formula_id": "scaled_exp_growth",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(0.4*x) coefficient-growth variant",
+          "symbolic_expression": "exp(0.4*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              -2.0,
+              2.0
+            ],
+            "input_sha256": "14bad3ec1c5d84f0084220931da3ec8073d82ae32332fb838bec3790919048c3",
+            "name": "train",
+            "target_sha256": "544d173c7a9239be6922c84d18afa092c2a3406737714c5e43784f9a6595b862"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -1.7,
+              1.7
+            ],
+            "input_sha256": "af8d8da4aeea9b050b5efbf8720b6c0200f9d6722d3c5f66e29c1bb2fd0788de",
+            "name": "heldout",
+            "target_sha256": "cb153ac341eb1eb9ec9c355dee78eaa80221e3a58c014b1b96f3c1b296096d5f"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.1,
+              3.2
+            ],
+            "input_sha256": "b2fa78438952e76227d261fbaff2ff94fe24c9610624a777c355fa14e87d66b4",
+            "name": "extrapolation",
+            "target_sha256": "de347c5539ca61bbb58d5c1ffd33b647022683135b38d4edf550805508ee68cb"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "scaled_exp_growth",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 83,
+        "anomaly_exp_overflow_count": 83,
+        "anomaly_log_branch_cut_count": 2416,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 2478,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 1.3156738561703868e-31,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 1.5623327221942603e-31,
+        "high_precision_max_error": 2.1084395886461046e-80,
+        "legacy_best_loss": 1.3156738561703868e-31,
+        "post_snap_loss": 1.5623327221942603e-31,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 1.5623327221942603e-31,
+        "refit_status": "rejected",
+        "refit_verifier_status": "failed",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "0.4",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "0.4"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "scaled_exp_growth_catalog",
+        "description": "Phase 30 signed/scaled exponential proof target with a positive exponent coefficient.",
+        "formula_id": "scaled_exp_growth",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(0.4*x) coefficient-growth variant",
+        "symbolic_expression": "exp(0.4*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-scaled-exp-growth-blind-2c3b6cabfaae",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-scaled-exp-growth-blind-d9645da015c5.json",
+      "case_id": "shallow-scaled-exp-growth-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "scaled_exp_growth",
+        "manifest_sha256": "8d044dbfac1f9d7cf743958bf2520fcb7c0bd5993d0b2598bcfb596effc314df",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "scaled_exp_growth_catalog",
+          "description": "Phase 30 signed/scaled exponential proof target with a positive exponent coefficient.",
+          "formula_id": "scaled_exp_growth",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(0.4*x) coefficient-growth variant",
+          "symbolic_expression": "exp(0.4*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 2,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              -2.0,
+              2.0
+            ],
+            "input_sha256": "d94b3f65ee155d5ea409c90a32c0268148ca5d0718e5a8f9ae2d20a1153be480",
+            "name": "train",
+            "target_sha256": "7837b8aef98c5996546990cb70df1805b6b6594d7dd8273d2bad711a1af6fdd5"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -1.7,
+              1.7
+            ],
+            "input_sha256": "60c9c12d47e3b23a20466f495ab43291b4d9f0d9cf46ec2373d5acac25a34fe3",
+            "name": "heldout",
+            "target_sha256": "fb8c4924469da7209813e1a02577bf6e295980f765321854a2fd977b06bdeca6"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.1,
+              3.2
+            ],
+            "input_sha256": "d29f97c1f693ed9a0b5883a54523e59a6a3cc5e813c132ace1f16d1fdf84138b",
+            "name": "extrapolation",
+            "target_sha256": "bb2af4e067b3b9f9ab1ad218586dcb0467df8da84c0b74e4f11bf87cb8893c12"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "scaled_exp_growth",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 56,
+        "anomaly_exp_overflow_count": 56,
+        "anomaly_log_branch_cut_count": 2608,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 2648,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 9.684759130663914e-32,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 1.9696690078515692e-31,
+        "high_precision_max_error": 2.9518154241045465e-80,
+        "legacy_best_loss": 9.684759130663914e-32,
+        "post_snap_loss": 1.9696690078515692e-31,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 1.9696690078515692e-31,
+        "refit_status": "rejected",
+        "refit_verifier_status": "failed",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "0.4",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "0.4"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "scaled_exp_growth_catalog",
+        "description": "Phase 30 signed/scaled exponential proof target with a positive exponent coefficient.",
+        "formula_id": "scaled_exp_growth",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(0.4*x) coefficient-growth variant",
+        "symbolic_expression": "exp(0.4*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-scaled-exp-growth-blind-d9645da015c5",
+      "seed": 2,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-scaled-exp-fast-decay-blind-0fef82e2d448.json",
+      "case_id": "shallow-scaled-exp-fast-decay-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "scaled_exp_fast_decay",
+        "manifest_sha256": "9c127a543ec391ac587a03fa9b6ff0fe77233ae893932115a894b5e4dfecab09",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "scaled_exp_fast_decay_catalog",
+          "description": "Phase 30 signed/scaled exponential proof target with a larger negative exponent coefficient.",
+          "formula_id": "scaled_exp_fast_decay",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(-1.2*x) fast-decay coefficient variant",
+          "symbolic_expression": "exp(-1.2*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.0,
+              2.5
+            ],
+            "input_sha256": "1f0545fe3f34787c06de945524cb67052521356eca163c95f5958681e3f4bbba",
+            "name": "train",
+            "target_sha256": "0210da42a77ede834e17f16d82d02330381c508941f63990672cbd83f4590b68"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.1,
+              2.3
+            ],
+            "input_sha256": "9da7aafd18ea5d22e89454985e189243f9ee3dfb669c0210c094552ed3c1fb23",
+            "name": "heldout",
+            "target_sha256": "9428f9fbbbfa18717631795d63072350dace78a3ce85f1155bba11ef3fe7935e"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.6,
+              3.5
+            ],
+            "input_sha256": "dfc098d1c14daf470dfd72434ee29f5952087c77b13f1c477d8cb25453debff5",
+            "name": "extrapolation",
+            "target_sha256": "43597e3f3675d1dcf5ab841ff59f0555fc385c32fa873018418491a5b49c6721"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "scaled_exp_fast_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 60,
+        "anomaly_exp_overflow_count": 60,
+        "anomaly_log_branch_cut_count": 5041,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 5075,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 2.974066844303768e-32,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 3.1294980868512584e-32,
+        "high_precision_max_error": 5.613585248530977e-81,
+        "legacy_best_loss": 2.974066844303768e-32,
+        "post_snap_loss": 3.1294980868512584e-32,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 3.1294980868512584e-32,
+        "refit_status": "rejected",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "-1.2",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "-1.2"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "scaled_exp_fast_decay_catalog",
+        "description": "Phase 30 signed/scaled exponential proof target with a larger negative exponent coefficient.",
+        "formula_id": "scaled_exp_fast_decay",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(-1.2*x) fast-decay coefficient variant",
+        "symbolic_expression": "exp(-1.2*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-scaled-exp-fast-decay-blind-0fef82e2d448",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-scaled-exp-fast-decay-blind-84833aade508.json",
+      "case_id": "shallow-scaled-exp-fast-decay-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "scaled_exp_fast_decay",
+        "manifest_sha256": "f7dcba56417265e083113c8a67750cff6c5acdf8c701794bc50e8a16de25abae",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "scaled_exp_fast_decay_catalog",
+          "description": "Phase 30 signed/scaled exponential proof target with a larger negative exponent coefficient.",
+          "formula_id": "scaled_exp_fast_decay",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(-1.2*x) fast-decay coefficient variant",
+          "symbolic_expression": "exp(-1.2*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.0,
+              2.5
+            ],
+            "input_sha256": "009b6500fb4c466147e0a4226a1fb050f22e6572317c99bafa45ff52f580c08b",
+            "name": "train",
+            "target_sha256": "828276de75988c02456728143a36e75642a0f226232052a0a88bf9fb80c4c39a"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.1,
+              2.3
+            ],
+            "input_sha256": "622005b3c83de1032b1a041e6cb2d9f9f1508c0992093390e879144d7e8cc136",
+            "name": "heldout",
+            "target_sha256": "5ffb91e398e637820f30bfd417943874b1ef700abf38cd5550013af9fde0119f"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.6,
+              3.5
+            ],
+            "input_sha256": "436edac22d78bf80776842b1ec138922dfe0a83b3f79e5a160c9142a4eef371e",
+            "name": "extrapolation",
+            "target_sha256": "c440002e459f291c62db6665a4dd2f74eb9535fa32f67464f56bc02941b7db26"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "scaled_exp_fast_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_log_branch_cut_count": 4716,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 4716,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 2.686670178009004e-32,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 2.686670178009004e-32,
+        "high_precision_max_error": 5.296750109691197e-81,
+        "legacy_best_loss": 2.686670178009004e-32,
+        "post_snap_loss": 2.686670178009004e-32,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 2.686670178009004e-32,
+        "refit_status": "rejected",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "-1.2",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "-1.2"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "scaled_exp_fast_decay_catalog",
+        "description": "Phase 30 signed/scaled exponential proof target with a larger negative exponent coefficient.",
+        "formula_id": "scaled_exp_fast_decay",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(-1.2*x) fast-decay coefficient variant",
+        "symbolic_expression": "exp(-1.2*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-scaled-exp-fast-decay-blind-84833aade508",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/proof/v1.6/campaigns/proof-shallow/runs/v1.5-shallow-proof/v1-5-shallow-proof-shallow-scaled-exp-fast-decay-blind-04a02d58d84b.json",
+      "case_id": "shallow-scaled-exp-fast-decay-blind",
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 32,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "scaled_exp_fast_decay",
+        "manifest_sha256": "aa1423d84aa7474757810007fa248b8fb8d0856c4b40576fe00ad29bb9a0cd0b",
+        "points": 32,
+        "provenance": {
+          "candidate_name": "scaled_exp_fast_decay_catalog",
+          "description": "Phase 30 signed/scaled exponential proof target with a larger negative exponent coefficient.",
+          "formula_id": "scaled_exp_fast_decay",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(-1.2*x) fast-decay coefficient variant",
+          "symbolic_expression": "exp(-1.2*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 2,
+        "splits": [
+          {
+            "count": 32,
+            "domain": [
+              0.0,
+              2.5
+            ],
+            "input_sha256": "2ba807ac4621085e25f0563a4a65250cfd09fe4813e5d8006727ff2ef7ff6593",
+            "name": "train",
+            "target_sha256": "c97ecba302f3b85661108e223c3a2be8d89a12028593a0aa8b4e725146197739"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.1,
+              2.3
+            ],
+            "input_sha256": "3380b89cae47d0daccc504a8a815b34adc957a9b75262fd4123c44f8800fe6e8",
+            "name": "heldout",
+            "target_sha256": "0ef22a58e9c78c93dbacb10fbe9838b65da67dd2e9c91fe7a555d21d5fd1d836"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.6,
+              3.5
+            ],
+            "input_sha256": "802751dfcc3f3e0c209736c9eff1ceee6a049663ad71559baf3bf22b43450f93",
+            "name": "extrapolation",
+            "target_sha256": "d34a75c400ebc0313c2c29073b842fec2f4b5ca481ffc3d2b409bffe2f263974"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "scaled_exp_fast_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 47,
+        "anomaly_exp_overflow_count": 47,
+        "anomaly_log_branch_cut_count": 4892,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 4933,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "best_loss": 3.3639065644773213e-32,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 3.364687820064662e-32,
+        "high_precision_max_error": 5.300203131160293e-81,
+        "legacy_best_loss": 3.3639065644773213e-32,
+        "post_snap_loss": 3.364687820064662e-32,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 3.364687820064662e-32,
+        "refit_status": "rejected",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": "-1.2",
+        "scaffold_source": "scaffold_scaled_exp",
+        "scaffold_strategy": "paper_scaled_exponential_family",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "-1.2"
+        ],
+        "depth": 9,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 2,
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 120,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "scaled_exp_fast_decay_catalog",
+        "description": "Phase 30 signed/scaled exponential proof target with a larger negative exponent coefficient.",
+        "formula_id": "scaled_exp_fast_decay",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(-1.2*x) fast-decay coefficient variant",
+        "symbolic_expression": "exp(-1.2*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-5-shallow-proof-shallow-scaled-exp-fast-decay-blind-04a02d58d84b",
+      "seed": 2,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "v1.5-shallow-proof",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent",
+      "training_mode": "blind_training"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/proof/v1.6/campaigns/proof-shallow/runs",
+    "cases": [
+      {
+        "claim_id": "paper-shallow-scaffolded-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "exp",
+        "id": "shallow-exp-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 1,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "scaffolded_blind"
+        ],
+        "threshold_policy_id": "scaffolded_bounded_100_percent",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-scaffolded-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "log",
+        "id": "shallow-log-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 3,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "scaffolded_blind"
+        ],
+        "threshold_policy_id": "scaffolded_bounded_100_percent",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-scaffolded-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "radioactive_decay",
+        "id": "shallow-radioactive-decay-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "-0.4"
+          ],
+          "depth": 9,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "scaffolded_blind"
+        ],
+        "threshold_policy_id": "scaffolded_bounded_100_percent",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-scaffolded-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "beer_lambert",
+        "id": "shallow-beer-lambert-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "-0.8"
+          ],
+          "depth": 9,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "scaffolded_blind"
+        ],
+        "threshold_policy_id": "scaffolded_bounded_100_percent",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-scaffolded-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "scaled_exp_growth",
+        "id": "shallow-scaled-exp-growth-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "0.4"
+          ],
+          "depth": 9,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "scaffolded_blind"
+        ],
+        "threshold_policy_id": "scaffolded_bounded_100_percent",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-shallow-scaffolded-recovery",
+        "dataset": {
+          "points": 32,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "scaled_exp_fast_decay",
+        "id": "shallow-scaled-exp-fast-decay-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "-1.2"
+          ],
+          "depth": 9,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 2,
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 120,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1,
+          2
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "bounded",
+          "scaffolded_blind"
+        ],
+        "threshold_policy_id": "scaffolded_bounded_100_percent",
+        "training_mode": "blind_training"
+      }
+    ],
+    "description": "Bounded v1.5 shallow scaffolded-training proof suite with fixed proof constants and evidenced scaled-exponential depth.",
+    "id": "v1.5-shallow-proof",
+    "schema": "eml.benchmark_suite.v1"
+  },
+  "thresholds": [
+    {
+      "claim_class": "scaffolded_training_proof",
+      "claim_id": "paper-shallow-scaffolded-recovery",
+      "eligible": 18,
+      "evidence_classes": {
+        "scaffolded_blind_training_recovered": 18
+      },
+      "failed": 0,
+      "passed": 18,
+      "rate": 1.0,
+      "required_rate": 1.0,
+      "status": "passed",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "scaffolded_blind_training_recovered"
+        ],
+        "description": "Declared scaffolded shallow suites pass only at 100% verifier-owned scaffolded training recovery.",
+        "fail_on_execution_error": true,
+        "fail_on_unsupported": true,
+        "id": "scaffolded_bounded_100_percent",
+        "policy_type": "bounded_rate",
+        "required_rate": 1.0
+      },
+      "threshold_policy_id": "scaffolded_bounded_100_percent"
+    }
+  ]
+}
