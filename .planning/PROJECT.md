@@ -29,11 +29,16 @@ v1.7 shipped the centered/scaled operator-family baseline: centered semantics an
 - Operator-family recovery, diagnostics, comparison Markdown, and regression-lock outputs in campaign reports.
 - Paper decision package with safe claims, unsafe claims, figure/table inventory, and incomplete completeness boundary.
 
-## Current Milestone
+## Current Milestone: v1.8 Centered-Family Viability and Full Evidence Run
 
-No active milestone is currently planned.
+**Goal:** Determine whether centered/scaled operator families are actually viable improvements over raw EML after fixing missing integration support, calibrating the family grid, running full evidence campaigns, and regenerating the paper decision artifacts.
 
-Recommended next milestone: run the full v1.7 family evidence matrix and regenerate the paper decision package with centered-family aggregates, or pursue constructive `CEML_s` witness search.
+**Target features:**
+- Triage the v1.7 `family-smoke` failures and identify which centered-family gaps are implementation blockers versus genuine operator behavior.
+- Add or explicitly gate centered warm-start, compiler-seed, initializer, and continuation support so full campaigns do not waste budget on known unsupported paths.
+- Expand the family experiment grid to include fixed `s` variants and continuation schedules needed for a defensible raw-vs-centered comparison.
+- Run the full family evidence matrix with recovery, depth, anomaly, repair/refit, and unsupported-rate artifacts.
+- Regenerate the paper decision package from centered-family aggregates and decide whether to publish the centered geometry paper, fall back to a raw-EML searchability note, or continue toward constructive completeness search.
 
 ## Requirements
 
@@ -84,7 +89,11 @@ Recommended next milestone: run the full v1.7 family evidence matrix and regener
 
 ### Active
 
-No active requirements. Start the next milestone with `$gsd-new-milestone`.
+- [ ] Fix or fail-closed-gate centered-family training blockers found by smoke evidence.
+- [ ] Calibrate fixed-`s` and continuation variants before expensive full campaigns.
+- [ ] Run and archive the full centered-family evidence matrix.
+- [ ] Regenerate paper decision artifacts from real centered-family aggregates.
+- [ ] Preserve strict separation between pure blind, scaffolded, warm-start, compile-only, repaired, and perturbed-basin regimes.
 
 ### Out of Scope
 
@@ -105,7 +114,9 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 
 `sources/NORTH_STAR.md` turns that paper result into an implementation blueprint. Its core recommendation is a hybrid pipeline: continuous search, hardening, symbolic snapping, local discrete cleanup, and verification. It also warns that pure gradient descent is not enough because the paper's blind recovery success drops sharply with depth, while warm starts recover reliably from perturbed correct solutions.
 
-The committed v1.6 proof bundle now gives the stable evidence base for a research pivot. Representation is strong, verifier ownership is strong, scaffolded and perturbed-basin regimes are strong, and pure-blind discovery remains the honest weak point. v1.7 should test the thesis that the bottleneck is raw EML search geometry by comparing it with centered/scaled exp-log transports under the same proof harness.
+The committed v1.6 proof bundle now gives the stable evidence base for a research pivot. Representation is strong, verifier ownership is strong, scaffolded and perturbed-basin regimes are strong, and pure-blind discovery remains the honest weak point. v1.7 built the centered/scaled exp-log transport infrastructure, but did not run the full centered evidence matrix.
+
+A quick post-v1.7 `family-smoke` run showed that full campaigns should not be launched blindly yet: raw EML recovered the smoke `exp` blind case and Beer-Lambert warm-start case, while centered `exp` blind variants failed and centered warm-start paths were explicitly unsupported. v1.8 should fix or gate those paths first, then run the full matrix only when the resulting evidence is meaningful.
 
 ## Constraints
 
@@ -114,7 +125,8 @@ The committed v1.6 proof bundle now gives the stable evidence base for a researc
 - **Non-destructive evidence**: v1.4 and v1.5 artifacts stay archived and comparable; new results cannot overwrite the historical benchmark anchors.
 - **Centered-family honesty**: `cEML_{s,t}`, `CEML_s`, and `ZEML_s` must be reported as operator-family experiments unless constructive interdefinability or completeness evidence is actually produced.
 - **Numerics**: Training defaults to PyTorch `complex128`, with training-mode guards only where needed and faithful verification afterwards.
-- **Scope realism**: v1.7 must compare search geometry without overselling deep blind recovery, universal guarantees, or unproved successor-family completeness.
+- **Scope realism**: v1.8 must compare search geometry without overselling deep blind recovery, universal guarantees, or unproved successor-family completeness.
+- **Run discipline**: Full family campaigns should run only after smoke/calibration blockers are fixed or explicitly gated, so expensive artifacts answer the scientific question rather than restating known missing support.
 - **Demos**: Showcase examples must remain drawn from `sources/FOR_DEMO.md`, favoring normalized, dimensionless, visually distinctive laws.
 - **Repository state**: This project now has archived milestone planning and proof artifacts that must remain inspectable after the rollover.
 
@@ -147,6 +159,7 @@ The committed v1.6 proof bundle now gives the stable evidence base for a researc
 | Defer matched-budget external baselines until the hybrid pipeline is stronger | External comparisons matter, but they should follow a materially improved blind-discovery engine. | ⚠️ Revisit for paper |
 | v1.7 tests centered/scaled EML transports before writing the flagship paper | v1.6 evidence shows representation and basin return are strong while raw blind search geometry remains the dominant bottleneck. | ✓ Good |
 | Use `CEML_s` for unit-terminal/formal successor claims and `ZEML_s` for training-centered comparisons | Zero-terminal centered trees do not generate new constants from closed trees, so training convenience and formal completeness must stay separate. | ✓ Good |
+| v1.8 treats centered-family performance as unknown until blocker fixes and full campaigns run | The v1.7 infrastructure shipped without full centered evidence, and the quick smoke check showed centered failures and unsupported warm-start paths. | - Pending |
 
 ## Evolution
 
@@ -166,4 +179,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-16 after shipping milestone v1.7*
+*Last updated: 2026-04-16 after starting milestone v1.8*

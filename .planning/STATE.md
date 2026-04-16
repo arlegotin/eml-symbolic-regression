@@ -1,24 +1,24 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.7
-milestone_name: Centered-Family Baseline and Paper Decision
+milestone: v1.8
+milestone_name: Centered-Family Viability and Full Evidence Run
 current_phase: null
-status: milestone_archived
-stopped_at: v1.7 archived; ready for next milestone
-last_updated: "2026-04-16T23:59:00Z"
-last_activity: 2026-04-16 -- v1.7 milestone archived
+status: defining_requirements
+stopped_at: v1.8 milestone started; defining requirements and roadmap
+last_updated: "2026-04-16T21:29:00Z"
+last_activity: 2026-04-16 -- v1.8 milestone started
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** None
+**Current phase:** Not started
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** No active milestone. Start the next milestone when ready.
+**Current focus:** v1.8 Centered-Family Viability and Full Evidence Run.
 
 ## Current Position
 
-Phase: —
+Phase: Not started (defining requirements)
 Plan: —
-Status: v1.7 archived
-Last activity: 2026-04-16 -- v1.7 milestone archived
-Progress: [##########] 100% by completed phases (v1.7: 5/5 planned)
+Status: Defining requirements
+Last activity: 2026-04-16 -- v1.8 milestone started
+Progress: [----------] 0% by completed phases (v1.8 roadmap pending)
 
 ## Performance Metrics
 
@@ -49,7 +49,8 @@ Progress: [##########] 100% by completed phases (v1.7: 5/5 planned)
 - v1.5 proved that representation and verifier contracts are strong while pure-blind shallow recovery remains weak (`2/18`) and deeper blind recovery degrades after depth 3.
 - v1.5 scaffolded shallow proof reached `18/18`, and perturbed basin proof reached `9/9`, showing that basin return is much stronger than blind discovery.
 - v1.6 delivered search-quality upgrades that weakly dominate the prior exact-candidate selector on declared paths while keeping archived baselines intact.
-- v1.7 begins from the interpretation that raw EML's main unresolved weakness is search geometry, not representation power or verification discipline.
+- v1.7 built centered/scaled operator-family infrastructure but did not run the full centered-family evidence matrix.
+- A quick post-v1.7 `family-smoke` run showed raw EML recovering the smoke `exp` blind and Beer-Lambert warm-start paths, while centered blind `exp` variants failed and centered warm-starts were unsupported. v1.8 therefore starts with triage and blocker fixes before full campaigns.
 
 ## Artifacts
 
@@ -76,28 +77,15 @@ Progress: [##########] 100% by completed phases (v1.7: 5/5 planned)
 | v1.7 archived phase artifacts | `.planning/milestones/v1.7-phases/` | Complete |
 | v1.7 paper decision package | `artifacts/paper/v1.7/` | Complete |
 | v1.7 milestone audit | `.planning/milestones/v1.7-MILESTONE-AUDIT.md` | Complete |
+| v1.8 project context | `.planning/PROJECT.md` | In Progress |
 
 ## Completed Milestone
-
-**v1.6: Hybrid Search Pipeline and Exact Candidate Recovery**
-
-Goal: Upgrade the current MVP optimizer into a verifier-gated hybrid recovery pipeline that improves exact candidate quality without weakening the evidence contract.
-
-Target features:
-
-- Exact-candidate selection from restarts and hardening checkpoints rather than soft-loss-only winners.
-- Target-free low-margin discrete cleanup and snap-neighborhood repair.
-- Post-snap constant refit plus stronger `exp`/`log` numerical and domain controls.
-- Short compiler macros and wider warm-start coverage with fail-closed fallback preserved.
-- Honest proof and campaign reruns against archived v1.5 and v1.4 baselines.
-
-## Current Milestone
 
 **v1.7: Centered-Family Baseline and Paper Decision**
 
 Goal: Determine whether centered/scaled transport families materially improve exact symbolic recovery relative to raw EML while preserving verifier-owned evidence discipline.
 
-Target work:
+Target features:
 
 - Family-aware semantics and exact AST support for raw EML, `cEML_{s,t}`, `CEML_s`, and `ZEML_s`.
 - Family-aware soft master tree, snapping, verification, compiler, and warm-start support.
@@ -105,15 +93,25 @@ Target work:
 - Comparative evidence bundle for recovery rates, depth behavior, anomalies, repair/refit dependence, and formula overhead.
 - Decision memo choosing between a publish-now robustness/geometry paper and a later successor-family paper requiring constructive completeness evidence.
 
+## Current Milestone
+
+**v1.8: Centered-Family Viability and Full Evidence Run**
+
+Goal: Determine whether centered/scaled operator families are actually viable improvements over raw EML after fixing missing integration support, calibrating the family grid, running full evidence campaigns, and regenerating the paper decision artifacts.
+
+Target work:
+
+- Smoke triage and missing-support audit for centered-family failures.
+- Centered warm-start, compiler-seed, initializer, and schedule fixes or explicit gates.
+- Expanded fixed-`s` and continuation experiment matrix.
+- Full family campaigns with archived aggregates, tables, figures, and regression locks.
+- Refreshed paper decision package grounded in actual centered-family aggregates.
+
 ## Phase Status
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 39 | Centered Operator Semantics and Exact Forms | Complete | OPF-01, OPF-02, OPF-03, OPF-04, OPF-05 |
-| 40 | Family-Aware Master Tree and Recovery Pipeline | Complete | TRN-01, TRN-02, TRN-03, TRN-04, TRN-05 |
-| 41 | Operator-Family Campaign Matrix | Complete | EVD-01, EVD-02 |
-| 42 | Comparative Evidence Aggregation and Regression Locks | Complete | EVD-03, EVD-04, EVD-05 |
-| 43 | Paper Decision Memo and Completeness Boundary | Complete | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 |
+| TBD | Requirements and roadmap pending | Pending | TBD |
 
 ## Accumulated Context
 
@@ -146,6 +144,7 @@ Target work:
 - Phase 41 added v1.7 family benchmark suites and campaign presets for raw, fixed centered, and scheduled continuation variants across smoke, shallow, basin, depth-curve, standard, and showcase-style matrices without reusing archived proof thresholds.
 - Phase 42 added operator-family recovery, diagnostics, comparison Markdown, and regression-lock JSON outputs to campaign tables and reports, including centered anomaly counters and active-node/complexity summaries.
 - Phase 43 added a reproducible paper decision package generator and generated `artifacts/paper/v1.7/`, with the current decision set to wait for centered-family campaign evidence while preserving raw-EML searchability as a viable paper note.
+- v1.8 should not start by launching every full family campaign. It should first turn the quick `family-smoke` failures into actionable fixes or explicit exclusions so the expensive runs answer centered-family viability rather than known missing integration.
 
 ### Pending Todos
 
@@ -153,7 +152,7 @@ None recorded.
 
 ### Blockers/Concerns
 
-The milestone must not claim universal blind recovery of arbitrary deep elementary expressions or completeness of the centered/scaled family unless the evidence produced in v1.7 actually supports those claims.
+The milestone must not claim universal blind recovery of arbitrary deep elementary expressions or completeness of the centered/scaled family unless v1.8 produces direct evidence. Centered warm-start support, initializer/schedule behavior, and the fixed-`s` grid must be resolved before full campaigns are used for paper claims.
 
 ### Quick Tasks Completed
 
@@ -164,8 +163,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: v1.7 archived; ready for next milestone
+Stopped at: v1.8 milestone started; requirements and roadmap pending
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after archiving v1.7*
+*Last updated: 2026-04-16 after starting v1.8*
