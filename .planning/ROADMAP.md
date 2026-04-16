@@ -47,7 +47,7 @@ The milestone adds family-aware semantics and exact AST support for `cEML_{s,t}`
 - [x] **Phase 40: Family-Aware Master Tree and Recovery Pipeline** - Thread fixed-family and scheduled-family choices through soft training, snapping, candidate ranking, compiler/warm-start paths, cleanup, repair, and refit. (requirements: TRN-01, TRN-02, TRN-03, TRN-04, TRN-05)
 - [x] **Phase 41: Operator-Family Campaign Matrix** - Add reproducible raw-vs-centered proof and showcase campaign presets with isolated artifacts and family-aware manifests. (requirements: EVD-01, EVD-02)
 - [x] **Phase 42: Comparative Evidence Aggregation and Regression Locks** - Produce family comparison tables, anomaly diagnostics, verifier/repair/refit summaries, and smoke/regression locks. (requirements: EVD-03, EVD-04, EVD-05)
-- [ ] **Phase 43: Paper Decision Memo and Completeness Boundary** - Convert the comparison evidence into a publish/wait decision, safe claim language, figure inventory, and optional completeness-search boundary report. (requirements: PAP-01, PAP-02, PAP-03, PAP-04, PAP-05)
+- [x] **Phase 43: Paper Decision Memo and Completeness Boundary** - Convert the comparison evidence into a publish/wait decision, safe claim language, figure inventory, and optional completeness-search boundary report. (requirements: PAP-01, PAP-02, PAP-03, PAP-04, PAP-05)
 
 ## Phase Details
 
@@ -132,11 +132,11 @@ Phase 39 establishes the mathematical and artifact representation for centered-f
 | EVD-03 | Phase 42 | Complete |
 | EVD-04 | Phase 42 | Complete |
 | EVD-05 | Phase 42 | Complete |
-| PAP-01 | Phase 43 | Pending |
-| PAP-02 | Phase 43 | Pending |
-| PAP-03 | Phase 43 | Pending |
-| PAP-04 | Phase 43 | Pending |
-| PAP-05 | Phase 43 | Pending |
+| PAP-01 | Phase 43 | Complete |
+| PAP-02 | Phase 43 | Complete |
+| PAP-03 | Phase 43 | Complete |
+| PAP-04 | Phase 43 | Complete |
+| PAP-05 | Phase 43 | Complete |
 
 **Coverage:** 20/20 v1.7 requirements mapped. No orphaned requirements. No duplicate phase assignments.
 
@@ -157,7 +157,7 @@ Phase 39 establishes the mathematical and artifact representation for centered-f
 | 40. Family-Aware Master Tree and Recovery Pipeline | 1/1 | Complete | 2026-04-16 |
 | 41. Operator-Family Campaign Matrix | 1/1 | Complete | 2026-04-16 |
 | 42. Comparative Evidence Aggregation and Regression Locks | 1/1 | Complete | 2026-04-16 |
-| 43. Paper Decision Memo and Completeness Boundary | 0/1 | Pending | - |
+| 43. Paper Decision Memo and Completeness Boundary | 1/1 | Complete | 2026-04-16 |
 
 ---
-*Roadmap updated: 2026-04-16 after completing Phase 42*
+*Roadmap updated: 2026-04-16 after completing Phase 43*

@@ -23,6 +23,7 @@ from .diagnostics import (
     write_perturbed_basin_bound_report,
 )
 from .optimize import TrainingConfig, fit_eml_tree
+from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .verify import verify_candidate
@@ -363,6 +364,15 @@ def diagnostics_basin_bound_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def paper_decision_command(args: argparse.Namespace) -> int:
+    paths = write_paper_decision_package(
+        tuple(Path(path) for path in args.aggregate or ()),
+        output_dir=Path(args.output_dir),
+    )
+    print(f"paper decision: memo -> {paths.decision_markdown}; json -> {paths.decision_json}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="eml-sr")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -460,6 +470,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Only run this perturbation noise across every proof preset. Repeatable.",
     )
     proof_campaign.set_defaults(func=run_proof_campaign_command)
+
+    paper_decision = sub.add_parser("paper-decision", help="Write the v1.7 paper decision memo package.")
+    paper_decision.add_argument("--aggregate", action="append", help="Benchmark aggregate JSON to summarize. Repeatable.")
+    paper_decision.add_argument("--output-dir", default=str(DEFAULT_PAPER_OUTPUT_ROOT), help="Directory for decision memo outputs.")
+    paper_decision.set_defaults(func=paper_decision_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)

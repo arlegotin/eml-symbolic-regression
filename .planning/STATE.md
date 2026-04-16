@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.7
 milestone_name: Centered-Family Baseline and Paper Decision
-current_phase: 43
-status: in_progress
-stopped_at: Phase 42 complete; ready for Phase 43 planning
-last_updated: "2026-04-16T23:35:00Z"
-last_activity: 2026-04-16 -- Phase 42 comparative evidence aggregation completed
+current_phase: null
+status: milestone_complete_pending_audit
+stopped_at: Phase 43 complete; ready for milestone audit
+last_updated: "2026-04-16T23:50:00Z"
+last_activity: 2026-04-16 -- Phase 43 paper decision package completed
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 5
-  completed_plans: 4
-  percent: 80
+  completed_plans: 5
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 43
+**Current phase:** None
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 43 will convert family evidence into a paper decision memo, safe claims, figure inventory, and completeness boundary.
+**Current focus:** v1.7 phase work is complete; milestone audit and archive are next.
 
 ## Current Position
 
-Phase: 43 — Paper Decision Memo and Completeness Boundary
+Phase: —
 Plan: —
-Status: Phase 42 complete; Phase 43 pending planning
-Last activity: 2026-04-16 -- Phase 42 comparative evidence aggregation completed
-Progress: [########--] 80% by completed phases (v1.7: 4/5 planned)
+Status: Phase 43 complete; milestone audit pending
+Last activity: 2026-04-16 -- Phase 43 paper decision package completed
+Progress: [##########] 100% by completed phases (v1.7: 5/5 planned)
 
 ## Performance Metrics
 
@@ -77,6 +77,8 @@ Progress: [########--] 80% by completed phases (v1.7: 4/5 planned)
 | Phase 40 context, plan, summary, verification | `.planning/phases/40-family-aware-master-tree-and-recovery-pipeline/` | Complete |
 | Phase 41 context, plan, summary, verification | `.planning/phases/41-operator-family-campaign-matrix/` | Complete |
 | Phase 42 context, plan, summary, verification | `.planning/phases/42-comparative-evidence-aggregation-and-regression-locks/` | Complete |
+| Phase 43 context, plan, summary, verification | `.planning/phases/43-paper-decision-memo-and-completeness-boundary/` | Complete |
+| v1.7 paper decision package | `artifacts/paper/v1.7/` | Complete |
 
 ## Completed Milestone
 
@@ -114,7 +116,7 @@ Target work:
 | 40 | Family-Aware Master Tree and Recovery Pipeline | Complete | TRN-01, TRN-02, TRN-03, TRN-04, TRN-05 |
 | 41 | Operator-Family Campaign Matrix | Complete | EVD-01, EVD-02 |
 | 42 | Comparative Evidence Aggregation and Regression Locks | Complete | EVD-03, EVD-04, EVD-05 |
-| 43 | Paper Decision Memo and Completeness Boundary | Pending | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 |
+| 43 | Paper Decision Memo and Completeness Boundary | Complete | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 |
 
 ## Accumulated Context
 
@@ -146,6 +148,7 @@ Target work:
 - Phase 40 threaded operator-family selection and scheduled continuation metadata through the soft master tree, optimizer manifests, warm-start/basin probes, repair neighborhoods, benchmark budgets, campaign CSV rows, and public package exports while preserving raw EML defaults.
 - Phase 41 added v1.7 family benchmark suites and campaign presets for raw, fixed centered, and scheduled continuation variants across smoke, shallow, basin, depth-curve, standard, and showcase-style matrices without reusing archived proof thresholds.
 - Phase 42 added operator-family recovery, diagnostics, comparison Markdown, and regression-lock JSON outputs to campaign tables and reports, including centered anomaly counters and active-node/complexity summaries.
+- Phase 43 added a reproducible paper decision package generator and generated `artifacts/paper/v1.7/`, with the current decision set to wait for centered-family campaign evidence while preserving raw-EML searchability as a viable paper note.
 
 ### Pending Todos
 
@@ -164,8 +167,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-16
-Stopped at: Phase 42 complete; ready for Phase 43 planning
+Stopped at: Phase 43 complete; ready for milestone audit
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after completing Phase 42*
+*Last updated: 2026-04-16 after completing Phase 43*

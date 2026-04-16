@@ -34,11 +34,11 @@ Requirements for this milestone only. Completed v1 through v1.6 requirements are
 
 ### Paper Decision and Claim Boundaries
 
-- [ ] **PAP-01**: User receives a decision memo that chooses between publishing a robustness/geometry paper now or waiting for a stronger successor-family paper.
-- [ ] **PAP-02**: User receives safe claim language for the centered/scaled family, including centering, normalized local Jacobian, curvature control, shifted singularity, and subtraction-limit behavior.
-- [ ] **PAP-03**: User receives explicit unsafe-claim warnings for unproved `CEML_s` completeness, `ZEML_s` terminal-0 limitations, universal recovery, and pocket-calculator replacement claims.
-- [ ] **PAP-04**: User receives a figure and table inventory centered on exact recovery versus depth, supported by anomaly, repair/refit, verifier, and overhead evidence.
-- [ ] **PAP-05**: User can inspect any constructive completeness or interdefinability search outputs for `CEML_s` as experimental evidence, with incomplete results labeled as such.
+- [x] **PAP-01**: User receives a decision memo that chooses between publishing a robustness/geometry paper now or waiting for a stronger successor-family paper.
+- [x] **PAP-02**: User receives safe claim language for the centered/scaled family, including centering, normalized local Jacobian, curvature control, shifted singularity, and subtraction-limit behavior.
+- [x] **PAP-03**: User receives explicit unsafe-claim warnings for unproved `CEML_s` completeness, `ZEML_s` terminal-0 limitations, universal recovery, and pocket-calculator replacement claims.
+- [x] **PAP-04**: User receives a figure and table inventory centered on exact recovery versus depth, supported by anomaly, repair/refit, verifier, and overhead evidence.
+- [x] **PAP-05**: User can inspect any constructive completeness or interdefinability search outputs for `CEML_s` as experimental evidence, with incomplete results labeled as such.
 
 ## Future Requirements
 
@@ -85,11 +85,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EVD-03 | Phase 42 | Complete |
 | EVD-04 | Phase 42 | Complete |
 | EVD-05 | Phase 42 | Complete |
-| PAP-01 | Phase 43 | Pending |
-| PAP-02 | Phase 43 | Pending |
-| PAP-03 | Phase 43 | Pending |
-| PAP-04 | Phase 43 | Pending |
-| PAP-05 | Phase 43 | Pending |
+| PAP-01 | Phase 43 | Complete |
+| PAP-02 | Phase 43 | Complete |
+| PAP-03 | Phase 43 | Complete |
+| PAP-04 | Phase 43 | Complete |
+| PAP-05 | Phase 43 | Complete |
 
 **Coverage:**
 - v1.7 requirements: 20 total
@@ -98,4 +98,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after completing Phase 42 comparative evidence aggregation*
+*Last updated: 2026-04-16 after completing Phase 43 paper decision package*
