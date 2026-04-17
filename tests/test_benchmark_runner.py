@@ -12,6 +12,7 @@ import eml_symbolic_regression.benchmark as benchmark_module
 from eml_symbolic_regression.basin import BasinTrainingResult
 from eml_symbolic_regression.benchmark import (
     BenchmarkCase,
+    BenchmarkRepairConfig,
     BenchmarkRun,
     BenchmarkSuite,
     DatasetConfig,
@@ -27,6 +28,7 @@ from eml_symbolic_regression.datasets import get_demo
 from eml_symbolic_regression.expression import Const, Eml, Var
 from eml_symbolic_regression.master_tree import SoftEMLTree
 from eml_symbolic_regression.optimize import ExactCandidate, FitResult, TrainingConfig
+from eml_symbolic_regression.repair import RepairConfig, RepairReport
 from eml_symbolic_regression.verify import SplitResult, VerificationReport, verify_candidate
 from eml_symbolic_regression.warm_start import WarmStartResult
 
@@ -109,6 +111,20 @@ def _repairable_fit_for_exp() -> FitResult:
         selected_candidate=selected,
         fallback_candidate=selected,
         candidates=(selected,),
+    )
+
+
+def _not_repaired_report(*, original_status: str = "snapped_but_failed", return_kind: str = "snapped_but_failed") -> RepairReport:
+    return RepairReport(
+        status="not_repaired",
+        original_status=original_status,
+        return_kind=return_kind,
+        moves_attempted=(),
+        accepted_moves=(),
+        repaired_expression=None,
+        verification=None,
+        reason="no_verified_slot_neighborhood",
+        variant_count=1,
     )
 
 
@@ -485,6 +501,113 @@ def test_perturbed_tree_repair_promotes_artifact_without_overwriting_raw(monkeyp
     assert artifact["metrics"]["repair_move_count"] >= 1
     assert artifact["metrics"]["repair_accepted_move_count"] >= 1
     assert artifact["metrics"]["repair_verifier_status"] == "recovered"
+
+
+@pytest.mark.parametrize("start_mode", ["blind", "warm_start", "perturbed_tree"])
+def test_expanded_repair_config_routes_to_target_free_cleanup(monkeypatch, tmp_path, start_mode):
+    captured_configs = []
+
+    def fake_cleanup_failed_candidate(*args, **kwargs):
+        captured_configs.append(kwargs.get("config"))
+        return _not_repaired_report(original_status=kwargs["original_status"], return_kind=kwargs["return_kind"])
+
+    monkeypatch.setattr(benchmark_module, "cleanup_failed_candidate", fake_cleanup_failed_candidate)
+    monkeypatch.setattr(
+        benchmark_module,
+        "repair_perturbed_candidate",
+        lambda *args, **kwargs: _not_repaired_report(original_status=kwargs["original_status"], return_kind=kwargs["return_kind"]),
+    )
+
+    if start_mode == "blind":
+        monkeypatch.setattr(benchmark_module, "fit_eml_tree", lambda *args, **kwargs: _repairable_fit_for_exp())
+        run = BenchmarkRun(
+            suite_id="phase52",
+            case_id="blind-expanded-repair",
+            formula="exp",
+            start_mode="blind",
+            seed=0,
+            perturbation_noise=0.0,
+            dataset=DatasetConfig(points=12),
+            optimizer=OptimizerBudget(depth=1, steps=1, restarts=1, refit_steps=0),
+            artifact_path=tmp_path / "blind-expanded-repair.json",
+            training_mode="blind_training",
+            repair=BenchmarkRepairConfig(preset="expanded_candidate_pool"),
+        )
+    elif start_mode == "warm_start":
+        fit = _repairable_fit_for_exp()
+        warm_tree = SoftEMLTree(1, ("x",), (1.0,))
+        embedding = warm_tree.embed_expr(Eml(Var("x"), Const(1.0)))
+
+        def fake_warm_start(*args, **kwargs):
+            return WarmStartResult(
+                status="snapped_but_failed",
+                fit=fit,
+                embedding=embedding,
+                verification=_verification_report("failed"),
+                manifest={
+                    "schema": "eml.warm_start_manifest.v1",
+                    "status": "snapped_but_failed",
+                    "optimizer": fit.manifest,
+                    "verification": _verification_report("failed").as_dict(),
+                    "diagnosis": {"status": "snapped_but_failed", "mechanism": "snap_instability"},
+                },
+            )
+
+        monkeypatch.setattr(benchmark_module, "fit_warm_started_eml_tree", fake_warm_start)
+        run = BenchmarkRun(
+            suite_id="phase52",
+            case_id="warm-expanded-repair",
+            formula="exp",
+            start_mode="warm_start",
+            seed=0,
+            perturbation_noise=0.0,
+            dataset=DatasetConfig(points=12),
+            optimizer=OptimizerBudget(depth=1, steps=1, restarts=1, warm_steps=1, warm_restarts=1, refit_steps=0),
+            artifact_path=tmp_path / "warm-expanded-repair.json",
+            training_mode="compiler_warm_start_training",
+            repair=BenchmarkRepairConfig(preset="expanded_candidate_pool"),
+        )
+    else:
+        target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+        raw_fit = _fit_from_slots({"root.left": "var:x", "root.right": "const:1"})
+        embedding = SoftEMLTree(2, ("x",), (1.0,)).embed_expr(target_expr)
+        raw_verification = _verification_report("failed")
+
+        def fake_fit_perturbed_true_tree(*args, **kwargs):
+            return BasinTrainingResult(
+                status="snapped_but_failed",
+                return_kind="snapped_but_failed",
+                fit=raw_fit,
+                embedding=embedding,
+                verification=raw_verification,
+                manifest={
+                    "schema": "eml.perturbed_true_tree_manifest.v1",
+                    "status": "snapped_but_failed",
+                    "raw_status": "snapped_but_failed",
+                    "return_kind": "snapped_but_failed",
+                    "optimizer": raw_fit.manifest,
+                    "verification": raw_verification.as_dict(),
+                },
+            )
+
+        monkeypatch.setattr(benchmark_module, "fit_perturbed_true_tree", fake_fit_perturbed_true_tree)
+        run = BenchmarkRun(
+            suite_id="phase52",
+            case_id="perturbed-expanded-repair",
+            formula="basin_depth2_exp_exp",
+            start_mode="perturbed_tree",
+            seed=0,
+            perturbation_noise=0.05,
+            dataset=DatasetConfig(points=12),
+            optimizer=OptimizerBudget(depth=2, warm_steps=1, warm_restarts=1, refit_steps=0),
+            artifact_path=tmp_path / "perturbed-expanded-repair.json",
+            training_mode="perturbed_true_tree_training",
+            repair=BenchmarkRepairConfig(preset="expanded_candidate_pool"),
+        )
+
+    execute_benchmark_run(run)
+
+    assert captured_configs == [RepairConfig.expanded_candidate_pool()]
 
 
 @pytest.mark.parametrize("start_mode", ["blind", "warm_start"])

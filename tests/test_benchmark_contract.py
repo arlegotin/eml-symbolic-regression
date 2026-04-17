@@ -1,11 +1,15 @@
 import json
+from pathlib import Path
 
 import pytest
 
 from eml_symbolic_regression.benchmark import (
+    BenchmarkRepairConfig,
     BenchmarkCase,
+    BenchmarkRun,
     BenchmarkSuite,
     BenchmarkValidationError,
+    DatasetConfig,
     OptimizerBudget,
     builtin_suite,
     list_builtin_suites,
@@ -113,6 +117,7 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "v1.8-family-showcase",
         "v1.9-arrhenius-evidence",
         "v1.9-michaelis-evidence",
+        "v1.9-repair-evidence",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -123,6 +128,7 @@ def test_builtin_suite_registry_expands_stable_run_ids():
     assert runs[0].claim_id is None
     assert runs[0].threshold_policy_id is None
     assert runs[0].training_mode == "blind_training"
+    assert "repair" not in runs[0].as_dict()
 
 
 def test_arrhenius_evidence_suite_contains_exact_warm_start_case():
@@ -181,10 +187,69 @@ def test_michaelis_evidence_suite_contains_exact_warm_start_case():
     assert run.optimizer.max_warm_depth == 14
     assert run.expect_recovery is True
     assert run.tags == ("v1.9", "michaelis", "warm_start", "same_ast")
+    assert "repair" not in run.as_dict()
     assert demo.train_domain == (0.05, 5.0)
     assert demo.heldout_domain == (0.08, 4.5)
     assert demo.extrap_domain == (5.1, 7.0)
     assert run.run_id == "v1-9-michaelis-evidence-michaelis-warm-a67d8ccfb108"
+
+
+def test_benchmark_case_and_run_serialize_optional_repair_config():
+    payload = {
+        "id": "repair-radioactive-blind-expanded",
+        "formula": "radioactive_decay",
+        "start_mode": "blind",
+        "seeds": [1],
+        "dataset": {"points": 24},
+        "optimizer": {"depth": 4, "steps": 80, "restarts": 1},
+        "repair": {"preset": "expanded_candidate_pool"},
+    }
+
+    case = BenchmarkCase.from_mapping(payload, path="cases[0]")
+    default_case = BenchmarkCase.from_mapping({key: value for key, value in payload.items() if key != "repair"}, path="cases[0]")
+    suite = BenchmarkSuite("repair-suite", "repair config suite", (case,))
+    default_suite = BenchmarkSuite("repair-suite", "repair config suite", (default_case,))
+    run = suite.expanded_runs()[0]
+    default_run = default_suite.expanded_runs()[0]
+
+    assert case.repair == BenchmarkRepairConfig(preset="expanded_candidate_pool")
+    assert case.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+    assert run.repair == case.repair
+    assert run.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+    assert "repair" not in default_case.as_dict()
+    assert "repair" not in default_run.as_dict()
+    assert run.optimizer.as_dict() == default_run.optimizer.as_dict()
+    assert run.run_id != default_run.run_id
+
+
+def test_benchmark_run_id_includes_repair_only_when_declared():
+    base = BenchmarkRun(
+        suite_id="repair-suite",
+        case_id="radioactive",
+        formula="radioactive_decay",
+        start_mode="blind",
+        seed=1,
+        perturbation_noise=0.0,
+        dataset=DatasetConfig(points=24),
+        optimizer=OptimizerBudget(depth=4, steps=80, restarts=1),
+        artifact_path=Path("unused.json"),
+    )
+    with_repair = BenchmarkRun(
+        suite_id=base.suite_id,
+        case_id=base.case_id,
+        formula=base.formula,
+        start_mode=base.start_mode,
+        seed=base.seed,
+        perturbation_noise=base.perturbation_noise,
+        dataset=base.dataset,
+        optimizer=base.optimizer,
+        artifact_path=base.artifact_path,
+        repair=BenchmarkRepairConfig(preset="expanded_candidate_pool"),
+    )
+
+    assert base.run_id != with_repair.run_id
+    assert "repair" not in base.as_dict()
+    assert with_repair.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
 
 
 def test_family_matrix_suites_clone_regimes_with_operator_variants():
