@@ -21,6 +21,17 @@ class RepairConfig:
     cleanup_max_slots: int = 4
     cleanup_beam_width: int = 8
     cleanup_max_moves: int = 2
+    cleanup_candidate_sources: tuple[str, ...] = ("selected",)
+
+    @classmethod
+    def expanded_candidate_pool(cls) -> "RepairConfig":
+        return cls(
+            cleanup_top_k=3,
+            cleanup_max_slots=8,
+            cleanup_beam_width=32,
+            cleanup_max_moves=3,
+            cleanup_candidate_sources=("selected", "fallback", "retained"),
+        )
 
 
 @dataclass(frozen=True)
@@ -38,6 +49,9 @@ class RepairMove:
     slot_margin: float | None = None
     probability_gap: float | None = None
     rank: int | None = None
+    candidate_id: str | None = None
+    candidate_source: str | None = None
+    candidate_root_source: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -58,6 +72,12 @@ class RepairMove:
             payload["probability_gap"] = self.probability_gap
         if self.rank is not None:
             payload["rank"] = self.rank
+        if self.candidate_id is not None:
+            payload["candidate_id"] = self.candidate_id
+        if self.candidate_source is not None:
+            payload["candidate_source"] = self.candidate_source
+        if self.candidate_root_source is not None:
+            payload["candidate_root_source"] = self.candidate_root_source
         return payload
 
 
@@ -72,6 +92,13 @@ class RepairReport:
     verification: VerificationReport | None
     reason: str
     variant_count: int = 0
+    candidate_roots_considered: tuple[dict[str, Any], ...] = ()
+    candidate_root_count: int = 0
+    variants_by_candidate_root: tuple[dict[str, Any], ...] = ()
+    deduped_variant_count: int = 0
+    accepted_candidate_id: str | None = None
+    accepted_candidate_source: str | None = None
+    accepted_candidate_root_source: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         verified = self.status == "repaired_candidate" and self.verification is not None and self.verification.status == "recovered"
@@ -90,6 +117,13 @@ class RepairReport:
             "verification": self.verification.as_dict() if self.verification is not None else None,
             "reason": self.reason,
             "variant_count": self.variant_count,
+            "candidate_roots_considered": [dict(root) for root in self.candidate_roots_considered],
+            "candidate_root_count": self.candidate_root_count,
+            "variants_by_candidate_root": [dict(root) for root in self.variants_by_candidate_root],
+            "deduped_variant_count": self.deduped_variant_count,
+            "accepted_candidate_id": self.accepted_candidate_id,
+            "accepted_candidate_source": self.accepted_candidate_source,
+            "accepted_candidate_root_source": self.accepted_candidate_root_source,
         }
 
 
@@ -458,6 +492,9 @@ def _with_verification(move: RepairMove, verifier_status: str, *, accepted: bool
         slot_margin=move.slot_margin,
         probability_gap=move.probability_gap,
         rank=move.rank,
+        candidate_id=move.candidate_id,
+        candidate_source=move.candidate_source,
+        candidate_root_source=move.candidate_root_source,
     )
 
 
