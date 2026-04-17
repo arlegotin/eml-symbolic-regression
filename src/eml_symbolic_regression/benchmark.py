@@ -66,6 +66,7 @@ BUILTIN_SUITES = (
     "v1.8-family-depth-curve",
     "v1.8-family-standard",
     "v1.8-family-showcase",
+    "v1.9-arrhenius-evidence",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
@@ -1461,6 +1462,24 @@ def builtin_suite(name: str) -> BenchmarkSuite:
             id="v1.8-family-showcase",
             description="v1.8 showcase-style raw-vs-centered operator-family comparison matrix.",
             base_name="v1.3-showcase",
+        )
+    if name == "v1.9-arrhenius-evidence":
+        return BenchmarkSuite(
+            id="v1.9-arrhenius-evidence",
+            description="Focused v1.9 Arrhenius exact warm-start evidence for normalized exp(-0.8/x).",
+            cases=(
+                _case(
+                    "arrhenius-warm",
+                    "arrhenius",
+                    "warm_start",
+                    seeds=(0,),
+                    perturbation_noise=(0.0,),
+                    points=24,
+                    warm_steps=1,
+                    tags=("v1.9", "arrhenius", "warm_start", "same_ast"),
+                    expect_recovery=True,
+                ),
+            ),
         )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
 
