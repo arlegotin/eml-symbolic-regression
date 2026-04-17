@@ -15,9 +15,9 @@
 
 ### Arrhenius Exact Recovery
 
-- [ ] **ARR-01**: Developer can generate a normalized Arrhenius demo dataset for `exp(-0.8/x)` over positive domains safely away from zero.
-- [ ] **ARR-02**: Developer can strictly compile the Arrhenius target within the supported depth gate and inspect macro diagnostics including `direct_division_template`.
-- [ ] **ARR-03**: Developer can run a zero-noise Arrhenius compiler warm start that returns the same exact AST and verifier status `recovered`.
+- [x] **ARR-01**: Developer can generate a normalized Arrhenius demo dataset for `exp(-0.8/x)` over positive domains safely away from zero.
+- [x] **ARR-02**: Developer can strictly compile the Arrhenius target within the supported depth gate and inspect macro diagnostics including `direct_division_template`.
+- [x] **ARR-03**: Developer can run a zero-noise Arrhenius compiler warm start that returns the same exact AST and verifier status `recovered`.
 - [ ] **ARR-04**: Developer can reproduce an Arrhenius benchmark or report artifact with compile depth, warm-start status, verifier status, and regime labeling.
 
 ### Michaelis-Menten Compiler Motifs
@@ -86,9 +86,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WIT-02 | Phase 49 | Complete |
 | WIT-03 | Phase 49 | Complete |
 | WIT-04 | Phase 49 | Complete |
-| ARR-01 | Phase 50 | Pending |
-| ARR-02 | Phase 50 | Pending |
-| ARR-03 | Phase 50 | Pending |
+| ARR-01 | Phase 50 | Complete |
+| ARR-02 | Phase 50 | Complete |
+| ARR-03 | Phase 50 | Complete |
 | ARR-04 | Phase 50 | Pending |
 | MIC-01 | Phase 51 | Pending |
 | MIC-02 | Phase 51 | Pending |

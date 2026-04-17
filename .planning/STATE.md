@@ -4,15 +4,15 @@ milestone: v1.9
 milestone_name: milestone
 current_phase: 50
 status: executing
-stopped_at: Phase 49 complete; ready to plan Phase 50
-last_updated: "2026-04-17T12:44:15.031Z"
-last_activity: 2026-04-17 -- Phase 50 execution started
+stopped_at: Completed 50-01-PLAN.md
+last_updated: "2026-04-17T12:50:26.866Z"
+last_activity: 2026-04-17
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 5
-  completed_plans: 2
-  percent: 40
+  completed_plans: 3
+  percent: 60
 ---
 
 # GSD State: EML Symbolic Regression
@@ -31,9 +31,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-17)
 ## Current Position
 
 Phase: 50 (Arrhenius Exact Warm-Start Demo) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 50
-Last activity: 2026-04-17 -- Phase 50 execution started
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-04-17
 Progress: [██--------] 20% by completed phases (v1.9: 1/5 complete)
 
 ## Performance Metrics
@@ -87,6 +87,7 @@ Progress: [██--------] 20% by completed phases (v1.9: 1/5 complete)
 | v1.9 active roadmap | `.planning/ROADMAP.md` | Complete |
 | Phase 49 P01 | 4 min | 2 tasks | 4 files |
 | Phase 49 P02 | 13 min | 3 tasks | 6 files |
+| Phase 50 P01 | 4min | 3 tasks | 4 files |
 
 ## Completed Milestone
 
@@ -169,6 +170,9 @@ Target work:
 - [Phase 49]: Direct optimizer calls use the initial training operator, not the final hardening operator, to resolve scaffold witness availability.
 - [Phase 49]: Centered raw scaffold helper calls fail with EmbeddingError reason centered_family_same_family_witness_missing before slot mutation or embedding.
 - [Phase 49]: Benchmark artifacts copy budget scaffold exclusions into trained optimizer manifests when benchmark filtering has already removed the raw scaffold requests.
+- [Phase 50]: Arrhenius uses normalized dimensionless input x with formula exp(-0.8/x) and positive domains away from zero.
+- [Phase 50]: Strict Arrhenius support is locked through direct_division_template; no Arrhenius-specific compiler branch was added.
+- [Phase 50]: Zero-noise Arrhenius warm-start evidence remains same_ast_return / same_ast, not blind discovery.
 
 ### Pending Todos
 
@@ -186,8 +190,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 ## Session Continuity
 
-Last session: 2026-04-17T11:52:04.592Z
-Stopped at: Phase 49 complete; ready to plan Phase 50
+Last session: 2026-04-17T12:50:26.862Z
+Stopped at: Completed 50-01-PLAN.md
 Resume file: None
 
 ---
