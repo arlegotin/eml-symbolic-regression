@@ -845,3 +845,51 @@ def test_shockley_warm_start_moves_to_verified_recovered_artifact(tmp_path):
     assert result.results[0].payload["stage_statuses"]["compiled_seed"] == "recovered"
     assert result.results[0].payload["stage_statuses"]["warm_start_attempt"] == "same_ast_return"
     assert result.results[0].payload["stage_statuses"]["trained_exact_recovery"] == "recovered"
+
+
+def test_arrhenius_warm_benchmark_records_same_ast_evidence(tmp_path):
+    base = builtin_suite("v1.9-arrhenius-evidence")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(
+        suite,
+        run_filter=RunFilter(case_ids=("arrhenius-warm",), seeds=(0,), perturbation_noises=(0.0,)),
+    )
+
+    assert len(result.results) == 1
+    assert result.results[0].status == "same_ast_return"
+    assert result.results[0].artifact_path.exists()
+    assert suite.id in result.results[0].artifact_path.parts
+
+    artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
+    domains = {split["name"]: tuple(split["domain"]) for split in artifact["dataset_manifest"]["splits"]}
+
+    assert artifact["run"]["suite_id"] == "v1.9-arrhenius-evidence"
+    assert artifact["run"]["case_id"] == "arrhenius-warm"
+    assert artifact["run"]["formula"] == "arrhenius"
+    assert artifact["run"]["start_mode"] == "warm_start"
+    assert artifact["training_mode"] == "compiler_warm_start_training"
+    assert artifact["status"] == "same_ast_return"
+    assert artifact["claim_status"] == "recovered"
+    assert artifact["evidence_class"] == "same_ast"
+    assert artifact["stage_statuses"]["compiled_seed"] == "recovered"
+    assert artifact["stage_statuses"]["warm_start_attempt"] == "same_ast_return"
+    assert artifact["stage_statuses"]["trained_exact_recovery"] == "recovered"
+    assert artifact["compiled_eml"]["metadata"]["macro_diagnostics"]["hits"] == ["direct_division_template"]
+    assert artifact["compiled_eml"]["metadata"]["depth"] == 7
+    assert artifact["warm_start_eml"]["status"] == "same_ast_return"
+    assert artifact["warm_start_eml"]["verification"]["status"] == "recovered"
+    assert artifact["warm_start_eml"]["diagnosis"]["changed_slot_count"] == 0
+    assert artifact["dataset_manifest"]["formula_id"] == "arrhenius"
+    assert artifact["provenance"]["symbolic_expression"] == "exp(-0.8/x)"
+    assert domains == {
+        "train": (0.5, 3.0),
+        "heldout": (0.6, 2.7),
+        "extrapolation": (3.1, 4.2),
+    }
+
+    aggregate = benchmark_module.aggregate_evidence(result)
+    aggregate_run = aggregate["runs"][0]
+
+    assert aggregate_run["evidence_class"] == "same_ast"
+    assert aggregate_run["classification"] == "same_ast_warm_start_return"
