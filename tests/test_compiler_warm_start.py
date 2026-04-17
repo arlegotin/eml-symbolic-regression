@@ -77,6 +77,25 @@ def test_michaelis_relaxed_diagnostic_reports_direct_division_macro():
     assert macro["node_delta"] > 0
 
 
+def test_compile_arrhenius_uses_direct_division_template():
+    spec = get_demo("arrhenius")
+    splits = spec.make_splits(points=24, seed=0)
+    result = compile_and_validate(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.unsupported_reason is None
+    assert result.metadata.depth == 7
+    assert result.metadata.node_count <= 256
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["direct_division_template"]
+    assert [entry.rule for entry in result.metadata.trace].count("direct_division_template") == 1
+
+
 def test_compiler_fail_closed_negative_cases():
     x = sp.Symbol("x")
 
@@ -181,6 +200,34 @@ def test_warm_start_manifest_returns_same_ast_and_verifies():
     assert result.manifest["status"] == "same_ast_return"
     assert result.manifest["diagnosis"]["mechanism"] == "same_ast_return"
     assert result.manifest["diagnosis"]["changed_slot_count"] == 0
+
+
+def test_arrhenius_warm_start_returns_same_ast_and_verifies():
+    # v1.9-arrhenius-evidence / arrhenius-warm is same_ast evidence, not blind discovery.
+    spec = get_demo("arrhenius")
+    splits = spec.make_splits(points=24, seed=0)
+    compiled = compile_and_validate(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+    result = fit_warm_started_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(depth=compiled.metadata.depth, variables=(spec.variable,), steps=1, restarts=1, seed=0),
+        compiled.expression,
+        perturbation_config=PerturbationConfig(seed=0, noise_scale=0.0),
+        verification_splits=splits,
+        compiler_metadata=compiled.metadata.as_dict(),
+    )
+
+    assert result.status == "same_ast_return"
+    assert result.verification is not None
+    assert result.verification.status == "recovered"
+    assert result.manifest["status"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["mechanism"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["changed_slot_count"] == 0
+    assert result.manifest["compiler_metadata"]["macro_diagnostics"]["hits"] == ["direct_division_template"]
 
 
 def test_perturbation_is_seeded_and_reports_active_slots():
