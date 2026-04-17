@@ -36,10 +36,10 @@
 
 ### Raw-Hybrid Paper Evidence
 
-- [ ] **RHY-01**: Developer can run a paper-facing raw-hybrid suite or campaign preset that includes shallow blind boundaries, perturbed basin evidence, Beer-Lambert, Shockley, Arrhenius, and Michaelis diagnostics.
-- [ ] **RHY-02**: Generated reports keep pure blind, scaffolded, compile-only, warm-start, same-AST return, repaired, refit, and perturbed-basin regimes separate.
-- [ ] **RHY-03**: Generated scientific-law tables include formula, compile support, compile depth, macro hits, warm-start status, verifier status, and artifact path.
-- [ ] **RHY-04**: Centered-family results are reported only as negative diagnostics with the same-family witness caveat, not as an intrinsic impossibility claim.
+- [x] **RHY-01**: Developer can run a paper-facing raw-hybrid suite or campaign preset that includes shallow blind boundaries, perturbed basin evidence, Beer-Lambert, Shockley, Arrhenius, and Michaelis diagnostics.
+- [x] **RHY-02**: Generated reports keep pure blind, scaffolded, compile-only, warm-start, same-AST return, repaired, refit, and perturbed-basin regimes separate.
+- [x] **RHY-03**: Generated scientific-law tables include formula, compile support, compile depth, macro hits, warm-start status, verifier status, and artifact path.
+- [x] **RHY-04**: Centered-family results are reported only as negative diagnostics with the same-family witness caveat, not as an intrinsic impossibility claim.
 - [ ] **RHY-05**: README or implementation docs are updated only after successful artifacts exist, with claim language that avoids presenting warm-start recovery as blind discovery.
 
 ## Future Requirements
@@ -98,10 +98,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REP-02 | Phase 52 | Complete |
 | REP-03 | Phase 52 | Complete |
 | REP-04 | Phase 52 | Complete |
-| RHY-01 | Phase 53 | Pending |
-| RHY-02 | Phase 53 | Pending |
-| RHY-03 | Phase 53 | Pending |
-| RHY-04 | Phase 53 | Pending |
+| RHY-01 | Phase 53 | Complete |
+| RHY-02 | Phase 53 | Complete |
+| RHY-03 | Phase 53 | Complete |
+| RHY-04 | Phase 53 | Complete |
 | RHY-05 | Phase 53 | Pending |
 
 **Coverage:**
