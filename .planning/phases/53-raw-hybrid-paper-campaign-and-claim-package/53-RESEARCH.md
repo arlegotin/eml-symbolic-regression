@@ -377,19 +377,22 @@ Phase 53 is local artifact generation and documentation packaging; it does not i
 | A4 | Source locks should hash specific source files rather than whole directories. | Recommended Implementation Slices | Low; whole-directory locks are more complete but less stable. |
 | A5 | README/docs update timing can be planned as a final slice in the same phase. | Execution Unknowns | Low; a separate docs phase would also satisfy the gate if artifacts exist. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should Beer-Lambert and Shockley be rerun under a v1.9 paper output path?**  
+   Resolution: cite the existing v1.6 standard source artifacts in the v1.9 paper package; do not rerun them in Phase 53.  
    What we know: committed Beer-Lambert and Shockley run artifacts already contain the required compile and warm-start diagnostics. [VERIFIED: artifacts/campaigns/v1.6-standard]  
    What's unclear: whether the paper package should cite v1.6 source artifacts or regenerate focused v1.9 copies for all scientific-law rows. [VERIFIED: 53-CONTEXT.md]  
    Recommendation: cite existing artifacts by default and add a focused rerun only if the planner wants all scientific-law run artifacts under v1.9. [ASSUMED]
 
 2. **Should unsupported Planck/logistic rows be in the main scientific-law table or a separate diagnostic table?**  
+   Resolution: include them as explicitly unsupported/stretch diagnostic rows with regime/status fields, not as solved rows.  
    What we know: Planck and logistic strict compiles are unsupported due depth limits in committed diagnostics. [VERIFIED: artifact JSON inspection]  
    What's unclear: table placement, not claim status. [VERIFIED: 53-CONTEXT.md]  
    Recommendation: include them in a separate `unsupported_diagnostics` section or flag column so supported law rows remain visually separate. [ASSUMED]
 
 3. **Should repair-only negative evidence be a table row or a report section?**  
+   Resolution: report it as a separate repair-only negative-evidence section/regime bucket; do not create a scientific-law success row for repair.  
    What we know: v1.9 repair evidence has zero improvements and preserved fallback behavior. [VERIFIED: artifacts/campaigns/v1.9-repair-evidence/repair-evidence-summary.json]  
    What's unclear: final report layout. [ASSUMED]  
    Recommendation: make repair a report section and include no scientific-law success row for repair. [VERIFIED: 53-CONTEXT.md]
