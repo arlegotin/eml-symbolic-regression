@@ -151,14 +151,31 @@ def test_runner_executes_operator_family_smoke_matrix(tmp_path):
         suite,
         run_filter=RunFilter(case_ids=("exp-blind-ceml2", "exp-blind-zeml8-4"), seeds=(0,)),
     )
+    aggregate = benchmark_module.aggregate_evidence(result)
+    aggregate_runs = {item["run_id"]: item for item in aggregate["runs"]}
+    expected_exclusions = [
+        "exp:centered_family_same_family_witness_missing",
+        "log:centered_family_same_family_witness_missing",
+        "scaled_exp:centered_family_same_family_witness_missing",
+    ]
 
     assert len(result.results) == 2
     for item in result.results:
         artifact = json.loads(item.artifact_path.read_text(encoding="utf-8"))
         assert artifact["budget"] == item.run.optimizer.as_dict()
         assert artifact["budget"]["operator_family"]["label"] in {"CEML_2", "ZEML_8"}
+        assert artifact["budget"]["scaffold_initializers"] == []
+        assert artifact["budget"]["scaffold_exclusions"] == expected_exclusions
         assert artifact["trained_eml_candidate"]["config"]["operator_family"]["label"] in {"CEML_2", "ZEML_8"}
+        assert artifact["trained_eml_candidate"]["config"]["scaffold_initializers"] == []
+        assert artifact["trained_eml_candidate"]["scaffold_exclusions"] == expected_exclusions
+        assert all(
+            not restart["attempt_kind"].startswith("scaffold_")
+            for restart in artifact["trained_eml_candidate"]["restarts"]
+        )
         assert artifact["metrics"]["operator_family"] in {"CEML_2", "ZEML_8"}
+        assert artifact["metrics"]["scaffold_exclusions"] == expected_exclusions
+        assert aggregate_runs[item.run.run_id]["metrics"]["scaffold_exclusions"] == expected_exclusions
         if item.run.case_id == "exp-blind-zeml8-4":
             assert artifact["metrics"]["operator_schedule"] == "ZEML_8 -> ZEML_4"
 
@@ -261,6 +278,7 @@ def test_shallow_beer_lambert_blind_run_artifact_exposes_scaled_scaffold_diagnos
     assert artifact["status"] == "recovered"
     assert artifact["budget"]["constants"] == ["-0.8"]
     assert artifact["evidence_class"] == "scaffolded_blind_training_recovered"
+    assert candidate["scaffold_exclusions"] == []
     assert initialization["kind"] == "scaffold_scaled_exp"
     assert initialization["strategy"] == "paper_scaled_exponential_family"
     assert initialization["coefficient"] == "-0.8"
