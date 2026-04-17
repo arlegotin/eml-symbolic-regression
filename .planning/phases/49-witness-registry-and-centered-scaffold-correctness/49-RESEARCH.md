@@ -2,7 +2,7 @@
 
 **Researched:** 2026-04-17 [VERIFIED: current_date]
 **Domain:** Python package scaffold/witness availability, operator-family routing, benchmark artifact contracts [VERIFIED: .planning/ROADMAP.md]
-**Confidence:** HIGH for local code architecture, HIGH for required behavior, MEDIUM for exact public API naming because no prior registry module exists [VERIFIED: src/eml_symbolic_regression][VERIFIED: .planning/phases/49-witness-registry-and-centered-scaffold-correctness/49-CONTEXT.md]
+**Confidence:** HIGH for local code architecture, HIGH for required behavior, HIGH for public API naming after planning resolved the registry export decision [VERIFIED: src/eml_symbolic_regression][VERIFIED: .planning/phases/49-witness-registry-and-centered-scaffold-correctness/49-CONTEXT.md][VERIFIED: .planning/phases/49-witness-registry-and-centered-scaffold-correctness/49-01-PLAN.md]
 
 <user_constraints>
 ## User Constraints (from CONTEXT.md)
@@ -368,17 +368,17 @@ Direct guards are needed because `_apply_scaffold()` can reach raw helpers after
 |---|-------|---------|---------------|
 | None | All implementation-relevant claims in this research were checked against local code, project planning artifacts, or local environment probes. [VERIFIED: rg inspections][VERIFIED: python version probes] | All | Low. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should the registry be exported from package `__init__.py`?** [VERIFIED: src/eml_symbolic_regression/__init__.py]
    - What we know: `__init__.py` exports public package symbols today, including `EmlOperator` and operator constructors. [VERIFIED: src/eml_symbolic_regression/__init__.py]
-   - What's unclear: WIT-01 requires developer inspection but does not require top-level package export. [VERIFIED: .planning/REQUIREMENTS.md]
-   - Recommendation: Export `list_scaffold_witnesses`, `scaffold_witness_for`, and the canonical reason constant if tests or CLI docs need top-level access; otherwise keep module-level import in `eml_symbolic_regression.witnesses`. [VERIFIED: src/eml_symbolic_regression/__init__.py]
+   - RESOLVED decision: Export registry inspection helpers and the canonical reason constant from package `__init__.py` so WIT-01 is directly inspectable from the top-level package API. [VERIFIED: .planning/phases/49-witness-registry-and-centered-scaffold-correctness/49-01-PLAN.md]
+   - Required exports: `CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING`, `ScaffoldPlan`, `ScaffoldWitness`, `known_scaffold_kinds`, `list_scaffold_witnesses`, `resolve_scaffold_plan`, and `scaffold_witness_for`. [VERIFIED: .planning/phases/49-witness-registry-and-centered-scaffold-correctness/49-01-PLAN.md]
 
 2. **Should benchmark `scaffold_exclusions` stay string-only or gain structured records?** [VERIFIED: src/eml_symbolic_regression/benchmark.py:140]
    - What we know: `OptimizerBudget.as_dict()` serializes `scaffold_exclusions` as a list of strings and metrics copy that list into run metrics. [VERIFIED: src/eml_symbolic_regression/benchmark.py:328][VERIFIED: src/eml_symbolic_regression/benchmark.py:2472]
-   - What's unclear: The success criteria require reason codes with operator-family context, but do not require a new artifact schema. [VERIFIED: .planning/ROADMAP.md][VERIFIED: .planning/phases/49-witness-registry-and-centered-scaffold-correctness/49-CONTEXT.md]
-   - Recommendation: Keep the string field for compatibility and rely on adjacent `operator_family` / `operator_schedule` fields for context unless implementation tests reveal an explicit structured-detail gap. [VERIFIED: src/eml_symbolic_regression/benchmark.py:2470][VERIFIED: src/eml_symbolic_regression/benchmark.py:2472]
+   - RESOLVED decision: Keep `scaffold_exclusions` string-only for compatibility and preserve operator-family context through adjacent `operator_family`, `operator_schedule`, and optimizer `scaffold_witness_operator` fields. [VERIFIED: .planning/phases/49-witness-registry-and-centered-scaffold-correctness/49-01-PLAN.md][VERIFIED: .planning/phases/49-witness-registry-and-centered-scaffold-correctness/49-02-PLAN.md]
+   - Required reason-code shape: `exp:centered_family_same_family_witness_missing`, `log:centered_family_same_family_witness_missing`, and `scaled_exp:centered_family_same_family_witness_missing`. [VERIFIED: .planning/phases/49-witness-registry-and-centered-scaffold-correctness/49-01-PLAN.md]
 
 ## Environment Availability
 
