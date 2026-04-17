@@ -436,6 +436,7 @@ def render_claim_boundaries() -> str:
         [
             "# Raw-Hybrid Claim Boundaries",
             "",
+            "- Raw-hybrid warm-start, same-AST, scaffolded, repaired, refit, compile-only, and perturbed-basin evidence is not blind discovery.",
             "- warm-start evidence is not pure blind discovery.",
             "- same-AST evidence is not pure blind discovery.",
             "- scaffolded evidence is not pure blind discovery.",
@@ -679,7 +680,7 @@ def _law_label(law: str | None) -> str:
     return {
         "arrhenius": "Arrhenius",
         "beer_lambert": "Beer-Lambert",
-        "shockley": "Shockley diode",
+        "shockley": "Shockley",
         "michaelis_menten": "Michaelis-Menten",
         "planck": "Planck diagnostic",
         "logistic": "Logistic diagnostic",
@@ -690,7 +691,7 @@ def _law_label(law: str | None) -> str:
 def _law_sort_key(label: str) -> tuple[int, str]:
     order = {
         "Beer-Lambert": 0,
-        "Shockley diode": 1,
+        "Shockley": 1,
         "Arrhenius": 2,
         "Michaelis-Menten": 3,
         "Planck diagnostic": 4,
@@ -791,6 +792,7 @@ def _manifest_payload(
     return {
         "schema": "eml.raw_hybrid_paper.v1",
         "preset_id": RAW_HYBRID_PAPER_PRESET_ID,
+        "preset": {"id": RAW_HYBRID_PAPER_PRESET_ID},
         "generated_at": _now_iso(),
         "output_dir": str(paths.output_dir),
         "reproducibility": {"command": reproduction_command},

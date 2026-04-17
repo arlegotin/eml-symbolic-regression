@@ -106,6 +106,7 @@ def test_raw_hybrid_manifest_records_package_contract(tmp_path):
 
     assert manifest["schema"] == "eml.raw_hybrid_paper.v1"
     assert manifest["preset_id"] == RAW_HYBRID_PAPER_PRESET_ID
+    assert manifest["preset"]["id"] == RAW_HYBRID_PAPER_PRESET_ID
     assert manifest["reproducibility"]["command"] == (
         "PYTHONPATH=src python -m eml_symbolic_regression.cli raw-hybrid-paper --output-dir out"
     )
@@ -195,7 +196,7 @@ def test_scientific_law_table_contains_required_columns_and_rows(tmp_path):
 
     by_law = {row["law"]: row for row in rows}
     assert by_law["Beer-Lambert"]["evidence_regime"] == "same_ast_return"
-    assert by_law["Shockley diode"]["evidence_regime"] == "same_ast_return"
+    assert by_law["Shockley"]["evidence_regime"] == "same_ast_return"
     assert by_law["Arrhenius"]["formula"] == "exp(-0.8/x)"
     assert by_law["Arrhenius"]["compile_support"] == "supported"
     assert by_law["Arrhenius"]["compile_depth"] == 7
