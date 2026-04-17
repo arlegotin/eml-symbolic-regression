@@ -94,6 +94,13 @@ Plans:
 
 **Requirements:** MIC-01, MIC-02, MIC-03, MIC-04
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 51-01-PLAN.md - Add strict reciprocal-shift and saturation-ratio compiler motifs with Michaelis same-AST warm-start tests.
+- [ ] 51-02-PLAN.md - Add focused `v1.9-michaelis-evidence` suite and artifact contract tests.
+- [ ] 51-03-PLAN.md - Generate focused Michaelis evidence artifacts and update regime-safe docs.
+
 ### Phase 52: Verifier-Gated Exact Cleanup Expansion
 
 **Goal:** Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior.
