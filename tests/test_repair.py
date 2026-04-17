@@ -150,6 +150,16 @@ def _terminal_to_child_repairable_tree() -> SoftEMLTree:
     return tree
 
 
+def _constant_to_child_repairable_tree() -> SoftEMLTree:
+    tree = SoftEMLTree(2, ("x",), (1.0,))
+    tree.set_slot("root", "right", "const:1", strength=40.0)
+    tree.set_slot("root.L", "left", "var:x", strength=40.0)
+    tree.set_slot("root.L", "right", "const:1", strength=40.0)
+    with torch.no_grad():
+        tree.root.left_logits.copy_(torch.tensor([2.0, 0.0, 1.99], dtype=torch.float64))
+    return tree
+
+
 def _fit_with_candidate_pool(
     *,
     selected: ExactCandidate,
@@ -593,6 +603,31 @@ def test_expanded_candidate_pool_deduplicates_duplicate_candidate_roots() -> Non
     assert payload["variant_count"] == payload["deduped_variant_count"]
     assert payload["variant_count"] >= 1
     assert {move["candidate_id"] for move in payload["moves_attempted"]} == {"selected"}
+
+
+def test_candidate_pool_dedup_counts_follow_replacement_owner() -> None:
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    selected = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="selected",
+        source="legacy_final_snap",
+    )
+    fallback = _candidate_from_tree(
+        _constant_to_child_repairable_tree(),
+        candidate_id="fallback-better-gap",
+        source="hardening_checkpoint",
+    )
+    fit = _fit_with_candidate_pool(selected=selected, fallback=fallback)
+
+    report = _run_candidate_pool_cleanup(fit, target_expr, config=RepairConfig.expanded_candidate_pool())
+    payload = report.as_dict()
+    by_root = {root["candidate_id"]: root for root in payload["variants_by_candidate_root"]}
+
+    assert payload["status"] == "repaired_candidate"
+    assert payload["accepted_candidate_id"] == "fallback-better-gap"
+    assert payload["accepted_candidate_root_source"] == "fallback"
+    assert by_root["fallback-better-gap"]["deduped_variant_count"] >= 1
+    assert sum(root["deduped_variant_count"] for root in by_root.values()) == payload["deduped_variant_count"]
 
 
 def test_candidate_pool_cleanup_preserves_subtree_move_provenance() -> None:

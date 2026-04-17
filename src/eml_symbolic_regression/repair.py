@@ -172,13 +172,12 @@ def cleanup_failed_candidate(
             candidate_root_count=len(candidate_roots),
         )
 
-    variants_by_root: list[dict[str, Any]] = []
+    variant_counts_by_root: dict[int, int] = {}
     deduped_variants: dict[str, _CleanupVariant] = {}
     roots_with_alternatives = 0
     for root in roots:
         bounded = _bounded_slot_alternatives(root.candidate, config)
         variants = ()
-        deduped_for_root = 0
         if bounded:
             roots_with_alternatives += 1
             variants = expand_snap_neighborhood(
@@ -212,14 +211,22 @@ def cleanup_failed_candidate(
                 existing = deduped_variants.get(key)
                 if existing is None:
                     deduped_variants[key] = cleanup_variant
-                    deduped_for_root += 1
                 elif _cleanup_variant_dedup_key(cleanup_variant) < _cleanup_variant_dedup_key(existing):
                     deduped_variants[key] = cleanup_variant
-        variants_by_root.append(
-            _candidate_root_variant_payload(root, variant_count=len(variants), deduped_variant_count=deduped_for_root)
-        )
+        variant_counts_by_root[root.root_order] = len(variants)
 
     deduped_variant_count = len(deduped_variants)
+    deduped_counts_by_root: dict[int, int] = {root.root_order: 0 for root in roots}
+    for variant in deduped_variants.values():
+        deduped_counts_by_root[variant.root.root_order] += 1
+    variants_by_root = tuple(
+        _candidate_root_variant_payload(
+            root,
+            variant_count=variant_counts_by_root.get(root.root_order, 0),
+            deduped_variant_count=deduped_counts_by_root.get(root.root_order, 0),
+        )
+        for root in roots
+    )
     if roots_with_alternatives == 0:
         return RepairReport(
             status="not_repaired",
@@ -232,7 +239,7 @@ def cleanup_failed_candidate(
             reason="missing_slot_alternatives",
             candidate_roots_considered=candidate_roots,
             candidate_root_count=len(candidate_roots),
-            variants_by_candidate_root=tuple(variants_by_root),
+            variants_by_candidate_root=variants_by_root,
             deduped_variant_count=deduped_variant_count,
         )
     if not deduped_variants:
@@ -248,7 +255,7 @@ def cleanup_failed_candidate(
             variant_count=0,
             candidate_roots_considered=candidate_roots,
             candidate_root_count=len(candidate_roots),
-            variants_by_candidate_root=tuple(variants_by_root),
+            variants_by_candidate_root=variants_by_root,
             deduped_variant_count=deduped_variant_count,
         )
 
@@ -280,7 +287,7 @@ def cleanup_failed_candidate(
             variant_count=deduped_variant_count,
             candidate_roots_considered=candidate_roots,
             candidate_root_count=len(candidate_roots),
-            variants_by_candidate_root=tuple(variants_by_root),
+            variants_by_candidate_root=variants_by_root,
             deduped_variant_count=deduped_variant_count,
             accepted_candidate_id=best_root.candidate.candidate_id,
             accepted_candidate_source=best_root.candidate.source,
@@ -299,7 +306,7 @@ def cleanup_failed_candidate(
         variant_count=deduped_variant_count,
         candidate_roots_considered=candidate_roots,
         candidate_root_count=len(candidate_roots),
-        variants_by_candidate_root=tuple(variants_by_root),
+        variants_by_candidate_root=variants_by_root,
         deduped_variant_count=deduped_variant_count,
     )
 
