@@ -119,6 +119,8 @@ class CompileResult:
 
 
 MACRO_RULES = (
+    "reciprocal_shift_template",
+    "saturation_ratio_template",
     "direct_division_template",
     "scaled_exp_minus_one_template",
 )
@@ -133,6 +135,12 @@ class UnsupportedExpression(ValueError):
 
     def as_dict(self) -> dict[str, str]:
         return {"reason": self.reason, "expression": self.expression, "detail": self.detail}
+
+
+@dataclass(frozen=True)
+class _UnitShift:
+    variable: str
+    offset: complex
 
 
 def subtract_expr(left: Expr, right: Expr) -> Expr:
@@ -252,6 +260,8 @@ class _Compiler:
     def _compile_special(self, expr: sp.Expr) -> Expr | None:
         if not self.config.enable_macros:
             return None
+        if isinstance(expr, sp.Pow):
+            return self._compile_reciprocal_shift(expr)
         if isinstance(expr, sp.Mul):
             macro = self._compile_direct_division(expr)
             if macro is not None:
@@ -259,6 +269,47 @@ class _Compiler:
         if isinstance(expr, sp.Add):
             return self._compile_scaled_exp_minus_one(expr)
         return None
+
+    def _match_unit_shift(self, expr: sp.Expr) -> _UnitShift | None:
+        if not isinstance(expr, sp.Add):
+            return None
+
+        symbol_terms: list[sp.Symbol] = []
+        numeric_terms: list[sp.Expr] = []
+        for term in expr.args:
+            if isinstance(term, sp.Symbol):
+                symbol_terms.append(term)
+            elif term.is_number:
+                numeric_terms.append(term)
+            else:
+                return None
+        if len(symbol_terms) != 1 or len(numeric_terms) != 1:
+            return None
+
+        variable = self._variable_name(symbol_terms[0])
+        offset = self._constant_value(numeric_terms[0])
+        return _UnitShift(variable=variable, offset=offset)
+
+    def _build_unit_shift(self, match: _UnitShift) -> Expr:
+        self.assumptions.append("unit shift x+b compiled as eml(log(x), exp(-b)) behind validation")
+        return Eml(log_of(Var(match.variable)), Const(np.exp(-match.offset)))
+
+    def _compile_reciprocal_shift(self, expr: sp.Pow) -> Expr | None:
+        base, exponent = expr.args
+        if exponent != -1:
+            return None
+
+        match = self._match_unit_shift(base)
+        if match is None:
+            return None
+
+        shifted = self._build_unit_shift(match)
+        self.assumptions.append("reciprocal shift shortcut lowers shifted denominator before exact divide identity")
+        return self._record(
+            "reciprocal_shift_template",
+            expr,
+            reciprocal_expr(shifted),
+        )
 
     def _compile_direct_division(self, expr: sp.Mul) -> Expr | None:
         numerator_factors: list[sp.Expr] = []
