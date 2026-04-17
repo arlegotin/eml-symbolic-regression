@@ -2582,6 +2582,7 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     repair_attempts = repair.get("moves_attempted") if isinstance(repair, Mapping) else None
     repair_accepted = repair.get("accepted_moves") if isinstance(repair, Mapping) else None
     repair_variant_count = repair.get("variant_count") if isinstance(repair, Mapping) else None
+    repair_root_summaries = repair.get("variants_by_candidate_root") if isinstance(repair, Mapping) else None
 
     diagnosis = {}
     warm_start = payload.get("warm_start_eml")
@@ -2691,6 +2692,12 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "warm_start_status": diagnosis.get("status"),
         "repair_status": payload.get("repair_status"),
         "repair_variant_count": repair_variant_count,
+        "repair_candidate_root_count": repair.get("candidate_root_count") if isinstance(repair, Mapping) else None,
+        "repair_candidate_root_summary_count": len(repair_root_summaries) if isinstance(repair_root_summaries, list) else 0,
+        "repair_deduped_variant_count": repair.get("deduped_variant_count") if isinstance(repair, Mapping) else None,
+        "repair_accepted_candidate_id": repair.get("accepted_candidate_id") if isinstance(repair, Mapping) else None,
+        "repair_accepted_candidate_source": repair.get("accepted_candidate_source") if isinstance(repair, Mapping) else None,
+        "repair_accepted_candidate_root_source": repair.get("accepted_candidate_root_source") if isinstance(repair, Mapping) else None,
         "repair_move_count": len(repair_attempts) if isinstance(repair_attempts, list) else 0,
         "repair_accepted_move_count": len(repair_accepted) if isinstance(repair_accepted, list) else 0,
         "repair_verifier_status": repair_verification.get("status") if isinstance(repair_verification, Mapping) else None,
