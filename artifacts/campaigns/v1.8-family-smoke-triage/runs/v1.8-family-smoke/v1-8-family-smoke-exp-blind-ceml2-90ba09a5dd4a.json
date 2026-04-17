@@ -1,0 +1,2465 @@
+{
+  "budget": {
+    "clamp_exp_real": 40.0,
+    "constants": [
+      "1"
+    ],
+    "depth": 1,
+    "hardening_emit_interval": 2,
+    "hardening_steps": 4,
+    "hardening_temperature_end": 0.02,
+    "log_domain_epsilon": 1e-09,
+    "log_safety_imag_tolerance": 1e-06,
+    "log_safety_margin": 1e-06,
+    "log_safety_weight": 0.0,
+    "lr": 0.05,
+    "max_compile_depth": 13,
+    "max_compile_nodes": 256,
+    "max_power": 3,
+    "max_warm_depth": 14,
+    "operator_family": {
+      "family": "ceml_s",
+      "label": "CEML_2",
+      "s": 2.0,
+      "singularity": -1.0,
+      "t": 1.0,
+      "terminal": "one"
+    },
+    "operator_schedule": [],
+    "refit_lr": 0.02,
+    "refit_steps": 80,
+    "restarts": 1,
+    "scaffold_exclusions": [
+      "scaled_exp:centered_family_incompatible_raw_witness"
+    ],
+    "scaffold_initializers": [
+      "exp",
+      "log"
+    ],
+    "steps": 6,
+    "warm_depth": 0,
+    "warm_restarts": 1,
+    "warm_steps": 8
+  },
+  "claim_class": null,
+  "claim_id": null,
+  "claim_status": "failed",
+  "dataset": {
+    "points": 24,
+    "tolerance": 1e-08
+  },
+  "dataset_manifest": {
+    "formula_id": "exp",
+    "manifest_sha256": "c237c6da1b08d9529271554abe841aeb1f97b3e9467fb83a6451f2727ecf4c2d",
+    "points": 24,
+    "provenance": {
+      "candidate_name": "exact_eml",
+      "description": "Paper smoke test: exp(x) = eml(x, 1).",
+      "formula_id": "exp",
+      "normalized_dimensionless": true,
+      "source_document": "sources/paper.pdf",
+      "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+      "symbolic_expression": "exp(x)",
+      "variable": "x"
+    },
+    "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+    "schema": "eml.proof_dataset_manifest.v1",
+    "seed": 0,
+    "splits": [
+      {
+        "count": 24,
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "input_sha256": "ae087517b786b20eff545a77de01e8228e6b5d0333a48a1ad9875ec97a984b23",
+        "name": "train",
+        "target_sha256": "34fc2d1450f8ab2f64c5b176a129440c611bf605213b808a29169245a7e4d060"
+      },
+      {
+        "count": 16,
+        "domain": [
+          -0.8,
+          0.8
+        ],
+        "input_sha256": "6454c09099a0b43ec50fbf16919e23428c7bcb1bf93e19be9bdece246d0c8834",
+        "name": "heldout",
+        "target_sha256": "04f4cdbe7f1c982c4b78b6daeb617cce8c8d0516c8207bf3e1b5915b9ef144af"
+      },
+      {
+        "count": 16,
+        "domain": [
+          1.05,
+          1.5
+        ],
+        "input_sha256": "c0e2780d052d629759eb24a599b6f9b1e870b3ebcd43347a769a46c41c60cf94",
+        "name": "extrapolation",
+        "target_sha256": "af97c80f3930f127278656c0aa1cf3b33dcd05418a1ab00b465cdc30d7fc8314"
+      }
+    ],
+    "tolerance": 1e-08,
+    "variable": "x"
+  },
+  "environment": {
+    "code_version": "c35d746",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "evidence_class": "snapped_but_failed",
+  "metrics": {
+    "active_slot_count": null,
+    "anomaly_clamp_count": 0,
+    "anomaly_exp_overflow_count": 0,
+    "anomaly_expm1_overflow_count": 0,
+    "anomaly_log1p_branch_cut_count": 0,
+    "anomaly_log_branch_cut_count": 0,
+    "anomaly_log_non_finite_input_count": 0,
+    "anomaly_log_non_positive_real_count": 0,
+    "anomaly_log_safety_penalty": 0.0,
+    "anomaly_log_small_magnitude_count": 0,
+    "anomaly_shifted_singularity_min_distance": 1.9892167389137256,
+    "anomaly_shifted_singularity_near_count": 0,
+    "best_loss": 0.7599558457779233,
+    "candidate_complexity": null,
+    "candidate_pool_size": 8,
+    "changed_slot_count": null,
+    "fallback_candidate_attempt_index": 1,
+    "fallback_candidate_checkpoint_index": null,
+    "fallback_candidate_id": "attempt-001-legacy-final-snap",
+    "fallback_candidate_source": "legacy_final_snap",
+    "fallback_post_snap_loss": 12.96540142176002,
+    "high_precision_max_error": 2.248530160317331,
+    "legacy_best_loss": 0.7599558457779233,
+    "operator_family": "CEML_2",
+    "operator_schedule": "",
+    "post_snap_loss": 1.2206895849232353,
+    "refit_accepted": false,
+    "refit_constant_count": 0,
+    "refit_post_snap_loss": null,
+    "refit_status": "not_attempted",
+    "refit_verifier_status": null,
+    "repair_accepted_move_count": 0,
+    "repair_move_count": 4,
+    "repair_status": "not_repaired",
+    "repair_variant_count": 3,
+    "repair_verifier_status": null,
+    "scaffold_coefficient": null,
+    "scaffold_exclusions": [
+      "scaled_exp:centered_family_incompatible_raw_witness"
+    ],
+    "scaffold_source": null,
+    "scaffold_strategy": null,
+    "selected_candidate_attempt_index": 1,
+    "selected_candidate_checkpoint_index": 1,
+    "selected_candidate_id": "attempt-001-hardening-01",
+    "selected_candidate_source": "hardening_checkpoint",
+    "selection_mode": "verifier_gated_exact_candidate_pool",
+    "snap_active_node_count": 3,
+    "snap_min_margin": 0.052125197743832785,
+    "unsupported_reason": null,
+    "verifier_status": "failed",
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "provenance": {
+    "candidate_name": "exact_eml",
+    "description": "Paper smoke test: exp(x) = eml(x, 1).",
+    "formula_id": "exp",
+    "normalized_dimensionless": true,
+    "source_document": "sources/paper.pdf",
+    "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+    "symbolic_expression": "exp(x)",
+    "variable": "x"
+  },
+  "refit": {
+    "accepted": false,
+    "fixed_constants": [
+      {
+        "after": "1",
+        "before": "1",
+        "changed": false,
+        "path": "root.R",
+        "refittable": false
+      }
+    ],
+    "post_refit_candidate": null,
+    "pre_refit_candidate": {
+      "ast": {
+        "metadata": {
+          "depth": 1,
+          "node_count": 3,
+          "source": "selected_exact_candidate"
+        },
+        "root": {
+          "kind": "centered_eml",
+          "left": {
+            "kind": "var",
+            "name": "x"
+          },
+          "operator": {
+            "family": "ceml_s",
+            "label": "CEML_2",
+            "s": 2.0,
+            "singularity": -1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "right": {
+            "kind": "const",
+            "value": "1"
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+          "operator_family": {
+            "family": "ceml_s",
+            "label": "CEML_2",
+            "s": 2.0,
+            "singularity": -1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "verification_mode": "canonical_centered"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "constants": [
+        {
+          "after": "1",
+          "before": "1",
+          "changed": false,
+          "path": "root.R",
+          "refittable": false
+        }
+      ],
+      "metrics": {
+        "complexity": 3,
+        "extrapolation_max_abs_error": 2.248530160317331,
+        "heldout_max_abs_error": 0.0,
+        "high_precision_max_error": 2.248530160317331,
+        "post_snap_loss": 1.2206895849232353,
+        "status_rank": 2,
+        "verifier_status": "failed"
+      },
+      "post_snap_loss": 1.2206895849232353,
+      "source": "selected_exact_candidate",
+      "symbolic_expression": "2.0*exp(0.5*x) - 2.0",
+      "symbolic_expression_render": {
+        "depth": 1,
+        "mode": "subprocess",
+        "node_count": 3,
+        "status": "rendered",
+        "timeout_seconds": 2.0
+      },
+      "verification": {
+        "candidate_kind": "exact_eml",
+        "high_precision_max_error": 2.248530160317331,
+        "high_precision_status": "skipped_numeric_failure",
+        "reason": "train_failed",
+        "split_results": [
+          {
+            "max_abs_error": 1.4223450054471314,
+            "max_imag_residue": 0.0,
+            "mse": 1.2206895849232353,
+            "name": "train",
+            "passed": false
+          },
+          {
+            "max_abs_error": 1.2454148782585244,
+            "max_imag_residue": 0.0,
+            "mse": 1.1379336389862669,
+            "name": "heldout",
+            "passed": false
+          },
+          {
+            "max_abs_error": 2.248530160317331,
+            "max_imag_residue": 0.0,
+            "mse": 3.372475170795459,
+            "name": "extrapolation",
+            "passed": false
+          }
+        ],
+        "status": "failed",
+        "tolerance": 1e-08
+      }
+    },
+    "reason": "no_refittable_constants",
+    "refittable_constants": [],
+    "selected_candidate": "pre_refit",
+    "status": "not_attempted"
+  },
+  "repair": {
+    "accepted_moves": [],
+    "moves_attempted": [
+      {
+        "accepted": false,
+        "after": "var:x",
+        "before": "const:1",
+        "descendant_assignments": [],
+        "kind": "slot_revert",
+        "probability_gap": 0.052125197743832785,
+        "pruned_assignments": [],
+        "rank": 1,
+        "slot": "root.right",
+        "slot_margin": 0.052125197743832785,
+        "source": "slot_alternative",
+        "subtree_root": null,
+        "verifier_status": "failed"
+      },
+      {
+        "accepted": false,
+        "after": "const:1",
+        "before": "var:x",
+        "descendant_assignments": [],
+        "kind": "slot_revert",
+        "probability_gap": 0.17421605501381004,
+        "pruned_assignments": [],
+        "rank": 1,
+        "slot": "root.left",
+        "slot_margin": 0.17421605501381004,
+        "source": "slot_alternative",
+        "subtree_root": null,
+        "verifier_status": "failed"
+      },
+      {
+        "accepted": false,
+        "after": "var:x",
+        "before": "const:1",
+        "descendant_assignments": [],
+        "kind": "slot_revert",
+        "probability_gap": 0.052125197743832785,
+        "pruned_assignments": [],
+        "rank": 1,
+        "slot": "root.right",
+        "slot_margin": 0.052125197743832785,
+        "source": "slot_alternative",
+        "subtree_root": null,
+        "verifier_status": "failed"
+      },
+      {
+        "accepted": false,
+        "after": "const:1",
+        "before": "var:x",
+        "descendant_assignments": [],
+        "kind": "slot_revert",
+        "probability_gap": 0.17421605501381004,
+        "pruned_assignments": [],
+        "rank": 1,
+        "slot": "root.left",
+        "slot_margin": 0.17421605501381004,
+        "source": "slot_alternative",
+        "subtree_root": null,
+        "verifier_status": "failed"
+      }
+    ],
+    "original_status": "snapped_but_failed",
+    "reason": "no_verified_slot_neighborhood",
+    "repaired_ast": null,
+    "return_kind": "snapped_but_failed",
+    "status": "not_repaired",
+    "variant_count": 3,
+    "verification": null
+  },
+  "repair_status": "not_repaired",
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.8-family-smoke-triage/runs/v1.8-family-smoke/v1-8-family-smoke-exp-blind-ceml2-90ba09a5dd4a.json",
+    "case_id": "exp-blind-ceml2",
+    "claim_id": null,
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "exp",
+    "optimizer": {
+      "clamp_exp_real": 40.0,
+      "constants": [
+        "1"
+      ],
+      "depth": 1,
+      "hardening_emit_interval": 2,
+      "hardening_steps": 4,
+      "hardening_temperature_end": 0.02,
+      "log_domain_epsilon": 1e-09,
+      "log_safety_imag_tolerance": 1e-06,
+      "log_safety_margin": 1e-06,
+      "log_safety_weight": 0.0,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 14,
+      "operator_family": {
+        "family": "ceml_s",
+        "label": "CEML_2",
+        "s": 2.0,
+        "singularity": -1.0,
+        "t": 1.0,
+        "terminal": "one"
+      },
+      "operator_schedule": [],
+      "refit_lr": 0.02,
+      "refit_steps": 80,
+      "restarts": 1,
+      "scaffold_exclusions": [
+        "scaled_exp:centered_family_incompatible_raw_witness"
+      ],
+      "scaffold_initializers": [
+        "exp",
+        "log"
+      ],
+      "steps": 6,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-8-family-smoke-exp-blind-ceml2-90ba09a5dd4a",
+    "seed": 0,
+    "start_mode": "blind",
+    "suite_id": "v1.8-family-smoke",
+    "tags": [
+      "smoke",
+      "blind",
+      "v1.8",
+      "family_matrix",
+      "operator_family",
+      "operator:ceml2"
+    ],
+    "threshold_policy_id": null,
+    "training_mode": "blind_training"
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "blind_baseline": "failed",
+    "local_repair": "not_repaired",
+    "post_snap_refit": "not_attempted"
+  },
+  "status": "snapped_but_failed",
+  "threshold": null,
+  "timing": {
+    "elapsed_seconds": 1.1281873749685474
+  },
+  "trained_eml_candidate": {
+    "best_loss": 0.7599558457779233,
+    "best_restart": {
+      "attempt_kind": "random",
+      "best_fit_loss": 0.7599558457779233,
+      "candidate_ids": [
+        "attempt-001-legacy-final-snap",
+        "attempt-001-hardening-00",
+        "attempt-001-hardening-01",
+        "attempt-001-hardening-02"
+      ],
+      "final_anomalies": {
+        "by_node": {
+          "root": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "expm1_overflow_count": 0,
+            "inf_count": 0,
+            "log1p_branch_cut_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 1.2997539421737772,
+            "max_exp_real": 0.5007030201242314,
+            "nan_count": 0,
+            "shifted_singularity_min_distance": 1.9892167389137256,
+            "shifted_singularity_near_count": 0
+          }
+        },
+        "clamp_count": 0,
+        "exp_overflow_count": 0,
+        "expm1_overflow_count": 0,
+        "inf_count": 0,
+        "log1p_branch_cut_count": 0,
+        "log_branch_cut_count": 0,
+        "log_non_finite_input_count": 0,
+        "log_non_positive_real_count": 0,
+        "log_safety_penalty": 0.0,
+        "log_small_magnitude_count": 0,
+        "max_abs": 1.2997539421737772,
+        "max_exp_real": 0.5007030201242314,
+        "nan_count": 0,
+        "shifted_singularity_min_distance": 1.9892167389137256,
+        "shifted_singularity_near_count": 0
+      },
+      "hardening_steps_completed": 4,
+      "initialization": null,
+      "legacy_candidate_id": "attempt-001-legacy-final-snap",
+      "random_restart": 0,
+      "restart": 1,
+      "seed": 0,
+      "steps_completed": 6
+    },
+    "candidates": [
+      {
+        "active_slot_count": 2,
+        "attempt_index": 1,
+        "attempt_kind": "random",
+        "best_fit_loss": 0.7599558457779233,
+        "candidate_id": "attempt-001-hardening-01",
+        "checkpoint_index": 1,
+        "global_step": 8,
+        "hardening_step": 2,
+        "low_margin_slot_count": 1,
+        "lowest_margin_slots": [
+          {
+            "choice": "const:1",
+            "margin": 0.052125197743832785,
+            "probability": 0.5260625988719164,
+            "slot": "root.right"
+          },
+          {
+            "choice": "var:x",
+            "margin": 0.17421605501381004,
+            "probability": 0.587108027506905,
+            "slot": "root.left"
+          }
+        ],
+        "post_snap_loss": 1.2206895849232353,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 2.248530160317331,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 2.248530160317331,
+          "post_snap_loss": 1.2206895849232353,
+          "soft_fit_loss": 0.7599558457779233,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.47393740112808364,
+                "probability_gap": 0.052125197743832785,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.052125197743832785,
+            "current_probability": 0.5260625988719164,
+            "slot": "root.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.412891972493095,
+                "probability_gap": 0.17421605501381004,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.17421605501381004,
+            "current_probability": 0.587108027506905,
+            "slot": "root.left"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "centered_eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "operator": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+              "operator_family": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "verification_mode": "canonical_centered"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 0.17421605501381004,
+              "path": "root",
+              "probability": 0.587108027506905,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 0.052125197743832785,
+              "path": "root",
+              "probability": 0.5260625988719164,
+              "side": "right"
+            }
+          ],
+          "min_margin": 0.052125197743832785
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.09666666666666668,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 2.248530160317331,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 1.4223450054471314,
+              "max_imag_residue": 0.0,
+              "mse": 1.2206895849232353,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 1.2454148782585244,
+              "max_imag_residue": 0.0,
+              "mse": 1.1379336389862669,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 2.248530160317331,
+              "max_imag_residue": 0.0,
+              "mse": 3.372475170795459,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 1,
+        "attempt_kind": "random",
+        "best_fit_loss": 0.7599558457779233,
+        "candidate_id": "attempt-001-hardening-02",
+        "checkpoint_index": 2,
+        "global_step": 9,
+        "hardening_step": 3,
+        "low_margin_slot_count": 1,
+        "lowest_margin_slots": [
+          {
+            "choice": "const:1",
+            "margin": 0.0679168291450929,
+            "probability": 0.5339584145725464,
+            "slot": "root.right"
+          },
+          {
+            "choice": "var:x",
+            "margin": 0.20038451660847034,
+            "probability": 0.6001922583042352,
+            "slot": "root.left"
+          }
+        ],
+        "post_snap_loss": 1.2206895849232353,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 2.248530160317331,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 2.248530160317331,
+          "post_snap_loss": 1.2206895849232353,
+          "soft_fit_loss": 0.7599558457779233,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.46604158542745355,
+                "probability_gap": 0.0679168291450929,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.0679168291450929,
+            "current_probability": 0.5339584145725464,
+            "slot": "root.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.39980774169576483,
+                "probability_gap": 0.20038451660847034,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.20038451660847034,
+            "current_probability": 0.6001922583042352,
+            "slot": "root.left"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "centered_eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "operator": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+              "operator_family": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "verification_mode": "canonical_centered"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 0.20038451660847034,
+              "path": "root",
+              "probability": 0.6001922583042352,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 0.0679168291450929,
+              "path": "root",
+              "probability": 0.5339584145725464,
+              "side": "right"
+            }
+          ],
+          "min_margin": 0.0679168291450929
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.01999999999999999,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 2.248530160317331,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 1.4223450054471314,
+              "max_imag_residue": 0.0,
+              "mse": 1.2206895849232353,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 1.2454148782585244,
+              "max_imag_residue": 0.0,
+              "mse": 1.1379336389862669,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 2.248530160317331,
+              "max_imag_residue": 0.0,
+              "mse": 3.372475170795459,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 0,
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 1.2206895849228638,
+        "candidate_id": "attempt-000-hardening-00",
+        "checkpoint_index": 0,
+        "global_step": 6,
+        "hardening_step": 0,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 1.2206895849232353,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 2.248530160317331,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 2.248530160317331,
+          "post_snap_loss": 1.2206895849232353,
+          "soft_fit_loss": 1.2206895849228638,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756528310610811e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756531286868726e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "centered_eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "operator": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+              "operator_family": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "verification_mode": "canonical_centered"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 2.248530160317331,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 1.4223450054471314,
+              "max_imag_residue": 0.0,
+              "mse": 1.2206895849232353,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 1.2454148782585244,
+              "max_imag_residue": 0.0,
+              "mse": 1.1379336389862669,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 2.248530160317331,
+              "max_imag_residue": 0.0,
+              "mse": 3.372475170795459,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 0,
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 1.2206895849228638,
+        "candidate_id": "attempt-000-hardening-01",
+        "checkpoint_index": 1,
+        "global_step": 8,
+        "hardening_step": 2,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 1.2206895849232353,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 2.248530160317331,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 2.248530160317331,
+          "post_snap_loss": 1.2206895849232353,
+          "soft_fit_loss": 1.2206895849228638,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756529452416666e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756532622689568e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "centered_eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "operator": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+              "operator_family": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "verification_mode": "canonical_centered"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.09666666666666668,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 2.248530160317331,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 1.4223450054471314,
+              "max_imag_residue": 0.0,
+              "mse": 1.2206895849232353,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 1.2454148782585244,
+              "max_imag_residue": 0.0,
+              "mse": 1.1379336389862669,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 2.248530160317331,
+              "max_imag_residue": 0.0,
+              "mse": 3.372475170795459,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 0,
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 1.2206895849228638,
+        "candidate_id": "attempt-000-hardening-02",
+        "checkpoint_index": 2,
+        "global_step": 9,
+        "hardening_step": 3,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 1.2206895849232353,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 2.248530160317331,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 2.248530160317331,
+          "post_snap_loss": 1.2206895849232353,
+          "soft_fit_loss": 1.2206895849228638,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756529892717258e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756533137805884e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "centered_eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "operator": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+              "operator_family": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "verification_mode": "canonical_centered"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.01999999999999999,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 2.248530160317331,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 1.4223450054471314,
+              "max_imag_residue": 0.0,
+              "mse": 1.2206895849232353,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 1.2454148782585244,
+              "max_imag_residue": 0.0,
+              "mse": 1.1379336389862669,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 2.248530160317331,
+              "max_imag_residue": 0.0,
+              "mse": 3.372475170795459,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 0,
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 1.2206895849228638,
+        "candidate_id": "attempt-000-legacy-final-snap",
+        "checkpoint_index": null,
+        "global_step": 5,
+        "hardening_step": null,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 1.2206895849232353,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 2.248530160317331,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 2.248530160317331,
+          "post_snap_loss": 1.2206895849232353,
+          "soft_fit_loss": 1.2206895849228638,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756527556572448e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.75653040470461e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "centered_eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "operator": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+              "operator_family": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "verification_mode": "canonical_centered"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "legacy_final_snap",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 2.248530160317331,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 1.4223450054471314,
+              "max_imag_residue": 0.0,
+              "mse": 1.2206895849232353,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 1.2454148782585244,
+              "max_imag_residue": 0.0,
+              "mse": 1.1379336389862669,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 2.248530160317331,
+              "max_imag_residue": 0.0,
+              "mse": 3.372475170795459,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 1,
+        "attempt_kind": "random",
+        "best_fit_loss": 0.7599558457779233,
+        "candidate_id": "attempt-001-hardening-00",
+        "checkpoint_index": 0,
+        "global_step": 6,
+        "hardening_step": 0,
+        "low_margin_slot_count": 1,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 0.011206962539990206,
+            "probability": 0.5056034812699951,
+            "slot": "root.right"
+          },
+          {
+            "choice": "var:x",
+            "margin": 0.10498810198865016,
+            "probability": 0.5524940509943251,
+            "slot": "root.left"
+          }
+        ],
+        "post_snap_loss": 12.96540142176002,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 2.695101730597661,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 15.421751629405723,
+          "post_snap_loss": 12.96540142176002,
+          "soft_fit_loss": 0.7599558457779233,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.4943965187300049,
+                "probability_gap": 0.011206962539990206,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.011206962539990206,
+            "current_probability": 0.5056034812699951,
+            "slot": "root.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.447505949005675,
+                "probability_gap": 0.10498810198865016,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.10498810198865016,
+            "current_probability": 0.5524940509943251,
+            "slot": "root.left"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "centered_eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "operator": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "right": {
+                "kind": "var",
+                "name": "x"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [],
+              "log_branch": "principal",
+              "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+              "operator_family": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "verification_mode": "canonical_centered"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 0.10498810198865016,
+              "path": "root",
+              "probability": 0.5524940509943251,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.011206962539990206,
+              "path": "root",
+              "probability": 0.5056034812699951,
+              "side": "right"
+            }
+          ],
+          "min_margin": 0.011206962539990206
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 15.421751629405723,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 15.421751629405723,
+              "max_imag_residue": 0.0,
+              "mse": 12.96540142176002,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 3.4684156681373484,
+              "max_imag_residue": 0.0,
+              "mse": 2.0219320014860465,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 2.695101730597661,
+              "max_imag_residue": 0.0,
+              "mse": 4.4355440988145505,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 1,
+        "attempt_kind": "random",
+        "best_fit_loss": 0.7599558457779233,
+        "candidate_id": "attempt-001-legacy-final-snap",
+        "checkpoint_index": null,
+        "global_step": 5,
+        "hardening_step": null,
+        "low_margin_slot_count": 2,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 0.054781132747431016,
+            "probability": 0.5273905663737155,
+            "slot": "root.right"
+          },
+          {
+            "choice": "var:x",
+            "margin": 0.061014329374659615,
+            "probability": 0.5305071646873298,
+            "slot": "root.left"
+          }
+        ],
+        "post_snap_loss": 12.96540142176002,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 2.695101730597661,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 15.421751629405723,
+          "post_snap_loss": 12.96540142176002,
+          "soft_fit_loss": 0.7599558457779233,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.4726094336262845,
+                "probability_gap": 0.054781132747431016,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.054781132747431016,
+            "current_probability": 0.5273905663737155,
+            "slot": "root.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.4694928353126702,
+                "probability_gap": 0.061014329374659615,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.061014329374659615,
+            "current_probability": 0.5305071646873298,
+            "slot": "root.left"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "centered_eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "operator": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "right": {
+                "kind": "var",
+                "name": "x"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [],
+              "log_branch": "principal",
+              "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+              "operator_family": {
+                "family": "ceml_s",
+                "label": "CEML_2",
+                "s": 2.0,
+                "singularity": -1.0,
+                "t": 1.0,
+                "terminal": "one"
+              },
+              "verification_mode": "canonical_centered"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 0.061014329374659615,
+              "path": "root",
+              "probability": 0.5305071646873298,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.054781132747431016,
+              "path": "root",
+              "probability": 0.5273905663737155,
+              "side": "right"
+            }
+          ],
+          "min_margin": 0.054781132747431016
+        },
+        "source": "legacy_final_snap",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 15.421751629405723,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 15.421751629405723,
+              "max_imag_residue": 0.0,
+              "mse": 12.96540142176002,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 3.4684156681373484,
+              "max_imag_residue": 0.0,
+              "mse": 2.0219320014860465,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 2.695101730597661,
+              "max_imag_residue": 0.0,
+              "mse": 4.4355440988145505,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      }
+    ],
+    "config": {
+      "clamp_exp_real": 40.0,
+      "constants": [
+        "1"
+      ],
+      "depth": 1,
+      "entropy_weight": 0.001,
+      "hardening_emit_interval": 2,
+      "hardening_steps": 4,
+      "hardening_temperature_end": 0.02,
+      "log_domain_epsilon": 1e-09,
+      "log_safety_imag_tolerance": 1e-06,
+      "log_safety_margin": 1e-06,
+      "log_safety_weight": 0.0,
+      "lr": 0.05,
+      "operator_family": {
+        "family": "ceml_s",
+        "label": "CEML_2",
+        "s": 2.0,
+        "singularity": -1.0,
+        "t": 1.0,
+        "terminal": "one"
+      },
+      "operator_schedule": [],
+      "refit_lr": 0.02,
+      "refit_steps": 80,
+      "restarts": 1,
+      "scaffold_initializers": [
+        "exp",
+        "log"
+      ],
+      "seed": 0,
+      "size_weight": 0.0001,
+      "steps": 6,
+      "temperature_end": 0.25,
+      "temperature_start": 2.0,
+      "variables": [
+        "x"
+      ]
+    },
+    "fallback_candidate": {
+      "active_slot_count": 2,
+      "attempt_index": 1,
+      "attempt_kind": "random",
+      "best_fit_loss": 0.7599558457779233,
+      "candidate_id": "attempt-001-legacy-final-snap",
+      "checkpoint_index": null,
+      "global_step": 5,
+      "hardening_step": null,
+      "low_margin_slot_count": 2,
+      "lowest_margin_slots": [
+        {
+          "choice": "var:x",
+          "margin": 0.054781132747431016,
+          "probability": 0.5273905663737155,
+          "slot": "root.right"
+        },
+        {
+          "choice": "var:x",
+          "margin": 0.061014329374659615,
+          "probability": 0.5305071646873298,
+          "slot": "root.left"
+        }
+      ],
+      "post_snap_loss": 12.96540142176002,
+      "random_restart": 0,
+      "seed": 0,
+      "selection_metrics": {
+        "complexity": 3,
+        "extrapolation_max_abs_error": 2.695101730597661,
+        "heldout_max_abs_error": 0.0,
+        "high_precision_max_error": 15.421751629405723,
+        "post_snap_loss": 12.96540142176002,
+        "soft_fit_loss": 0.7599558457779233,
+        "status_rank": 2,
+        "verifier_status": "failed"
+      },
+      "slot_alternatives": [
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 0.4726094336262845,
+              "probability_gap": 0.054781132747431016,
+              "rank": 1
+            }
+          ],
+          "current_choice": "var:x",
+          "current_margin": 0.054781132747431016,
+          "current_probability": 0.5273905663737155,
+          "slot": "root.right"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 0.4694928353126702,
+              "probability_gap": 0.061014329374659615,
+              "rank": 1
+            }
+          ],
+          "current_choice": "var:x",
+          "current_margin": 0.061014329374659615,
+          "current_probability": 0.5305071646873298,
+          "slot": "root.left"
+        }
+      ],
+      "snap": {
+        "active_node_count": 3,
+        "ast": {
+          "metadata": {
+            "depth": 1,
+            "node_count": 3,
+            "source": "exact_ast"
+          },
+          "root": {
+            "kind": "centered_eml",
+            "left": {
+              "kind": "var",
+              "name": "x"
+            },
+            "operator": {
+              "family": "ceml_s",
+              "label": "CEML_2",
+              "s": 2.0,
+              "singularity": -1.0,
+              "t": 1.0,
+              "terminal": "one"
+            },
+            "right": {
+              "kind": "var",
+              "name": "x"
+            }
+          },
+          "schema": "eml.ast.v1",
+          "semantics": {
+            "constant_basis": [],
+            "log_branch": "principal",
+            "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+            "operator_family": {
+              "family": "ceml_s",
+              "label": "CEML_2",
+              "s": 2.0,
+              "singularity": -1.0,
+              "t": 1.0,
+              "terminal": "one"
+            },
+            "verification_mode": "canonical_centered"
+          },
+          "variables": [
+            "x"
+          ]
+        },
+        "decisions": [
+          {
+            "choice": "var:x",
+            "margin": 0.061014329374659615,
+            "path": "root",
+            "probability": 0.5305071646873298,
+            "side": "left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 0.054781132747431016,
+            "path": "root",
+            "probability": 0.5273905663737155,
+            "side": "right"
+          }
+        ],
+        "min_margin": 0.054781132747431016
+      },
+      "source": "legacy_final_snap",
+      "temperature": 0.25,
+      "verification": {
+        "candidate_kind": "exact_eml",
+        "high_precision_max_error": 15.421751629405723,
+        "high_precision_status": "skipped_numeric_failure",
+        "reason": "train_failed",
+        "split_results": [
+          {
+            "max_abs_error": 15.421751629405723,
+            "max_imag_residue": 0.0,
+            "mse": 12.96540142176002,
+            "name": "train",
+            "passed": false
+          },
+          {
+            "max_abs_error": 3.4684156681373484,
+            "max_imag_residue": 0.0,
+            "mse": 2.0219320014860465,
+            "name": "heldout",
+            "passed": false
+          },
+          {
+            "max_abs_error": 2.695101730597661,
+            "max_imag_residue": 0.0,
+            "mse": 4.4355440988145505,
+            "name": "extrapolation",
+            "passed": false
+          }
+        ],
+        "status": "failed",
+        "tolerance": 1e-08
+      }
+    },
+    "legacy_best_loss": 0.7599558457779233,
+    "operator_trace": [
+      {
+        "end_step": 5,
+        "operator": {
+          "family": "ceml_s",
+          "label": "CEML_2",
+          "s": 2.0,
+          "singularity": -1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "phase": "training",
+        "start_step": 0
+      },
+      {
+        "end_step": 9,
+        "operator": {
+          "family": "ceml_s",
+          "label": "CEML_2",
+          "s": 2.0,
+          "singularity": -1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "phase": "hardening",
+        "start_step": 6
+      }
+    ],
+    "post_snap_loss": 1.2206895849232353,
+    "restarts": [
+      {
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 1.2206895849228638,
+        "candidate_ids": [
+          "attempt-000-legacy-final-snap",
+          "attempt-000-hardening-00",
+          "attempt-000-hardening-01",
+          "attempt-000-hardening-02"
+        ],
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 1.299761524968533,
+              "max_exp_real": 0.5007030201401861,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": 2.0,
+              "shifted_singularity_near_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "exp_overflow_count": 0,
+          "expm1_overflow_count": 0,
+          "inf_count": 0,
+          "log1p_branch_cut_count": 0,
+          "log_branch_cut_count": 0,
+          "log_non_finite_input_count": 0,
+          "log_non_positive_real_count": 0,
+          "log_safety_penalty": 0.0,
+          "log_small_magnitude_count": 0,
+          "max_abs": 1.299761524968533,
+          "max_exp_real": 0.5007030201401861,
+          "nan_count": 0,
+          "shifted_singularity_min_distance": 2.0,
+          "shifted_singularity_near_count": 0
+        },
+        "hardening_steps_completed": 4,
+        "initialization": {
+          "kind": "scaffold_exp",
+          "seed": 0,
+          "strategy": "generic_paper_primitive",
+          "variable": "x"
+        },
+        "legacy_candidate_id": "attempt-000-legacy-final-snap",
+        "random_restart": null,
+        "restart": 0,
+        "seed": 0,
+        "steps_completed": 6
+      },
+      {
+        "attempt_kind": "random",
+        "best_fit_loss": 0.7599558457779233,
+        "candidate_ids": [
+          "attempt-001-legacy-final-snap",
+          "attempt-001-hardening-00",
+          "attempt-001-hardening-01",
+          "attempt-001-hardening-02"
+        ],
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 1.2997539421737772,
+              "max_exp_real": 0.5007030201242314,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": 1.9892167389137256,
+              "shifted_singularity_near_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "exp_overflow_count": 0,
+          "expm1_overflow_count": 0,
+          "inf_count": 0,
+          "log1p_branch_cut_count": 0,
+          "log_branch_cut_count": 0,
+          "log_non_finite_input_count": 0,
+          "log_non_positive_real_count": 0,
+          "log_safety_penalty": 0.0,
+          "log_small_magnitude_count": 0,
+          "max_abs": 1.2997539421737772,
+          "max_exp_real": 0.5007030201242314,
+          "nan_count": 0,
+          "shifted_singularity_min_distance": 1.9892167389137256,
+          "shifted_singularity_near_count": 0
+        },
+        "hardening_steps_completed": 4,
+        "initialization": null,
+        "legacy_candidate_id": "attempt-001-legacy-final-snap",
+        "random_restart": 0,
+        "restart": 1,
+        "seed": 0,
+        "steps_completed": 6
+      }
+    ],
+    "schema": "eml.run_manifest.v1",
+    "selected_candidate": {
+      "active_slot_count": 2,
+      "attempt_index": 1,
+      "attempt_kind": "random",
+      "best_fit_loss": 0.7599558457779233,
+      "candidate_id": "attempt-001-hardening-01",
+      "checkpoint_index": 1,
+      "global_step": 8,
+      "hardening_step": 2,
+      "low_margin_slot_count": 1,
+      "lowest_margin_slots": [
+        {
+          "choice": "const:1",
+          "margin": 0.052125197743832785,
+          "probability": 0.5260625988719164,
+          "slot": "root.right"
+        },
+        {
+          "choice": "var:x",
+          "margin": 0.17421605501381004,
+          "probability": 0.587108027506905,
+          "slot": "root.left"
+        }
+      ],
+      "post_snap_loss": 1.2206895849232353,
+      "random_restart": 0,
+      "seed": 0,
+      "selection_metrics": {
+        "complexity": 3,
+        "extrapolation_max_abs_error": 2.248530160317331,
+        "heldout_max_abs_error": 0.0,
+        "high_precision_max_error": 2.248530160317331,
+        "post_snap_loss": 1.2206895849232353,
+        "soft_fit_loss": 0.7599558457779233,
+        "status_rank": 2,
+        "verifier_status": "failed"
+      },
+      "slot_alternatives": [
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 0.47393740112808364,
+              "probability_gap": 0.052125197743832785,
+              "rank": 1
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 0.052125197743832785,
+          "current_probability": 0.5260625988719164,
+          "slot": "root.right"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 0.412891972493095,
+              "probability_gap": 0.17421605501381004,
+              "rank": 1
+            }
+          ],
+          "current_choice": "var:x",
+          "current_margin": 0.17421605501381004,
+          "current_probability": 0.587108027506905,
+          "slot": "root.left"
+        }
+      ],
+      "snap": {
+        "active_node_count": 3,
+        "ast": {
+          "metadata": {
+            "depth": 1,
+            "node_count": 3,
+            "source": "exact_ast"
+          },
+          "root": {
+            "kind": "centered_eml",
+            "left": {
+              "kind": "var",
+              "name": "x"
+            },
+            "operator": {
+              "family": "ceml_s",
+              "label": "CEML_2",
+              "s": 2.0,
+              "singularity": -1.0,
+              "t": 1.0,
+              "terminal": "one"
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          },
+          "schema": "eml.ast.v1",
+          "semantics": {
+            "constant_basis": [
+              "1"
+            ],
+            "log_branch": "principal",
+            "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+            "operator_family": {
+              "family": "ceml_s",
+              "label": "CEML_2",
+              "s": 2.0,
+              "singularity": -1.0,
+              "t": 1.0,
+              "terminal": "one"
+            },
+            "verification_mode": "canonical_centered"
+          },
+          "variables": [
+            "x"
+          ]
+        },
+        "decisions": [
+          {
+            "choice": "var:x",
+            "margin": 0.17421605501381004,
+            "path": "root",
+            "probability": 0.587108027506905,
+            "side": "left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 0.052125197743832785,
+            "path": "root",
+            "probability": 0.5260625988719164,
+            "side": "right"
+          }
+        ],
+        "min_margin": 0.052125197743832785
+      },
+      "source": "hardening_checkpoint",
+      "temperature": 0.09666666666666668,
+      "verification": {
+        "candidate_kind": "exact_eml",
+        "high_precision_max_error": 2.248530160317331,
+        "high_precision_status": "skipped_numeric_failure",
+        "reason": "train_failed",
+        "split_results": [
+          {
+            "max_abs_error": 1.4223450054471314,
+            "max_imag_residue": 0.0,
+            "mse": 1.2206895849232353,
+            "name": "train",
+            "passed": false
+          },
+          {
+            "max_abs_error": 1.2454148782585244,
+            "max_imag_residue": 0.0,
+            "mse": 1.1379336389862669,
+            "name": "heldout",
+            "passed": false
+          },
+          {
+            "max_abs_error": 2.248530160317331,
+            "max_imag_residue": 0.0,
+            "mse": 3.372475170795459,
+            "name": "extrapolation",
+            "passed": false
+          }
+        ],
+        "status": "failed",
+        "tolerance": 1e-08
+      }
+    },
+    "selection": {
+      "candidate_count": 8,
+      "fallback_attempt_index": 1,
+      "fallback_candidate_id": "attempt-001-legacy-final-snap",
+      "fallback_source": "legacy_final_snap",
+      "mode": "verifier_gated_exact_candidate_pool",
+      "selected_attempt_index": 1,
+      "selected_candidate_id": "attempt-001-hardening-01",
+      "selected_source": "hardening_checkpoint"
+    },
+    "snap": {
+      "active_node_count": 3,
+      "ast": {
+        "metadata": {
+          "depth": 1,
+          "node_count": 3,
+          "source": "exact_ast"
+        },
+        "root": {
+          "kind": "centered_eml",
+          "left": {
+            "kind": "var",
+            "name": "x"
+          },
+          "operator": {
+            "family": "ceml_s",
+            "label": "CEML_2",
+            "s": 2.0,
+            "singularity": -1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "right": {
+            "kind": "const",
+            "value": "1"
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+          "operator_family": {
+            "family": "ceml_s",
+            "label": "CEML_2",
+            "s": 2.0,
+            "singularity": -1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "verification_mode": "canonical_centered"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "decisions": [
+        {
+          "choice": "var:x",
+          "margin": 0.17421605501381004,
+          "path": "root",
+          "probability": 0.587108027506905,
+          "side": "left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 0.052125197743832785,
+          "path": "root",
+          "probability": 0.5260625988719164,
+          "side": "right"
+        }
+      ],
+      "min_margin": 0.052125197743832785
+    },
+    "status": "snapped_candidate"
+  },
+  "trained_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": 2.248530160317331,
+    "high_precision_status": "skipped_numeric_failure",
+    "reason": "train_failed",
+    "split_results": [
+      {
+        "max_abs_error": 1.4223450054471314,
+        "max_imag_residue": 0.0,
+        "mse": 1.2206895849232353,
+        "name": "train",
+        "passed": false
+      },
+      {
+        "max_abs_error": 1.2454148782585244,
+        "max_imag_residue": 0.0,
+        "mse": 1.1379336389862669,
+        "name": "heldout",
+        "passed": false
+      },
+      {
+        "max_abs_error": 2.248530160317331,
+        "max_imag_residue": 0.0,
+        "mse": 3.372475170795459,
+        "name": "extrapolation",
+        "passed": false
+      }
+    ],
+    "status": "failed",
+    "tolerance": 1e-08
+  },
+  "training_mode": "blind_training"
+}

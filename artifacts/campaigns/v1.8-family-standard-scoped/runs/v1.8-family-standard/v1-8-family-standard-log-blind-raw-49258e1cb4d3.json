@@ -1,0 +1,5146 @@
+{
+  "budget": {
+    "clamp_exp_real": 40.0,
+    "constants": [
+      "1"
+    ],
+    "depth": 3,
+    "hardening_emit_interval": 2,
+    "hardening_steps": 4,
+    "hardening_temperature_end": 0.02,
+    "log_domain_epsilon": 1e-09,
+    "log_safety_imag_tolerance": 1e-06,
+    "log_safety_margin": 1e-06,
+    "log_safety_weight": 0.0,
+    "lr": 0.05,
+    "max_compile_depth": 13,
+    "max_compile_nodes": 256,
+    "max_power": 3,
+    "max_warm_depth": 14,
+    "operator_family": {
+      "family": "raw_eml",
+      "label": "raw_eml",
+      "s": 1.0,
+      "t": 1.0,
+      "terminal": "one"
+    },
+    "operator_schedule": [],
+    "refit_lr": 0.02,
+    "refit_steps": 80,
+    "restarts": 1,
+    "scaffold_exclusions": [],
+    "scaffold_initializers": [
+      "exp",
+      "log",
+      "scaled_exp"
+    ],
+    "steps": 80,
+    "warm_depth": 0,
+    "warm_restarts": 1,
+    "warm_steps": 8
+  },
+  "claim_class": null,
+  "claim_id": null,
+  "claim_status": "recovered",
+  "dataset": {
+    "points": 24,
+    "tolerance": 1e-08
+  },
+  "dataset_manifest": {
+    "formula_id": "log",
+    "manifest_sha256": "233dec39b6608f64a02052b470c118a5164ad9c81232c5a0772fb62f79feed93",
+    "points": 24,
+    "provenance": {
+      "candidate_name": "exact_eml",
+      "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+      "formula_id": "log",
+      "normalized_dimensionless": true,
+      "source_document": "sources/paper.pdf",
+      "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+      "symbolic_expression": "E - log(exp(E)/x)",
+      "variable": "x"
+    },
+    "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+    "schema": "eml.proof_dataset_manifest.v1",
+    "seed": 0,
+    "splits": [
+      {
+        "count": 24,
+        "domain": [
+          0.25,
+          3.0
+        ],
+        "input_sha256": "e3a490a0aed9ff8d4f22af7c6d3ac0262f00c3d90255d9a1fb2818c75ea6daf9",
+        "name": "train",
+        "target_sha256": "898f7651439ce4ad0a412ddc3f2e8c87ade0ce5caafa3c5adb77a2a07380541e"
+      },
+      {
+        "count": 16,
+        "domain": [
+          0.35,
+          2.75
+        ],
+        "input_sha256": "9c422468f759253c2e789af5bc68d8d26d01125b42d6e9d76fe6a201a0a4629f",
+        "name": "heldout",
+        "target_sha256": "299cfbf89ce7e9bdb262683093db440b5432c41f5a4e55b090effd76fd4cfaae"
+      },
+      {
+        "count": 16,
+        "domain": [
+          3.1,
+          4.2
+        ],
+        "input_sha256": "301148227c1d0026c03b52fb2e00b8f46537a4074b925ce67339592267e9c736",
+        "name": "extrapolation",
+        "target_sha256": "6ed51e9ae6e048f326f44d5c7cd936edc4a10ca9680a9ff9643851f4cb9b0a79"
+      }
+    ],
+    "tolerance": 1e-08,
+    "variable": "x"
+  },
+  "environment": {
+    "code_version": "c35d746",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "evidence_class": "scaffolded_blind_training_recovered",
+  "metrics": {
+    "active_slot_count": null,
+    "anomaly_clamp_count": 0,
+    "anomaly_exp_overflow_count": 0,
+    "anomaly_expm1_overflow_count": 0,
+    "anomaly_log1p_branch_cut_count": 0,
+    "anomaly_log_branch_cut_count": 0,
+    "anomaly_log_non_finite_input_count": 0,
+    "anomaly_log_non_positive_real_count": 0,
+    "anomaly_log_safety_penalty": 0.0,
+    "anomaly_log_small_magnitude_count": 0,
+    "anomaly_shifted_singularity_min_distance": null,
+    "anomaly_shifted_singularity_near_count": 0,
+    "best_loss": 1.6065967163686542e-32,
+    "candidate_complexity": null,
+    "candidate_pool_size": 12,
+    "changed_slot_count": null,
+    "fallback_candidate_attempt_index": 1,
+    "fallback_candidate_checkpoint_index": null,
+    "fallback_candidate_id": "attempt-001-legacy-final-snap",
+    "fallback_candidate_source": "legacy_final_snap",
+    "fallback_post_snap_loss": 1.6065967163686542e-32,
+    "high_precision_max_error": 0.0,
+    "legacy_best_loss": 1.6065967163686542e-32,
+    "operator_family": "raw_eml",
+    "operator_schedule": "",
+    "post_snap_loss": 1.6065967163686542e-32,
+    "refit_accepted": false,
+    "refit_constant_count": 0,
+    "refit_post_snap_loss": null,
+    "refit_status": "not_attempted",
+    "refit_verifier_status": null,
+    "repair_accepted_move_count": 0,
+    "repair_move_count": 0,
+    "repair_status": "not_attempted",
+    "repair_variant_count": null,
+    "repair_verifier_status": null,
+    "scaffold_coefficient": null,
+    "scaffold_exclusions": [],
+    "scaffold_source": "scaffold_log",
+    "scaffold_strategy": "generic_paper_primitive",
+    "selected_candidate_attempt_index": 1,
+    "selected_candidate_checkpoint_index": 0,
+    "selected_candidate_id": "attempt-001-hardening-00",
+    "selected_candidate_source": "hardening_checkpoint",
+    "selection_mode": "verifier_gated_exact_candidate_pool",
+    "snap_active_node_count": 7,
+    "snap_min_margin": 1.0,
+    "unsupported_reason": null,
+    "verifier_status": "recovered",
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "provenance": {
+    "candidate_name": "exact_eml",
+    "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+    "formula_id": "log",
+    "normalized_dimensionless": true,
+    "source_document": "sources/paper.pdf",
+    "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+    "symbolic_expression": "E - log(exp(E)/x)",
+    "variable": "x"
+  },
+  "refit": {
+    "accepted": false,
+    "fixed_constants": [
+      {
+        "after": "1",
+        "before": "1",
+        "changed": false,
+        "path": "root.L",
+        "refittable": false
+      },
+      {
+        "after": "1",
+        "before": "1",
+        "changed": false,
+        "path": "root.R.L.L",
+        "refittable": false
+      },
+      {
+        "after": "1",
+        "before": "1",
+        "changed": false,
+        "path": "root.R.R",
+        "refittable": false
+      }
+    ],
+    "post_refit_candidate": null,
+    "pre_refit_candidate": {
+      "ast": {
+        "metadata": {
+          "depth": 3,
+          "node_count": 7,
+          "source": "selected_exact_candidate"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "const",
+            "value": "1"
+          },
+          "right": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "var",
+                "name": "x"
+              }
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "constants": [
+        {
+          "after": "1",
+          "before": "1",
+          "changed": false,
+          "path": "root.L",
+          "refittable": false
+        },
+        {
+          "after": "1",
+          "before": "1",
+          "changed": false,
+          "path": "root.R.L.L",
+          "refittable": false
+        },
+        {
+          "after": "1",
+          "before": "1",
+          "changed": false,
+          "path": "root.R.R",
+          "refittable": false
+        }
+      ],
+      "metrics": {
+        "complexity": 7,
+        "extrapolation_max_abs_error": 0.0,
+        "heldout_max_abs_error": 0.0,
+        "high_precision_max_error": 0.0,
+        "post_snap_loss": 1.6065967163686542e-32,
+        "status_rank": 0,
+        "verifier_status": "recovered"
+      },
+      "post_snap_loss": 1.6065967163686542e-32,
+      "source": "selected_exact_candidate",
+      "symbolic_expression": "E - log(exp(E)/x)",
+      "symbolic_expression_render": {
+        "depth": 3,
+        "mode": "subprocess",
+        "node_count": 7,
+        "status": "rendered",
+        "timeout_seconds": 2.0
+      },
+      "verification": {
+        "candidate_kind": "exact_eml",
+        "high_precision_max_error": 0.0,
+        "high_precision_status": "performed",
+        "reason": "verified",
+        "split_results": [
+          {
+            "max_abs_error": 2.220446049250313e-16,
+            "max_imag_residue": 0.0,
+            "mse": 1.6065967163686542e-32,
+            "name": "train",
+            "passed": true
+          },
+          {
+            "max_abs_error": 2.220446049250313e-16,
+            "max_imag_residue": 0.0,
+            "mse": 1.791791933026203e-32,
+            "name": "heldout",
+            "passed": true
+          },
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "extrapolation",
+            "passed": true
+          }
+        ],
+        "status": "recovered",
+        "tolerance": 1e-08
+      }
+    },
+    "reason": "no_refittable_constants",
+    "refittable_constants": [],
+    "selected_candidate": "pre_refit",
+    "status": "not_attempted"
+  },
+  "repair": null,
+  "repair_status": "not_attempted",
+  "run": {
+    "artifact_path": "artifacts/campaigns/v1.8-family-standard-scoped/runs/v1.8-family-standard/v1-8-family-standard-log-blind-raw-49258e1cb4d3.json",
+    "case_id": "log-blind-raw",
+    "claim_id": null,
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "log",
+    "optimizer": {
+      "clamp_exp_real": 40.0,
+      "constants": [
+        "1"
+      ],
+      "depth": 3,
+      "hardening_emit_interval": 2,
+      "hardening_steps": 4,
+      "hardening_temperature_end": 0.02,
+      "log_domain_epsilon": 1e-09,
+      "log_safety_imag_tolerance": 1e-06,
+      "log_safety_margin": 1e-06,
+      "log_safety_weight": 0.0,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 14,
+      "operator_family": {
+        "family": "raw_eml",
+        "label": "raw_eml",
+        "s": 1.0,
+        "t": 1.0,
+        "terminal": "one"
+      },
+      "operator_schedule": [],
+      "refit_lr": 0.02,
+      "refit_steps": 80,
+      "restarts": 1,
+      "scaffold_exclusions": [],
+      "scaffold_initializers": [
+        "exp",
+        "log",
+        "scaled_exp"
+      ],
+      "steps": 80,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-8-family-standard-log-blind-raw-49258e1cb4d3",
+    "seed": 0,
+    "start_mode": "blind",
+    "suite_id": "v1.8-family-standard",
+    "tags": [
+      "blind",
+      "shallow",
+      "v1.8",
+      "family_matrix",
+      "operator_family",
+      "operator:raw"
+    ],
+    "threshold_policy_id": null,
+    "training_mode": "blind_training"
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "blind_baseline": "recovered",
+    "post_snap_refit": "not_attempted"
+  },
+  "status": "recovered",
+  "threshold": null,
+  "timing": {
+    "elapsed_seconds": 1.4590190409799106
+  },
+  "trained_eml_candidate": {
+    "best_loss": 1.6065967163686542e-32,
+    "best_restart": {
+      "attempt_kind": "scaffold_log",
+      "best_fit_loss": 1.6065967163686542e-32,
+      "candidate_ids": [
+        "attempt-001-legacy-final-snap",
+        "attempt-001-hardening-00",
+        "attempt-001-hardening-01",
+        "attempt-001-hardening-02"
+      ],
+      "final_anomalies": {
+        "by_node": {
+          "root": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "expm1_overflow_count": 0,
+            "inf_count": 0,
+            "log1p_branch_cut_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 1.3835321147733617,
+            "max_exp_real": 1.0,
+            "nan_count": 0,
+            "shifted_singularity_min_distance": null,
+            "shifted_singularity_near_count": 0
+          },
+          "root.L": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "expm1_overflow_count": 0,
+            "inf_count": 0,
+            "log1p_branch_cut_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 20.124405960645248,
+            "max_exp_real": 3.0019333053855117,
+            "nan_count": 0,
+            "shifted_singularity_min_distance": null,
+            "shifted_singularity_near_count": 0
+          },
+          "root.L.L": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "expm1_overflow_count": 0,
+            "inf_count": 0,
+            "log1p_branch_cut_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 19.025149444407784,
+            "max_exp_real": 3.0019333053855117,
+            "nan_count": 0,
+            "shifted_singularity_min_distance": null,
+            "shifted_singularity_near_count": 0
+          },
+          "root.L.R": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "expm1_overflow_count": 0,
+            "inf_count": 0,
+            "log1p_branch_cut_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 20.124405960645248,
+            "max_exp_real": 3.0019333053855117,
+            "nan_count": 0,
+            "shifted_singularity_min_distance": null,
+            "shifted_singularity_near_count": 0
+          },
+          "root.R": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "expm1_overflow_count": 0,
+            "inf_count": 0,
+            "log1p_branch_cut_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 60.4498407852832,
+            "max_exp_real": 4.101813943232407,
+            "nan_count": 0,
+            "shifted_singularity_min_distance": null,
+            "shifted_singularity_near_count": 0
+          },
+          "root.R.L": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "expm1_overflow_count": 0,
+            "inf_count": 0,
+            "log1p_branch_cut_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 4.101813943232407,
+            "max_exp_real": 1.0,
+            "nan_count": 0,
+            "shifted_singularity_min_distance": null,
+            "shifted_singularity_near_count": 0
+          },
+          "root.R.R": {
+            "clamp_count": 0,
+            "exp_overflow_count": 0,
+            "expm1_overflow_count": 0,
+            "inf_count": 0,
+            "log1p_branch_cut_count": 0,
+            "log_branch_cut_count": 0,
+            "log_non_finite_input_count": 0,
+            "log_non_positive_real_count": 0,
+            "log_safety_penalty": 0.0,
+            "log_small_magnitude_count": 0,
+            "max_abs": 4.101813943232407,
+            "max_exp_real": 1.0,
+            "nan_count": 0,
+            "shifted_singularity_min_distance": null,
+            "shifted_singularity_near_count": 0
+          }
+        },
+        "clamp_count": 0,
+        "exp_overflow_count": 0,
+        "expm1_overflow_count": 0,
+        "inf_count": 0,
+        "log1p_branch_cut_count": 0,
+        "log_branch_cut_count": 0,
+        "log_non_finite_input_count": 0,
+        "log_non_positive_real_count": 0,
+        "log_safety_penalty": 0.0,
+        "log_small_magnitude_count": 0,
+        "max_abs": 60.4498407852832,
+        "max_exp_real": 4.101813943232407,
+        "nan_count": 0,
+        "shifted_singularity_min_distance": null,
+        "shifted_singularity_near_count": 0
+      },
+      "hardening_steps_completed": 4,
+      "initialization": {
+        "kind": "scaffold_log",
+        "seed": 0,
+        "strategy": "generic_paper_primitive",
+        "variable": "x"
+      },
+      "legacy_candidate_id": "attempt-001-legacy-final-snap",
+      "random_restart": null,
+      "restart": 1,
+      "seed": 0,
+      "steps_completed": 80
+    },
+    "candidates": [
+      {
+        "active_slot_count": 6,
+        "attempt_index": 1,
+        "attempt_kind": "scaffold_log",
+        "best_fit_loss": 1.6065967163686542e-32,
+        "candidate_id": "attempt-001-hardening-00",
+        "checkpoint_index": 0,
+        "global_step": 80,
+        "hardening_step": 0,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.L.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.L.right"
+          }
+        ],
+        "post_snap_loss": 1.6065967163686542e-32,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 7,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 1.6065967163686542e-32,
+          "soft_fit_loss": 1.6065967163686542e-32,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509896850218e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509896850218e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.75650946850559e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.75650946850559e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509462431548e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.R.right"
+                  }
+                ],
+                "probability": 8.7565094609131e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509462431548e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.right"
+                  }
+                ],
+                "probability": 8.7565094609131e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.75650946850559e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.75650946850559e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 7,
+          "ast": {
+            "metadata": {
+              "depth": 3,
+              "node_count": 7,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "const",
+                    "value": "1"
+                  },
+                  "right": {
+                    "kind": "var",
+                    "name": "x"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root.R",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.R.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.R.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.R",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 2.220446049250313e-16,
+              "max_imag_residue": 0.0,
+              "mse": 1.6065967163686542e-32,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 2.220446049250313e-16,
+              "max_imag_residue": 0.0,
+              "mse": 1.791791933026203e-32,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 6,
+        "attempt_index": 1,
+        "attempt_kind": "scaffold_log",
+        "best_fit_loss": 1.6065967163686542e-32,
+        "candidate_id": "attempt-001-hardening-01",
+        "checkpoint_index": 1,
+        "global_step": 82,
+        "hardening_step": 2,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.L.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.L.right"
+          }
+        ],
+        "post_snap_loss": 1.6065967163686542e-32,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 7,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 1.6065967163686542e-32,
+          "soft_fit_loss": 1.6065967163686542e-32,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509896830184e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509896830184e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509468475663e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.756509468475663e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509462401372e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.R.right"
+                  }
+                ],
+                "probability": 8.756509460882985e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509462401372e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.right"
+                  }
+                ],
+                "probability": 8.756509460882985e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509468475663e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.756509468475663e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 7,
+          "ast": {
+            "metadata": {
+              "depth": 3,
+              "node_count": 7,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "const",
+                    "value": "1"
+                  },
+                  "right": {
+                    "kind": "var",
+                    "name": "x"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root.R",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.R.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.R.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.R",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.09666666666666668,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 2.220446049250313e-16,
+              "max_imag_residue": 0.0,
+              "mse": 1.6065967163686542e-32,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 2.220446049250313e-16,
+              "max_imag_residue": 0.0,
+              "mse": 1.791791933026203e-32,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 6,
+        "attempt_index": 1,
+        "attempt_kind": "scaffold_log",
+        "best_fit_loss": 1.6065967163686542e-32,
+        "candidate_id": "attempt-001-hardening-02",
+        "checkpoint_index": 2,
+        "global_step": 83,
+        "hardening_step": 3,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.L.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.L.right"
+          }
+        ],
+        "post_snap_loss": 1.6065967163686542e-32,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 7,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 1.6065967163686542e-32,
+          "soft_fit_loss": 1.6065967163686542e-32,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509896821598e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509896821598e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509468462846e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.756509468462846e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509462388555e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.R.right"
+                  }
+                ],
+                "probability": 8.756509460870168e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509462388555e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.right"
+                  }
+                ],
+                "probability": 8.756509460870168e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509468462846e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.756509468462846e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 7,
+          "ast": {
+            "metadata": {
+              "depth": 3,
+              "node_count": 7,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "const",
+                    "value": "1"
+                  },
+                  "right": {
+                    "kind": "var",
+                    "name": "x"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root.R",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.R.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.R.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.R",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.01999999999999999,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 2.220446049250313e-16,
+              "max_imag_residue": 0.0,
+              "mse": 1.6065967163686542e-32,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 2.220446049250313e-16,
+              "max_imag_residue": 0.0,
+              "mse": 1.791791933026203e-32,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 6,
+        "attempt_index": 1,
+        "attempt_kind": "scaffold_log",
+        "best_fit_loss": 1.6065967163686542e-32,
+        "candidate_id": "attempt-001-legacy-final-snap",
+        "checkpoint_index": null,
+        "global_step": 79,
+        "hardening_step": null,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.L.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.R.L.right"
+          }
+        ],
+        "post_snap_loss": 1.6065967163686542e-32,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 7,
+          "extrapolation_max_abs_error": 0.0,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 0.0,
+          "post_snap_loss": 1.6065967163686542e-32,
+          "soft_fit_loss": 1.6065967163686542e-32,
+          "status_rank": 0,
+          "verifier_status": "recovered"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509896861916e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509896861916e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.L.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509468523073e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.756509468523073e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509462449155e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.R.right"
+                  }
+                ],
+                "probability": 8.75650946093077e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.R.R"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.R.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 8.756509462449155e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.right"
+                  }
+                ],
+                "probability": 8.75650946093077e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.756509468523073e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.756509468523073e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 7,
+          "ast": {
+            "metadata": {
+              "depth": 3,
+              "node_count": 7,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "const",
+                    "value": "1"
+                  },
+                  "right": {
+                    "kind": "var",
+                    "name": "x"
+                  }
+                },
+                "right": {
+                  "kind": "const",
+                  "value": "1"
+                }
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "child",
+              "margin": 1.0,
+              "path": "root.R",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.R.L",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root.R.L",
+              "probability": 1.0,
+              "side": "right"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root.R",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "legacy_final_snap",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 0.0,
+          "high_precision_status": "performed",
+          "reason": "verified",
+          "split_results": [
+            {
+              "max_abs_error": 2.220446049250313e-16,
+              "max_imag_residue": 0.0,
+              "mse": 1.6065967163686542e-32,
+              "name": "train",
+              "passed": true
+            },
+            {
+              "max_abs_error": 2.220446049250313e-16,
+              "max_imag_residue": 0.0,
+              "mse": 1.791791933026203e-32,
+              "name": "heldout",
+              "passed": true
+            },
+            {
+              "max_abs_error": 0.0,
+              "max_imag_residue": 0.0,
+              "mse": 0.0,
+              "name": "extrapolation",
+              "passed": true
+            }
+          ],
+          "status": "recovered",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 0,
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 69.22726827145655,
+        "candidate_id": "attempt-000-hardening-00",
+        "checkpoint_index": 0,
+        "global_step": 80,
+        "hardening_step": 0,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 69.22726827145657,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 65.30903309979202,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 65.30903309979202,
+          "post_snap_loss": 69.22726827145657,
+          "soft_fit_loss": 69.22726827145655,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.716535510534572e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.right"
+                  }
+                ],
+                "probability": 8.666416816722054e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 8.764449937715874e-27,
+                "probability_gap": 1.0,
+                "rank": 1,
+                "subtree_root": "root.R"
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.760839077184265e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 65.30903309979202,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 19.025149444407784,
+              "max_imag_residue": 0.0,
+              "mse": 69.22726827145657,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 14.740964253138293,
+              "max_imag_residue": 0.0,
+              "mse": 48.36719641923348,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 65.30903309979202,
+              "max_imag_residue": 0.0,
+              "mse": 1738.7288635744915,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 0,
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 69.22726827145655,
+        "candidate_id": "attempt-000-hardening-01",
+        "checkpoint_index": 1,
+        "global_step": 82,
+        "hardening_step": 2,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 69.22726827145657,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 65.30903309979202,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 65.30903309979202,
+          "post_snap_loss": 69.22726827145657,
+          "soft_fit_loss": 69.22726827145655,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.716534605369921e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.right"
+                  }
+                ],
+                "probability": 8.666414778364326e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 8.764450133589819e-27,
+                "probability_gap": 1.0,
+                "rank": 1,
+                "subtree_root": "root.R"
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.760839183387025e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.09666666666666668,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 65.30903309979202,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 19.025149444407784,
+              "max_imag_residue": 0.0,
+              "mse": 69.22726827145657,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 14.740964253138293,
+              "max_imag_residue": 0.0,
+              "mse": 48.36719641923348,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 65.30903309979202,
+              "max_imag_residue": 0.0,
+              "mse": 1738.7288635744915,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 0,
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 69.22726827145655,
+        "candidate_id": "attempt-000-hardening-02",
+        "checkpoint_index": 2,
+        "global_step": 83,
+        "hardening_step": 3,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 69.22726827145657,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 65.30903309979202,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 65.30903309979202,
+          "post_snap_loss": 69.22726827145657,
+          "soft_fit_loss": 69.22726827145655,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.716534219485325e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.right"
+                  }
+                ],
+                "probability": 8.666413909384064e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 8.764450217092033e-27,
+                "probability_gap": 1.0,
+                "rank": 1,
+                "subtree_root": "root.R"
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.760839228661902e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.01999999999999999,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 65.30903309979202,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 19.025149444407784,
+              "max_imag_residue": 0.0,
+              "mse": 69.22726827145657,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 14.740964253138293,
+              "max_imag_residue": 0.0,
+              "mse": 48.36719641923348,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 65.30903309979202,
+              "max_imag_residue": 0.0,
+              "mse": 1738.7288635744915,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 2,
+        "attempt_index": 0,
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 69.22726827145655,
+        "candidate_id": "attempt-000-legacy-final-snap",
+        "checkpoint_index": null,
+        "global_step": 79,
+        "hardening_step": null,
+        "low_margin_slot_count": 0,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "post_snap_loss": 69.22726827145657,
+        "random_restart": null,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 3,
+          "extrapolation_max_abs_error": 65.30903309979202,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 65.30903309979202,
+          "post_snap_loss": 69.22726827145657,
+          "soft_fit_loss": 69.22726827145655,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 8.71653603987414e-27,
+                "probability_gap": 1.0,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.right"
+                  }
+                ],
+                "probability": 8.66641800875313e-27,
+                "probability_gap": 1.0,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.right"
+                  }
+                ],
+                "probability": 8.76444982316663e-27,
+                "probability_gap": 1.0,
+                "rank": 1,
+                "subtree_root": "root.R"
+              },
+              {
+                "choice": "var:x",
+                "probability": 8.760839015075815e-27,
+                "probability_gap": 1.0,
+                "rank": 2
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 1.0,
+            "current_probability": 1.0,
+            "slot": "root.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 3,
+          "ast": {
+            "metadata": {
+              "depth": 1,
+              "node_count": 3,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "var",
+                "name": "x"
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "var:x",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 1.0,
+              "path": "root",
+              "probability": 1.0,
+              "side": "right"
+            }
+          ],
+          "min_margin": 1.0
+        },
+        "source": "legacy_final_snap",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 65.30903309979202,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 19.025149444407784,
+              "max_imag_residue": 0.0,
+              "mse": 69.22726827145657,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 14.740964253138293,
+              "max_imag_residue": 0.0,
+              "mse": 48.36719641923348,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 65.30903309979202,
+              "max_imag_residue": 0.0,
+              "mse": 1738.7288635744915,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 6,
+        "attempt_index": 2,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.6346277048832631,
+        "candidate_id": "attempt-002-hardening-00",
+        "checkpoint_index": 0,
+        "global_step": 80,
+        "hardening_step": 0,
+        "low_margin_slot_count": 1,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 0.07148909676200738,
+            "probability": 0.45181763615289694,
+            "slot": "root.R.right"
+          },
+          {
+            "choice": "child",
+            "margin": 0.17499546143608408,
+            "probability": 0.48580911495733126,
+            "slot": "root.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 0.19992732290736792,
+            "probability": 0.5428338368157041,
+            "slot": "root.left"
+          },
+          {
+            "choice": "child",
+            "margin": 0.3483220121848327,
+            "probability": 0.5796223993811143,
+            "slot": "root.R.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 0.5012999541395142,
+            "probability": 0.7506499770697571,
+            "slot": "root.R.L.left"
+          }
+        ],
+        "post_snap_loss": 57.11453695040577,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 7,
+          "extrapolation_max_abs_error": 65.46133421647787,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 65.46133421647787,
+          "post_snap_loss": 57.11453695040577,
+          "soft_fit_loss": 1.6346277048832631,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.38032853939088956,
+                "probability_gap": 0.07148909676200738,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.R.right"
+                  }
+                ],
+                "probability": 0.16785382445621364,
+                "probability_gap": 0.2839638116966833,
+                "rank": 2,
+                "subtree_root": "root.R.R"
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.07148909676200738,
+            "current_probability": 0.45181763615289694,
+            "slot": "root.R.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.3108136535212472,
+                "probability_gap": 0.17499546143608408,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 0.20337723152142156,
+                "probability_gap": 0.2824318834359097,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 0.17499546143608408,
+            "current_probability": 0.48580911495733126,
+            "slot": "root.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.34290651390833615,
+                "probability_gap": 0.19992732290736792,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "child",
+                    "slot": "root.L.right"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.R.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.R.right"
+                  }
+                ],
+                "probability": 0.11425964927595987,
+                "probability_gap": 0.4285741875397442,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.19992732290736792,
+            "current_probability": 0.5428338368157041,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.23130038719628157,
+                "probability_gap": 0.3483220121848327,
+                "rank": 1
+              },
+              {
+                "choice": "const:1",
+                "probability": 0.18907721342260408,
+                "probability_gap": 0.3905451859585102,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 0.3483220121848327,
+            "current_probability": 0.5796223993811143,
+            "slot": "root.R.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.24935002293024294,
+                "probability_gap": 0.5012999541395142,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.5012999541395142,
+            "current_probability": 0.7506499770697571,
+            "slot": "root.R.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.2400026922117372,
+                "probability_gap": 0.5199946155765256,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.5199946155765256,
+            "current_probability": 0.7599973077882628,
+            "slot": "root.R.L.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 7,
+          "ast": {
+            "metadata": {
+              "depth": 3,
+              "node_count": 7,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "var",
+                  "name": "x"
+                }
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "const:1",
+              "margin": 0.19992732290736792,
+              "path": "root",
+              "probability": 0.5428338368157041,
+              "side": "left"
+            },
+            {
+              "choice": "child",
+              "margin": 0.17499546143608408,
+              "path": "root",
+              "probability": 0.48580911495733126,
+              "side": "right"
+            },
+            {
+              "choice": "child",
+              "margin": 0.3483220121848327,
+              "path": "root.R",
+              "probability": 0.5796223993811143,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.5012999541395142,
+              "path": "root.R.L",
+              "probability": 0.7506499770697571,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 0.5199946155765256,
+              "path": "root.R.L",
+              "probability": 0.7599973077882628,
+              "side": "right"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.07148909676200738,
+              "path": "root.R",
+              "probability": 0.45181763615289694,
+              "side": "right"
+            }
+          ],
+          "min_margin": 0.07148909676200738
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 65.46133421647787,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 18.505380646422974,
+              "max_imag_residue": 0.0,
+              "mse": 57.11453695040577,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 14.051090751418762,
+              "max_imag_residue": 0.0,
+              "mse": 36.57368236892207,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 65.46133421647787,
+              "max_imag_residue": 0.0,
+              "mse": 1732.912233162786,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 6,
+        "attempt_index": 2,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.6346277048832631,
+        "candidate_id": "attempt-002-hardening-01",
+        "checkpoint_index": 1,
+        "global_step": 82,
+        "hardening_step": 2,
+        "low_margin_slot_count": 1,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 0.08488441888013287,
+            "probability": 0.4596836487705757,
+            "slot": "root.R.right"
+          },
+          {
+            "choice": "child",
+            "margin": 0.1740653653802246,
+            "probability": 0.4853053881890413,
+            "slot": "root.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 0.19992817525684003,
+            "probability": 0.5428361172340415,
+            "slot": "root.left"
+          },
+          {
+            "choice": "child",
+            "margin": 0.3458538995641376,
+            "probability": 0.5783200214619443,
+            "slot": "root.R.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 0.5003056262246102,
+            "probability": 0.7501528131123051,
+            "slot": "root.R.L.left"
+          }
+        ],
+        "post_snap_loss": 57.11453695040577,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 7,
+          "extrapolation_max_abs_error": 65.46133421647787,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 65.46133421647787,
+          "post_snap_loss": 57.11453695040577,
+          "soft_fit_loss": 1.6346277048832631,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.37479922989044284,
+                "probability_gap": 0.08488441888013287,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.R.right"
+                  }
+                ],
+                "probability": 0.1655171213389815,
+                "probability_gap": 0.2941665274315942,
+                "rank": 2,
+                "subtree_root": "root.R.R"
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.08488441888013287,
+            "current_probability": 0.4596836487705757,
+            "slot": "root.R.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.3112400228088167,
+                "probability_gap": 0.1740653653802246,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 0.2034545890021421,
+                "probability_gap": 0.28185079918689915,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 0.1740653653802246,
+            "current_probability": 0.4853053881890413,
+            "slot": "root.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.3429079419772014,
+                "probability_gap": 0.19992817525684003,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "child",
+                    "slot": "root.L.right"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.R.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.R.right"
+                  }
+                ],
+                "probability": 0.1142559407887571,
+                "probability_gap": 0.42858017644528434,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.19992817525684003,
+            "current_probability": 0.5428361172340415,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.2324661218978067,
+                "probability_gap": 0.3458538995641376,
+                "rank": 1
+              },
+              {
+                "choice": "const:1",
+                "probability": 0.18921385664024912,
+                "probability_gap": 0.38910616482169513,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 0.3458538995641376,
+            "current_probability": 0.5783200214619443,
+            "slot": "root.R.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.24984718688769494,
+                "probability_gap": 0.5003056262246102,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.5003056262246102,
+            "current_probability": 0.7501528131123051,
+            "slot": "root.R.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.24044561172124632,
+                "probability_gap": 0.5191087765575074,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.5191087765575074,
+            "current_probability": 0.7595543882787538,
+            "slot": "root.R.L.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 7,
+          "ast": {
+            "metadata": {
+              "depth": 3,
+              "node_count": 7,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "var",
+                  "name": "x"
+                }
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "const:1",
+              "margin": 0.19992817525684003,
+              "path": "root",
+              "probability": 0.5428361172340415,
+              "side": "left"
+            },
+            {
+              "choice": "child",
+              "margin": 0.1740653653802246,
+              "path": "root",
+              "probability": 0.4853053881890413,
+              "side": "right"
+            },
+            {
+              "choice": "child",
+              "margin": 0.3458538995641376,
+              "path": "root.R",
+              "probability": 0.5783200214619443,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.5003056262246102,
+              "path": "root.R.L",
+              "probability": 0.7501528131123051,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 0.5191087765575074,
+              "path": "root.R.L",
+              "probability": 0.7595543882787538,
+              "side": "right"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.08488441888013287,
+              "path": "root.R",
+              "probability": 0.4596836487705757,
+              "side": "right"
+            }
+          ],
+          "min_margin": 0.08488441888013287
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.09666666666666668,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 65.46133421647787,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 18.505380646422974,
+              "max_imag_residue": 0.0,
+              "mse": 57.11453695040577,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 14.051090751418762,
+              "max_imag_residue": 0.0,
+              "mse": 36.57368236892207,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 65.46133421647787,
+              "max_imag_residue": 0.0,
+              "mse": 1732.912233162786,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 6,
+        "attempt_index": 2,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.6346277048832631,
+        "candidate_id": "attempt-002-hardening-02",
+        "checkpoint_index": 2,
+        "global_step": 83,
+        "hardening_step": 3,
+        "low_margin_slot_count": 1,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 0.09124319141239784,
+            "probability": 0.46340811010488364,
+            "slot": "root.R.right"
+          },
+          {
+            "choice": "child",
+            "margin": 0.17365752866415857,
+            "probability": 0.48508485867594053,
+            "slot": "root.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 0.19992854204569682,
+            "probability": 0.542837098678878,
+            "slot": "root.left"
+          },
+          {
+            "choice": "child",
+            "margin": 0.3447890756685995,
+            "probability": 0.5777584553742502,
+            "slot": "root.R.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 0.4998771850164989,
+            "probability": 0.7499385925082495,
+            "slot": "root.R.L.left"
+          }
+        ],
+        "post_snap_loss": 57.11453695040577,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 7,
+          "extrapolation_max_abs_error": 65.46133421647787,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 65.46133421647787,
+          "post_snap_loss": 57.11453695040577,
+          "soft_fit_loss": 1.6346277048832631,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.3721649186924858,
+                "probability_gap": 0.09124319141239784,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.R.right"
+                  }
+                ],
+                "probability": 0.16442697120263075,
+                "probability_gap": 0.29898113890225286,
+                "rank": 2,
+                "subtree_root": "root.R.R"
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.09124319141239784,
+            "current_probability": 0.46340811010488364,
+            "slot": "root.R.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.31142733001178197,
+                "probability_gap": 0.17365752866415857,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 0.20348781131227758,
+                "probability_gap": 0.281597047363663,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 0.17365752866415857,
+            "current_probability": 0.48508485867594053,
+            "slot": "root.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.34290855663318115,
+                "probability_gap": 0.19992854204569682,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "child",
+                    "slot": "root.L.right"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.R.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.R.right"
+                  }
+                ],
+                "probability": 0.11425434468794084,
+                "probability_gap": 0.42858275399093715,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.19992854204569682,
+            "current_probability": 0.542837098678878,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.23296937970565068,
+                "probability_gap": 0.3447890756685995,
+                "rank": 1
+              },
+              {
+                "choice": "const:1",
+                "probability": 0.18927216492009916,
+                "probability_gap": 0.38848629045415106,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 0.3447890756685995,
+            "current_probability": 0.5777584553742502,
+            "slot": "root.R.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.25006140749175054,
+                "probability_gap": 0.4998771850164989,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.4998771850164989,
+            "current_probability": 0.7499385925082495,
+            "slot": "root.R.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.2406364385390178,
+                "probability_gap": 0.5187271229219643,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.5187271229219643,
+            "current_probability": 0.7593635614609822,
+            "slot": "root.R.L.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 7,
+          "ast": {
+            "metadata": {
+              "depth": 3,
+              "node_count": 7,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "var",
+                  "name": "x"
+                }
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "const:1",
+              "margin": 0.19992854204569682,
+              "path": "root",
+              "probability": 0.542837098678878,
+              "side": "left"
+            },
+            {
+              "choice": "child",
+              "margin": 0.17365752866415857,
+              "path": "root",
+              "probability": 0.48508485867594053,
+              "side": "right"
+            },
+            {
+              "choice": "child",
+              "margin": 0.3447890756685995,
+              "path": "root.R",
+              "probability": 0.5777584553742502,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.4998771850164989,
+              "path": "root.R.L",
+              "probability": 0.7499385925082495,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 0.5187271229219643,
+              "path": "root.R.L",
+              "probability": 0.7593635614609822,
+              "side": "right"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.09124319141239784,
+              "path": "root.R",
+              "probability": 0.46340811010488364,
+              "side": "right"
+            }
+          ],
+          "min_margin": 0.09124319141239784
+        },
+        "source": "hardening_checkpoint",
+        "temperature": 0.01999999999999999,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 65.46133421647787,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 18.505380646422974,
+              "max_imag_residue": 0.0,
+              "mse": 57.11453695040577,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 14.051090751418762,
+              "max_imag_residue": 0.0,
+              "mse": 36.57368236892207,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 65.46133421647787,
+              "max_imag_residue": 0.0,
+              "mse": 1732.912233162786,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      },
+      {
+        "active_slot_count": 6,
+        "attempt_index": 2,
+        "attempt_kind": "random",
+        "best_fit_loss": 1.6346277048832631,
+        "candidate_id": "attempt-002-legacy-final-snap",
+        "checkpoint_index": null,
+        "global_step": 79,
+        "hardening_step": null,
+        "low_margin_slot_count": 1,
+        "lowest_margin_slots": [
+          {
+            "choice": "var:x",
+            "margin": 0.06559763555479026,
+            "probability": 0.4483281815262637,
+            "slot": "root.R.right"
+          },
+          {
+            "choice": "child",
+            "margin": 0.17545795593211572,
+            "probability": 0.4860616807851294,
+            "slot": "root.right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 0.1999268284772664,
+            "probability": 0.5428325153215992,
+            "slot": "root.left"
+          },
+          {
+            "choice": "child",
+            "margin": 0.34969088780137736,
+            "probability": 0.5803463127209485,
+            "slot": "root.R.left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 0.5018612231151726,
+            "probability": 0.7509306115575862,
+            "slot": "root.R.L.left"
+          }
+        ],
+        "post_snap_loss": 57.11453695040577,
+        "random_restart": 0,
+        "seed": 0,
+        "selection_metrics": {
+          "complexity": 7,
+          "extrapolation_max_abs_error": 65.46133421647787,
+          "heldout_max_abs_error": 0.0,
+          "high_precision_max_error": 65.46133421647787,
+          "post_snap_loss": 57.11453695040577,
+          "soft_fit_loss": 1.6346277048832631,
+          "status_rank": 2,
+          "verifier_status": "failed"
+        },
+        "slot_alternatives": [
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.38273054597147343,
+                "probability_gap": 0.06559763555479026,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "const:1",
+                    "slot": "root.R.R.left"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.R.R.right"
+                  }
+                ],
+                "probability": 0.16894127250226285,
+                "probability_gap": 0.2793869090240009,
+                "rank": 2,
+                "subtree_root": "root.R.R"
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.06559763555479026,
+            "current_probability": 0.4483281815262637,
+            "slot": "root.R.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.3106037248530137,
+                "probability_gap": 0.17545795593211572,
+                "rank": 1
+              },
+              {
+                "choice": "var:x",
+                "probability": 0.20333459436185683,
+                "probability_gap": 0.2827270864232726,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 0.17545795593211572,
+            "current_probability": 0.4860616807851294,
+            "slot": "root.right"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.34290568684433276,
+                "probability_gap": 0.1999268284772664,
+                "rank": 1
+              },
+              {
+                "choice": "child",
+                "descendant_assignments": [
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.left"
+                  },
+                  {
+                    "choice": "child",
+                    "slot": "root.L.right"
+                  },
+                  {
+                    "choice": "var:x",
+                    "slot": "root.L.R.left"
+                  },
+                  {
+                    "choice": "const:1",
+                    "slot": "root.L.R.right"
+                  }
+                ],
+                "probability": 0.1142617978340682,
+                "probability_gap": 0.42857071748753095,
+                "rank": 2,
+                "subtree_root": "root.L"
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.1999268284772664,
+            "current_probability": 0.5428325153215992,
+            "slot": "root.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.2306554249195711,
+                "probability_gap": 0.34969088780137736,
+                "rank": 1
+              },
+              {
+                "choice": "const:1",
+                "probability": 0.1889982623594804,
+                "probability_gap": 0.39134805036146814,
+                "rank": 2
+              }
+            ],
+            "current_choice": "child",
+            "current_margin": 0.34969088780137736,
+            "current_probability": 0.5803463127209485,
+            "slot": "root.R.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "const:1",
+                "probability": 0.24906938844241364,
+                "probability_gap": 0.5018612231151726,
+                "rank": 1
+              }
+            ],
+            "current_choice": "var:x",
+            "current_margin": 0.5018612231151726,
+            "current_probability": 0.7509306115575862,
+            "slot": "root.R.L.left"
+          },
+          {
+            "alternatives": [
+              {
+                "choice": "var:x",
+                "probability": 0.23975163560899868,
+                "probability_gap": 0.5204967287820025,
+                "rank": 1
+              }
+            ],
+            "current_choice": "const:1",
+            "current_margin": 0.5204967287820025,
+            "current_probability": 0.7602483643910012,
+            "slot": "root.R.L.right"
+          }
+        ],
+        "snap": {
+          "active_node_count": 7,
+          "ast": {
+            "metadata": {
+              "depth": 3,
+              "node_count": 7,
+              "source": "exact_ast"
+            },
+            "root": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "eml",
+                "left": {
+                  "kind": "eml",
+                  "left": {
+                    "kind": "var",
+                    "name": "x"
+                  },
+                  "right": {
+                    "kind": "const",
+                    "value": "1"
+                  }
+                },
+                "right": {
+                  "kind": "var",
+                  "name": "x"
+                }
+              }
+            },
+            "schema": "eml.ast.v1",
+            "semantics": {
+              "constant_basis": [
+                "1"
+              ],
+              "log_branch": "principal",
+              "operator": "exp(x)-log(y)",
+              "verification_mode": "canonical"
+            },
+            "variables": [
+              "x"
+            ]
+          },
+          "decisions": [
+            {
+              "choice": "const:1",
+              "margin": 0.1999268284772664,
+              "path": "root",
+              "probability": 0.5428325153215992,
+              "side": "left"
+            },
+            {
+              "choice": "child",
+              "margin": 0.17545795593211572,
+              "path": "root",
+              "probability": 0.4860616807851294,
+              "side": "right"
+            },
+            {
+              "choice": "child",
+              "margin": 0.34969088780137736,
+              "path": "root.R",
+              "probability": 0.5803463127209485,
+              "side": "left"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.5018612231151726,
+              "path": "root.R.L",
+              "probability": 0.7509306115575862,
+              "side": "left"
+            },
+            {
+              "choice": "const:1",
+              "margin": 0.5204967287820025,
+              "path": "root.R.L",
+              "probability": 0.7602483643910012,
+              "side": "right"
+            },
+            {
+              "choice": "var:x",
+              "margin": 0.06559763555479026,
+              "path": "root.R",
+              "probability": 0.4483281815262637,
+              "side": "right"
+            }
+          ],
+          "min_margin": 0.06559763555479026
+        },
+        "source": "legacy_final_snap",
+        "temperature": 0.25,
+        "verification": {
+          "candidate_kind": "exact_eml",
+          "high_precision_max_error": 65.46133421647787,
+          "high_precision_status": "skipped_numeric_failure",
+          "reason": "train_failed",
+          "split_results": [
+            {
+              "max_abs_error": 18.505380646422974,
+              "max_imag_residue": 0.0,
+              "mse": 57.11453695040577,
+              "name": "train",
+              "passed": false
+            },
+            {
+              "max_abs_error": 14.051090751418762,
+              "max_imag_residue": 0.0,
+              "mse": 36.57368236892207,
+              "name": "heldout",
+              "passed": false
+            },
+            {
+              "max_abs_error": 65.46133421647787,
+              "max_imag_residue": 0.0,
+              "mse": 1732.912233162786,
+              "name": "extrapolation",
+              "passed": false
+            }
+          ],
+          "status": "failed",
+          "tolerance": 1e-08
+        }
+      }
+    ],
+    "config": {
+      "clamp_exp_real": 40.0,
+      "constants": [
+        "1"
+      ],
+      "depth": 3,
+      "entropy_weight": 0.001,
+      "hardening_emit_interval": 2,
+      "hardening_steps": 4,
+      "hardening_temperature_end": 0.02,
+      "log_domain_epsilon": 1e-09,
+      "log_safety_imag_tolerance": 1e-06,
+      "log_safety_margin": 1e-06,
+      "log_safety_weight": 0.0,
+      "lr": 0.05,
+      "operator_family": {
+        "family": "raw_eml",
+        "label": "raw_eml",
+        "s": 1.0,
+        "t": 1.0,
+        "terminal": "one"
+      },
+      "operator_schedule": [],
+      "refit_lr": 0.02,
+      "refit_steps": 80,
+      "restarts": 1,
+      "scaffold_initializers": [
+        "exp",
+        "log",
+        "scaled_exp"
+      ],
+      "seed": 0,
+      "size_weight": 0.0001,
+      "steps": 80,
+      "temperature_end": 0.25,
+      "temperature_start": 2.0,
+      "variables": [
+        "x"
+      ]
+    },
+    "fallback_candidate": {
+      "active_slot_count": 6,
+      "attempt_index": 1,
+      "attempt_kind": "scaffold_log",
+      "best_fit_loss": 1.6065967163686542e-32,
+      "candidate_id": "attempt-001-legacy-final-snap",
+      "checkpoint_index": null,
+      "global_step": 79,
+      "hardening_step": null,
+      "low_margin_slot_count": 0,
+      "lowest_margin_slots": [
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.left"
+        },
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.right"
+        },
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.R.left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.R.L.left"
+        },
+        {
+          "choice": "var:x",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.R.L.right"
+        }
+      ],
+      "post_snap_loss": 1.6065967163686542e-32,
+      "random_restart": null,
+      "seed": 0,
+      "selection_metrics": {
+        "complexity": 7,
+        "extrapolation_max_abs_error": 0.0,
+        "heldout_max_abs_error": 0.0,
+        "high_precision_max_error": 0.0,
+        "post_snap_loss": 1.6065967163686542e-32,
+        "soft_fit_loss": 1.6065967163686542e-32,
+        "status_rank": 0,
+        "verifier_status": "recovered"
+      },
+      "slot_alternatives": [
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.756509896861916e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.R.L.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 8.756509896861916e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            }
+          ],
+          "current_choice": "var:x",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.R.L.right"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 8.756509468523073e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "var:x",
+              "probability": 8.756509468523073e-27,
+              "probability_gap": 1.0,
+              "rank": 2
+            }
+          ],
+          "current_choice": "child",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.R.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.756509462449155e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "child",
+              "descendant_assignments": [
+                {
+                  "choice": "const:1",
+                  "slot": "root.R.R.left"
+                },
+                {
+                  "choice": "var:x",
+                  "slot": "root.R.R.right"
+                }
+              ],
+              "probability": 8.75650946093077e-27,
+              "probability_gap": 1.0,
+              "rank": 2,
+              "subtree_root": "root.R.R"
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.R.right"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.756509462449155e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "child",
+              "descendant_assignments": [
+                {
+                  "choice": "var:x",
+                  "slot": "root.L.left"
+                },
+                {
+                  "choice": "const:1",
+                  "slot": "root.L.right"
+                }
+              ],
+              "probability": 8.75650946093077e-27,
+              "probability_gap": 1.0,
+              "rank": 2,
+              "subtree_root": "root.L"
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 8.756509468523073e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "var:x",
+              "probability": 8.756509468523073e-27,
+              "probability_gap": 1.0,
+              "rank": 2
+            }
+          ],
+          "current_choice": "child",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.right"
+        }
+      ],
+      "snap": {
+        "active_node_count": 7,
+        "ast": {
+          "metadata": {
+            "depth": 3,
+            "node_count": 7,
+            "source": "exact_ast"
+          },
+          "root": {
+            "kind": "eml",
+            "left": {
+              "kind": "const",
+              "value": "1"
+            },
+            "right": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "const",
+                  "value": "1"
+                },
+                "right": {
+                  "kind": "var",
+                  "name": "x"
+                }
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            }
+          },
+          "schema": "eml.ast.v1",
+          "semantics": {
+            "constant_basis": [
+              "1"
+            ],
+            "log_branch": "principal",
+            "operator": "exp(x)-log(y)",
+            "verification_mode": "canonical"
+          },
+          "variables": [
+            "x"
+          ]
+        },
+        "decisions": [
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "right"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "path": "root.R",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root.R.L",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "path": "root.R.L",
+            "probability": 1.0,
+            "side": "right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root.R",
+            "probability": 1.0,
+            "side": "right"
+          }
+        ],
+        "min_margin": 1.0
+      },
+      "source": "legacy_final_snap",
+      "temperature": 0.25,
+      "verification": {
+        "candidate_kind": "exact_eml",
+        "high_precision_max_error": 0.0,
+        "high_precision_status": "performed",
+        "reason": "verified",
+        "split_results": [
+          {
+            "max_abs_error": 2.220446049250313e-16,
+            "max_imag_residue": 0.0,
+            "mse": 1.6065967163686542e-32,
+            "name": "train",
+            "passed": true
+          },
+          {
+            "max_abs_error": 2.220446049250313e-16,
+            "max_imag_residue": 0.0,
+            "mse": 1.791791933026203e-32,
+            "name": "heldout",
+            "passed": true
+          },
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "extrapolation",
+            "passed": true
+          }
+        ],
+        "status": "recovered",
+        "tolerance": 1e-08
+      }
+    },
+    "legacy_best_loss": 1.6065967163686542e-32,
+    "operator_trace": [
+      {
+        "end_step": 79,
+        "operator": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "phase": "training",
+        "start_step": 0
+      },
+      {
+        "end_step": 83,
+        "operator": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "phase": "hardening",
+        "start_step": 80
+      }
+    ],
+    "post_snap_loss": 1.6065967163686542e-32,
+    "restarts": [
+      {
+        "attempt_kind": "scaffold_exp",
+        "best_fit_loss": 69.22726827145655,
+        "candidate_ids": [
+          "attempt-000-legacy-final-snap",
+          "attempt-000-hardening-00",
+          "attempt-000-hardening-01",
+          "attempt-000-hardening-02"
+        ],
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 20.124405960645248,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 20.124405960645248,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 19.025149444407784,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 20.124405960645248,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 20.124405960645248,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 20.124405960645248,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 4.101813943232407,
+              "max_exp_real": 1.0,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "exp_overflow_count": 0,
+          "expm1_overflow_count": 0,
+          "inf_count": 0,
+          "log1p_branch_cut_count": 0,
+          "log_branch_cut_count": 0,
+          "log_non_finite_input_count": 0,
+          "log_non_positive_real_count": 0,
+          "log_safety_penalty": 0.0,
+          "log_small_magnitude_count": 0,
+          "max_abs": 20.124405960645248,
+          "max_exp_real": 3.0019333053855117,
+          "nan_count": 0,
+          "shifted_singularity_min_distance": null,
+          "shifted_singularity_near_count": 0
+        },
+        "hardening_steps_completed": 4,
+        "initialization": {
+          "kind": "scaffold_exp",
+          "seed": 0,
+          "strategy": "generic_paper_primitive",
+          "variable": "x"
+        },
+        "legacy_candidate_id": "attempt-000-legacy-final-snap",
+        "random_restart": null,
+        "restart": 0,
+        "seed": 0,
+        "steps_completed": 80
+      },
+      {
+        "attempt_kind": "scaffold_log",
+        "best_fit_loss": 1.6065967163686542e-32,
+        "candidate_ids": [
+          "attempt-001-legacy-final-snap",
+          "attempt-001-hardening-00",
+          "attempt-001-hardening-01",
+          "attempt-001-hardening-02"
+        ],
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 1.3835321147733617,
+              "max_exp_real": 1.0,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 20.124405960645248,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 19.025149444407784,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 20.124405960645248,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 60.4498407852832,
+              "max_exp_real": 4.101813943232407,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 4.101813943232407,
+              "max_exp_real": 1.0,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 4.101813943232407,
+              "max_exp_real": 1.0,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "exp_overflow_count": 0,
+          "expm1_overflow_count": 0,
+          "inf_count": 0,
+          "log1p_branch_cut_count": 0,
+          "log_branch_cut_count": 0,
+          "log_non_finite_input_count": 0,
+          "log_non_positive_real_count": 0,
+          "log_safety_penalty": 0.0,
+          "log_small_magnitude_count": 0,
+          "max_abs": 60.4498407852832,
+          "max_exp_real": 4.101813943232407,
+          "nan_count": 0,
+          "shifted_singularity_min_distance": null,
+          "shifted_singularity_near_count": 0
+        },
+        "hardening_steps_completed": 4,
+        "initialization": {
+          "kind": "scaffold_log",
+          "seed": 0,
+          "strategy": "generic_paper_primitive",
+          "variable": "x"
+        },
+        "legacy_candidate_id": "attempt-001-legacy-final-snap",
+        "random_restart": null,
+        "restart": 1,
+        "seed": 0,
+        "steps_completed": 80
+      },
+      {
+        "attempt_kind": "random",
+        "best_fit_loss": 1.6346277048832631,
+        "candidate_ids": [
+          "attempt-002-legacy-final-snap",
+          "attempt-002-hardening-00",
+          "attempt-002-hardening-01",
+          "attempt-002-hardening-02"
+        ],
+        "final_anomalies": {
+          "by_node": {
+            "root": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 17.40612412938259,
+              "max_exp_real": 1.0000000002122709,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 16.928945777111878,
+              "max_exp_real": 2.9922702417565876,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.L.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 4.099655430400565,
+              "max_exp_real": 1.0021223724309798,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.L.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 20.124405960645248,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 549437704.9780972,
+              "max_exp_real": 20.124405960645248,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.R.L": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 20.124405960645248,
+              "max_exp_real": 3.0019333053855117,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            },
+            "root.R.R": {
+              "clamp_count": 0,
+              "exp_overflow_count": 0,
+              "expm1_overflow_count": 0,
+              "inf_count": 0,
+              "log1p_branch_cut_count": 0,
+              "log_branch_cut_count": 0,
+              "log_non_finite_input_count": 0,
+              "log_non_positive_real_count": 0,
+              "log_safety_penalty": 0.0,
+              "log_small_magnitude_count": 0,
+              "max_abs": 4.101813943232407,
+              "max_exp_real": 1.0,
+              "nan_count": 0,
+              "shifted_singularity_min_distance": null,
+              "shifted_singularity_near_count": 0
+            }
+          },
+          "clamp_count": 0,
+          "exp_overflow_count": 0,
+          "expm1_overflow_count": 0,
+          "inf_count": 0,
+          "log1p_branch_cut_count": 0,
+          "log_branch_cut_count": 0,
+          "log_non_finite_input_count": 0,
+          "log_non_positive_real_count": 0,
+          "log_safety_penalty": 0.0,
+          "log_small_magnitude_count": 0,
+          "max_abs": 549437704.9780972,
+          "max_exp_real": 20.124405960645248,
+          "nan_count": 0,
+          "shifted_singularity_min_distance": null,
+          "shifted_singularity_near_count": 0
+        },
+        "hardening_steps_completed": 4,
+        "initialization": null,
+        "legacy_candidate_id": "attempt-002-legacy-final-snap",
+        "random_restart": 0,
+        "restart": 2,
+        "seed": 0,
+        "steps_completed": 80
+      }
+    ],
+    "schema": "eml.run_manifest.v1",
+    "selected_candidate": {
+      "active_slot_count": 6,
+      "attempt_index": 1,
+      "attempt_kind": "scaffold_log",
+      "best_fit_loss": 1.6065967163686542e-32,
+      "candidate_id": "attempt-001-hardening-00",
+      "checkpoint_index": 0,
+      "global_step": 80,
+      "hardening_step": 0,
+      "low_margin_slot_count": 0,
+      "lowest_margin_slots": [
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.left"
+        },
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.right"
+        },
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.R.left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.R.L.left"
+        },
+        {
+          "choice": "var:x",
+          "margin": 1.0,
+          "probability": 1.0,
+          "slot": "root.R.L.right"
+        }
+      ],
+      "post_snap_loss": 1.6065967163686542e-32,
+      "random_restart": null,
+      "seed": 0,
+      "selection_metrics": {
+        "complexity": 7,
+        "extrapolation_max_abs_error": 0.0,
+        "heldout_max_abs_error": 0.0,
+        "high_precision_max_error": 0.0,
+        "post_snap_loss": 1.6065967163686542e-32,
+        "soft_fit_loss": 1.6065967163686542e-32,
+        "status_rank": 0,
+        "verifier_status": "recovered"
+      },
+      "slot_alternatives": [
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.756509896850218e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.R.L.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 8.756509896850218e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            }
+          ],
+          "current_choice": "var:x",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.R.L.right"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 8.75650946850559e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "var:x",
+              "probability": 8.75650946850559e-27,
+              "probability_gap": 1.0,
+              "rank": 2
+            }
+          ],
+          "current_choice": "child",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.R.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.756509462431548e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "child",
+              "descendant_assignments": [
+                {
+                  "choice": "const:1",
+                  "slot": "root.R.R.left"
+                },
+                {
+                  "choice": "var:x",
+                  "slot": "root.R.R.right"
+                }
+              ],
+              "probability": 8.7565094609131e-27,
+              "probability_gap": 1.0,
+              "rank": 2,
+              "subtree_root": "root.R.R"
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.R.right"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "var:x",
+              "probability": 8.756509462431548e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "child",
+              "descendant_assignments": [
+                {
+                  "choice": "var:x",
+                  "slot": "root.L.left"
+                },
+                {
+                  "choice": "const:1",
+                  "slot": "root.L.right"
+                }
+              ],
+              "probability": 8.7565094609131e-27,
+              "probability_gap": 1.0,
+              "rank": 2,
+              "subtree_root": "root.L"
+            }
+          ],
+          "current_choice": "const:1",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.left"
+        },
+        {
+          "alternatives": [
+            {
+              "choice": "const:1",
+              "probability": 8.75650946850559e-27,
+              "probability_gap": 1.0,
+              "rank": 1
+            },
+            {
+              "choice": "var:x",
+              "probability": 8.75650946850559e-27,
+              "probability_gap": 1.0,
+              "rank": 2
+            }
+          ],
+          "current_choice": "child",
+          "current_margin": 1.0,
+          "current_probability": 1.0,
+          "slot": "root.right"
+        }
+      ],
+      "snap": {
+        "active_node_count": 7,
+        "ast": {
+          "metadata": {
+            "depth": 3,
+            "node_count": 7,
+            "source": "exact_ast"
+          },
+          "root": {
+            "kind": "eml",
+            "left": {
+              "kind": "const",
+              "value": "1"
+            },
+            "right": {
+              "kind": "eml",
+              "left": {
+                "kind": "eml",
+                "left": {
+                  "kind": "const",
+                  "value": "1"
+                },
+                "right": {
+                  "kind": "var",
+                  "name": "x"
+                }
+              },
+              "right": {
+                "kind": "const",
+                "value": "1"
+              }
+            }
+          },
+          "schema": "eml.ast.v1",
+          "semantics": {
+            "constant_basis": [
+              "1"
+            ],
+            "log_branch": "principal",
+            "operator": "exp(x)-log(y)",
+            "verification_mode": "canonical"
+          },
+          "variables": [
+            "x"
+          ]
+        },
+        "decisions": [
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "path": "root",
+            "probability": 1.0,
+            "side": "right"
+          },
+          {
+            "choice": "child",
+            "margin": 1.0,
+            "path": "root.R",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root.R.L",
+            "probability": 1.0,
+            "side": "left"
+          },
+          {
+            "choice": "var:x",
+            "margin": 1.0,
+            "path": "root.R.L",
+            "probability": 1.0,
+            "side": "right"
+          },
+          {
+            "choice": "const:1",
+            "margin": 1.0,
+            "path": "root.R",
+            "probability": 1.0,
+            "side": "right"
+          }
+        ],
+        "min_margin": 1.0
+      },
+      "source": "hardening_checkpoint",
+      "temperature": 0.25,
+      "verification": {
+        "candidate_kind": "exact_eml",
+        "high_precision_max_error": 0.0,
+        "high_precision_status": "performed",
+        "reason": "verified",
+        "split_results": [
+          {
+            "max_abs_error": 2.220446049250313e-16,
+            "max_imag_residue": 0.0,
+            "mse": 1.6065967163686542e-32,
+            "name": "train",
+            "passed": true
+          },
+          {
+            "max_abs_error": 2.220446049250313e-16,
+            "max_imag_residue": 0.0,
+            "mse": 1.791791933026203e-32,
+            "name": "heldout",
+            "passed": true
+          },
+          {
+            "max_abs_error": 0.0,
+            "max_imag_residue": 0.0,
+            "mse": 0.0,
+            "name": "extrapolation",
+            "passed": true
+          }
+        ],
+        "status": "recovered",
+        "tolerance": 1e-08
+      }
+    },
+    "selection": {
+      "candidate_count": 12,
+      "fallback_attempt_index": 1,
+      "fallback_candidate_id": "attempt-001-legacy-final-snap",
+      "fallback_source": "legacy_final_snap",
+      "mode": "verifier_gated_exact_candidate_pool",
+      "selected_attempt_index": 1,
+      "selected_candidate_id": "attempt-001-hardening-00",
+      "selected_source": "hardening_checkpoint"
+    },
+    "snap": {
+      "active_node_count": 7,
+      "ast": {
+        "metadata": {
+          "depth": 3,
+          "node_count": 7,
+          "source": "exact_ast"
+        },
+        "root": {
+          "kind": "eml",
+          "left": {
+            "kind": "const",
+            "value": "1"
+          },
+          "right": {
+            "kind": "eml",
+            "left": {
+              "kind": "eml",
+              "left": {
+                "kind": "const",
+                "value": "1"
+              },
+              "right": {
+                "kind": "var",
+                "name": "x"
+              }
+            },
+            "right": {
+              "kind": "const",
+              "value": "1"
+            }
+          }
+        },
+        "schema": "eml.ast.v1",
+        "semantics": {
+          "constant_basis": [
+            "1"
+          ],
+          "log_branch": "principal",
+          "operator": "exp(x)-log(y)",
+          "verification_mode": "canonical"
+        },
+        "variables": [
+          "x"
+        ]
+      },
+      "decisions": [
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "path": "root",
+          "probability": 1.0,
+          "side": "left"
+        },
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "path": "root",
+          "probability": 1.0,
+          "side": "right"
+        },
+        {
+          "choice": "child",
+          "margin": 1.0,
+          "path": "root.R",
+          "probability": 1.0,
+          "side": "left"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "path": "root.R.L",
+          "probability": 1.0,
+          "side": "left"
+        },
+        {
+          "choice": "var:x",
+          "margin": 1.0,
+          "path": "root.R.L",
+          "probability": 1.0,
+          "side": "right"
+        },
+        {
+          "choice": "const:1",
+          "margin": 1.0,
+          "path": "root.R",
+          "probability": 1.0,
+          "side": "right"
+        }
+      ],
+      "min_margin": 1.0
+    },
+    "status": "snapped_candidate"
+  },
+  "trained_eml_verification": {
+    "candidate_kind": "exact_eml",
+    "high_precision_max_error": 0.0,
+    "high_precision_status": "performed",
+    "reason": "verified",
+    "split_results": [
+      {
+        "max_abs_error": 2.220446049250313e-16,
+        "max_imag_residue": 0.0,
+        "mse": 1.6065967163686542e-32,
+        "name": "train",
+        "passed": true
+      },
+      {
+        "max_abs_error": 2.220446049250313e-16,
+        "max_imag_residue": 0.0,
+        "mse": 1.791791933026203e-32,
+        "name": "heldout",
+        "passed": true
+      },
+      {
+        "max_abs_error": 0.0,
+        "max_imag_residue": 0.0,
+        "mse": 0.0,
+        "name": "extrapolation",
+        "passed": true
+      }
+    ],
+    "status": "recovered",
+    "tolerance": 1e-08
+  },
+  "training_mode": "blind_training"
+}

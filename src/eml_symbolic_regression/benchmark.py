@@ -57,6 +57,14 @@ BUILTIN_SUITES = (
     "v1.7-family-depth-curve",
     "v1.7-family-standard",
     "v1.7-family-showcase",
+    "v1.8-family-smoke",
+    "v1.8-family-calibration",
+    "v1.8-family-shallow-pure-blind",
+    "v1.8-family-shallow",
+    "v1.8-family-basin",
+    "v1.8-family-depth-curve",
+    "v1.8-family-standard",
+    "v1.8-family-showcase",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
@@ -129,6 +137,7 @@ class OptimizerBudget:
     refit_steps: int = 80
     refit_lr: float = 0.02
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
+    scaffold_exclusions: tuple[str, ...] = ()
     operator_family: EmlOperator = field(default_factory=raw_eml_operator)
     operator_schedule: tuple[EmlOperator, ...] = ()
 
@@ -173,6 +182,14 @@ class OptimizerBudget:
                 path=f"{path}.scaffold_initializers",
             )
         values["scaffold_initializers"] = tuple(str(value) for value in scaffold_initializers)
+        scaffold_exclusions = values["scaffold_exclusions"]
+        if not isinstance(scaffold_exclusions, (list, tuple)):
+            raise BenchmarkValidationError(
+                "malformed_budget",
+                "scaffold_exclusions must be a list",
+                path=f"{path}.scaffold_exclusions",
+            )
+        values["scaffold_exclusions"] = tuple(str(value) for value in scaffold_exclusions)
         try:
             values["operator_family"] = eml_operator_from_spec(payload.get("operator_family"))
         except (KeyError, TypeError, ValueError) as exc:
@@ -309,6 +326,7 @@ class OptimizerBudget:
             "refit_steps": self.refit_steps,
             "refit_lr": self.refit_lr,
             "scaffold_initializers": list(self.scaffold_initializers),
+            "scaffold_exclusions": list(self.scaffold_exclusions),
             "operator_family": self.operator_family.as_dict(),
             "operator_schedule": [operator.as_dict() for operator in self.operator_schedule],
         }
@@ -896,12 +914,16 @@ class _OperatorVariant:
         return ("operator_family", f"operator:{self.id}")
 
 
-def _family_variants(*, include_continuation: bool = True) -> tuple[_OperatorVariant, ...]:
-    variants = [
-        _OperatorVariant("raw", raw_eml_operator()),
-        _OperatorVariant("ceml2", eml_operator_from_spec("ceml_s:2")),
-        _OperatorVariant("zeml2", eml_operator_from_spec("zeml_s:2")),
-    ]
+def _family_variants(
+    *,
+    scales: Iterable[int] = (2,),
+    include_continuation: bool = True,
+    include_long_continuation: bool = False,
+) -> tuple[_OperatorVariant, ...]:
+    variants = [_OperatorVariant("raw", raw_eml_operator())]
+    for scale in scales:
+        variants.append(_OperatorVariant(f"ceml{scale}", eml_operator_from_spec(f"ceml_s:{scale}")))
+        variants.append(_OperatorVariant(f"zeml{scale}", eml_operator_from_spec(f"zeml_s:{scale}")))
     if include_continuation:
         variants.append(
             _OperatorVariant(
@@ -910,27 +932,52 @@ def _family_variants(*, include_continuation: bool = True) -> tuple[_OperatorVar
                 (eml_operator_from_spec("zeml_s:8"), eml_operator_from_spec("zeml_s:4")),
             )
         )
+    if include_long_continuation:
+        variants.append(
+            _OperatorVariant(
+                "zeml8-4-2-1",
+                eml_operator_from_spec("zeml_s:8"),
+                (
+                    eml_operator_from_spec("zeml_s:8"),
+                    eml_operator_from_spec("zeml_s:4"),
+                    eml_operator_from_spec("zeml_s:2"),
+                    eml_operator_from_spec("zeml_s:1"),
+                ),
+            )
+        )
     return tuple(variants)
 
 
 def _operator_variant_budget(base: OptimizerBudget, variant: _OperatorVariant) -> OptimizerBudget:
     scaffold_initializers = base.scaffold_initializers
+    scaffold_exclusions = base.scaffold_exclusions
     if not variant.operator_family.is_raw:
+        removed = tuple(scaffold for scaffold in scaffold_initializers if scaffold == "scaled_exp")
         scaffold_initializers = tuple(scaffold for scaffold in scaffold_initializers if scaffold != "scaled_exp")
+        if removed:
+            scaffold_exclusions = tuple(
+                dict.fromkeys(
+                    (
+                        *scaffold_exclusions,
+                        "scaled_exp:centered_family_incompatible_raw_witness",
+                    )
+                )
+            )
     return replace(
         base,
         scaffold_initializers=scaffold_initializers,
+        scaffold_exclusions=scaffold_exclusions,
         operator_family=variant.operator_family,
         operator_schedule=variant.operator_schedule,
     )
 
 
-def _family_case(base: BenchmarkCase, variant: _OperatorVariant) -> BenchmarkCase:
+def _family_case(base: BenchmarkCase, variant: _OperatorVariant, *, suite_tag: str) -> BenchmarkCase:
     return replace(
         base,
         id=f"{base.id}-{variant.id}",
         optimizer=_operator_variant_budget(base.optimizer, variant),
-        tags=tuple(dict.fromkeys((*base.tags, "v1.7", "family_matrix", *variant.tags))),
+        tags=tuple(dict.fromkeys((*base.tags, suite_tag, "family_matrix", *variant.tags))),
         claim_id=None,
         threshold_policy_id=None,
         expect_recovery=False if not variant.operator_family.is_raw else base.expect_recovery,
@@ -943,11 +990,65 @@ def _family_suite(
     description: str,
     base_name: str,
     include_continuation: bool = True,
+    scales: Iterable[int] = (2,),
+    include_long_continuation: bool = False,
+    suite_tag: str = "v1.7",
 ) -> BenchmarkSuite:
     base = builtin_suite(base_name)
-    variants = _family_variants(include_continuation=include_continuation)
-    cases = tuple(_family_case(case, variant) for case in base.cases for variant in variants)
+    variants = _family_variants(
+        scales=scales,
+        include_continuation=include_continuation,
+        include_long_continuation=include_long_continuation,
+    )
+    cases = tuple(_family_case(case, variant, suite_tag=suite_tag) for case in base.cases for variant in variants)
     return BenchmarkSuite(id=id, description=description, cases=cases)
+
+
+def _v18_family_suite(*, id: str, description: str, base_name: str) -> BenchmarkSuite:
+    return _family_suite(
+        id=id,
+        description=description,
+        base_name=base_name,
+        scales=(1, 2, 4, 8),
+        include_continuation=True,
+        include_long_continuation=True,
+        suite_tag="v1.8",
+    )
+
+
+def _family_calibration_suite() -> BenchmarkSuite:
+    cases = (
+        _case(
+            "cal-exp-blind",
+            "exp",
+            "blind",
+            points=16,
+            depth=1,
+            steps=12,
+            restarts=1,
+            tags=("v1.8", "family_calibration", "exp_probe"),
+        ),
+        _case(
+            "cal-log-blind",
+            "log",
+            "blind",
+            points=16,
+            depth=3,
+            steps=18,
+            restarts=1,
+            tags=("v1.8", "family_calibration", "log_probe"),
+        ),
+    )
+    variants = _family_variants(
+        scales=(1, 2, 4, 8),
+        include_continuation=True,
+        include_long_continuation=True,
+    )
+    return BenchmarkSuite(
+        id="v1.8-family-calibration",
+        description="Focused v1.8 family calibration probes for shallow exp/log behavior across fixed scales and schedules.",
+        cases=tuple(_family_case(case, variant, suite_tag="v1.8") for case in cases for variant in variants),
+    )
 
 
 def builtin_suite(name: str) -> BenchmarkSuite:
@@ -1328,6 +1429,50 @@ def builtin_suite(name: str) -> BenchmarkSuite:
             description="v1.7 showcase-style raw-vs-centered operator-family comparison matrix.",
             base_name="v1.3-showcase",
         )
+    if name == "v1.8-family-smoke":
+        return _v18_family_suite(
+            id="v1.8-family-smoke",
+            description="CI-scale v1.8 raw-vs-centered operator-family smoke matrix with expanded fixed scales and schedules.",
+            base_name="smoke",
+        )
+    if name == "v1.8-family-calibration":
+        return _family_calibration_suite()
+    if name == "v1.8-family-shallow-pure-blind":
+        return _v18_family_suite(
+            id="v1.8-family-shallow-pure-blind",
+            description="v1.8 family matrix cloned from the shallow pure-blind proof denominator without proof thresholds.",
+            base_name="v1.5-shallow-pure-blind",
+        )
+    if name == "v1.8-family-shallow":
+        return _v18_family_suite(
+            id="v1.8-family-shallow",
+            description="v1.8 family matrix cloned from the shallow scaffolded proof denominator without proof thresholds.",
+            base_name="v1.5-shallow-proof",
+        )
+    if name == "v1.8-family-basin":
+        return _v18_family_suite(
+            id="v1.8-family-basin",
+            description="v1.8 family matrix cloned from the perturbed-basin proof denominator without proof thresholds.",
+            base_name="proof-perturbed-basin",
+        )
+    if name == "v1.8-family-depth-curve":
+        return _v18_family_suite(
+            id="v1.8-family-depth-curve",
+            description="v1.8 family matrix cloned from the blind-vs-perturbed depth curve without proof thresholds.",
+            base_name="proof-depth-curve",
+        )
+    if name == "v1.8-family-standard":
+        return _v18_family_suite(
+            id="v1.8-family-standard",
+            description="v1.8 standard-style raw-vs-centered operator-family comparison matrix.",
+            base_name="v1.3-standard",
+        )
+    if name == "v1.8-family-showcase":
+        return _v18_family_suite(
+            id="v1.8-family-showcase",
+            description="v1.8 showcase-style raw-vs-centered operator-family comparison matrix.",
+            base_name="v1.3-showcase",
+        )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
 
 
@@ -1546,9 +1691,12 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 "claim_status": "unsupported",
                 "warm_start_eml": {
                     "status": "unsupported",
-                    "reason": "centered_family_warm_start_rules_missing",
-                    "operator_family": _budget_operator_family(run.optimizer).as_dict(),
-                    "detail": "compiler warm-start currently emits raw EML trees unless a centered-family seed is supplied",
+                    "reason": "centered_family_same_family_seed_missing",
+                    **_centered_seed_unsupported_context(
+                        run,
+                        mode="warm_start",
+                        seed_source="compiler_warm_start",
+                    ),
                 },
             }
 
@@ -1685,9 +1833,12 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 **target_payload,
                 "perturbed_true_tree": {
                     "status": "unsupported",
-                    "reason": "centered_family_target_seed_missing",
-                    "operator_family": _budget_operator_family(run.optimizer).as_dict(),
-                    "detail": "perturbed-tree training requires a target exact tree from the same operator family",
+                    "reason": "centered_family_same_family_seed_missing",
+                    **_centered_seed_unsupported_context(
+                        run,
+                        mode="perturbed_tree",
+                        seed_source=str(target_metadata.get("source", "target_exact_tree")),
+                    ),
                 },
                 "claim_status": "unsupported",
             }
@@ -1800,6 +1951,26 @@ def _fit_depth(fit: FitResult, default_depth: int) -> int:
 
 def _budget_operator_family(budget: OptimizerBudget) -> EmlOperator:
     return budget.operator_schedule[0] if budget.operator_schedule else budget.operator_family
+
+
+def _budget_operator_schedule_label(budget: OptimizerBudget) -> str:
+    return " -> ".join(operator.label for operator in budget.operator_schedule)
+
+
+def _centered_seed_unsupported_context(run: BenchmarkRun, *, mode: str, seed_source: str) -> dict[str, Any]:
+    operator = _budget_operator_family(run.optimizer)
+    return {
+        "operator_family": operator.as_dict(),
+        "operator_schedule": [item.as_dict() for item in run.optimizer.operator_schedule],
+        "unsupported_class": "missing_same_family_exact_seed",
+        "counts_in_denominator": True,
+        "mode": mode,
+        "seed_source": seed_source,
+        "detail": (
+            f"{mode} requires an exact target tree from {operator.label}; "
+            "raw EML compiler seeds are not embedded into centered-family trees as exact returns"
+        ),
+    }
 
 
 def _fit_variables(fit: FitResult, default_variables: tuple[str, ...]) -> tuple[str, ...]:
@@ -2259,6 +2430,23 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     if isinstance(warm_start, Mapping):
         diagnosis = warm_start.get("diagnosis") or {}
 
+    budget = payload.get("budget") if isinstance(payload.get("budget"), Mapping) else {}
+    budget_operator = budget.get("operator_family") if isinstance(budget.get("operator_family"), Mapping) else {}
+    budget_schedule = budget.get("operator_schedule")
+    budget_schedule_label = (
+        " -> ".join(str(item.get("label", "")) for item in budget_schedule if isinstance(item, Mapping))
+        if isinstance(budget_schedule, list)
+        else None
+    )
+    candidate_config = candidate.get("config") if isinstance(candidate, Mapping) and isinstance(candidate.get("config"), Mapping) else {}
+    candidate_operator = candidate_config.get("operator_family") if isinstance(candidate_config.get("operator_family"), Mapping) else {}
+    candidate_schedule = candidate_config.get("operator_schedule")
+    candidate_schedule_label = (
+        " -> ".join(str(item.get("label", "")) for item in candidate_schedule if isinstance(item, Mapping))
+        if isinstance(candidate_schedule, list)
+        else None
+    )
+
     active_slot_changes = None
     changed_slots = None
     initialization: Mapping[str, Any] = {}
@@ -2279,16 +2467,10 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     refit_constants = refit.get("refittable_constants")
 
     return {
-        "operator_family": (
-            (candidate.get("config") or {}).get("operator_family", {}).get("label")
-            if isinstance(candidate, Mapping) and isinstance(candidate.get("config"), Mapping)
-            else None
-        ),
-        "operator_schedule": (
-            " -> ".join(item.get("label", "") for item in (candidate.get("config") or {}).get("operator_schedule", ()))
-            if isinstance(candidate, Mapping) and isinstance(candidate.get("config"), Mapping)
-            else None
-        ),
+        "operator_family": candidate_operator.get("label") or budget_operator.get("label"),
+        "operator_schedule": candidate_schedule_label or budget_schedule_label,
+        "scaffold_exclusions": list(budget.get("scaffold_exclusions", ())) if isinstance(budget, Mapping) else [],
+        "unsupported_reason": _run_reason(payload) if payload.get("status") == "unsupported" else None,
         "best_loss": (
             selected.get("best_fit_loss")
             if isinstance(selected, Mapping)
@@ -2665,6 +2847,10 @@ def _run_reason(payload: Mapping[str, Any]) -> str:
     warm = payload.get("warm_start_eml")
     if isinstance(warm, Mapping) and warm.get("status") == "unsupported":
         return str(warm.get("reason") or "unsupported")
+
+    perturbed = payload.get("perturbed_true_tree")
+    if isinstance(perturbed, Mapping) and perturbed.get("status") == "unsupported":
+        return str(perturbed.get("reason") or "unsupported")
 
     for key in ("trained_eml_verification", "compiled_eml_verification", "verification"):
         verification = payload.get(key)

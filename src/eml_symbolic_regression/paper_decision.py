@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 
 
-DEFAULT_PAPER_OUTPUT_ROOT = Path("artifacts") / "paper" / "v1.7"
+DEFAULT_PAPER_OUTPUT_ROOT = Path("artifacts") / "paper" / "v1.8"
 
 SAFE_CLAIMS = (
     "cEML_{s,t} is an affine-normalized transport of raw EML that preserves the exp-log inverse-pair structure.",
@@ -62,7 +62,7 @@ def write_paper_decision_package(
     *,
     output_dir: Path = DEFAULT_PAPER_OUTPUT_ROOT,
 ) -> PaperDecisionPaths:
-    """Write the v1.7 paper decision package and return generated paths."""
+    """Write the current paper decision package and return generated paths."""
 
     aggregates = [_load_aggregate(path) for path in aggregate_paths]
     summary = _summarize_aggregates(aggregates)
@@ -80,8 +80,8 @@ def write_paper_decision_package(
     output_dir.mkdir(parents=True, exist_ok=True)
     _write_json(paths.decision_json, decision)
     paths.decision_markdown.write_text(_decision_markdown(decision), encoding="utf-8")
-    paths.safe_claims.write_text(_bulleted_doc("Safe Claims", SAFE_CLAIMS), encoding="utf-8")
-    paths.unsafe_claims.write_text(_bulleted_doc("Unsafe Claims", UNSAFE_CLAIMS), encoding="utf-8")
+    paths.safe_claims.write_text(_claims_doc("Safe Claims", SAFE_CLAIMS, summary), encoding="utf-8")
+    paths.unsafe_claims.write_text(_claims_doc("Unsafe Claims", UNSAFE_CLAIMS, summary), encoding="utf-8")
     paths.figure_inventory.write_text(_bulleted_doc("Figure and Table Inventory", FIGURE_TABLE_INVENTORY), encoding="utf-8")
     paths.completeness_boundary.write_text(_completeness_boundary_markdown(summary), encoding="utf-8")
     return paths
@@ -137,7 +137,7 @@ def _decision_payload(summary: Mapping[str, Any]) -> dict[str, Any]:
     if not summary.get("has_centered_evidence"):
         decision = "wait_for_centered_family_evidence"
         recommendation = (
-            "Do not submit the centered-family empirical paper yet. Run the v1.7 family campaigns first; "
+            "Do not submit the centered-family empirical paper yet. Run the current family campaigns first; "
             "a raw-EML searchability/geometry note remains publishable from the archived proof evidence."
         )
     elif centered_rate is not None and raw_rate is not None and float(centered_rate) > float(raw_rate):
@@ -146,11 +146,17 @@ def _decision_payload(summary: Mapping[str, Any]) -> dict[str, Any]:
             "Publish a robustness/geometry paper centered on the operator-family comparison. Keep completeness claims out "
             "unless constructive witnesses are added."
         )
-    else:
-        decision = "wait_for_successor_family_or_more_evidence"
+    elif raw_rate is not None and float(raw_rate) > 0.0:
+        decision = "publish_raw_eml_searchability_note"
         recommendation = (
-            "Do not position the centered family as an empirical improvement yet. Use the results as diagnostics and wait "
-            "for stronger recovery or constructive completeness evidence."
+            "Do not position the centered family as an empirical improvement. The v1.8 aggregates support a raw-EML "
+            "searchability/geometry note with centered variants reported as negative or diagnostic evidence."
+        )
+    else:
+        decision = "abandon_or_pivot_centered_family_work"
+        recommendation = (
+            "The supplied aggregates do not support a centered-family improvement or a positive raw-EML paper claim. "
+            "Use the results as a pivot signal before spending more full-campaign budget."
         )
     return {
         "schema": "eml.paper_decision.v1",
@@ -171,7 +177,7 @@ def _decision_payload(summary: Mapping[str, Any]) -> dict[str, Any]:
 def _decision_markdown(payload: Mapping[str, Any]) -> str:
     summary = payload["evidence_summary"]
     lines = [
-        "# v1.7 Paper Decision Memo",
+        "# v1.8 Paper Decision Memo",
         "",
         f"**Decision:** `{payload['decision']}`",
         "",
@@ -201,7 +207,7 @@ def _decision_markdown(payload: Mapping[str, Any]) -> str:
             "## Claim Boundary",
             "",
             "Centered-family mathematical claims are safe only at the operator/geometry level until constructive completeness is supplied.",
-            "Empirical recovery claims require v1.7 family campaign aggregates and must keep regimes separate.",
+            "Empirical recovery claims require v1.8 family campaign aggregates and must keep regimes separate.",
             "",
         ]
     )
@@ -223,6 +229,27 @@ def _completeness_boundary_markdown(summary: Mapping[str, Any]) -> str:
             "",
         ]
     )
+
+
+def _claims_doc(title: str, items: Iterable[str], summary: Mapping[str, Any]) -> str:
+    lines = [f"# {title}", ""]
+    lines.extend(
+        [
+            "## Evidence Inputs",
+            "",
+            "These claims are scoped to the supplied aggregate files:",
+            "",
+        ]
+    )
+    aggregate_paths = [path for path in summary.get("aggregate_paths", ()) if path]
+    if aggregate_paths:
+        lines.extend(f"- `{path}`" for path in aggregate_paths)
+    else:
+        lines.append("- No aggregate paths supplied")
+    lines.extend(["", "## Claims", ""])
+    lines.extend(f"- {item}" for item in items)
+    lines.append("")
+    return "\n".join(lines)
 
 
 def _bulleted_doc(title: str, items: Iterable[str]) -> str:

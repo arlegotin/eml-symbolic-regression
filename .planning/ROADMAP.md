@@ -1,6 +1,6 @@
 # Roadmap: EML Symbolic Regression
 
-**Updated:** 2026-04-16
+**Updated:** 2026-04-17
 **Current milestone:** v1.8 Centered-Family Viability and Full Evidence Run
 **Phase numbering:** Continues from v1.7; v1.8 starts at Phase 44.
 
@@ -14,7 +14,7 @@
 - **v1.5 Training Proof and Recovery Guarantees** - Phases 29-33 complete (completed 2026-04-16; archive: `.planning/milestones/v1.5-ROADMAP.md`)
 - **v1.6 Hybrid Search Pipeline and Exact Candidate Recovery** - Phases 34-38 complete (completed 2026-04-16; archive: `.planning/milestones/v1.6-ROADMAP.md`)
 - **v1.7 Centered-Family Baseline and Paper Decision** - Phases 39-43 complete (completed 2026-04-16; archive: `.planning/milestones/v1.7-ROADMAP.md`)
-- **v1.8 Centered-Family Viability and Full Evidence Run** - Phases 44-48 planned
+- **v1.8 Centered-Family Viability and Full Evidence Run** - Phases 44-48 complete (completed 2026-04-17)
 
 ## Milestone Goal
 
@@ -24,11 +24,17 @@ Determine whether centered/scaled operator families are actually viable improvem
 
 | Phase | Name | Goal | Requirements | Status |
 |-------|------|------|--------------|--------|
-| 44 | Centered-Family Smoke Triage and Full-Run Gate | Turn the quick smoke failure signal into an artifact-backed blocker map and go/no-go gate for expensive campaigns. | TRI-01, TRI-02, TRI-03, TRI-04 | Pending |
-| 45 | Centered Integration Fixes | Fix or explicitly gate centered warm-start, compiler-seed, initializer, schedule, repair, and refit paths. | FIX-01, FIX-02, FIX-03, FIX-04, FIX-05 | Pending |
-| 46 | Family Matrix Calibration | Expand and calibrate the fixed-`s` and continuation experiment matrix before full evidence runs. | MAT-01, MAT-02, MAT-03, MAT-04, MAT-05 | Pending |
-| 47 | Full Family Evidence Campaigns | Run and archive the raw-vs-centered family evidence campaigns with comparison artifacts and locks. | RUN-01, RUN-02, RUN-03, RUN-04, RUN-05 | Pending |
-| 48 | Paper Decision Refresh and Milestone Audit | Regenerate the paper decision package from v1.8 aggregates and audit the claim boundary. | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 | Pending |
+| 44 | Centered-Family Smoke Triage and Full-Run Gate | Turn the quick smoke failure signal into an artifact-backed blocker map and go/no-go gate for expensive campaigns. | TRI-01, TRI-02, TRI-03, TRI-04 | Complete |
+| 45 | Centered Integration Fixes | Fix or explicitly gate centered warm-start, compiler-seed, initializer, schedule, repair, and refit paths. | FIX-01, FIX-02, FIX-03, FIX-04, FIX-05 | Complete |
+| 46 | Family Matrix Calibration | Expand and calibrate the fixed-`s` and continuation experiment matrix before full evidence runs. | MAT-01, MAT-02, MAT-03, MAT-04, MAT-05 | Complete |
+| 47 | Full Family Evidence Campaigns | Run and archive the raw-vs-centered family evidence campaigns with comparison artifacts and locks. | RUN-01, RUN-02, RUN-03, RUN-04, RUN-05 | Complete |
+| 48 | Paper Decision Refresh and Milestone Audit | Regenerate the paper decision package from v1.8 aggregates and audit the claim boundary. | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 | Complete |
+
+- [x] **Phase 44: Centered-Family Smoke Triage and Full-Run Gate** - Turn the quick smoke failure signal into an artifact-backed blocker map and go/no-go gate for expensive campaigns. (requirements: TRI-01, TRI-02, TRI-03, TRI-04)
+- [x] **Phase 45: Centered Integration Fixes** - Fix or explicitly gate centered warm-start, compiler-seed, initializer, schedule, repair, and refit paths. (requirements: FIX-01, FIX-02, FIX-03, FIX-04, FIX-05)
+- [x] **Phase 46: Family Matrix Calibration** - Expand and calibrate the fixed-`s` and continuation experiment matrix before full evidence runs. (requirements: MAT-01, MAT-02, MAT-03, MAT-04, MAT-05)
+- [x] **Phase 47: Full Family Evidence Campaigns** - Run and archive the raw-vs-centered family evidence campaigns with comparison artifacts and locks. (requirements: RUN-01, RUN-02, RUN-03, RUN-04, RUN-05)
+- [x] **Phase 48: Paper Decision Refresh and Milestone Audit** - Regenerate the paper decision package from v1.8 aggregates and audit the claim boundary. (requirements: PAP-01, PAP-02, PAP-03, PAP-04, PAP-05)
 
 ## Phase Details
 
@@ -109,30 +115,30 @@ Determine whether centered/scaled operator families are actually viable improvem
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TRI-01 | Phase 44 | Pending |
-| TRI-02 | Phase 44 | Pending |
-| TRI-03 | Phase 44 | Pending |
-| TRI-04 | Phase 44 | Pending |
-| FIX-01 | Phase 45 | Pending |
-| FIX-02 | Phase 45 | Pending |
-| FIX-03 | Phase 45 | Pending |
-| FIX-04 | Phase 45 | Pending |
-| FIX-05 | Phase 45 | Pending |
-| MAT-01 | Phase 46 | Pending |
-| MAT-02 | Phase 46 | Pending |
-| MAT-03 | Phase 46 | Pending |
-| MAT-04 | Phase 46 | Pending |
-| MAT-05 | Phase 46 | Pending |
-| RUN-01 | Phase 47 | Pending |
-| RUN-02 | Phase 47 | Pending |
-| RUN-03 | Phase 47 | Pending |
-| RUN-04 | Phase 47 | Pending |
-| RUN-05 | Phase 47 | Pending |
-| PAP-01 | Phase 48 | Pending |
-| PAP-02 | Phase 48 | Pending |
-| PAP-03 | Phase 48 | Pending |
-| PAP-04 | Phase 48 | Pending |
-| PAP-05 | Phase 48 | Pending |
+| TRI-01 | Phase 44 | Complete |
+| TRI-02 | Phase 44 | Complete |
+| TRI-03 | Phase 44 | Complete |
+| TRI-04 | Phase 44 | Complete |
+| FIX-01 | Phase 45 | Complete |
+| FIX-02 | Phase 45 | Complete |
+| FIX-03 | Phase 45 | Complete |
+| FIX-04 | Phase 45 | Complete |
+| FIX-05 | Phase 45 | Complete |
+| MAT-01 | Phase 46 | Complete |
+| MAT-02 | Phase 46 | Complete |
+| MAT-03 | Phase 46 | Complete |
+| MAT-04 | Phase 46 | Complete |
+| MAT-05 | Phase 46 | Complete |
+| RUN-01 | Phase 47 | Complete |
+| RUN-02 | Phase 47 | Complete |
+| RUN-03 | Phase 47 | Complete |
+| RUN-04 | Phase 47 | Complete |
+| RUN-05 | Phase 47 | Complete |
+| PAP-01 | Phase 48 | Complete |
+| PAP-02 | Phase 48 | Complete |
+| PAP-03 | Phase 48 | Complete |
+| PAP-04 | Phase 48 | Complete |
+| PAP-05 | Phase 48 | Complete |
 
 **Coverage summary:**
 - v1.8 requirements: 24 total
@@ -141,11 +147,8 @@ Determine whether centered/scaled operator families are actually viable improvem
 
 ## Next Step
 
-Start Phase 44 with:
-
-```bash
-$gsd-plan-phase 44
-```
+v1.8 complete. The paper decision package is available at `artifacts/paper/v1.8/`.
 
 ---
 *Roadmap created: 2026-04-16 for milestone v1.8*
+*Last updated: 2026-04-17 after completing v1.8*

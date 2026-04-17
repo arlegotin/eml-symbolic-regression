@@ -448,6 +448,7 @@ def fit_eml_tree(
     manifest = {
         "schema": "eml.run_manifest.v1",
         "config": _training_config_payload(config),
+        "operator_trace": _operator_trace(config),
         "best_restart": best_log,
         "restarts": restart_logs,
         "candidates": [candidate.as_dict() for candidate in ranked_candidates],
@@ -547,6 +548,44 @@ def _training_config_payload(config: TrainingConfig) -> dict[str, Any]:
     payload["constants"] = [format_constant_value(value) for value in config.constants]
     payload.update(config.operator_payload())
     return payload
+
+
+def _operator_trace(config: TrainingConfig) -> list[dict[str, Any]]:
+    if not config.operator_schedule:
+        trace = [
+            {
+                "phase": "training",
+                "start_step": 0,
+                "end_step": max(config.steps - 1, 0),
+                "operator": config.operator_family.as_dict(),
+            }
+        ]
+    else:
+        trace = []
+        schedule = list(config.operator_schedule)
+        total_steps = max(config.steps, 1)
+        for index, operator in enumerate(schedule):
+            start = int((index * total_steps) / len(schedule))
+            end = int(((index + 1) * total_steps) / len(schedule)) - 1
+            trace.append(
+                {
+                    "phase": "training",
+                    "schedule_index": index,
+                    "start_step": start,
+                    "end_step": max(start, end),
+                    "operator": operator.as_dict(),
+                }
+            )
+    if config.hardening_steps > 0:
+        trace.append(
+            {
+                "phase": "hardening",
+                "start_step": config.steps,
+                "end_step": config.steps + config.hardening_steps - 1,
+                "operator": _final_operator(config).as_dict(),
+            }
+        )
+    return trace
 
 
 def _scaled_exp_constants(constants: tuple[complex, ...]) -> tuple[complex, ...]:

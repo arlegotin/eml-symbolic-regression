@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.8
 milestone_name: Centered-Family Viability and Full Evidence Run
-current_phase: 44
-status: ready_to_plan
-stopped_at: v1.8 roadmap created; ready to plan Phase 44
-last_updated: "2026-04-16T21:31:00Z"
-last_activity: 2026-04-16 -- v1.8 roadmap created
+current_phase: 48
+status: milestone_complete
+stopped_at: v1.8 completed; paper decision package generated
+last_updated: "2026-04-17T00:00:00Z"
+last_activity: 2026-04-17 -- v1.8 centered-family evidence and paper decision completed
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 5
   total_plans: 5
-  completed_plans: 0
-  percent: 0
+  completed_plans: 5
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 44 - Centered-Family Smoke Triage and Full-Run Gate
+**Current phase:** Phase 48 - Paper Decision Refresh and Milestone Audit
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,11 +30,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-16)
 
 ## Current Position
 
-Phase: 44 - Centered-Family Smoke Triage and Full-Run Gate
-Plan: Not planned yet
-Status: Ready to plan
-Last activity: 2026-04-16 -- v1.8 roadmap created
-Progress: [----------] 0% by completed phases (v1.8: 0/5 planned)
+Phase: 48 - Paper Decision Refresh and Milestone Audit
+Plan: Complete
+Status: Milestone complete
+Last activity: 2026-04-17 -- v1.8 centered-family evidence and paper decision completed
+Progress: [##########] 100% by completed phases (v1.8: 5/5 complete)
 
 ## Performance Metrics
 
@@ -113,11 +113,11 @@ Target work:
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 44 | Centered-Family Smoke Triage and Full-Run Gate | Pending | TRI-01, TRI-02, TRI-03, TRI-04 |
-| 45 | Centered Integration Fixes | Pending | FIX-01, FIX-02, FIX-03, FIX-04, FIX-05 |
-| 46 | Family Matrix Calibration | Pending | MAT-01, MAT-02, MAT-03, MAT-04, MAT-05 |
-| 47 | Full Family Evidence Campaigns | Pending | RUN-01, RUN-02, RUN-03, RUN-04, RUN-05 |
-| 48 | Paper Decision Refresh and Milestone Audit | Pending | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 |
+| 44 | Centered-Family Smoke Triage and Full-Run Gate | Complete | TRI-01, TRI-02, TRI-03, TRI-04 |
+| 45 | Centered Integration Fixes | Complete | FIX-01, FIX-02, FIX-03, FIX-04, FIX-05 |
+| 46 | Family Matrix Calibration | Complete | MAT-01, MAT-02, MAT-03, MAT-04, MAT-05 |
+| 47 | Full Family Evidence Campaigns | Complete | RUN-01, RUN-02, RUN-03, RUN-04, RUN-05 |
+| 48 | Paper Decision Refresh and Milestone Audit | Complete | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 |
 
 ## Accumulated Context
 
@@ -151,6 +151,11 @@ Target work:
 - Phase 42 added operator-family recovery, diagnostics, comparison Markdown, and regression-lock JSON outputs to campaign tables and reports, including centered anomaly counters and active-node/complexity summaries.
 - Phase 43 added a reproducible paper decision package generator and generated `artifacts/paper/v1.7/`, with the current decision set to wait for centered-family campaign evidence while preserving raw-EML searchability as a viable paper note.
 - v1.8 should not start by launching every full family campaign. It should first turn the quick `family-smoke` failures into actionable fixes or explicit exclusions so the expensive runs answer centered-family viability rather than known missing integration.
+- Phase 44 reproduced expanded v1.8 family smoke evidence, classified centered blind failures and same-family seed gates, and wrote a `conditional_go_scoped` full-run gate.
+- Phase 45 made centered warm-start and perturbed-tree unsupported paths explicit via `centered_family_same_family_seed_missing`, scaffold exclusion metadata, and optimizer schedule traces.
+- Phase 46 expanded v1.8 family suites to fixed `s in {1,2,4,8}` plus declared ZEML continuation schedules and added focused `family-calibration`.
+- Phase 47 ran scoped v1.8 standard evidence after calibration and recorded deliberate scope decisions for larger shallow, basin, depth-curve, and showcase campaigns.
+- Phase 48 generated `artifacts/paper/v1.8/` and chose `publish_raw_eml_searchability_note` because raw EML recovered 80.0% across supplied v1.8 aggregates while the best centered recovery rate was 0.0%.
 
 ### Pending Todos
 
@@ -158,7 +163,7 @@ None recorded.
 
 ### Blockers/Concerns
 
-The milestone must not claim universal blind recovery of arbitrary deep elementary expressions or completeness of the centered/scaled family unless v1.8 produces direct evidence. Centered warm-start support, initializer/schedule behavior, and the fixed-`s` grid must be resolved before full campaigns are used for paper claims.
+The milestone must not claim universal blind recovery of arbitrary deep elementary expressions or completeness of the centered/scaled family. v1.8 produced negative centered-family evidence under the scoped local campaigns: centered warm-start and perturbed-tree paths remain fail-closed until same-family exact seeds exist, and centered blind calibration recovered 0/20 centered rows. The paper-facing recommendation is a raw-EML searchability note, not a centered-family improvement paper.
 
 ### Quick Tasks Completed
 
@@ -168,9 +173,9 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 ## Session Continuity
 
-Last session: 2026-04-16
-Stopped at: v1.8 roadmap created; ready to plan Phase 44
+Last session: 2026-04-17
+Stopped at: v1.8 completed; paper decision package generated
 Resume file: None
 
 ---
-*Last updated: 2026-04-16 after creating v1.8 roadmap*
+*Last updated: 2026-04-17 after completing v1.8*

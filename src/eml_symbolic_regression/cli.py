@@ -22,6 +22,12 @@ from .diagnostics import (
     write_campaign_comparison,
     write_perturbed_basin_bound_report,
 )
+from .family_triage import (
+    DEFAULT_EVIDENCE_OUTPUT_DIR,
+    DEFAULT_TRIAGE_OUTPUT_DIR,
+    write_family_evidence_manifest,
+    write_family_triage,
+)
 from .optimize import TrainingConfig, fit_eml_tree
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
 from .proof import list_claims
@@ -327,6 +333,46 @@ def diagnostics_triage_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def diagnostics_family_triage_command(args: argparse.Namespace) -> int:
+    paths = write_family_triage(
+        smoke_aggregate=Path(args.smoke_aggregate),
+        calibration_aggregate=Path(args.calibration_aggregate) if args.calibration_aggregate else None,
+        output_dir=Path(args.output_dir),
+    )
+    print(f"family triage: report -> {paths.markdown_path}; gate -> {paths.go_no_go_path}")
+    return 0
+
+
+def diagnostics_family_evidence_command(args: argparse.Namespace) -> int:
+    completed = [_campaign_manifest_entry(Path(path)) for path in args.completed_manifest]
+    scoped = []
+    for value in args.scoped:
+        name, reason = value.split(":", 1) if ":" in value else (value, "deliberately scoped by v1.8 gate")
+        scoped.append({"name": name, "scope_reason": reason})
+    paths = write_family_evidence_manifest(
+        completed_campaigns=completed,
+        scoped_campaigns=scoped,
+        output_dir=Path(args.output_dir),
+    )
+    print(f"family evidence manifest: markdown -> {paths.markdown_path}; json -> {paths.json_path}")
+    return 0
+
+
+def _campaign_manifest_entry(path: Path) -> dict[str, Any]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    output = payload.get("output") if isinstance(payload.get("output"), dict) else {}
+    table_paths = output.get("tables") if isinstance(output.get("tables"), dict) else {}
+    return {
+        "name": (payload.get("preset") or {}).get("name") if isinstance(payload.get("preset"), dict) else path.parent.name,
+        "aggregate_json": output.get("aggregate_json"),
+        "report_markdown": output.get("report_markdown"),
+        "operator_family_locks_json": table_paths.get("operator_family_locks_json"),
+        "reproduction_command": (payload.get("reproducibility") or {}).get("command")
+        if isinstance(payload.get("reproducibility"), dict)
+        else None,
+    }
+
+
 def diagnostics_rerun_command(args: argparse.Namespace) -> int:
     baselines = tuple(Path(path) for path in (args.baseline or DEFAULT_BASELINE_CAMPAIGNS))
     result = run_diagnostic_subset(
@@ -471,7 +517,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     proof_campaign.set_defaults(func=run_proof_campaign_command)
 
-    paper_decision = sub.add_parser("paper-decision", help="Write the v1.7 paper decision memo package.")
+    paper_decision = sub.add_parser("paper-decision", help="Write the paper decision memo package.")
     paper_decision.add_argument("--aggregate", action="append", help="Benchmark aggregate JSON to summarize. Repeatable.")
     paper_decision.add_argument("--output-dir", default=str(DEFAULT_PAPER_OUTPUT_ROOT), help="Directory for decision memo outputs.")
     paper_decision.set_defaults(func=paper_decision_command)
@@ -483,6 +529,28 @@ def build_parser() -> argparse.ArgumentParser:
     triage.add_argument("--baseline", action="append", help="Campaign folder to include. Repeatable.")
     triage.add_argument("--output-dir", default="artifacts/diagnostics/v1.4-baseline", help="Directory for triage outputs.")
     triage.set_defaults(func=diagnostics_triage_command)
+
+    family_triage = diagnostics_sub.add_parser("family-triage", help="Write v1.8 centered-family triage and go/no-go artifacts.")
+    family_triage.add_argument("--smoke-aggregate", required=True, help="Aggregate JSON from the family-smoke campaign.")
+    family_triage.add_argument("--calibration-aggregate", help="Optional aggregate JSON from the family-calibration campaign.")
+    family_triage.add_argument("--output-dir", default=str(DEFAULT_TRIAGE_OUTPUT_DIR), help="Directory for family triage outputs.")
+    family_triage.set_defaults(func=diagnostics_family_triage_command)
+
+    family_evidence = diagnostics_sub.add_parser("family-evidence", help="Write v1.8 family evidence manifest.")
+    family_evidence.add_argument(
+        "--completed-manifest",
+        action="append",
+        default=[],
+        help="Campaign manifest JSON for a completed campaign. Repeatable.",
+    )
+    family_evidence.add_argument(
+        "--scoped",
+        action="append",
+        default=[],
+        help="Scoped campaign in NAME:reason form. Repeatable.",
+    )
+    family_evidence.add_argument("--output-dir", default=str(DEFAULT_EVIDENCE_OUTPUT_DIR), help="Directory for evidence manifest outputs.")
+    family_evidence.set_defaults(func=diagnostics_family_evidence_command)
 
     rerun = diagnostics_sub.add_parser("rerun", help="Run a focused diagnostic subset selected from baselines.")
     rerun.add_argument(

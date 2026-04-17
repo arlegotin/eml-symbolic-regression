@@ -163,6 +163,44 @@ def test_runner_executes_operator_family_smoke_matrix(tmp_path):
             assert artifact["metrics"]["operator_schedule"] == "ZEML_8 -> ZEML_4"
 
 
+def test_centered_warm_start_fails_closed_with_operator_metadata(tmp_path):
+    base = builtin_suite("v1.8-family-smoke")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(
+        suite,
+        run_filter=RunFilter(case_ids=("beer-warm-ceml2",), seeds=(0,)),
+    )
+    artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
+
+    assert result.results[0].status == "unsupported"
+    assert artifact["warm_start_eml"]["reason"] == "centered_family_same_family_seed_missing"
+    assert artifact["warm_start_eml"]["unsupported_class"] == "missing_same_family_exact_seed"
+    assert artifact["warm_start_eml"]["counts_in_denominator"] is True
+    assert artifact["warm_start_eml"]["operator_family"]["label"] == "CEML_2"
+    assert artifact["metrics"]["operator_family"] == "CEML_2"
+    assert artifact["metrics"]["unsupported_reason"] == "centered_family_same_family_seed_missing"
+
+
+def test_centered_perturbed_tree_unsupported_reason_survives_aggregate(tmp_path):
+    base = builtin_suite("v1.8-family-basin")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(
+        suite,
+        run_filter=RunFilter(case_ids=("basin-depth1-perturbed-ceml2",), seeds=(0,)),
+    )
+    artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
+    aggregate = benchmark_module.aggregate_evidence(result)
+
+    assert result.results[0].status == "unsupported"
+    assert artifact["perturbed_true_tree"]["reason"] == "centered_family_same_family_seed_missing"
+    assert artifact["perturbed_true_tree"]["unsupported_class"] == "missing_same_family_exact_seed"
+    assert artifact["perturbed_true_tree"]["operator_family"]["label"] == "CEML_2"
+    assert artifact["metrics"]["unsupported_reason"] == "centered_family_same_family_seed_missing"
+    assert aggregate["runs"][0]["reason"] == "centered_family_same_family_seed_missing"
+
+
 def test_runner_filter_executes_subset(tmp_path):
     base = builtin_suite("v1.2-evidence")
     suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")

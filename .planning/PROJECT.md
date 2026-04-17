@@ -10,17 +10,19 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.7 Shipped
+## Current State: v1.8 Shipped
 
-The repo now has strong representation, verification, and reproducibility foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, and one-command proof bundles are all in place and archived through v1.6.
+The repo now has strong representation, verification, reproducibility, and centered-family evidence foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, and paper-decision artifacts are all in place and archived through v1.8.
 
 v1.6 upgraded the optimizer into a verifier-gated hybrid discrete-continuous pipeline: hardening and checkpoint snaps, exact-candidate ranking, low-margin discrete cleanup, post-snap constant refit, shorter compiler macros, and regime-aware reporting that preserves archived v1.5 and v1.4 evidence.
 
 The final `artifacts/proof/v1.6` bundle was regenerated from the latest code state and verified against campaign aggregates. It keeps the empirical story honest: pure random shallow blind recovery remains measured at `2/18` threshold-eligible recoveries plus one repaired candidate, scaffolded shallow proof remains `18/18`, perturbed true-tree basin proof remains `9/9` with same-AST returns, and depth-curve evidence remains reported rather than overclaimed.
 
-v1.7 shipped the centered/scaled operator-family baseline: centered semantics and exact ASTs, family-aware training and benchmark metadata, v1.7 family campaign suites, operator-family comparison tables, and a paper-decision package under `artifacts/paper/v1.7/`. The generated decision is conservative because full v1.7 family campaigns were not run in this session: wait for centered-family campaign evidence before submitting the centered empirical paper, while preserving raw-EML searchability/geometry as a viable note.
+v1.7 shipped the centered/scaled operator-family baseline: centered semantics and exact ASTs, family-aware training and benchmark metadata, v1.7 family campaign suites, operator-family comparison tables, and a paper-decision package under `artifacts/paper/v1.7/`.
 
-## Last Completed Milestone: v1.7 Centered-Family Baseline and Paper Decision
+v1.8 converted that hypothesis into evidence. The expanded smoke, calibration, and scoped standard campaigns show raw EML outperforming the centered variants under the supplied local-budget matrix: raw EML recovered 80.0% across the v1.8 paper-decision aggregates, while the best centered-family recovery rate was 0.0%. Centered warm-start and perturbed-tree paths remain explicit same-family seed gates rather than hidden failures. The paper decision package under `artifacts/paper/v1.8/` therefore recommends a raw-EML searchability note with centered-family results reported as negative diagnostic evidence.
+
+## Previous Milestone: v1.7 Centered-Family Baseline and Paper Decision
 
 **Shipped features:**
 - Centered/scaled operator semantics and exact ASTs for `cEML_{s,t}`, `CEML_s`, and `ZEML_s`.
@@ -29,16 +31,16 @@ v1.7 shipped the centered/scaled operator-family baseline: centered semantics an
 - Operator-family recovery, diagnostics, comparison Markdown, and regression-lock outputs in campaign reports.
 - Paper decision package with safe claims, unsafe claims, figure/table inventory, and incomplete completeness boundary.
 
-## Current Milestone: v1.8 Centered-Family Viability and Full Evidence Run
+## Last Completed Milestone: v1.8 Centered-Family Viability and Full Evidence Run
 
 **Goal:** Determine whether centered/scaled operator families are actually viable improvements over raw EML after fixing missing integration support, calibrating the family grid, running full evidence campaigns, and regenerating the paper decision artifacts.
 
-**Target features:**
+**Shipped features:**
 - Triage the v1.7 `family-smoke` failures and identify which centered-family gaps are implementation blockers versus genuine operator behavior.
 - Add or explicitly gate centered warm-start, compiler-seed, initializer, and continuation support so full campaigns do not waste budget on known unsupported paths.
 - Expand the family experiment grid to include fixed `s` variants and continuation schedules needed for a defensible raw-vs-centered comparison.
-- Run the full family evidence matrix with recovery, depth, anomaly, repair/refit, and unsupported-rate artifacts.
-- Regenerate the paper decision package from centered-family aggregates and decide whether to publish the centered geometry paper, fall back to a raw-EML searchability note, or continue toward constructive completeness search.
+- Run scoped family evidence with recovery, anomaly, repair/refit, unsupported-rate, and regression-lock artifacts.
+- Regenerate the paper decision package from v1.8 centered-family aggregates and choose the raw-EML searchability note path.
 
 ## Requirements
 
@@ -86,14 +88,11 @@ v1.7 shipped the centered/scaled operator-family baseline: centered semantics an
 - ✓ v1.7 raw-vs-centered family benchmark suites and campaign presets — v1.7 Phase 41
 - ✓ Operator-family recovery tables, diagnostics tables, comparison Markdown, and regression-lock JSON outputs — v1.7 Phase 42
 - ✓ Paper decision package with safe claims, unsafe claims, figure inventory, and incomplete completeness boundary — v1.7 Phase 43
+- ✓ Expanded v1.8 family smoke triage, calibration, same-family seed gates, scoped evidence manifest, and raw-EML paper decision package — v1.8 Phases 44-48
 
 ### Active
 
-- [ ] Fix or fail-closed-gate centered-family training blockers found by smoke evidence.
-- [ ] Calibrate fixed-`s` and continuation variants before expensive full campaigns.
-- [ ] Run and archive the full centered-family evidence matrix.
-- [ ] Regenerate paper decision artifacts from real centered-family aggregates.
-- [ ] Preserve strict separation between pure blind, scaffolded, warm-start, compile-only, repaired, and perturbed-basin regimes.
+- [ ] Decide whether the next milestone should pursue constructive centered-family witnesses, raw-EML paper packaging, or external baselines.
 
 ### Out of Scope
 
@@ -159,7 +158,9 @@ A quick post-v1.7 `family-smoke` run showed that full campaigns should not be la
 | Defer matched-budget external baselines until the hybrid pipeline is stronger | External comparisons matter, but they should follow a materially improved blind-discovery engine. | ⚠️ Revisit for paper |
 | v1.7 tests centered/scaled EML transports before writing the flagship paper | v1.6 evidence shows representation and basin return are strong while raw blind search geometry remains the dominant bottleneck. | ✓ Good |
 | Use `CEML_s` for unit-terminal/formal successor claims and `ZEML_s` for training-centered comparisons | Zero-terminal centered trees do not generate new constants from closed trees, so training convenience and formal completeness must stay separate. | ✓ Good |
-| v1.8 treats centered-family performance as unknown until blocker fixes and full campaigns run | The v1.7 infrastructure shipped without full centered evidence, and the quick smoke check showed centered failures and unsupported warm-start paths. | - Pending |
+| v1.8 treats centered-family performance as unknown until blocker fixes and full campaigns run | The v1.7 infrastructure shipped without full centered evidence, and the quick smoke check showed centered failures and unsupported warm-start paths. | ✓ Good |
+| v1.8 does not support a centered-family improvement paper from the supplied local evidence | Expanded smoke, calibration, and scoped standard aggregates show raw EML recovery at 80.0% and best centered recovery at 0.0%. | ✓ Good |
+| The near-term paper path is a raw-EML searchability note | Centered variants are useful negative diagnostics but not an empirical improvement under v1.8 evidence. | ✓ Good |
 
 ## Evolution
 
@@ -179,4 +180,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-16 after starting milestone v1.8*
+*Last updated: 2026-04-17 after completing milestone v1.8*

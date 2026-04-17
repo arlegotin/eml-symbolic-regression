@@ -7,6 +7,7 @@ import json
 import math
 import platform
 import shlex
+import shutil
 import statistics
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -137,52 +138,59 @@ _PRESETS = {
     ),
     "family-smoke": CampaignPreset(
         name="family-smoke",
-        suite="v1.7-family-smoke",
+        suite="v1.8-family-smoke",
         tier="ci",
-        description="CI-scale v1.7 raw-vs-centered operator-family smoke campaign.",
-        budget_guardrail="12 runs; raw, fixed centered, and continuation variants over the smoke suite.",
+        description="CI-scale v1.8 raw-vs-centered operator-family smoke campaign.",
+        budget_guardrail="33 runs; raw, fixed CEML/ZEML s={1,2,4,8}, and continuation variants over the smoke suite.",
+    ),
+    "family-calibration": CampaignPreset(
+        name="family-calibration",
+        suite="v1.8-family-calibration",
+        tier="v1.8-family-calibration",
+        description="Focused v1.8 exp/log operator-family calibration probes before full campaigns.",
+        budget_guardrail="22 runs; exp/log shallow probes across raw, fixed centered scales, and declared ZEML schedules.",
     ),
     "family-shallow-pure-blind": CampaignPreset(
         name="family-shallow-pure-blind",
-        suite="v1.7-family-shallow-pure-blind",
-        tier="v1.7-family-matrix",
-        description="v1.7 shallow pure-blind raw-vs-centered operator-family matrix.",
-        budget_guardrail="72 runs; v1.5 shallow pure-blind cases cloned across four operator variants without proof thresholds.",
+        suite="v1.8-family-shallow-pure-blind",
+        tier="v1.8-family-matrix",
+        description="v1.8 shallow pure-blind raw-vs-centered operator-family matrix.",
+        budget_guardrail="198 runs; v1.5 shallow pure-blind cases cloned across expanded v1.8 operator variants without proof thresholds.",
     ),
     "family-shallow": CampaignPreset(
         name="family-shallow",
-        suite="v1.7-family-shallow",
-        tier="v1.7-family-matrix",
-        description="v1.7 shallow scaffolded raw-vs-centered operator-family matrix.",
-        budget_guardrail="72 runs; v1.5 shallow scaffolded cases cloned across four operator variants without proof thresholds.",
+        suite="v1.8-family-shallow",
+        tier="v1.8-family-matrix",
+        description="v1.8 shallow scaffolded raw-vs-centered operator-family matrix.",
+        budget_guardrail="198 runs; v1.5 shallow scaffolded cases cloned across expanded v1.8 operator variants without proof thresholds.",
     ),
     "family-basin": CampaignPreset(
         name="family-basin",
-        suite="v1.7-family-basin",
-        tier="v1.7-family-matrix",
-        description="v1.7 perturbed-basin raw-vs-centered operator-family matrix.",
+        suite="v1.8-family-basin",
+        tier="v1.8-family-matrix",
+        description="v1.8 perturbed-basin raw-vs-centered operator-family matrix.",
         budget_guardrail="Raw basin rows run normally; centered perturbed-tree rows fail closed until same-family seeds exist.",
     ),
     "family-depth-curve": CampaignPreset(
         name="family-depth-curve",
-        suite="v1.7-family-depth-curve",
-        tier="v1.7-family-matrix",
-        description="v1.7 blind-vs-perturbed depth-curve operator-family matrix.",
-        budget_guardrail="80 expanded runs; depth-curve cases cloned across four operator variants without proof thresholds.",
+        suite="v1.8-family-depth-curve",
+        tier="v1.8-family-matrix",
+        description="v1.8 blind-vs-perturbed depth-curve operator-family matrix.",
+        budget_guardrail="220 expanded runs; depth-curve cases cloned across expanded v1.8 operator variants without proof thresholds.",
     ),
     "family-standard": CampaignPreset(
         name="family-standard",
-        suite="v1.7-family-standard",
-        tier="v1.7-family-matrix",
-        description="v1.7 standard-style raw-vs-centered operator-family comparison campaign.",
-        budget_guardrail="Standard-style comparison cloned across four operator variants with isolated v1.7 outputs.",
+        suite="v1.8-family-standard",
+        tier="v1.8-family-matrix",
+        description="v1.8 standard-style raw-vs-centered operator-family comparison campaign.",
+        budget_guardrail="Standard-style comparison cloned across expanded v1.8 operator variants with isolated v1.8 outputs.",
     ),
     "family-showcase": CampaignPreset(
         name="family-showcase",
-        suite="v1.7-family-showcase",
-        tier="v1.7-family-matrix",
-        description="v1.7 showcase-style raw-vs-centered operator-family comparison campaign.",
-        budget_guardrail="Showcase-style comparison cloned across four operator variants with isolated v1.7 outputs.",
+        suite="v1.8-family-showcase",
+        tier="v1.8-family-matrix",
+        description="v1.8 showcase-style raw-vs-centered operator-family comparison campaign.",
+        budget_guardrail="Showcase-style comparison cloned across expanded v1.8 operator variants; run only after earlier positive signal.",
     ),
 }
 
@@ -212,6 +220,8 @@ def run_campaign(
         raise CampaignOutputExistsError(
             f"{campaign_dir} already exists; choose a new --label or pass --overwrite to replace campaign-level outputs"
         )
+    if campaign_dir.exists() and overwrite:
+        shutil.rmtree(campaign_dir)
     campaign_dir.mkdir(parents=True, exist_ok=True)
 
     base_suite = load_suite(preset.suite)

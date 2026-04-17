@@ -81,6 +81,7 @@ def test_campaign_presets_map_to_budgeted_suites():
         "proof-basin-probes",
         "proof-depth-curve",
         "family-smoke",
+        "family-calibration",
         "family-shallow-pure-blind",
         "family-shallow",
         "family-basin",
@@ -124,13 +125,18 @@ def test_campaign_presets_map_to_budgeted_suites():
 
     family_smoke = campaign_preset("family-smoke")
     family_runs = load_suite(family_smoke.suite).expanded_runs()
-    assert family_smoke.suite == "v1.7-family-smoke"
+    assert family_smoke.suite == "v1.8-family-smoke"
     assert any(run.case_id == "exp-blind-ceml2" for run in family_runs)
+    assert any(run.case_id == "exp-blind-ceml8" for run in family_runs)
     assert any([operator.label for operator in run.optimizer.operator_schedule] == ["ZEML_8", "ZEML_4"] for run in family_runs)
 
+    family_calibration = campaign_preset("family-calibration")
+    assert family_calibration.suite == "v1.8-family-calibration"
+    assert len(load_suite(family_calibration.suite).expanded_runs()) == 22
+
     family_standard = campaign_preset("family-standard")
-    assert family_standard.suite == "v1.7-family-standard"
-    assert family_standard.tier == "v1.7-family-matrix"
+    assert family_standard.suite == "v1.8-family-standard"
+    assert family_standard.tier == "v1.8-family-matrix"
 
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
@@ -172,7 +178,7 @@ def test_family_smoke_campaign_writes_family_manifest(tmp_path):
     comparison = result.table_paths["operator_family_comparison_md"].read_text(encoding="utf-8")
 
     assert manifest["preset"]["name"] == "family-smoke"
-    assert manifest["suite"]["id"] == "v1.7-family-smoke"
+    assert manifest["suite"]["id"] == "v1.8-family-smoke"
     assert manifest["counts"]["total"] == 2
     assert manifest["run_filter"]["case_ids"] == ["exp-blind-raw", "exp-blind-ceml2"]
     assert {"raw_eml", "CEML_2"} <= {row["operator_family"] for row in recovery_rows}
@@ -245,6 +251,10 @@ def test_campaign_refuses_silent_overwrite(tmp_path):
             run_filter=RunFilter(case_ids=("planck-diagnostic",)),
         )
 
+    stale_artifact = tmp_path / "existing" / "runs" / "stale-suite" / "stale.json"
+    stale_artifact.parent.mkdir(parents=True)
+    stale_artifact.write_text("{}", encoding="utf-8")
+
     replacement = run_campaign(
         "smoke",
         output_root=tmp_path,
@@ -254,6 +264,7 @@ def test_campaign_refuses_silent_overwrite(tmp_path):
     )
 
     assert replacement.manifest_path.exists()
+    assert not stale_artifact.exists()
 
 
 def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):

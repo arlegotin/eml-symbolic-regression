@@ -32,6 +32,14 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "v1.7-family-depth-curve",
         "v1.7-family-standard",
         "v1.7-family-showcase",
+        "v1.8-family-smoke",
+        "v1.8-family-calibration",
+        "v1.8-family-shallow-pure-blind",
+        "v1.8-family-shallow",
+        "v1.8-family-basin",
+        "v1.8-family-depth-curve",
+        "v1.8-family-standard",
+        "v1.8-family-showcase",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -66,6 +74,27 @@ def test_family_matrix_suites_clone_regimes_with_operator_variants():
     ]
     assert centered_scaffolded
     assert "scaled_exp" not in centered_scaffolded[0].optimizer.scaffold_initializers
+    assert centered_scaffolded[0].optimizer.scaffold_exclusions == (
+        "scaled_exp:centered_family_incompatible_raw_witness",
+    )
+
+
+def test_v18_family_matrix_expands_scales_and_schedules():
+    suite = load_suite("v1.8-family-calibration")
+    runs = suite.expanded_runs()
+
+    assert len(runs) == 22
+    assert {"cal-exp-blind-ceml1", "cal-log-blind-zeml8-4-2-1"} <= {run.case_id for run in runs}
+    assert {"raw_eml", "CEML_1", "CEML_2", "CEML_4", "CEML_8", "ZEML_1", "ZEML_2", "ZEML_4", "ZEML_8"} <= {
+        run.optimizer.operator_family.label for run in runs
+    }
+    assert any(
+        [operator.label for operator in run.optimizer.operator_schedule] == ["ZEML_8", "ZEML_4", "ZEML_2", "ZEML_1"]
+        for run in runs
+    )
+    v18_probe = next(run for run in runs if run.case_id == "cal-exp-blind-ceml1")
+    assert "v1.8" in v18_probe.tags
+    assert "v1.7" not in v18_probe.tags
 
 
 def test_family_basin_and_depth_curve_preserve_regime_shapes_without_thresholds():

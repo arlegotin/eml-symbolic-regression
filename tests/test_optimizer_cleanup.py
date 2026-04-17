@@ -77,6 +77,9 @@ def test_optimizer_preserves_centered_schedule_metadata():
 
     assert result.manifest["config"]["operator_schedule"][0]["label"] == "ZEML_8"
     assert result.manifest["config"]["operator_schedule"][1]["label"] == "ZEML_4"
+    assert [item["operator"]["label"] for item in result.manifest["operator_trace"][:2]] == ["ZEML_8", "ZEML_4"]
+    assert result.manifest["operator_trace"][-1]["phase"] == "hardening"
+    assert result.manifest["operator_trace"][-1]["operator"]["label"] == "ZEML_4"
     assert result.snap.expression.to_node()["operator"]["label"] == "ZEML_4"
 
 
