@@ -4,15 +4,15 @@ milestone: v1.9
 milestone_name: milestone
 current_phase: 50
 status: executing
-stopped_at: Completed 50-01-PLAN.md
-last_updated: "2026-04-17T12:50:26.866Z"
+stopped_at: Completed 50-02-PLAN.md
+last_updated: "2026-04-17T12:58:00.567Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 5
-  completed_plans: 3
-  percent: 60
+  completed_plans: 4
+  percent: 80
 ---
 
 # GSD State: EML Symbolic Regression
@@ -31,7 +31,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-17)
 ## Current Position
 
 Phase: 50 (Arrhenius Exact Warm-Start Demo) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-04-17
 Progress: [██--------] 20% by completed phases (v1.9: 1/5 complete)
@@ -88,6 +88,7 @@ Progress: [██--------] 20% by completed phases (v1.9: 1/5 complete)
 | Phase 49 P01 | 4 min | 2 tasks | 4 files |
 | Phase 49 P02 | 13 min | 3 tasks | 6 files |
 | Phase 50 P01 | 4min | 3 tasks | 4 files |
+| Phase 50 P02 | 7min | 2 tasks | 4 files |
 
 ## Completed Milestone
 
@@ -173,6 +174,8 @@ Target work:
 - [Phase 50]: Arrhenius uses normalized dimensionless input x with formula exp(-0.8/x) and positive domains away from zero.
 - [Phase 50]: Strict Arrhenius support is locked through direct_division_template; no Arrhenius-specific compiler branch was added.
 - [Phase 50]: Zero-noise Arrhenius warm-start evidence remains same_ast_return / same_ast, not blind discovery.
+- [Phase 50]: Arrhenius benchmark evidence is isolated in v1.9-arrhenius-evidence instead of broadening existing campaign denominators.
+- [Phase 50]: The arrhenius-warm benchmark path is classified as same_ast, not blind discovery.
 
 ### Pending Todos
 
@@ -190,8 +193,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 ## Session Continuity
 
-Last session: 2026-04-17T12:50:26.862Z
-Stopped at: Completed 50-01-PLAN.md
+Last session: 2026-04-17T12:58:00.564Z
+Stopped at: Completed 50-02-PLAN.md
 Resume file: None
 
 ---
