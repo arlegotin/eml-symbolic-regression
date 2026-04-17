@@ -28,7 +28,7 @@ The paper shows that EML plus the constant `1` can generate the scientific-calcu
 - CLI commands for paper checks, demo reports, benchmark evidence runs, and campaign reports.
 - Pytest coverage for the MVP pipeline.
 
-The implementation is intentionally honest about scope: exact EML recovery is demonstrated for paper-grounded shallow formulas and for Beer-Lambert via a compiler-generated warm start. Harder showcase demos remain verified catalog candidates or explicit unsupported/depth reports unless a trained exact EML candidate passes the verifier.
+The implementation is intentionally honest about scope: exact EML recovery is demonstrated for paper-grounded shallow formulas, for Beer-Lambert via a compiler-generated warm start, and for normalized Arrhenius as exact compiler warm-start / same-AST basin evidence. Harder showcase demos remain verified catalog candidates or explicit unsupported/depth reports unless a trained exact EML candidate passes the verifier.
 
 ## Quick Commands
 
@@ -62,6 +62,12 @@ Run the compiler warm-start recovery path:
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --warm-start-eml --output artifacts/beer-lambert-warm-report.json
 ```
 
+Run the normalized Arrhenius exact warm-start report:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli demo arrhenius --warm-start-eml --points 24 --output artifacts/arrhenius-warm-report.json
+```
+
 List benchmark suites:
 
 ```bash
@@ -78,6 +84,12 @@ Run a filtered evidence subset:
 
 ```bash
 PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.2-evidence --case beer-perturbation-sweep --seed 0 --output-dir artifacts/benchmarks
+```
+
+Reproduce the focused Arrhenius evidence artifact:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-arrhenius-evidence --case arrhenius-warm --seed 0 --perturbation-noise 0.0 --output-dir artifacts/campaigns/v1.9-arrhenius-evidence
 ```
 
 List campaign presets:
@@ -140,7 +152,7 @@ python -m pytest
 
 ## Benchmark Evidence
 
-Benchmark runs use the built-in suites `smoke`, `v1.2-evidence`, and `for-demo-diagnostics`, or a custom JSON suite with schema `eml.benchmark_suite.v1`. Each expanded run writes a JSON artifact containing the suite/run identity, formula, start mode, seed, perturbation, optimizer config, stage statuses, normalized losses/snap metrics when training ran, verifier status, timing, and errors.
+Benchmark runs use the built-in suites `smoke`, `v1.2-evidence`, `for-demo-diagnostics`, and focused evidence suites such as `v1.9-arrhenius-evidence`, or a custom JSON suite with schema `eml.benchmark_suite.v1`. Each expanded run writes a JSON artifact containing the suite/run identity, formula, start mode, seed, perturbation, optimizer config, stage statuses, normalized losses/snap metrics when training ran, verifier status, timing, and errors.
 
 The CLI also writes:
 
@@ -155,6 +167,8 @@ Interpretation rules:
 - `verified_equivalent_ast` means a warm-started run snapped to a different exact AST that still verified.
 - `unsupported` and failed cases are kept in the denominator; they are part of the evidence.
 - `verifier_recovery_rate` is computed from verifier-owned recovery, not from training loss.
+
+The focused Arrhenius artifact is rooted at `artifacts/campaigns/v1.9-arrhenius-evidence/v1.9-arrhenius-evidence/`. It contains suite `v1.9-arrhenius-evidence` case `arrhenius-warm` for demo id `arrhenius`, normalized formula `exp(-0.8/x)`, domains `(0.5, 3.0)`, `(0.6, 2.7)`, and `(3.1, 4.2)`, compiler macro `direct_division_template`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
 
 ## Campaign Reports
 
