@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 
 from eml_symbolic_regression.datasets import demo_specs, get_demo, proof_dataset_manifest
 
@@ -110,3 +111,38 @@ def test_for_demo_and_paper_provenance_are_distinct():
     assert planck_provenance["normalized_dimensionless"] is True
     assert "Planck" in planck_provenance["source_linkage"]
     assert "exp" in exp_provenance["symbolic_expression"]
+
+
+def test_arrhenius_demo_uses_positive_dimensionless_domains():
+    # v1.9-arrhenius-evidence / arrhenius-warm must remain same_ast evidence:
+    # direct_division_template -> same_ast_return -> recovered.
+    spec = get_demo("arrhenius")
+
+    assert spec.variable == "x"
+    assert spec.train_domain == (0.5, 3.0)
+    assert spec.heldout_domain == (0.6, 2.7)
+    assert spec.extrap_domain == (3.1, 4.2)
+    assert spec.normalized_dimensionless is True
+    assert spec.source_document == "sources/FOR_DEMO.md"
+    assert "Arrhenius" in spec.source_linkage
+
+    splits = spec.make_splits(points=24, seed=0)
+    for split in splits:
+        values = split.inputs["x"]
+        assert values.min() > 0.0
+        assert np.issubdtype(split.target.dtype, np.complexfloating)
+        assert np.all(np.isfinite(split.target))
+
+    manifest = proof_dataset_manifest("arrhenius", points=24, seed=0, tolerance=1e-8)
+    domains = {split["name"]: split["domain"] for split in manifest["splits"]}
+    assert domains == {
+        "train": [0.5, 3.0],
+        "heldout": [0.6, 2.7],
+        "extrapolation": [3.1, 4.2],
+    }
+    assert manifest["formula_id"] == "arrhenius"
+    assert manifest["provenance"]["formula_id"] == "arrhenius"
+    assert manifest["provenance"]["symbolic_expression"] == "exp(-0.8/x)"
+    assert manifest["provenance"]["source_document"] == "sources/FOR_DEMO.md"
+    assert manifest["provenance"]["normalized_dimensionless"] is True
+    assert not (FORBIDDEN_RAW_KEYS & set(_walk_keys(manifest)))
