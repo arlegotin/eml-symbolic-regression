@@ -35,6 +35,7 @@ from .proof import (
 from .repair import cleanup_failed_candidate, repair_perturbed_candidate
 from .semantics import AnomalyStats, EmlOperator, as_complex_tensor, eml_operator_from_spec, mse_complex_numpy, raw_eml_operator
 from .verify import verify_candidate
+from .witnesses import known_scaffold_kinds, resolve_scaffold_plan
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
 
@@ -285,7 +286,7 @@ class OptimizerBudget:
         for index, value in enumerate(self.constants):
             if not (np.isfinite(value.real) and np.isfinite(value.imag)):
                 raise BenchmarkValidationError("invalid_budget", "constants must be finite", path=f"{path}.constants[{index}]")
-        allowed_scaffolds = {"exp", "log", "scaled_exp"}
+        allowed_scaffolds = set(known_scaffold_kinds())
         unknown_scaffolds = sorted(set(self.scaffold_initializers) - allowed_scaffolds)
         if unknown_scaffolds:
             raise BenchmarkValidationError(
@@ -949,24 +950,12 @@ def _family_variants(
 
 
 def _operator_variant_budget(base: OptimizerBudget, variant: _OperatorVariant) -> OptimizerBudget:
-    scaffold_initializers = base.scaffold_initializers
-    scaffold_exclusions = base.scaffold_exclusions
-    if not variant.operator_family.is_raw:
-        removed = tuple(scaffold for scaffold in scaffold_initializers if scaffold == "scaled_exp")
-        scaffold_initializers = tuple(scaffold for scaffold in scaffold_initializers if scaffold != "scaled_exp")
-        if removed:
-            scaffold_exclusions = tuple(
-                dict.fromkeys(
-                    (
-                        *scaffold_exclusions,
-                        "scaled_exp:centered_family_incompatible_raw_witness",
-                    )
-                )
-            )
+    initial_operator = variant.operator_schedule[0] if variant.operator_schedule else variant.operator_family
+    scaffold_plan = resolve_scaffold_plan(base.scaffold_initializers, initial_operator)
     return replace(
         base,
-        scaffold_initializers=scaffold_initializers,
-        scaffold_exclusions=scaffold_exclusions,
+        scaffold_initializers=scaffold_plan.enabled,
+        scaffold_exclusions=tuple(dict.fromkeys((*base.scaffold_exclusions, *scaffold_plan.exclusions))),
         operator_family=variant.operator_family,
         operator_schedule=variant.operator_schedule,
     )
