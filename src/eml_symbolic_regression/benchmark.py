@@ -1635,7 +1635,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         return {
             "status": status,
             "stage_statuses": stage_statuses,
-            "trained_eml_candidate": fit.manifest,
+            "trained_eml_candidate": _manifest_with_budget_scaffold_exclusions(fit.manifest, run.optimizer),
             "trained_eml_verification": report.as_dict(),
             "repair": repair_payload,
             "repair_status": repair_status,
@@ -1920,7 +1920,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             "stage_statuses": stage_statuses,
             **target_payload,
             "perturbed_true_tree": basin.manifest,
-            "trained_eml_candidate": basin.fit.manifest,
+            "trained_eml_candidate": _manifest_with_budget_scaffold_exclusions(basin.fit.manifest, run.optimizer),
             "trained_eml_verification": basin.verification.as_dict() if basin.verification else None,
             "return_kind": basin.return_kind,
             "raw_status": raw_status,
@@ -1936,6 +1936,19 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
 def _fit_depth(fit: FitResult, default_depth: int) -> int:
     config = fit.manifest.get("config") if isinstance(fit.manifest, Mapping) else None
     return int(config.get("depth", default_depth)) if isinstance(config, Mapping) else int(default_depth)
+
+
+def _manifest_with_budget_scaffold_exclusions(manifest: Mapping[str, Any], budget: OptimizerBudget) -> dict[str, Any]:
+    payload = deepcopy(dict(manifest))
+    payload["scaffold_exclusions"] = list(
+        dict.fromkeys(
+            (
+                *payload.get("scaffold_exclusions", ()),
+                *budget.scaffold_exclusions,
+            )
+        )
+    )
+    return payload
 
 
 def _budget_operator_family(budget: OptimizerBudget) -> EmlOperator:
