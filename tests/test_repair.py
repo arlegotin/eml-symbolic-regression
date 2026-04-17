@@ -627,7 +627,7 @@ def test_candidate_pool_cleanup_preserves_subtree_move_provenance() -> None:
 
 
 def test_candidate_pool_cleanup_does_not_accept_unrecovered_variants() -> None:
-    target_expr = Eml(Const(1.0), Const(1.0))
+    target_expr = Eml(Eml(Eml(Var("x"), Const(1.0)), Const(1.0)), Const(1.0))
     selected = _candidate_from_tree(
         _constant_root_tree(),
         candidate_id="selected",
