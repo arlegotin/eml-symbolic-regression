@@ -58,6 +58,33 @@ def test_compile_shockley_uses_lower_depth_template():
     assert result.metadata.macro_diagnostics["node_delta"] > 0
 
 
+def test_compile_reciprocal_shift_uses_template():
+    assert CompilerConfig().max_depth == 13
+    assert CompilerConfig().max_nodes == 256
+
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        1 / (x + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.unsupported_reason is None
+    assert result.metadata.depth == 10
+    assert result.metadata.node_count == 25
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["reciprocal_shift_template"]
+    assert result.metadata.macro_diagnostics["baseline_depth"] == 14
+    assert result.metadata.macro_diagnostics["baseline_node_count"] == 43
+    assert result.metadata.macro_diagnostics["depth_delta"] == 4
+    assert result.metadata.macro_diagnostics["node_delta"] == 18
+    assert [entry.rule for entry in result.metadata.trace].count("reciprocal_shift_template") == 1
+    assert "saturation_ratio_template" not in result.metadata.macro_diagnostics["hits"]
+
+
 def test_michaelis_relaxed_diagnostic_reports_direct_division_macro():
     spec = get_demo("michaelis_menten")
     splits = spec.make_splits(points=24, seed=0)
