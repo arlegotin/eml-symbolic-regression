@@ -67,6 +67,7 @@ BUILTIN_SUITES = (
     "v1.8-family-standard",
     "v1.8-family-showcase",
     "v1.9-arrhenius-evidence",
+    "v1.9-michaelis-evidence",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
@@ -1477,6 +1478,24 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                     points=24,
                     warm_steps=1,
                     tags=("v1.9", "arrhenius", "warm_start", "same_ast"),
+                    expect_recovery=True,
+                ),
+            ),
+        )
+    if name == "v1.9-michaelis-evidence":
+        return BenchmarkSuite(
+            id="v1.9-michaelis-evidence",
+            description="Focused v1.9 Michaelis-Menten exact warm-start evidence for normalized 2*x/(x+0.5).",
+            cases=(
+                _case(
+                    "michaelis-warm",
+                    "michaelis_menten",
+                    "warm_start",
+                    seeds=(0,),
+                    perturbation_noise=(0.0,),
+                    points=24,
+                    warm_steps=1,
+                    tags=("v1.9", "michaelis", "warm_start", "same_ast"),
                     expect_recovery=True,
                 ),
             ),
