@@ -68,6 +68,7 @@ BUILTIN_SUITES = (
     "v1.8-family-showcase",
     "v1.9-arrhenius-evidence",
     "v1.9-michaelis-evidence",
+    "v1.9-repair-evidence",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
@@ -1547,6 +1548,66 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                     warm_steps=1,
                     tags=("v1.9", "michaelis", "warm_start", "same_ast"),
                     expect_recovery=True,
+                ),
+            ),
+        )
+    if name == "v1.9-repair-evidence":
+        expanded_repair = BenchmarkRepairConfig(preset="expanded_candidate_pool")
+        return BenchmarkSuite(
+            id="v1.9-repair-evidence",
+            description="Focused v1.9 near-miss before/after suite for default versus expanded verifier-gated cleanup.",
+            cases=(
+                _case(
+                    "repair-radioactive-blind-default",
+                    "radioactive_decay",
+                    "blind",
+                    seeds=(1,),
+                    points=24,
+                    depth=4,
+                    steps=80,
+                    restarts=1,
+                    tags=("v1.9", "repair", "near_miss", "default_cleanup"),
+                    expect_recovery=False,
+                ),
+                _case(
+                    "repair-radioactive-blind-expanded",
+                    "radioactive_decay",
+                    "blind",
+                    seeds=(1,),
+                    points=24,
+                    depth=4,
+                    steps=80,
+                    restarts=1,
+                    tags=("v1.9", "repair", "near_miss", "expanded_cleanup"),
+                    expect_recovery=False,
+                    repair=expanded_repair,
+                ),
+                _case(
+                    "repair-beer-warm-default",
+                    "beer_lambert",
+                    "warm_start",
+                    seeds=(1,),
+                    perturbation_noise=(35.0,),
+                    points=24,
+                    depth=2,
+                    warm_steps=60,
+                    warm_restarts=1,
+                    tags=("v1.9", "repair", "near_miss", "default_cleanup"),
+                    expect_recovery=False,
+                ),
+                _case(
+                    "repair-beer-warm-expanded",
+                    "beer_lambert",
+                    "warm_start",
+                    seeds=(1,),
+                    perturbation_noise=(35.0,),
+                    points=24,
+                    depth=2,
+                    warm_steps=60,
+                    warm_restarts=1,
+                    tags=("v1.9", "repair", "near_miss", "expanded_cleanup"),
+                    expect_recovery=False,
+                    repair=expanded_repair,
                 ),
             ),
         )
