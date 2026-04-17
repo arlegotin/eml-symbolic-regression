@@ -28,13 +28,13 @@ Produce a stronger raw-EML hybrid paper package by fixing centered scaffold corr
 | 49 | Witness Registry and Centered Scaffold Correctness | 2/2 | Complete    | 2026-04-17 |
 | 50 | Arrhenius Exact Warm-Start Demo | 3/3 | Complete    | 2026-04-17 |
 | 51 | Reciprocal and Saturation Compiler Motifs | 3/3 | Complete    | 2026-04-17 |
-| 52 | Verifier-Gated Exact Cleanup Expansion | 2/3 | In Progress|  |
+| 52 | Verifier-Gated Exact Cleanup Expansion | 3/3 | Complete   | 2026-04-17 |
 | 53 | Raw-Hybrid Paper Campaign and Claim Package | Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 | Not Started |
 
 - [x] **Phase 49: Witness Registry and Centered Scaffold Correctness** - Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. (requirements: WIT-01, WIT-02, WIT-03, WIT-04) (completed 2026-04-17)
 - [x] **Phase 50: Arrhenius Exact Warm-Start Demo** - Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return. (requirements: ARR-01, ARR-02, ARR-03, ARR-04) (completed 2026-04-17)
 - [x] **Phase 51: Reciprocal and Saturation Compiler Motifs** - Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics. (requirements: MIC-01, MIC-02, MIC-03, MIC-04) (completed 2026-04-17)
-- [ ] **Phase 52: Verifier-Gated Exact Cleanup Expansion** - Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. (requirements: REP-01, REP-02, REP-03, REP-04)
+- [x] **Phase 52: Verifier-Gated Exact Cleanup Expansion** - Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. (requirements: REP-01, REP-02, REP-03, REP-04) (completed 2026-04-17)
 - [ ] **Phase 53: Raw-Hybrid Paper Campaign and Claim Package** - Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. (requirements: RHY-01, RHY-02, RHY-03, RHY-04, RHY-05)
 
 ## Phase Details

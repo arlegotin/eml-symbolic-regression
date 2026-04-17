@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 milestone: v1.9
 milestone_name: milestone
 current_phase: 52
-status: executing
-stopped_at: Completed 52-02-PLAN.md
-last_updated: "2026-04-17T15:33:56.057Z"
+status: verifying
+stopped_at: Completed 52-03-PLAN.md
+last_updated: "2026-04-17T15:42:03.031Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 11
-  completed_plans: 10
-  percent: 91
+  completed_plans: 11
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
@@ -32,7 +32,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-17)
 
 Phase: 52 (Verifier-Gated Exact Cleanup Expansion) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-17
 Progress: [██████----] 60% by completed phases (v1.9: 3/5 complete)
 
@@ -95,6 +95,7 @@ Progress: [██████----] 60% by completed phases (v1.9: 3/5 complete)
 | Phase 51 P03 | 4min | 2 tasks | 7 files |
 | Phase 52 P01 | 9min | 2 tasks | 3 files |
 | Phase 52 P02 | 15min | 3 tasks | 7 files |
+| Phase 52 P03 | 8min | 2 tasks | 12 files |
 
 ## Completed Milestone
 
@@ -201,6 +202,9 @@ Target work:
 - [Phase 52]: v1.9-repair-evidence has no claim id, no threshold policy, and expect_recovery=False; it measures near-miss repair behavior without changing denominators.
 - [Phase 52]: Expanded target-free cleanup config is passed only to cleanup_failed_candidate; perturbed target-aware repair remains the fallback path after a target-free miss.
 - [Phase 52]: Repair root/dedup metrics are exposed without relabeling repaired candidates as blind, same-AST, compile-only, or perturbed true-tree recovery.
+- [Phase 52]: The focused evidence suite measured no repair improvement from expanded cleanup, and that result is documented rather than forced.
+- [Phase 52]: Fallback preservation is validated from serialized optimizer selected_candidate and fallback_candidate manifests.
+- [Phase 52]: Expanded cleanup remains repair-only evidence and is not documented as blind, same-AST, compile-only, or perturbed true-tree recovery.
 
 ### Pending Todos
 
@@ -218,8 +222,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 ## Session Continuity
 
-Last session: 2026-04-17T15:33:56.054Z
-Stopped at: Completed 52-02-PLAN.md
+Last session: 2026-04-17T15:42:03.026Z
+Stopped at: Completed 52-03-PLAN.md
 Resume file: None
 
 ---
