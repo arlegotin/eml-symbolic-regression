@@ -113,6 +113,25 @@ def test_repair_config_defaults_to_bounded_target_neighborhood() -> None:
     assert config.strength == 30.0
     assert config.allow_target_slot_reverts is True
     assert config.allow_catalog_alternatives is False
+    assert config.cleanup_top_k == 2
+    assert config.cleanup_max_slots == 4
+    assert config.cleanup_beam_width == 8
+    assert config.cleanup_max_moves == 2
+    assert config.cleanup_candidate_sources == ("selected",)
+
+
+def test_repair_config_expanded_candidate_pool_is_bounded() -> None:
+    config = RepairConfig.expanded_candidate_pool()
+
+    assert config.max_target_reverts == 8
+    assert config.strength == 30.0
+    assert config.allow_target_slot_reverts is True
+    assert config.allow_catalog_alternatives is False
+    assert config.cleanup_top_k == 3
+    assert config.cleanup_max_slots == 8
+    assert config.cleanup_beam_width == 32
+    assert config.cleanup_max_moves == 3
+    assert config.cleanup_candidate_sources == ("selected", "fallback", "retained")
 
 
 def test_repair_move_serializes_slot_and_subtree_provenance() -> None:
@@ -144,6 +163,25 @@ def test_repair_move_serializes_slot_and_subtree_provenance() -> None:
     ]
     assert payload["pruned_assignments"] == [{"slot": "root.L.right", "choice": "const:1"}]
     assert payload["subtree_root"] == "root.L"
+
+    candidate_move = RepairMove(
+        kind="terminal_to_child",
+        slot="root.left",
+        before="var:x",
+        after="child",
+        source="slot_alternative",
+        accepted=True,
+        verifier_status="recovered",
+        candidate_id="fallback-candidate",
+        candidate_source="hardening_checkpoint",
+        candidate_root_source="fallback",
+    )
+
+    candidate_payload = candidate_move.as_dict()
+
+    assert candidate_payload["candidate_id"] == "fallback-candidate"
+    assert candidate_payload["candidate_source"] == "hardening_checkpoint"
+    assert candidate_payload["candidate_root_source"] == "fallback"
 
 
 def test_unverified_repair_report_preserves_raw_status_without_repaired_ast() -> None:
@@ -207,6 +245,13 @@ def test_verified_repair_report_serializes_repaired_ast_and_verification() -> No
     assert payload["repaired_ast"]["root"]["kind"] == "eml"
     assert payload["repaired_ast"]["metadata"]["source"] == "repaired_candidate"
     assert payload["verification"]["status"] == "recovered"
+    assert payload["candidate_roots_considered"] == []
+    assert payload["candidate_root_count"] == 0
+    assert payload["variants_by_candidate_root"] == []
+    assert payload["deduped_variant_count"] == 0
+    assert payload["accepted_candidate_id"] is None
+    assert payload["accepted_candidate_source"] is None
+    assert payload["accepted_candidate_root_source"] is None
 
 
 def test_terminal_to_child_repair_applies_new_descendant_assignments() -> None:
