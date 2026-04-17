@@ -85,23 +85,30 @@ def test_compile_reciprocal_shift_uses_template():
     assert "saturation_ratio_template" not in result.metadata.macro_diagnostics["hits"]
 
 
-def test_michaelis_relaxed_diagnostic_reports_direct_division_macro():
+def test_compile_michaelis_uses_saturation_ratio_template():
     spec = get_demo("michaelis_menten")
     splits = spec.make_splits(points=24, seed=0)
-    diagnostic = diagnose_compile_expression(
+    result = compile_and_validate(
         spec.candidate.to_sympy(),
         CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
         {spec.variable: splits[0].inputs[spec.variable]},
     )
 
-    assert diagnostic["status"] == "unsupported"
-    assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
-    relaxed_metadata = diagnostic["relaxed"]["metadata"]
-    macro = relaxed_metadata["macro_diagnostics"]
-    assert relaxed_metadata["depth"] <= 14
-    assert macro["hits"] == ["direct_division_template"]
-    assert macro["depth_delta"] > 0
-    assert macro["node_delta"] > 0
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.unsupported_reason is None
+    assert result.metadata.depth == 12
+    assert result.metadata.node_count == 41
+    assert result.metadata.macro_diagnostics is not None
+    macro = result.metadata.macro_diagnostics
+    assert macro["hits"] == ["saturation_ratio_template"]
+    assert macro["baseline_depth"] == 18
+    assert macro["baseline_node_count"] == 75
+    assert macro["depth_delta"] == 6
+    assert macro["node_delta"] == 34
+    assert [entry.rule for entry in result.metadata.trace].count("saturation_ratio_template") == 1
+    assert "reciprocal_shift_template" not in macro["hits"]
+    assert "direct_division_template" not in macro["hits"]
 
 
 def test_compile_arrhenius_uses_direct_division_template():
