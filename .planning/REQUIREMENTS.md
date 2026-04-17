@@ -82,33 +82,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WIT-01 | TBD | Pending |
-| WIT-02 | TBD | Pending |
-| WIT-03 | TBD | Pending |
-| WIT-04 | TBD | Pending |
-| ARR-01 | TBD | Pending |
-| ARR-02 | TBD | Pending |
-| ARR-03 | TBD | Pending |
-| ARR-04 | TBD | Pending |
-| MIC-01 | TBD | Pending |
-| MIC-02 | TBD | Pending |
-| MIC-03 | TBD | Pending |
-| MIC-04 | TBD | Pending |
-| REP-01 | TBD | Pending |
-| REP-02 | TBD | Pending |
-| REP-03 | TBD | Pending |
-| REP-04 | TBD | Pending |
-| RHY-01 | TBD | Pending |
-| RHY-02 | TBD | Pending |
-| RHY-03 | TBD | Pending |
-| RHY-04 | TBD | Pending |
-| RHY-05 | TBD | Pending |
+| WIT-01 | Phase 49 | Pending |
+| WIT-02 | Phase 49 | Pending |
+| WIT-03 | Phase 49 | Pending |
+| WIT-04 | Phase 49 | Pending |
+| ARR-01 | Phase 50 | Pending |
+| ARR-02 | Phase 50 | Pending |
+| ARR-03 | Phase 50 | Pending |
+| ARR-04 | Phase 50 | Pending |
+| MIC-01 | Phase 51 | Pending |
+| MIC-02 | Phase 51 | Pending |
+| MIC-03 | Phase 51 | Pending |
+| MIC-04 | Phase 51 | Pending |
+| REP-01 | Phase 52 | Pending |
+| REP-02 | Phase 52 | Pending |
+| REP-03 | Phase 52 | Pending |
+| REP-04 | Phase 52 | Pending |
+| RHY-01 | Phase 53 | Pending |
+| RHY-02 | Phase 53 | Pending |
+| RHY-03 | Phase 53 | Pending |
+| RHY-04 | Phase 53 | Pending |
+| RHY-05 | Phase 53 | Pending |
 
 **Coverage:**
 - v1.9 requirements: 21 total
-- Mapped to phases: 0
-- Unmapped: 21
+- Mapped to phases: 21
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-17*
-*Last updated: 2026-04-17 after requirement definition*
+*Last updated: 2026-04-17 after roadmap creation*

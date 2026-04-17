@@ -83,8 +83,8 @@ Progress: [----------] 0% by completed phases (v1.9: 0/5 complete)
 | v1.8 archived roadmap | `.planning/milestones/v1.8-ROADMAP.md` | Complete |
 | v1.8 archived phase artifacts | `.planning/milestones/v1.8-phases/` | Complete |
 | v1.8 milestone audit | `.planning/milestones/v1.8-MILESTONE-AUDIT.md` | Complete |
-| v1.9 active requirements | `.planning/REQUIREMENTS.md` | Pending |
-| v1.9 active roadmap | `.planning/ROADMAP.md` | Pending |
+| v1.9 active requirements | `.planning/REQUIREMENTS.md` | Complete |
+| v1.9 active roadmap | `.planning/ROADMAP.md` | Complete |
 
 ## Completed Milestone
 

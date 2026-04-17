@@ -1,8 +1,8 @@
 # Roadmap: EML Symbolic Regression
 
 **Updated:** 2026-04-17
-**Current milestone:** v1.8 Centered-Family Viability and Full Evidence Run
-**Phase numbering:** Continues from v1.7; v1.8 starts at Phase 44.
+**Current milestone:** v1.9 Raw-EML Hybrid Recovery and Paper Suite
+**Phase numbering:** Continues from v1.8; v1.9 starts at Phase 49.
 
 ## Milestones
 
@@ -14,141 +14,139 @@
 - **v1.5 Training Proof and Recovery Guarantees** - Phases 29-33 complete (completed 2026-04-16; archive: `.planning/milestones/v1.5-ROADMAP.md`)
 - **v1.6 Hybrid Search Pipeline and Exact Candidate Recovery** - Phases 34-38 complete (completed 2026-04-16; archive: `.planning/milestones/v1.6-ROADMAP.md`)
 - **v1.7 Centered-Family Baseline and Paper Decision** - Phases 39-43 complete (completed 2026-04-16; archive: `.planning/milestones/v1.7-ROADMAP.md`)
-- **v1.8 Centered-Family Viability and Full Evidence Run** - Phases 44-48 complete (completed 2026-04-17)
+- **v1.8 Centered-Family Viability and Full Evidence Run** - Phases 44-48 complete (completed 2026-04-17; archive: `.planning/milestones/v1.8-ROADMAP.md`)
+- **v1.9 Raw-EML Hybrid Recovery and Paper Suite** - Phases 49-53 planned
 
 ## Milestone Goal
 
-Determine whether centered/scaled operator families are actually viable improvements over raw EML after fixing missing integration support, calibrating the family grid, running full evidence campaigns, and regenerating the paper decision artifacts.
+Produce a stronger raw-EML hybrid paper package by fixing centered scaffold correctness, adding Arrhenius exact recovery, materially improving Michaelis-Menten support, expanding exact cleanup, and generating a regime-separated paper-facing campaign.
 
 ## Planned Phases
 
 | Phase | Name | Goal | Requirements | Status |
 |-------|------|------|--------------|--------|
-| 44 | Centered-Family Smoke Triage and Full-Run Gate | Turn the quick smoke failure signal into an artifact-backed blocker map and go/no-go gate for expensive campaigns. | TRI-01, TRI-02, TRI-03, TRI-04 | Complete |
-| 45 | Centered Integration Fixes | Fix or explicitly gate centered warm-start, compiler-seed, initializer, schedule, repair, and refit paths. | FIX-01, FIX-02, FIX-03, FIX-04, FIX-05 | Complete |
-| 46 | Family Matrix Calibration | Expand and calibrate the fixed-`s` and continuation experiment matrix before full evidence runs. | MAT-01, MAT-02, MAT-03, MAT-04, MAT-05 | Complete |
-| 47 | Full Family Evidence Campaigns | Run and archive the raw-vs-centered family evidence campaigns with comparison artifacts and locks. | RUN-01, RUN-02, RUN-03, RUN-04, RUN-05 | Complete |
-| 48 | Paper Decision Refresh and Milestone Audit | Regenerate the paper decision package from v1.8 aggregates and audit the claim boundary. | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 | Complete |
+| 49 | Witness Registry and Centered Scaffold Correctness | Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. | WIT-01, WIT-02, WIT-03, WIT-04 | Not Started |
+| 50 | Arrhenius Exact Warm-Start Demo | Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return. | ARR-01, ARR-02, ARR-03, ARR-04 | Not Started |
+| 51 | Reciprocal and Saturation Compiler Motifs | Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics. | MIC-01, MIC-02, MIC-03, MIC-04 | Not Started |
+| 52 | Verifier-Gated Exact Cleanup Expansion | Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. | REP-01, REP-02, REP-03, REP-04 | Not Started |
+| 53 | Raw-Hybrid Paper Campaign and Claim Package | Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 | Not Started |
 
-- [x] **Phase 44: Centered-Family Smoke Triage and Full-Run Gate** - Turn the quick smoke failure signal into an artifact-backed blocker map and go/no-go gate for expensive campaigns. (requirements: TRI-01, TRI-02, TRI-03, TRI-04)
-- [x] **Phase 45: Centered Integration Fixes** - Fix or explicitly gate centered warm-start, compiler-seed, initializer, schedule, repair, and refit paths. (requirements: FIX-01, FIX-02, FIX-03, FIX-04, FIX-05)
-- [x] **Phase 46: Family Matrix Calibration** - Expand and calibrate the fixed-`s` and continuation experiment matrix before full evidence runs. (requirements: MAT-01, MAT-02, MAT-03, MAT-04, MAT-05)
-- [x] **Phase 47: Full Family Evidence Campaigns** - Run and archive the raw-vs-centered family evidence campaigns with comparison artifacts and locks. (requirements: RUN-01, RUN-02, RUN-03, RUN-04, RUN-05)
-- [x] **Phase 48: Paper Decision Refresh and Milestone Audit** - Regenerate the paper decision package from v1.8 aggregates and audit the claim boundary. (requirements: PAP-01, PAP-02, PAP-03, PAP-04, PAP-05)
+- [ ] **Phase 49: Witness Registry and Centered Scaffold Correctness** - Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. (requirements: WIT-01, WIT-02, WIT-03, WIT-04)
+- [ ] **Phase 50: Arrhenius Exact Warm-Start Demo** - Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return. (requirements: ARR-01, ARR-02, ARR-03, ARR-04)
+- [ ] **Phase 51: Reciprocal and Saturation Compiler Motifs** - Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics. (requirements: MIC-01, MIC-02, MIC-03, MIC-04)
+- [ ] **Phase 52: Verifier-Gated Exact Cleanup Expansion** - Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. (requirements: REP-01, REP-02, REP-03, REP-04)
+- [ ] **Phase 53: Raw-Hybrid Paper Campaign and Claim Package** - Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. (requirements: RHY-01, RHY-02, RHY-03, RHY-04, RHY-05)
 
 ## Phase Details
 
-### Phase 44: Centered-Family Smoke Triage and Full-Run Gate
+### Phase 49: Witness Registry and Centered Scaffold Correctness
 
-**Goal:** Convert the observed `family-smoke` result into a reproducible blocker analysis and full-run gate.
+**Goal:** Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs.
 
-**Why first:** The quick smoke check showed centered blind `exp` failures and unsupported centered warm-start paths. Running full campaigns before classifying these would mostly spend time producing known low-information failures.
-
-**Success criteria:**
-1. A reproducible smoke command and artifact path are documented for raw-vs-centered comparison.
-2. Every centered smoke failure and unsupported path is classified with an artifact-backed reason.
-3. Focused `exp`/`log` shallow calibration probes are available for the centered variants that matter.
-4. A go/no-go memo states what must be fixed, what can remain fail-closed, and what evidence can be trusted in the next phases.
-
-**Requirements:** TRI-01, TRI-02, TRI-03, TRI-04
-
-### Phase 45: Centered Integration Fixes
-
-**Goal:** Make centered-family training paths real where needed and explicitly fail-closed where not supported.
-
-**Why now:** The family matrix must distinguish genuine centered operator behavior from missing warm-start, initializer, embedding, continuation, repair, or refit support.
+**Why first:** Centered-family evidence remains partly confounded while raw `exp`/`log` scaffold helpers can be reused under centered semantics. This must be fixed before new centered conclusions and before adding richer raw motifs.
 
 **Success criteria:**
-1. Centered warm-start either executes supported verified attempts or emits explicit unsupported reasons that stay in denominators.
-2. Compiler-seed and exact-AST embedding paths preserve operator-family metadata and reject incompatible exact-return comparisons.
-3. Centered scaffold and initializer choices are compatible or excluded with visible reason codes.
-4. Continuation schedules switch operators as declared and record schedule state in manifests.
-5. Repair/refit/neighborhood logic preserves family semantics under regression tests.
+1. A witness registry declares scaffold availability by operator family.
+2. Raw `exp`, `log`, and `scaled_exp` scaffolds are available for raw EML only unless a same-family witness is explicitly registered.
+3. Raw scaffold helpers fail closed or are no longer directly callable under centered families.
+4. Optimizer and benchmark manifests expose centered scaffold exclusions with reason codes.
 
-**Requirements:** FIX-01, FIX-02, FIX-03, FIX-04, FIX-05
+**Requirements:** WIT-01, WIT-02, WIT-03, WIT-04
 
-### Phase 46: Family Matrix Calibration
+### Phase 50: Arrhenius Exact Warm-Start Demo
 
-**Goal:** Build the defensible experiment grid and calibration artifacts for fixed centered families and continuation schedules.
+**Goal:** Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return.
 
-**Why now:** The v1.7 grid was intentionally small. The paper-relevant comparison needs fixed `s` variants, scheduled variants, clear filters, and budget/exclusion records.
-
-**Success criteria:**
-1. Built-in family suites cover raw EML, `CEML_1/2/4/8`, `ZEML_1/2/4/8`, and declared continuation schedules where supported.
-2. Campaign presets separate calibration, shallow pure-blind, scaffolded shallow, basin, depth-curve, standard, and optional showcase evidence.
-3. Run IDs, manifests, filters, and tables expose formula, start mode, training mode, depth, seed, operator family, and schedule.
-4. Calibration outputs record chosen budgets, exclusions, and recommended full-run scope.
-
-**Requirements:** MAT-01, MAT-02, MAT-03, MAT-04, MAT-05
-
-### Phase 47: Full Family Evidence Campaigns
-
-**Goal:** Execute and archive the full raw-vs-centered evidence matrix needed to answer centered-family viability.
-
-**Why now:** After triage, fixes, and calibration, full campaigns can produce evidence rather than restating known missing support.
+**Why now:** Arrhenius is the clearest low-risk new scientific-law win: it is normalized, domain-safe away from zero, strictly compilable under current diagnostics, and already has review-time evidence for same-AST warm-start return.
 
 **Success criteria:**
-1. `family-shallow-pure-blind` is run or deliberately scoped with a reproducible reason and artifact trail.
-2. `family-shallow`, `family-basin`, and `family-depth-curve` are run or deliberately scoped with reproducible reasons and artifact trails.
-3. `family-standard` is run after calibration; `family-showcase` runs only if earlier evidence shows a meaningful centered-family signal.
-4. Campaign reports include recovery, depth, anomaly, shifted-singularity, repair/refit, post-snap verifier, unsupported, and formula-complexity comparisons.
-5. Regression-lock artifacts compare centered and raw families while preserving archived historical anchors.
+1. `arrhenius` exists as a built-in demo dataset with positive train, held-out, and extrapolation domains.
+2. Strict compiler diagnostics report support within the current depth gate and include `direct_division_template`.
+3. Zero-noise compiler warm-start returns the same exact AST and verifier status `recovered`.
+4. A reproducible artifact/report path records compile depth, warm-start status, verifier status, and evidence regime.
 
-**Requirements:** RUN-01, RUN-02, RUN-03, RUN-04, RUN-05
+**Requirements:** ARR-01, ARR-02, ARR-03, ARR-04
 
-### Phase 48: Paper Decision Refresh and Milestone Audit
+### Phase 51: Reciprocal and Saturation Compiler Motifs
 
-**Goal:** Regenerate the paper decision package from v1.8 evidence and close the milestone with an explicit claim boundary.
+**Goal:** Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics.
 
-**Why last:** Paper claims must follow the actual v1.8 aggregates, not the original centered-family hypothesis.
+**Why now:** Michaelis-Menten is the highest-value medium-difficulty target because it is scientifically recognizable and currently close to the support gate. A reciprocal-shift macro is the most concrete compiler opportunity identified by the review.
 
 **Success criteria:**
-1. `artifacts/paper/v1.8/` is generated from the new centered-family aggregates.
-2. The decision memo chooses publish centered geometry paper, publish raw-EML searchability note, continue completeness search, or abandon/pivot centered-family work.
-3. Safe/unsafe claim artifacts cite actual aggregate paths and preserve regime separation.
-4. Negative centered results, if present, are reported directly rather than reframed as success.
-5. The milestone audit verifies requirement coverage, evidence integrity, and absence of centered-family overclaims.
+1. Reciprocal-shift motifs such as `1/(x+b)` are supported or fail closed with improved diagnostics.
+2. Saturation-ratio motifs such as `(a*x)/(b+x)` use reusable compiler logic rather than formula-specific hardcoding.
+3. Before/after diagnostics record depth, node count, rule trace, and macro hits for reciprocal shift and Michaelis targets.
+4. Michaelis-Menten is exact-recovered if strict support reaches the gate; otherwise the milestone records a material depth reduction and honest unsupported status.
 
-**Requirements:** PAP-01, PAP-02, PAP-03, PAP-04, PAP-05
+**Requirements:** MIC-01, MIC-02, MIC-03, MIC-04
+
+### Phase 52: Verifier-Gated Exact Cleanup Expansion
+
+**Goal:** Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior.
+
+**Why now:** Existing evidence shows soft fits often snap to stable but wrong exact corners. A larger, verifier-gated exact cleanup neighborhood is directly targeted at those symbolic selection failures.
+
+**Success criteria:**
+1. Cleanup can consider selected, fallback, and retained exact candidates where candidate pool provenance is available.
+2. Cleanup defaults or presets allow a larger deduplicated neighborhood than the v1.6/v1.8 configuration while remaining bounded.
+3. Subtree-level alternatives are used when provenance exposes them.
+4. Targeted before/after artifacts show whether repair improves near-miss subsets without weakening fallback behavior.
+
+**Requirements:** REP-01, REP-02, REP-03, REP-04
+
+### Phase 53: Raw-Hybrid Paper Campaign and Claim Package
+
+**Goal:** Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists.
+
+**Why last:** Paper artifacts should follow real code and campaign evidence. This phase packages the results without blurring evidence regimes or overselling warm-start recovery as blind discovery.
+
+**Success criteria:**
+1. A raw-hybrid paper suite includes shallow blind boundaries, perturbed basin evidence, Beer-Lambert, Shockley, Arrhenius, and Michaelis diagnostics.
+2. Reports keep pure blind, scaffolded, compile-only, warm-start, same-AST return, repaired, refit, and perturbed-basin regimes separate.
+3. Scientific-law tables include formula, compile support, depth, macro hits, warm-start status, verifier status, and artifact paths.
+4. Centered-family material is framed as negative diagnostic evidence with same-family witness caveats.
+5. README/docs updates cite successful artifacts and avoid blind-discovery overclaims.
+
+**Requirements:** RHY-01, RHY-02, RHY-03, RHY-04, RHY-05
 
 ## Coverage
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TRI-01 | Phase 44 | Complete |
-| TRI-02 | Phase 44 | Complete |
-| TRI-03 | Phase 44 | Complete |
-| TRI-04 | Phase 44 | Complete |
-| FIX-01 | Phase 45 | Complete |
-| FIX-02 | Phase 45 | Complete |
-| FIX-03 | Phase 45 | Complete |
-| FIX-04 | Phase 45 | Complete |
-| FIX-05 | Phase 45 | Complete |
-| MAT-01 | Phase 46 | Complete |
-| MAT-02 | Phase 46 | Complete |
-| MAT-03 | Phase 46 | Complete |
-| MAT-04 | Phase 46 | Complete |
-| MAT-05 | Phase 46 | Complete |
-| RUN-01 | Phase 47 | Complete |
-| RUN-02 | Phase 47 | Complete |
-| RUN-03 | Phase 47 | Complete |
-| RUN-04 | Phase 47 | Complete |
-| RUN-05 | Phase 47 | Complete |
-| PAP-01 | Phase 48 | Complete |
-| PAP-02 | Phase 48 | Complete |
-| PAP-03 | Phase 48 | Complete |
-| PAP-04 | Phase 48 | Complete |
-| PAP-05 | Phase 48 | Complete |
+| WIT-01 | Phase 49 | Pending |
+| WIT-02 | Phase 49 | Pending |
+| WIT-03 | Phase 49 | Pending |
+| WIT-04 | Phase 49 | Pending |
+| ARR-01 | Phase 50 | Pending |
+| ARR-02 | Phase 50 | Pending |
+| ARR-03 | Phase 50 | Pending |
+| ARR-04 | Phase 50 | Pending |
+| MIC-01 | Phase 51 | Pending |
+| MIC-02 | Phase 51 | Pending |
+| MIC-03 | Phase 51 | Pending |
+| MIC-04 | Phase 51 | Pending |
+| REP-01 | Phase 52 | Pending |
+| REP-02 | Phase 52 | Pending |
+| REP-03 | Phase 52 | Pending |
+| REP-04 | Phase 52 | Pending |
+| RHY-01 | Phase 53 | Pending |
+| RHY-02 | Phase 53 | Pending |
+| RHY-03 | Phase 53 | Pending |
+| RHY-04 | Phase 53 | Pending |
+| RHY-05 | Phase 53 | Pending |
 
 **Coverage summary:**
-- v1.8 requirements: 24 total
-- Mapped to phases: 24
+- v1.9 requirements: 21 total
+- Mapped to phases: 21
 - Unmapped: 0
 
 ## Next Step
 
-v1.8 complete. The paper decision package is available at `artifacts/paper/v1.8/`.
+Start with Phase 49 to fix witness/scaffold correctness before adding raw motifs or paper-facing evidence.
+
+`$gsd-plan-phase 49`
 
 ---
-*Roadmap created: 2026-04-16 for milestone v1.8*
-*Last updated: 2026-04-17 after completing v1.8*
+*Roadmap created: 2026-04-17 for milestone v1.9*
+*Last updated: 2026-04-17 after roadmap creation*
