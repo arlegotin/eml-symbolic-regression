@@ -263,6 +263,9 @@ class _Compiler:
         if isinstance(expr, sp.Pow):
             return self._compile_reciprocal_shift(expr)
         if isinstance(expr, sp.Mul):
+            macro = self._compile_saturation_ratio(expr)
+            if macro is not None:
+                return macro
             macro = self._compile_direct_division(expr)
             if macro is not None:
                 return macro
@@ -309,6 +312,51 @@ class _Compiler:
             "reciprocal_shift_template",
             expr,
             reciprocal_expr(shifted),
+        )
+
+    def _compile_saturation_ratio(self, expr: sp.Mul) -> Expr | None:
+        numerator_factors: list[sp.Expr] = []
+        denominator_matches: list[_UnitShift] = []
+
+        for factor in expr.args:
+            if isinstance(factor, sp.Pow) and factor.exp == -1:
+                match = self._match_unit_shift(factor.base)
+                if match is None:
+                    return None
+                denominator_matches.append(match)
+            else:
+                numerator_factors.append(factor)
+
+        if len(denominator_matches) != 1:
+            return None
+
+        coefficient = 1.0 + 0.0j
+        numerator_symbol: sp.Symbol | None = None
+        for factor in numerator_factors:
+            if factor.is_number:
+                coefficient *= self._constant_value(factor)
+            elif isinstance(factor, sp.Symbol):
+                if numerator_symbol is not None:
+                    return None
+                numerator_symbol = factor
+            else:
+                return None
+
+        if numerator_symbol is None:
+            return None
+
+        variable = self._variable_name(numerator_symbol)
+        shift = denominator_matches[0]
+        if variable != shift.variable:
+            return None
+
+        numerator = multiply_expr(Const(coefficient), Var(variable))
+        denominator = self._build_unit_shift(shift)
+        self.assumptions.append("saturation ratio shortcut lowers c*x/(x+b) as one structural motif")
+        return self._record(
+            "saturation_ratio_template",
+            expr,
+            divide_expr(numerator, denominator),
         )
 
     def _compile_direct_division(self, expr: sp.Mul) -> Expr | None:
