@@ -112,6 +112,7 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "v1.8-family-standard",
         "v1.8-family-showcase",
         "v1.9-arrhenius-evidence",
+        "v1.9-michaelis-evidence",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -152,6 +153,38 @@ def test_arrhenius_evidence_suite_contains_exact_warm_start_case():
     assert demo.heldout_domain == (0.6, 2.7)
     assert demo.extrap_domain == (3.1, 4.2)
     assert run.run_id == suite.expanded_runs()[0].run_id
+
+
+def test_michaelis_evidence_suite_contains_exact_warm_start_case():
+    suite = builtin_suite("v1.9-michaelis-evidence")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.9-michaelis-evidence"
+    assert [case.id for case in suite.cases] == ["michaelis-warm"]
+    assert len(runs) == 1
+
+    run = runs[0]
+    demo = get_demo("michaelis_menten")
+    provenance = demo.formula_provenance()
+
+    assert run.case_id == "michaelis-warm"
+    assert run.formula == "michaelis_menten"
+    assert provenance["symbolic_expression"] == "2*x/(x + 0.5)"
+    assert run.start_mode == "warm_start"
+    assert run.training_mode == "compiler_warm_start_training"
+    assert run.seed == 0
+    assert run.perturbation_noise == 0.0
+    assert run.dataset.points == 24
+    assert run.optimizer.warm_steps == 1
+    assert run.optimizer.max_compile_depth == 13
+    assert run.optimizer.max_compile_nodes == 256
+    assert run.optimizer.max_warm_depth == 14
+    assert run.expect_recovery is True
+    assert run.tags == ("v1.9", "michaelis", "warm_start", "same_ast")
+    assert demo.train_domain == (0.05, 5.0)
+    assert demo.heldout_domain == (0.08, 4.5)
+    assert demo.extrap_domain == (5.1, 7.0)
+    assert run.run_id == "v1-9-michaelis-evidence-michaelis-warm-a67d8ccfb108"
 
 
 def test_family_matrix_suites_clone_regimes_with_operator_variants():
