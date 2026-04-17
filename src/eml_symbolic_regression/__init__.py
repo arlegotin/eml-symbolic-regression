@@ -16,8 +16,18 @@ from .semantics import (
     zeml_s_operator,
 )
 from .verify import VerificationReport, verify_candidate
+from .witnesses import (
+    CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING,
+    ScaffoldPlan,
+    ScaffoldWitness,
+    known_scaffold_kinds,
+    list_scaffold_witnesses,
+    resolve_scaffold_plan,
+    scaffold_witness_for,
+)
 
 __all__ = [
+    "CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING",
     "Const",
     "CenteredEml",
     "CompilerConfig",
@@ -26,6 +36,8 @@ __all__ = [
     "EmlOperator",
     "EmbeddingConfig",
     "Expr",
+    "ScaffoldPlan",
+    "ScaffoldWitness",
     "SoftEMLTree",
     "SympyCandidate",
     "UnsupportedExpression",
@@ -44,8 +56,12 @@ __all__ = [
     "eml_torch",
     "embed_expr_into_tree",
     "exp_expr",
+    "known_scaffold_kinds",
+    "list_scaffold_witnesses",
     "log_expr",
     "raw_eml_operator",
+    "resolve_scaffold_plan",
+    "scaffold_witness_for",
     "verify_candidate",
     "zeml_s_expr",
     "zeml_s_operator",
