@@ -1,9 +1,11 @@
 import hashlib
 import json
+import shlex
 from pathlib import Path
 
 import pytest
 
+from eml_symbolic_regression.cli import build_parser, raw_hybrid_paper_command
 from eml_symbolic_regression.raw_hybrid_paper import (
     RAW_HYBRID_PAPER_PRESET_ID,
     RawHybridPaperError,
@@ -216,3 +218,66 @@ def test_centered_diagnostics_keep_same_family_witness_caveat(tmp_path):
     assert "negative diagnostic" in centered
     assert "impossibility" not in centered
     assert "best centered recovery rate" in centered
+
+
+def test_raw_hybrid_cli_parser_and_command_writes_package(tmp_path, capsys):
+    output_dir = tmp_path / "paper root"
+    args = build_parser().parse_args(["raw-hybrid-paper", "--output-dir", str(output_dir), "--require-existing"])
+
+    assert args.func is raw_hybrid_paper_command
+    assert args.output_dir == str(output_dir)
+    assert args.require_existing is True
+
+    result = args.func(args)
+    captured = capsys.readouterr().out
+
+    assert result == 0
+    assert "manifest ->" in captured
+    assert "report ->" in captured
+    assert "scientific laws ->" in captured
+    assert "claim boundaries ->" in captured
+    assert "source locks ->" in captured
+    assert (output_dir / "manifest.json").exists()
+    assert (output_dir / "raw-hybrid-report.md").exists()
+    assert (output_dir / "scientific-law-table.json").exists()
+    assert (output_dir / "claim-boundaries.md").exists()
+    assert (output_dir / "source-locks.json").exists()
+
+
+def test_raw_hybrid_cli_refuses_silent_overwrite(tmp_path):
+    output_dir = tmp_path / "paper"
+    parser = build_parser()
+    first = parser.parse_args(["raw-hybrid-paper", "--output-dir", str(output_dir), "--require-existing"])
+    assert first.func(first) == 0
+
+    second = parser.parse_args(["raw-hybrid-paper", "--output-dir", str(output_dir), "--require-existing"])
+    with pytest.raises(RawHybridPaperError):
+        second.func(second)
+
+    stale = output_dir / "stale.txt"
+    stale.write_text("remove me", encoding="utf-8")
+    replacement = parser.parse_args(["raw-hybrid-paper", "--output-dir", str(output_dir), "--require-existing", "--overwrite"])
+    assert replacement.func(replacement) == 0
+    assert not stale.exists()
+
+
+def test_raw_hybrid_cli_reproduction_command_quotes_shell_sensitive_paths(tmp_path):
+    output_dir = tmp_path / "paper root; echo injected"
+    args = build_parser().parse_args(["raw-hybrid-paper", "--output-dir", str(output_dir), "--require-existing", "--overwrite"])
+
+    assert args.func(args) == 0
+    manifest = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
+    command = manifest["reproducibility"]["command"]
+
+    assert command == shlex.join(shlex.split(command))
+    assert shlex.split(command) == [
+        "PYTHONPATH=src",
+        "python",
+        "-m",
+        "eml_symbolic_regression.cli",
+        "raw-hybrid-paper",
+        "--output-dir",
+        str(output_dir),
+        "--require-existing",
+        "--overwrite",
+    ]
