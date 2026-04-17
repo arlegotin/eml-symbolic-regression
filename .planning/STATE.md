@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 milestone: v1.9
 milestone_name: milestone
 current_phase: 49
-status: executing
-stopped_at: Completed 49-01-PLAN.md
-last_updated: "2026-04-17T11:35:06.803Z"
+status: verifying
+stopped_at: Completed 49-02-PLAN.md
+last_updated: "2026-04-17T11:52:04.596Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
-  percent: 50
+  completed_plans: 2
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
@@ -30,11 +30,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-17)
 
 ## Current Position
 
-Phase: 49 (Witness Registry and Centered Scaffold Correctness) — EXECUTING
+Phase: 49 (Witness Registry and Centered Scaffold Correctness) — VERIFYING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-17
-Progress: [----------] 0% by completed phases (v1.9: 0/5 complete)
+Progress: [██--------] 20% by completed phases (v1.9: 1/5 complete)
 
 ## Performance Metrics
 
@@ -86,6 +86,7 @@ Progress: [----------] 0% by completed phases (v1.9: 0/5 complete)
 | v1.9 active requirements | `.planning/REQUIREMENTS.md` | Complete |
 | v1.9 active roadmap | `.planning/ROADMAP.md` | Complete |
 | Phase 49 P01 | 4 min | 2 tasks | 4 files |
+| Phase 49 P02 | 13 min | 3 tasks | 6 files |
 
 ## Completed Milestone
 
@@ -119,7 +120,7 @@ Target work:
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 49 | Witness Registry and Centered Scaffold Correctness | In Progress (1/2 plans) | WIT-01, WIT-02, WIT-03, WIT-04 |
+| 49 | Witness Registry and Centered Scaffold Correctness | Complete (2/2 plans) | WIT-01, WIT-02, WIT-03, WIT-04 |
 | 50 | Arrhenius Exact Warm-Start Demo | Not Started | ARR-01, ARR-02, ARR-03, ARR-04 |
 | 51 | Reciprocal and Saturation Compiler Motifs | Not Started | MIC-01, MIC-02, MIC-03, MIC-04 |
 | 52 | Verifier-Gated Exact Cleanup Expansion | Not Started | REP-01, REP-02, REP-03, REP-04 |
@@ -165,6 +166,9 @@ Target work:
 - [Phase 49]: Current exp, log, and scaled_exp scaffold witnesses are registered only for raw_eml.
 - [Phase 49]: Centered benchmark variants serialize exp/log/scaled_exp exclusions with centered_family_same_family_witness_missing.
 - [Phase 49]: Continuation benchmark variants resolve scaffold availability against the first scheduled operator.
+- [Phase 49]: Direct optimizer calls use the initial training operator, not the final hardening operator, to resolve scaffold witness availability.
+- [Phase 49]: Centered raw scaffold helper calls fail with EmbeddingError reason centered_family_same_family_witness_missing before slot mutation or embedding.
+- [Phase 49]: Benchmark artifacts copy budget scaffold exclusions into trained optimizer manifests when benchmark filtering has already removed the raw scaffold requests.
 
 ### Pending Todos
 
@@ -182,8 +186,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 ## Session Continuity
 
-Last session: 2026-04-17T11:35:06.799Z
-Stopped at: Completed 49-01-PLAN.md
+Last session: 2026-04-17T11:52:04.592Z
+Stopped at: Completed 49-02-PLAN.md
 Resume file: None
 
 ---

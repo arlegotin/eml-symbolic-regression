@@ -25,13 +25,13 @@ Produce a stronger raw-EML hybrid paper package by fixing centered scaffold corr
 
 | Phase | Name | Goal | Requirements | Status |
 |-------|------|------|--------------|--------|
-| 49 | Witness Registry and Centered Scaffold Correctness | Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. | WIT-01, WIT-02, WIT-03, WIT-04 | In Progress (1/2 plans) |
+| 49 | Witness Registry and Centered Scaffold Correctness | Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. | WIT-01, WIT-02, WIT-03, WIT-04 | Complete |
 | 50 | Arrhenius Exact Warm-Start Demo | Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return. | ARR-01, ARR-02, ARR-03, ARR-04 | Not Started |
 | 51 | Reciprocal and Saturation Compiler Motifs | Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics. | MIC-01, MIC-02, MIC-03, MIC-04 | Not Started |
 | 52 | Verifier-Gated Exact Cleanup Expansion | Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. | REP-01, REP-02, REP-03, REP-04 | Not Started |
 | 53 | Raw-Hybrid Paper Campaign and Claim Package | Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 | Not Started |
 
-- [ ] **Phase 49: Witness Registry and Centered Scaffold Correctness** - Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. (requirements: WIT-01, WIT-02, WIT-03, WIT-04)
+- [x] **Phase 49: Witness Registry and Centered Scaffold Correctness** - Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. (requirements: WIT-01, WIT-02, WIT-03, WIT-04) (completed 2026-04-17)
 - [ ] **Phase 50: Arrhenius Exact Warm-Start Demo** - Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return. (requirements: ARR-01, ARR-02, ARR-03, ARR-04)
 - [ ] **Phase 51: Reciprocal and Saturation Compiler Motifs** - Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics. (requirements: MIC-01, MIC-02, MIC-03, MIC-04)
 - [ ] **Phase 52: Verifier-Gated Exact Cleanup Expansion** - Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. (requirements: REP-01, REP-02, REP-03, REP-04)
@@ -53,11 +53,11 @@ Produce a stronger raw-EML hybrid paper package by fixing centered scaffold corr
 
 **Requirements:** WIT-01, WIT-02, WIT-03, WIT-04
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 49-01-PLAN.md — Add the raw-only scaffold witness registry and route benchmark budget filtering through it.
-- [ ] 49-02-PLAN.md — Close direct optimizer/helper bypasses and prove centered scaffold exclusions survive artifacts.
+- [x] 49-02-PLAN.md — Close direct optimizer/helper bypasses and prove centered scaffold exclusions survive artifacts.
 
 ### Phase 50: Arrhenius Exact Warm-Start Demo
 
@@ -122,7 +122,7 @@ Plans:
 |-------------|-------|--------|
 | WIT-01 | Phase 49 | Complete |
 | WIT-02 | Phase 49 | Complete |
-| WIT-03 | Phase 49 | Pending |
+| WIT-03 | Phase 49 | Complete |
 | WIT-04 | Phase 49 | Complete |
 | ARR-01 | Phase 50 | Pending |
 | ARR-02 | Phase 50 | Pending |
