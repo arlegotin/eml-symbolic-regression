@@ -132,6 +132,30 @@ The generated Arrhenius evidence root is `artifacts/campaigns/v1.9-arrhenius-evi
 
 The generated Michaelis-Menten evidence root is `artifacts/campaigns/v1.9-michaelis-evidence/v1.9-michaelis-evidence/`. The suite `v1.9-michaelis-evidence` contains case `michaelis-warm`, demo id `michaelis_menten`, normalized formula `2*x/(x+0.5)`, domains `(0.05, 5.0)`, `(0.08, 4.5)`, and `(5.1, 7.0)`, macro hit `saturation_ratio_template`, compile depth `12`, node count `41`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
 
+## Raw-Hybrid Paper Package Contract
+
+`src/eml_symbolic_regression/raw_hybrid_paper.py` is a synthesis-only package writer. The CLI command is:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli raw-hybrid-paper --output-dir artifacts/paper/v1.9/raw-hybrid --require-existing
+```
+
+The command validates declared source artifacts, refuses a non-empty output directory unless `--overwrite` is passed, and does not run training, benchmarks, campaigns, proof campaigns, or paper-decision generation. Its source locks hash specific files, not directories, and write source id, role, path, required flag, and SHA-256 into `artifacts/paper/v1.9/raw-hybrid/source-locks.json`.
+
+The generated package root is `artifacts/paper/v1.9/raw-hybrid/`. It contains:
+
+- `manifest.json`: schema `eml.raw_hybrid_paper.v1`, preset `v1.9-raw-hybrid-paper`, reproduction command, output paths, source list, regime counts, and scientific-law row count.
+- `source-locks.json`: file-level evidence locks for v1.6 proof aggregates, v1.8 centered-family decision artifacts, v1.9 Arrhenius/Michaelis/repair evidence, and v1.6 Beer-Lambert/Shockley/Planck/logistic diagnostics.
+- `regime-summary.json`: separate `pure_blind`, `scaffolded`, `compile_only`, `warm_start`, `same_ast_return`, `repaired`, `refit`, and `perturbed_basin` buckets.
+- `raw-hybrid-report.md`: human-readable report with the same regime separation.
+- `scientific-law-table.json`, `scientific-law-table.csv`, and `scientific-law-table.md`: rows for Beer-Lambert, Shockley, Arrhenius, Michaelis-Menten, Planck diagnostic, logistic diagnostic, and historical Michaelis context.
+- `claim-boundaries.md`: explicit boundaries stating that warm-start, same-AST, scaffolded, repaired, refit, compile-only, and perturbed-basin evidence is not blind discovery.
+- `centered-negative-diagnostics.md`: centered-family negative diagnostic evidence with the same-family witness caveat.
+
+The `scientific-law-table` columns are `law`, `formula`, `compile_support`, `compile_depth`, `macro_hits`, `warm_start_status`, `verifier_status`, `evidence_regime`, and `artifact_path`. Beer-Lambert, Shockley, Arrhenius, and Michaelis-Menten are supported same-AST warm-start diagnostics. Arrhenius and Michaelis-Menten remain exact compiler warm-start / same-AST evidence, not blind discovery. Planck and logistic are unsupported/stretch compile diagnostics, not solved rows.
+
+The package deliberately reports centered-family material only as negative diagnostics under missing same-family witnesses. It does not claim centered-family impossibility.
+
 ## Campaign Report Contract
 
 Campaign presets are the showcase layer over benchmark suites:
