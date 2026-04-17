@@ -469,17 +469,15 @@ This phase does not introduce authentication, sessions, access control, persiste
 | A1 | The post-implementation macro code can preserve the prototype depth 10 and depth 12 results exactly. [ASSUMED] | Recommended Approach | If helper implementation differs from the prototype, Michaelis may remain strict-unsupported and Phase 51 should record depth reduction rather than recovery. |
 | A2 | A focused suite name such as `v1.9-michaelis-evidence` is acceptable if strict support lands. [ASSUMED] | Verification Plan | If the project wants no new suite until Phase 53, use CLI and tests only and leave broad artifact packaging for Phase 53. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should saturation artifacts report both `saturation_ratio_template` and `reciprocal_shift_template`, or only the top-level saturation macro?** [VERIFIED: .planning/phases/51-reciprocal-and-saturation-compiler-motifs/51-CONTEXT.md]
    - What we know: reciprocal-only tests should report `reciprocal_shift_template`, and Michaelis should report `saturation_ratio_template`. [VERIFIED: .planning/REQUIREMENTS.md]
-   - What is unclear: whether nested motif provenance should be represented as two macro hits or one top-level macro hit plus trace details. [ASSUMED]
-   - Recommendation: record `saturation_ratio_template` as the top-level macro for Michaelis and keep `reciprocal_shift_template` for reciprocal-only expressions unless the planner explicitly wants nested hit accounting. [ASSUMED]
+   - Decision: record `saturation_ratio_template` as the top-level macro hit for Michaelis-style saturation ratios, and keep `reciprocal_shift_template` for reciprocal-only expressions. Do not force nested reciprocal macro hits inside saturation artifacts unless a future trace schema explicitly needs nested provenance.
 
 2. **Should Phase 51 commit a permanent Michaelis evidence artifact if same-AST recovery lands?** [VERIFIED: .planning/ROADMAP.md]
    - What we know: Phase 50 committed focused Arrhenius evidence after tests passed. [VERIFIED: .planning/phases/50-arrhenius-exact-warm-start-demo/50-VERIFICATION.md]
-   - What is unclear: whether the planner wants a Phase 51 durable artifact immediately or only focused tests before Phase 53 packaging. [ASSUMED]
-   - Recommendation: add one focused benchmark suite and artifact if strict support lands, because MIC-04 asks for either warm-start recovery or honest unsupported artifact visibility. [VERIFIED: .planning/REQUIREMENTS.md]
+   - Decision: add one focused benchmark suite and permanent artifact if strict support lands, modeled on `v1.9-arrhenius-evidence`; otherwise add a focused unsupported diagnostic artifact that records the measured depth/node reduction. Broad paper-facing packaging still belongs to Phase 53.
 
 ## Sources
 
