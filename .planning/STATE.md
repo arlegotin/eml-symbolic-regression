@@ -1,40 +1,40 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.8
-milestone_name: Centered-Family Viability and Full Evidence Run
-current_phase: 48
-status: milestone_complete
-stopped_at: v1.8 completed; paper decision package generated
-last_updated: "2026-04-17T00:00:00Z"
-last_activity: 2026-04-17 -- v1.8 centered-family evidence and paper decision completed
+milestone: v1.9
+milestone_name: Raw-EML Hybrid Recovery and Paper Suite
+current_phase: 49
+status: ready_to_plan
+stopped_at: milestone v1.9 initialized; ready to plan Phase 49
+last_updated: "2026-04-17T10:47:51.727Z"
+last_activity: 2026-04-17 -- Milestone v1.9 started
 progress:
   total_phases: 5
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 48 - Paper Decision Refresh and Milestone Audit
+**Current phase:** Phase 49 - Witness Registry and Centered Scaffold Correctness
 **Mode:** YOLO
 
 ## Project Reference
 
-See: `.planning/PROJECT.md` (updated 2026-04-16)
+See: `.planning/PROJECT.md` (updated 2026-04-17)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.8 Centered-Family Viability and Full Evidence Run.
+**Current focus:** v1.9 Raw-EML Hybrid Recovery and Paper Suite.
 
 ## Current Position
 
-Phase: 48 - Paper Decision Refresh and Milestone Audit
-Plan: Complete
-Status: Milestone complete
-Last activity: 2026-04-17 -- v1.8 centered-family evidence and paper decision completed
-Progress: [##########] 100% by completed phases (v1.8: 5/5 complete)
+Phase: 49 - Witness Registry and Centered Scaffold Correctness
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-04-17 -- Milestone v1.9 started
+Progress: [----------] 0% by completed phases (v1.9: 0/5 complete)
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Progress: [##########] 100% by completed phases (v1.8: 5/5 complete)
 - v1.6 delivered search-quality upgrades that weakly dominate the prior exact-candidate selector on declared paths while keeping archived baselines intact.
 - v1.7 built centered/scaled operator-family infrastructure but did not run the full centered-family evidence matrix.
 - A quick post-v1.7 `family-smoke` run showed raw EML recovering the smoke `exp` blind and Beer-Lambert warm-start paths, while centered blind `exp` variants failed and centered warm-starts were unsupported. v1.8 therefore starts with triage and blocker fixes before full campaigns.
+- v1.8 produced negative centered-family evidence under scoped local campaigns and selected a raw-EML searchability paper path. v1.9 should now convert that decision into stronger raw-hybrid scientific-law results.
 
 ## Artifacts
 
@@ -78,46 +79,50 @@ Progress: [##########] 100% by completed phases (v1.8: 5/5 complete)
 | v1.7 paper decision package | `artifacts/paper/v1.7/` | Complete |
 | v1.7 milestone audit | `.planning/milestones/v1.7-MILESTONE-AUDIT.md` | Complete |
 | v1.8 project context | `.planning/PROJECT.md` | Complete |
-| v1.8 active requirements | `.planning/REQUIREMENTS.md` | Complete |
-| v1.8 active roadmap | `.planning/ROADMAP.md` | Complete |
+| v1.8 archived requirements | `.planning/milestones/v1.8-REQUIREMENTS.md` | Complete |
+| v1.8 archived roadmap | `.planning/milestones/v1.8-ROADMAP.md` | Complete |
+| v1.8 archived phase artifacts | `.planning/milestones/v1.8-phases/` | Complete |
+| v1.8 milestone audit | `.planning/milestones/v1.8-MILESTONE-AUDIT.md` | Complete |
+| v1.9 active requirements | `.planning/REQUIREMENTS.md` | Pending |
+| v1.9 active roadmap | `.planning/ROADMAP.md` | Pending |
 
 ## Completed Milestone
-
-**v1.7: Centered-Family Baseline and Paper Decision**
-
-Goal: Determine whether centered/scaled transport families materially improve exact symbolic recovery relative to raw EML while preserving verifier-owned evidence discipline.
-
-Target features:
-
-- Family-aware semantics and exact AST support for raw EML, `cEML_{s,t}`, `CEML_s`, and `ZEML_s`.
-- Family-aware soft master tree, snapping, verification, compiler, and warm-start support.
-- Raw-vs-centered proof and campaign matrix with fixed `s` grids and continuation schedules.
-- Comparative evidence bundle for recovery rates, depth behavior, anomalies, repair/refit dependence, and formula overhead.
-- Decision memo choosing between a publish-now robustness/geometry paper and a later successor-family paper requiring constructive completeness evidence.
-
-## Current Milestone
 
 **v1.8: Centered-Family Viability and Full Evidence Run**
 
 Goal: Determine whether centered/scaled operator families are actually viable improvements over raw EML after fixing missing integration support, calibrating the family grid, running full evidence campaigns, and regenerating the paper decision artifacts.
 
+Target features:
+
+- Centered-family smoke triage, calibration, and missing-support gates.
+- Explicit fail-closed handling for centered warm-start, compiler-seed, scaffold, and perturbed-tree paths.
+- Fixed-scale and continuation family matrix calibration.
+- Scoped family evidence campaigns and paper decision artifacts.
+- Raw-EML searchability note recommendation with centered results reported as negative diagnostics.
+
+## Current Milestone
+
+**v1.9: Raw-EML Hybrid Recovery and Paper Suite**
+
+Goal: Produce a stronger raw-EML hybrid paper package by fixing centered scaffold correctness, adding Arrhenius exact recovery, materially improving Michaelis-Menten support, expanding exact cleanup, and generating a regime-separated paper-facing campaign.
+
 Target work:
 
-- Smoke triage and missing-support audit for centered-family failures.
-- Centered warm-start, compiler-seed, initializer, and schedule fixes or explicit gates.
-- Expanded fixed-`s` and continuation experiment matrix.
-- Full family campaigns with archived aggregates, tables, figures, and regression locks.
-- Refreshed paper decision package grounded in actual centered-family aggregates.
+- Add a witness registry and prevent raw `exp`/`log` scaffolds under centered semantics.
+- Add Arrhenius as a normalized strict-compile and exact warm-start recovery demo.
+- Add reciprocal-shift and saturation compiler motifs for Michaelis-Menten support.
+- Expand exact post-snap cleanup with verifier-gated deduped neighborhoods.
+- Generate a raw-hybrid paper suite with regime-separated tables, reports, and claim language.
 
 ## Phase Status
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 44 | Centered-Family Smoke Triage and Full-Run Gate | Complete | TRI-01, TRI-02, TRI-03, TRI-04 |
-| 45 | Centered Integration Fixes | Complete | FIX-01, FIX-02, FIX-03, FIX-04, FIX-05 |
-| 46 | Family Matrix Calibration | Complete | MAT-01, MAT-02, MAT-03, MAT-04, MAT-05 |
-| 47 | Full Family Evidence Campaigns | Complete | RUN-01, RUN-02, RUN-03, RUN-04, RUN-05 |
-| 48 | Paper Decision Refresh and Milestone Audit | Complete | PAP-01, PAP-02, PAP-03, PAP-04, PAP-05 |
+| 49 | Witness Registry and Centered Scaffold Correctness | Not Started | WIT-01, WIT-02, WIT-03, WIT-04 |
+| 50 | Arrhenius Exact Warm-Start Demo | Not Started | ARR-01, ARR-02, ARR-03, ARR-04 |
+| 51 | Reciprocal and Saturation Compiler Motifs | Not Started | MIC-01, MIC-02, MIC-03, MIC-04 |
+| 52 | Verifier-Gated Exact Cleanup Expansion | Not Started | REP-01, REP-02, REP-03, REP-04 |
+| 53 | Raw-Hybrid Paper Campaign and Claim Package | Not Started | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 |
 
 ## Accumulated Context
 
@@ -163,7 +168,7 @@ None recorded.
 
 ### Blockers/Concerns
 
-The milestone must not claim universal blind recovery of arbitrary deep elementary expressions or completeness of the centered/scaled family. v1.8 produced negative centered-family evidence under the scoped local campaigns: centered warm-start and perturbed-tree paths remain fail-closed until same-family exact seeds exist, and centered blind calibration recovered 0/20 centered rows. The paper-facing recommendation is a raw-EML searchability note, not a centered-family improvement paper.
+The milestone must not claim universal blind recovery of arbitrary deep elementary expressions or completeness of the centered/scaled family. v1.9 warm-start, scaffolded, perturbed-basin, repair, refit, and pure-blind results must remain separated in every report. Centered empirical scaling remains paused until same-family witnesses exist.
 
 ### Quick Tasks Completed
 
@@ -174,8 +179,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-17
-Stopped at: v1.8 completed; paper decision package generated
+Stopped at: v1.9 initialized; ready to plan Phase 49
 Resume file: None
 
 ---
-*Last updated: 2026-04-17 after completing v1.8*
+*Last updated: 2026-04-17 after starting v1.9*

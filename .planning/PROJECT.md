@@ -10,26 +10,13 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.8 Shipped
+## Current State: v1.9 Started
 
-The repo now has strong representation, verification, reproducibility, and centered-family evidence foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, and paper-decision artifacts are all in place and archived through v1.8.
+The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, and paper-decision foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, and paper-decision artifacts are all in place and archived through v1.8.
 
-v1.6 upgraded the optimizer into a verifier-gated hybrid discrete-continuous pipeline: hardening and checkpoint snaps, exact-candidate ranking, low-margin discrete cleanup, post-snap constant refit, shorter compiler macros, and regime-aware reporting that preserves archived v1.5 and v1.4 evidence.
+The current evidence says raw EML is representationally viable but blind basin finding degrades sharply with depth. Perturbed true-tree recovery remains strong, scaffolded/warm-start regimes are useful when clearly labeled, and centered-family evidence is negative under the supplied v1.8 setup.
 
-The final `artifacts/proof/v1.6` bundle was regenerated from the latest code state and verified against campaign aggregates. It keeps the empirical story honest: pure random shallow blind recovery remains measured at `2/18` threshold-eligible recoveries plus one repaired candidate, scaffolded shallow proof remains `18/18`, perturbed true-tree basin proof remains `9/9` with same-AST returns, and depth-curve evidence remains reported rather than overclaimed.
-
-v1.7 shipped the centered/scaled operator-family baseline: centered semantics and exact ASTs, family-aware training and benchmark metadata, v1.7 family campaign suites, operator-family comparison tables, and a paper-decision package under `artifacts/paper/v1.7/`.
-
-v1.8 converted that hypothesis into evidence. The expanded smoke, calibration, and scoped standard campaigns show raw EML outperforming the centered variants under the supplied local-budget matrix: raw EML recovered 80.0% across the v1.8 paper-decision aggregates, while the best centered-family recovery rate was 0.0%. Centered warm-start and perturbed-tree paths remain explicit same-family seed gates rather than hidden failures. The paper decision package under `artifacts/paper/v1.8/` therefore recommends a raw-EML searchability note with centered-family results reported as negative diagnostic evidence.
-
-## Previous Milestone: v1.7 Centered-Family Baseline and Paper Decision
-
-**Shipped features:**
-- Centered/scaled operator semantics and exact ASTs for `cEML_{s,t}`, `CEML_s`, and `ZEML_s`.
-- Family-aware soft master tree training, snapping, schedule metadata, benchmark budgets, campaign CSV rows, and raw-default preservation.
-- Built-in v1.7 family suites and campaign presets for raw, fixed centered, and continuation variants.
-- Operator-family recovery, diagnostics, comparison Markdown, and regression-lock outputs in campaign reports.
-- Paper decision package with safe claims, unsafe claims, figure/table inventory, and incomplete completeness boundary.
+v1.9 pivots from trying to rescue centered families as the main story toward a raw-EML hybrid paper path: fix the remaining centered scaffold correctness confound, add Arrhenius as an exact warm-start recovery, shorten Michaelis-Menten through reusable compiler motifs, strengthen verifier-gated exact cleanup, and generate a regime-separated raw-hybrid paper suite.
 
 ## Last Completed Milestone: v1.8 Centered-Family Viability and Full Evidence Run
 
@@ -41,6 +28,17 @@ v1.8 converted that hypothesis into evidence. The expanded smoke, calibration, a
 - Expand the family experiment grid to include fixed `s` variants and continuation schedules needed for a defensible raw-vs-centered comparison.
 - Run scoped family evidence with recovery, anomaly, repair/refit, unsupported-rate, and regression-lock artifacts.
 - Regenerate the paper decision package from v1.8 centered-family aggregates and choose the raw-EML searchability note path.
+
+## Current Milestone: v1.9 Raw-EML Hybrid Recovery and Paper Suite
+
+**Goal:** Produce a stronger raw-EML hybrid paper package by fixing centered scaffold correctness, adding Arrhenius exact recovery, materially improving Michaelis-Menten support, expanding exact cleanup, and generating a regime-separated paper-facing campaign.
+
+**Target features:**
+- Explicit operator-family witness registry that prevents raw `exp`/`log` scaffolds from running under centered semantics until true same-family witnesses exist.
+- Arrhenius normalized demo with strict compiler support, exact warm-start recovery, tests, and reproducible artifacts.
+- Reusable reciprocal-shift and saturation-ratio compiler motifs aimed at bringing Michaelis-Menten under the supported depth gate.
+- Broader verifier-gated post-snap exact cleanup with AST deduplication, more candidate sources, and targeted before/after evidence.
+- Raw-hybrid paper suite/report that keeps pure blind, scaffolded, warm-start, perturbed, repaired, and centered-negative evidence regimes separate.
 
 ## Requirements
 
@@ -92,7 +90,11 @@ v1.8 converted that hypothesis into evidence. The expanded smoke, calibration, a
 
 ### Active
 
-- [ ] Decide whether the next milestone should pursue constructive centered-family witnesses, raw-EML paper packaging, or external baselines.
+- [ ] Fix centered scaffold correctness by routing all scaffold attempts through explicit operator-family witness availability.
+- [ ] Add Arrhenius as a normalized exact-recovery demo with strict compile support and verifier-owned warm-start return.
+- [ ] Add reciprocal/saturation compiler motifs and materially reduce Michaelis-Menten compile depth, preferably to supported exact recovery.
+- [ ] Strengthen verifier-gated exact post-snap cleanup without changing the recovery contract.
+- [ ] Generate a raw-hybrid paper-facing campaign/report with regime-separated claims and centered-family caveats.
 
 ### Out of Scope
 
@@ -115,7 +117,9 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 
 The committed v1.6 proof bundle now gives the stable evidence base for a research pivot. Representation is strong, verifier ownership is strong, scaffolded and perturbed-basin regimes are strong, and pure-blind discovery remains the honest weak point. v1.7 built the centered/scaled exp-log transport infrastructure, but did not run the full centered evidence matrix.
 
-A quick post-v1.7 `family-smoke` run showed that full campaigns should not be launched blindly yet: raw EML recovered the smoke `exp` blind case and Beer-Lambert warm-start case, while centered `exp` blind variants failed and centered warm-start paths were explicitly unsupported. v1.8 should fix or gate those paths first, then run the full matrix only when the resulting evidence is meaningful.
+A quick post-v1.7 `family-smoke` run showed that full campaigns should not be launched blindly yet: raw EML recovered the smoke `exp` blind case and Beer-Lambert warm-start case, while centered `exp` blind variants failed and centered warm-start paths were explicitly unsupported. v1.8 fixed or gated those paths, ran scoped evidence, and selected the raw-EML searchability note path.
+
+v1.8 found no positive centered-family recovery signal under the scoped local setup and identified a remaining centered scaffold correctness confound: raw `exp`/`log` scaffold helpers are semantically raw witnesses and must not be silently reused for `CEML_s` or `ZEML_s`. v1.9 should treat centered families as a paused constructive-theory track while focusing empirical effort on raw-EML motif-guided exact recovery.
 
 ## Constraints
 
@@ -128,6 +132,9 @@ A quick post-v1.7 `family-smoke` run showed that full campaigns should not be la
 - **Run discipline**: Full family campaigns should run only after smoke/calibration blockers are fixed or explicitly gated, so expensive artifacts answer the scientific question rather than restating known missing support.
 - **Demos**: Showcase examples must remain drawn from `sources/FOR_DEMO.md`, favoring normalized, dimensionless, visually distinctive laws.
 - **Repository state**: This project now has archived milestone planning and proof artifacts that must remain inspectable after the rollover.
+- **Witness honesty**: Raw EML witness/scaffold helpers are raw-only unless a same-family centered witness is explicitly constructed and tested.
+- **Reusable motifs**: Compiler improvements should target reusable structures such as reciprocal shifts and saturation ratios, not one-off formula recognizers.
+- **Paper claims**: Warm-start, same-AST return, scaffolded recovery, repair, refit, and pure-blind discovery must remain separately labeled in all v1.9 outputs.
 
 ## Key Decisions
 
@@ -161,6 +168,9 @@ A quick post-v1.7 `family-smoke` run showed that full campaigns should not be la
 | v1.8 treats centered-family performance as unknown until blocker fixes and full campaigns run | The v1.7 infrastructure shipped without full centered evidence, and the quick smoke check showed centered failures and unsupported warm-start paths. | ✓ Good |
 | v1.8 does not support a centered-family improvement paper from the supplied local evidence | Expanded smoke, calibration, and scoped standard aggregates show raw EML recovery at 80.0% and best centered recovery at 0.0%. | ✓ Good |
 | The near-term paper path is a raw-EML searchability note | Centered variants are useful negative diagnostics but not an empirical improvement under v1.8 evidence. | ✓ Good |
+| v1.9 pivots to raw-EML hybrid recovery rather than centered-family rescue | The strongest evidence is representation viability, blind-search depth limits, and reliable basin return near exact witnesses. | — Pending |
+| Centered empirical scaling pauses until same-family witnesses exist | Current centered results are negative and still partially confounded by raw scaffold reuse under centered semantics. | — Pending |
+| Michaelis-Menten is the preferred next compiler/search win before Planck | Michaelis is near the support gate while Planck remains materially deeper under current compile diagnostics. | — Pending |
 
 ## Evolution
 
@@ -180,4 +190,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-17 after completing milestone v1.8*
+*Last updated: 2026-04-17 after starting milestone v1.9*

@@ -1,5 +1,19 @@
 # Milestones
 
+## v1.8 Centered-Family Viability and Full Evidence Run (Shipped: 2026-04-17)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Reproduced and classified expanded raw-vs-centered family smoke and calibration evidence with scoped go/no-go diagnostics.
+- Made centered warm-start, perturbed-tree, compiler-seed, initializer, and scaffold unsupported paths explicit instead of hidden raw-family reuse.
+- Expanded fixed-scale and continuation family suites, then scoped the full evidence run based on centered calibration failure.
+- Archived v1.8 family evidence manifests, campaign aggregates, comparison tables, and regression locks without overwriting earlier proof anchors.
+- Generated `artifacts/paper/v1.8/` and selected the raw-EML searchability note path after raw EML outperformed centered variants in supplied aggregates.
+
+---
+
 ## v1.7 Centered-Family Baseline and Paper Decision (Shipped: 2026-04-16)
 
 **Phases completed:** 5 phases, 5 plans, 20 requirements
