@@ -110,3 +110,109 @@ def test_raw_hybrid_manifest_records_package_contract(tmp_path):
     assert manifest["source_locks"] == str(paths.source_locks_json)
     assert manifest["outputs"]["manifest_json"] == str(paths.manifest_json)
     assert manifest["outputs"]["source_locks_json"] == str(paths.source_locks_json)
+
+
+def test_raw_hybrid_report_keeps_required_regimes_separate(tmp_path):
+    paths = write_raw_hybrid_paper_package(output_dir=tmp_path / "paper", require_existing=True)
+
+    summary = json.loads(paths.regime_summary_json.read_text(encoding="utf-8"))
+    report = paths.raw_hybrid_report_md.read_text(encoding="utf-8")
+    claim_boundaries = paths.claim_boundaries_md.read_text(encoding="utf-8")
+
+    required_regimes = {
+        "pure_blind",
+        "scaffolded",
+        "compile_only",
+        "warm_start",
+        "same_ast_return",
+        "repaired",
+        "refit",
+        "perturbed_basin",
+    }
+    assert required_regimes <= set(summary)
+    assert summary["pure_blind"]["runs"]
+    assert summary["scaffolded"]["runs"]
+    assert summary["perturbed_basin"]["runs"]
+    assert summary["repaired"]["runs"]
+    assert "overall recovery" not in report.lower()
+    assert "merged recovery" not in report.lower()
+    for heading in (
+        "Pure Blind",
+        "Scaffolded",
+        "Compile Only",
+        "Warm Start",
+        "Same-AST Return",
+        "Repaired",
+        "Refit",
+        "Perturbed Basin",
+    ):
+        assert f"## {heading}" in report
+    for phrase in (
+        "warm-start evidence is not pure blind discovery",
+        "same-AST evidence is not pure blind discovery",
+        "scaffolded evidence is not pure blind discovery",
+        "repaired evidence is not pure blind discovery",
+        "refit evidence is not pure blind discovery",
+        "compile-only evidence is not pure blind discovery",
+        "perturbed-basin evidence is not pure blind discovery",
+    ):
+        assert phrase in claim_boundaries
+
+
+def test_scientific_law_table_contains_required_columns_and_rows(tmp_path):
+    paths = write_raw_hybrid_paper_package(output_dir=tmp_path / "paper", require_existing=True)
+
+    payload = json.loads(paths.scientific_law_table_json.read_text(encoding="utf-8"))
+    csv_header = paths.scientific_law_table_csv.read_text(encoding="utf-8").splitlines()[0].split(",")
+    markdown = paths.scientific_law_table_md.read_text(encoding="utf-8")
+    rows = payload["rows"]
+    required_columns = {
+        "law",
+        "formula",
+        "compile_support",
+        "compile_depth",
+        "macro_hits",
+        "warm_start_status",
+        "verifier_status",
+        "evidence_regime",
+        "artifact_path",
+    }
+
+    assert required_columns <= set(payload["columns"])
+    assert required_columns <= set(csv_header)
+    assert all(required_columns <= set(row) for row in rows)
+    assert "| law | formula | compile_support |" in markdown
+
+    by_law = {row["law"]: row for row in rows}
+    assert by_law["Beer-Lambert"]["evidence_regime"] == "same_ast_return"
+    assert by_law["Shockley diode"]["evidence_regime"] == "same_ast_return"
+    assert by_law["Arrhenius"]["formula"] == "exp(-0.8/x)"
+    assert by_law["Arrhenius"]["compile_support"] == "supported"
+    assert by_law["Arrhenius"]["compile_depth"] == 7
+    assert by_law["Arrhenius"]["macro_hits"] == ["direct_division_template"]
+    assert by_law["Arrhenius"]["warm_start_status"] == "same_ast_return"
+    assert by_law["Arrhenius"]["verifier_status"] == "recovered"
+    assert by_law["Arrhenius"]["evidence_regime"] == "same_ast_return"
+    assert "blind" not in by_law["Arrhenius"]["evidence_regime"]
+    assert by_law["Michaelis-Menten"]["formula"] == "2*x/(x + 0.5)"
+    assert by_law["Michaelis-Menten"]["compile_support"] == "supported"
+    assert by_law["Michaelis-Menten"]["compile_depth"] == 12
+    assert by_law["Michaelis-Menten"]["macro_hits"] == ["saturation_ratio_template"]
+    assert by_law["Michaelis-Menten"]["evidence_regime"] == "same_ast_return"
+    assert "blind" not in by_law["Michaelis-Menten"]["evidence_regime"]
+    assert by_law["Planck diagnostic"]["compile_support"] == "unsupported"
+    assert by_law["Planck diagnostic"]["evidence_regime"] == "compile_only"
+    assert by_law["Logistic diagnostic"]["compile_support"] == "unsupported"
+    assert by_law["Logistic diagnostic"]["evidence_regime"] == "compile_only"
+    assert by_law["Historical Michaelis diagnostic"]["evidence_regime"] == "historical_context"
+
+
+def test_centered_diagnostics_keep_same_family_witness_caveat(tmp_path):
+    paths = write_raw_hybrid_paper_package(output_dir=tmp_path / "paper", require_existing=True)
+
+    centered = paths.centered_negative_diagnostics_md.read_text(encoding="utf-8").lower()
+
+    assert "same-family witness" in centered
+    assert "negative diagnostic" in centered
+    assert "impossibility" not in centered
+    assert "best centered recovery rate" in centered
