@@ -165,7 +165,7 @@ Plans:
 
 Continue with Phase 53 to package the raw-hybrid paper-facing suite, reports, tables, and claim language.
 
-`$gsd-plan-phase 52`
+`$gsd-plan-phase 53`
 
 ---
 *Roadmap created: 2026-04-17 for milestone v1.9*
