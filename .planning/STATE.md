@@ -4,15 +4,15 @@ milestone: v1.9
 milestone_name: milestone
 current_phase: 51
 status: executing
-stopped_at: Completed 50-03-PLAN.md
-last_updated: "2026-04-17T13:45:01.863Z"
-last_activity: 2026-04-17 -- Phase 51 execution started
+stopped_at: Completed 51-01-PLAN.md
+last_updated: "2026-04-17T13:54:50.267Z"
+last_activity: 2026-04-17
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 8
-  completed_plans: 5
-  percent: 63
+  completed_plans: 6
+  percent: 75
 ---
 
 # GSD State: EML Symbolic Regression
@@ -31,9 +31,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-17)
 ## Current Position
 
 Phase: 51 (Reciprocal and Saturation Compiler Motifs) — EXECUTING
-Plan: 1 of 3
-Status: Executing Phase 51
-Last activity: 2026-04-17 -- Phase 51 execution started
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-04-17
 Progress: [████------] 40% by completed phases (v1.9: 2/5 complete)
 
 ## Performance Metrics
@@ -90,6 +90,7 @@ Progress: [████------] 40% by completed phases (v1.9: 2/5 complete)
 | Phase 50 P01 | 4min | 3 tasks | 4 files |
 | Phase 50 P02 | 7min | 2 tasks | 4 files |
 | Phase 50 P03 | 4min | 2 tasks | 7 files |
+| Phase 51 P01 | 8min | 3 tasks | 3 files |
 
 ## Completed Milestone
 
@@ -180,6 +181,9 @@ Target work:
 - [Phase 50]: Docs cite generated v1.9-arrhenius-evidence artifacts only after JSON validation passed.
 - [Phase 50]: Arrhenius is documented as exact compiler warm-start / same-AST basin evidence, not blind discovery.
 - [Phase 50]: Michaelis-Menten and Planck remain unsupported/stretch under default compile/warm-start gates.
+- [Phase 51]: Reciprocal and saturation motifs match direct SymPy structure only; no demo-name or string hardcoding was added.
+- [Phase 51]: Michaelis-Menten is promoted only as compiled same-AST warm-start evidence, not blind discovery.
+- [Phase 51]: Arrhenius remains on direct_division_template and Planck remains stretch/unsupported under warm-start promotion.
 
 ### Pending Todos
 
@@ -197,8 +201,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 ## Session Continuity
 
-Last session: 2026-04-17T13:04:41.196Z
-Stopped at: Completed 50-03-PLAN.md
+Last session: 2026-04-17T13:54:50.264Z
+Stopped at: Completed 51-01-PLAN.md
 Resume file: None
 
 ---

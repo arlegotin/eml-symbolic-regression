@@ -22,10 +22,10 @@
 
 ### Michaelis-Menten Compiler Motifs
 
-- [ ] **MIC-01**: Developer can compile reciprocal-shift motifs such as `1/(x + b)` or inspect a fail-closed diagnostic explaining remaining unsupported structure.
-- [ ] **MIC-02**: Developer can compile or rewrite saturation-ratio motifs such as `(a*x)/(b + x)` through reusable compiler logic rather than a one-off formula recognizer.
-- [ ] **MIC-03**: Developer can compare before/after compiler diagnostics for `1/(x+0.5)` and `2*x/(x+0.5)`, including depth, node count, rule trace, and macro hits.
-- [ ] **MIC-04**: Developer can run Michaelis-Menten warm-start recovery if strict support reaches the gate, or see an honest unsupported artifact if the macro work only reduces depth.
+- [x] **MIC-01**: Developer can compile reciprocal-shift motifs such as `1/(x + b)` or inspect a fail-closed diagnostic explaining remaining unsupported structure.
+- [x] **MIC-02**: Developer can compile or rewrite saturation-ratio motifs such as `(a*x)/(b + x)` through reusable compiler logic rather than a one-off formula recognizer.
+- [x] **MIC-03**: Developer can compare before/after compiler diagnostics for `1/(x+0.5)` and `2*x/(x+0.5)`, including depth, node count, rule trace, and macro hits.
+- [x] **MIC-04**: Developer can run Michaelis-Menten warm-start recovery if strict support reaches the gate, or see an honest unsupported artifact if the macro work only reduces depth.
 
 ### Exact Cleanup Expansion
 
@@ -90,10 +90,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ARR-02 | Phase 50 | Complete |
 | ARR-03 | Phase 50 | Complete |
 | ARR-04 | Phase 50 | Complete |
-| MIC-01 | Phase 51 | Pending |
-| MIC-02 | Phase 51 | Pending |
-| MIC-03 | Phase 51 | Pending |
-| MIC-04 | Phase 51 | Pending |
+| MIC-01 | Phase 51 | Complete |
+| MIC-02 | Phase 51 | Complete |
+| MIC-03 | Phase 51 | Complete |
+| MIC-04 | Phase 51 | Complete |
 | REP-01 | Phase 52 | Pending |
 | REP-02 | Phase 52 | Pending |
 | REP-03 | Phase 52 | Pending |
