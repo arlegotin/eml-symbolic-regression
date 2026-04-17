@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.9
 milestone_name: milestone
 current_phase: 50
-status: verifying
-stopped_at: Completed 49-02-PLAN.md
+status: ready_to_plan
+stopped_at: Phase 49 complete; ready to plan Phase 50
 last_updated: "2026-04-17T12:08:25.664Z"
 last_activity: 2026-04-17
 progress:
@@ -26,13 +26,13 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-17)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 49 — Witness Registry and Centered Scaffold Correctness
+**Current focus:** Phase 50 — Arrhenius Exact Warm-Start Demo
 
 ## Current Position
 
-Phase: 49 (Witness Registry and Centered Scaffold Correctness) — VERIFYING
+Phase: 50 - Arrhenius Exact Warm-Start Demo
 Plan: Not started
-Status: Phase complete — ready for verification
+Status: Ready to plan
 Last activity: 2026-04-17
 Progress: [██--------] 20% by completed phases (v1.9: 1/5 complete)
 
@@ -187,8 +187,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 ## Session Continuity
 
 Last session: 2026-04-17T11:52:04.592Z
-Stopped at: Completed 49-02-PLAN.md
+Stopped at: Phase 49 complete; ready to plan Phase 50
 Resume file: None
 
 ---
-*Last updated: 2026-04-17 after starting v1.9*
+*Last updated: 2026-04-17 after completing Phase 49*
