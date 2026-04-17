@@ -48,7 +48,7 @@ Unsupported functions, unknown variables, unsafe constants, excessive powers, an
 
 `literal_constants` means fixed coefficients such as `-0.8`, `0.5`, and `2` are inserted as terminal constants and reported as such. It is not a pure `{1, eml}` synthesis claim.
 
-The compiler now routes supported shortcuts through an explicit macro layer. Current macro rules are `scaled_exp_minus_one_template` for Shockley-style `scale * (exp(a) - 1)` shapes and `direct_division_template` for true numerator-over-denominator motifs such as Michaelis-Menten and Arrhenius reciprocal-temperature exponents. Compiler metadata records macro hits, misses, and the depth/node delta against a no-macro baseline so a shortcut can be audited instead of hidden behind an ad hoc branch.
+The compiler now routes supported shortcuts through an explicit macro layer. Current macro rules are `scaled_exp_minus_one_template` for Shockley-style `scale * (exp(a) - 1)` shapes, `direct_division_template` for true numerator-over-denominator motifs and Arrhenius reciprocal-temperature exponents, `reciprocal_shift_template` for reciprocal shifts such as `1/(x+b)`, and `saturation_ratio_template` for saturation ratios such as `c*x/(x+b)`. Compiler metadata records macro hits, misses, and the depth/node delta against a no-macro baseline so a shortcut can be audited instead of hidden behind an ad hoc branch.
 
 ## Warm Starts
 
@@ -78,6 +78,7 @@ Built-in suites:
 - `v1.3-standard`: the default campaign matrix with shallow blind baselines, Beer-Lambert perturbations, Michaelis-Menten, Planck, and selected FOR_DEMO diagnostics.
 - `v1.3-showcase`: an expanded campaign matrix with more seeds, more Beer-Lambert perturbation levels, and full FOR_DEMO diagnostics.
 - `v1.9-arrhenius-evidence`: a single focused `arrhenius-warm` run for normalized Arrhenius exact compiler warm-start evidence.
+- `v1.9-michaelis-evidence`: a single focused `michaelis-warm` run for normalized Michaelis-Menten exact compiler warm-start / same-AST evidence.
 
 Each run writes schema `eml.benchmark_run.v1` with:
 
@@ -116,6 +117,8 @@ The taxonomy intentionally separates:
 This prevents a same-AST return or low training loss from being read as blind symbolic discovery.
 
 The generated Arrhenius evidence root is `artifacts/campaigns/v1.9-arrhenius-evidence/v1.9-arrhenius-evidence/`. The suite `v1.9-arrhenius-evidence` contains case `arrhenius-warm`, demo id `arrhenius`, normalized formula `exp(-0.8/x)`, positive domains `(0.5, 3.0)`, `(0.6, 2.7)`, and `(3.1, 4.2)`, macro hit `direct_division_template`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
+
+The generated Michaelis-Menten evidence root is `artifacts/campaigns/v1.9-michaelis-evidence/v1.9-michaelis-evidence/`. The suite `v1.9-michaelis-evidence` contains case `michaelis-warm`, demo id `michaelis_menten`, normalized formula `2*x/(x+0.5)`, domains `(0.05, 5.0)`, `(0.08, 4.5)`, and `(5.1, 7.0)`, macro hit `saturation_ratio_template`, compile depth `12`, node count `41`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
 
 ## Campaign Report Contract
 
@@ -171,12 +174,13 @@ The built-in demos mirror `sources/FOR_DEMO.md`:
 
 `exp` and `log` are exact EML candidates. The remaining demos are catalog showcase formulas with verifier reports, with selected formulas promoted only when exact compiler warm-start evidence or another verifier-owned exact EML path exists.
 
-Beer-Lambert, Shockley, and normalized Arrhenius now have compiler-driven warm-start paths:
+Beer-Lambert, Shockley, normalized Arrhenius, and normalized Michaelis-Menten now have compiler-driven warm-start paths:
 
 ```bash
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --warm-start-eml
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo shockley --warm-start-eml --points 24
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo arrhenius --warm-start-eml --points 24 --output artifacts/arrhenius-warm-report.json
+PYTHONPATH=src python -m eml_symbolic_regression.cli demo michaelis_menten --warm-start-eml --points 24 --output artifacts/michaelis-warm-report.json
 ```
 
 Arrhenius uses normalized dimensionless input `x` and formula `exp(-0.8/x)`. Its focused benchmark command is:
@@ -185,4 +189,10 @@ Arrhenius uses normalized dimensionless input `x` and formula `exp(-0.8/x)`. Its
 PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-arrhenius-evidence --case arrhenius-warm --seed 0 --perturbation-noise 0.0 --output-dir artifacts/campaigns/v1.9-arrhenius-evidence
 ```
 
-At the default gates, Michaelis-Menten and Planck remain honest stretch reports: their catalog formulas verify, the relaxed compiler diagnostics show the macro-shortened exact trees, but the shipped compile/warm-start stages still report unsupported depth instead of promotion.
+Michaelis-Menten uses normalized dimensionless input `x` and formula `2*x/(x+0.5)`. Its focused benchmark command is:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-michaelis-evidence --case michaelis-warm --seed 0 --perturbation-noise 0.0 --output-dir artifacts/campaigns/v1.9-michaelis-evidence
+```
+
+At the default gates, Planck remains an honest stretch report: its catalog formula verifies, the relaxed compiler diagnostics show the macro-shortened exact tree, but the shipped compile/warm-start stage still reports unsupported depth instead of promotion. Michaelis-Menten is promoted only by the strict same-AST warm-start evidence above, not as blind discovery.

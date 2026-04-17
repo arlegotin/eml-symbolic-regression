@@ -28,7 +28,7 @@ The paper shows that EML plus the constant `1` can generate the scientific-calcu
 - CLI commands for paper checks, demo reports, benchmark evidence runs, and campaign reports.
 - Pytest coverage for the MVP pipeline.
 
-The implementation is intentionally honest about scope: exact EML recovery is demonstrated for paper-grounded shallow formulas, for Beer-Lambert via a compiler-generated warm start, and for normalized Arrhenius as exact compiler warm-start / same-AST basin evidence. Harder showcase demos remain verified catalog candidates or explicit unsupported/depth reports unless a trained exact EML candidate passes the verifier.
+The implementation is intentionally honest about scope: exact EML recovery is demonstrated for paper-grounded shallow formulas, for Beer-Lambert via a compiler-generated warm start, and for normalized Arrhenius and Michaelis-Menten as exact compiler warm-start / same-AST basin evidence. Harder showcase demos remain verified catalog candidates or explicit unsupported/depth reports unless a trained exact EML candidate passes the verifier.
 
 ## Quick Commands
 
@@ -68,6 +68,12 @@ Run the normalized Arrhenius exact warm-start report:
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo arrhenius --warm-start-eml --points 24 --output artifacts/arrhenius-warm-report.json
 ```
 
+Run the normalized Michaelis-Menten exact warm-start report:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli demo michaelis_menten --warm-start-eml --points 24 --output artifacts/michaelis-warm-report.json
+```
+
 List benchmark suites:
 
 ```bash
@@ -90,6 +96,12 @@ Reproduce the focused Arrhenius evidence artifact:
 
 ```bash
 PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-arrhenius-evidence --case arrhenius-warm --seed 0 --perturbation-noise 0.0 --output-dir artifacts/campaigns/v1.9-arrhenius-evidence
+```
+
+Reproduce the focused Michaelis-Menten evidence artifact:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-michaelis-evidence --case michaelis-warm --seed 0 --perturbation-noise 0.0 --output-dir artifacts/campaigns/v1.9-michaelis-evidence
 ```
 
 List campaign presets:
@@ -152,7 +164,7 @@ python -m pytest
 
 ## Benchmark Evidence
 
-Benchmark runs use the built-in suites `smoke`, `v1.2-evidence`, `for-demo-diagnostics`, and focused evidence suites such as `v1.9-arrhenius-evidence`, or a custom JSON suite with schema `eml.benchmark_suite.v1`. Each expanded run writes a JSON artifact containing the suite/run identity, formula, start mode, seed, perturbation, optimizer config, stage statuses, normalized losses/snap metrics when training ran, verifier status, timing, and errors.
+Benchmark runs use the built-in suites `smoke`, `v1.2-evidence`, `for-demo-diagnostics`, and focused evidence suites such as `v1.9-arrhenius-evidence` and `v1.9-michaelis-evidence`, or a custom JSON suite with schema `eml.benchmark_suite.v1`. Each expanded run writes a JSON artifact containing the suite/run identity, formula, start mode, seed, perturbation, optimizer config, stage statuses, normalized losses/snap metrics when training ran, verifier status, timing, and errors.
 
 The CLI also writes:
 
@@ -169,6 +181,8 @@ Interpretation rules:
 - `verifier_recovery_rate` is computed from verifier-owned recovery, not from training loss.
 
 The focused Arrhenius artifact is rooted at `artifacts/campaigns/v1.9-arrhenius-evidence/v1.9-arrhenius-evidence/`. It contains suite `v1.9-arrhenius-evidence` case `arrhenius-warm` for demo id `arrhenius`, normalized formula `exp(-0.8/x)`, domains `(0.5, 3.0)`, `(0.6, 2.7)`, and `(3.1, 4.2)`, compiler macro `direct_division_template`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
+
+The focused Michaelis-Menten artifact is rooted at `artifacts/campaigns/v1.9-michaelis-evidence/v1.9-michaelis-evidence/`. It contains suite `v1.9-michaelis-evidence` case `michaelis-warm` for demo id `michaelis_menten`, normalized formula `2*x/(x+0.5)`, domains `(0.05, 5.0)`, `(0.08, 4.5)`, and `(5.1, 7.0)`, compiler macro `saturation_ratio_template`, compile depth `12`, node count `41`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
 
 ## Campaign Reports
 
@@ -200,4 +214,4 @@ The committed smoke report is at `artifacts/campaigns/v1.3-smoke/report.md`. Cur
 
 This repo does not promise blind recovery of arbitrary deep formulas. The paper reports that blind recovery degrades sharply with depth and that depth-6 blind recovery was not observed in the reported attempts. Warm-start success is a different claim: it shows return-to-solution from a compiler-provided scaffold, with fixed literal constants when the source formula contains coefficients.
 
-The default compiler/warm-start gates intentionally keep Michaelis-Menten and Planck honest: their catalog formulas verify, but their compiled EML trees currently exceed the default depth budget for warm-start promotion.
+The default compiler/warm-start gates intentionally keep Planck honest: its catalog formula verifies, but its compiled EML tree remains a stretch/unsupported report under the shipped warm-start promotion budget. Michaelis-Menten now has focused same-AST warm-start evidence under the strict v1.9 gate, but it is not a blind discovery claim.
