@@ -15,6 +15,69 @@ from eml_symbolic_regression.cli import build_parser
 from eml_symbolic_regression.proof import paper_claim
 
 
+def test_scaffold_witness_registry_declares_raw_only_current_witnesses():
+    from eml_symbolic_regression import (
+        CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING,
+        ceml_s_operator,
+        known_scaffold_kinds,
+        list_scaffold_witnesses,
+        raw_eml_operator,
+        resolve_scaffold_plan,
+        scaffold_witness_for,
+        zeml_s_operator,
+    )
+
+    witnesses = list_scaffold_witnesses()
+
+    assert [witness["kind"] for witness in witnesses] == ["exp", "log", "scaled_exp"]
+    assert {witness["operator_family"] for witness in witnesses} == {"raw_eml"}
+    assert witnesses == [
+        {
+            "kind": "exp",
+            "operator_family": "raw_eml",
+            "attempt_kind": "scaffold_exp",
+            "min_depth": 1,
+            "strategy": "generic_paper_primitive",
+        },
+        {
+            "kind": "log",
+            "operator_family": "raw_eml",
+            "attempt_kind": "scaffold_log",
+            "min_depth": 3,
+            "strategy": "generic_paper_primitive",
+        },
+        {
+            "kind": "scaled_exp",
+            "operator_family": "raw_eml",
+            "attempt_kind": "scaffold_scaled_exp",
+            "min_depth": 9,
+            "strategy": "paper_scaled_exponential_family",
+        },
+    ]
+    assert known_scaffold_kinds() == ("exp", "log", "scaled_exp")
+
+    requested = ("exp", "log", "scaled_exp", "exp")
+    raw_plan = resolve_scaffold_plan(requested, raw_eml_operator())
+    assert raw_plan.as_dict() == {
+        "enabled": ["exp", "log", "scaled_exp"],
+        "exclusions": [],
+    }
+    assert scaffold_witness_for("exp", raw_eml_operator()).as_dict() == witnesses[0]
+
+    expected_exclusions = [
+        f"exp:{CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING}",
+        f"log:{CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING}",
+        f"scaled_exp:{CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING}",
+    ]
+    for operator in (ceml_s_operator(2.0), zeml_s_operator(8.0)):
+        centered_plan = resolve_scaffold_plan(requested, operator)
+        assert centered_plan.as_dict() == {
+            "enabled": [],
+            "exclusions": expected_exclusions,
+        }
+        assert scaffold_witness_for("exp", operator) is None
+
+
 def test_builtin_suite_registry_expands_stable_run_ids():
     assert {
         "smoke",
