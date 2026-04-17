@@ -26,7 +26,7 @@ Produce a stronger raw-EML hybrid paper package by fixing centered scaffold corr
 | Phase | Name | Goal | Requirements | Status |
 |-------|------|------|--------------|--------|
 | 49 | Witness Registry and Centered Scaffold Correctness | 2/2 | Complete    | 2026-04-17 |
-| 50 | Arrhenius Exact Warm-Start Demo | 3/3 | Complete   | 2026-04-17 |
+| 50 | Arrhenius Exact Warm-Start Demo | 3/3 | Complete    | 2026-04-17 |
 | 51 | Reciprocal and Saturation Compiler Motifs | Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics. | MIC-01, MIC-02, MIC-03, MIC-04 | Not Started |
 | 52 | Verifier-Gated Exact Cleanup Expansion | Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. | REP-01, REP-02, REP-03, REP-04 | Not Started |
 | 53 | Raw-Hybrid Paper Campaign and Claim Package | Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 | Not Started |
