@@ -27,7 +27,7 @@ Produce a stronger raw-EML hybrid paper package by fixing centered scaffold corr
 |-------|------|------|--------------|--------|
 | 49 | Witness Registry and Centered Scaffold Correctness | 2/2 | Complete    | 2026-04-17 |
 | 50 | Arrhenius Exact Warm-Start Demo | 3/3 | Complete    | 2026-04-17 |
-| 51 | Reciprocal and Saturation Compiler Motifs | 1/3 | In Progress|  |
+| 51 | Reciprocal and Saturation Compiler Motifs | 2/3 | In Progress|  |
 | 52 | Verifier-Gated Exact Cleanup Expansion | Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. | REP-01, REP-02, REP-03, REP-04 | Not Started |
 | 53 | Raw-Hybrid Paper Campaign and Claim Package | Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 | Not Started |
 
@@ -94,11 +94,11 @@ Plans:
 
 **Requirements:** MIC-01, MIC-02, MIC-03, MIC-04
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [x] 51-01-PLAN.md - Add strict reciprocal-shift and saturation-ratio compiler motifs with Michaelis same-AST warm-start tests.
-- [ ] 51-02-PLAN.md - Add focused `v1.9-michaelis-evidence` suite and artifact contract tests.
+- [x] 51-02-PLAN.md - Add focused `v1.9-michaelis-evidence` suite and artifact contract tests.
 - [ ] 51-03-PLAN.md - Generate focused Michaelis evidence artifacts and update regime-safe docs.
 
 ### Phase 52: Verifier-Gated Exact Cleanup Expansion

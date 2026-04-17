@@ -4,15 +4,15 @@ milestone: v1.9
 milestone_name: milestone
 current_phase: 51
 status: executing
-stopped_at: Completed 51-01-PLAN.md
-last_updated: "2026-04-17T13:54:50.267Z"
+stopped_at: Completed 51-02-PLAN.md
+last_updated: "2026-04-17T14:02:42.849Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 8
-  completed_plans: 6
-  percent: 75
+  completed_plans: 7
+  percent: 88
 ---
 
 # GSD State: EML Symbolic Regression
@@ -31,7 +31,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-17)
 ## Current Position
 
 Phase: 51 (Reciprocal and Saturation Compiler Motifs) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-04-17
 Progress: [████------] 40% by completed phases (v1.9: 2/5 complete)
@@ -91,6 +91,7 @@ Progress: [████------] 40% by completed phases (v1.9: 2/5 complete)
 | Phase 50 P02 | 7min | 2 tasks | 4 files |
 | Phase 50 P03 | 4min | 2 tasks | 7 files |
 | Phase 51 P01 | 8min | 3 tasks | 3 files |
+| Phase 51 P02 | 4min | 2 tasks | 4 files |
 
 ## Completed Milestone
 
@@ -184,6 +185,9 @@ Target work:
 - [Phase 51]: Reciprocal and saturation motifs match direct SymPy structure only; no demo-name or string hardcoding was added.
 - [Phase 51]: Michaelis-Menten is promoted only as compiled same-AST warm-start evidence, not blind discovery.
 - [Phase 51]: Arrhenius remains on direct_division_template and Planck remains stretch/unsupported under warm-start promotion.
+- [Phase 51]: Michaelis-Menten evidence is isolated in v1.9-michaelis-evidence; broad v1.2/v1.3/v1.8 and paper-facing suites were not expanded.
+- [Phase 51]: michaelis-warm is classified as same-AST warm-start evidence, not blind discovery.
+- [Phase 51]: Default compile and warm-start gates remain unchanged for Michaelis evidence: max compile depth 13, max compile nodes 256, and max warm depth 14.
 
 ### Pending Todos
 
@@ -201,8 +205,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 ## Session Continuity
 
-Last session: 2026-04-17T13:54:50.264Z
-Stopped at: Completed 51-01-PLAN.md
+Last session: 2026-04-17T14:02:42.846Z
+Stopped at: Completed 51-02-PLAN.md
 Resume file: None
 
 ---
