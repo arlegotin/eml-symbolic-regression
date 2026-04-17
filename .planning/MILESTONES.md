@@ -1,5 +1,28 @@
 # Milestones
 
+## v1.9 milestone (Shipped: 2026-04-17)
+
+**Phases completed:** 5 phases, 14 plans, 33 tasks
+
+**Key accomplishments:**
+
+- Raw-only scaffold witness registry with benchmark budget filtering that removes raw exp/log/scaled_exp scaffolds from centered-family variants.
+- Registry-backed optimizer and helper guards that block raw exp/log/scaled_exp scaffolds under centered operators while preserving raw scaffold recovery artifacts.
+- Normalized Arrhenius demo `exp(-0.8/x)` with strict direct-division compile and verified same-AST warm-start evidence
+- Focused Arrhenius benchmark suite with same-AST warm-start artifact evidence for normalized `exp(-0.8/x)`
+- Focused Arrhenius same-AST warm-start artifacts with README and implementation docs tied to validated JSON evidence
+- Structural reciprocal-shift and saturation-ratio EML compiler macros with Michaelis-Menten same-AST warm-start recovery
+- Focused Michaelis-Menten same-AST warm-start benchmark evidence with saturation macro artifact locks
+- Validated Michaelis-Menten same-AST warm-start artifacts with regime-safe README and implementation documentation
+- Opt-in candidate-pool repair over selected, fallback, and retained exact roots with verifier-gated AST-deduped promotion
+- Benchmark opt-in for expanded verifier-gated cleanup with focused before/after repair evidence
+- Focused v1.9 repair evidence measured expanded cleanup against selected-only cleanup while preserving fallback manifests
+- Synthesis-only raw-hybrid paper package writer with file-level source locks, regime-separated reports, scientific-law tables, centered caveats, and a CLI entry point
+- Committed v1.9 raw-hybrid paper package with source locks, regime-separated evidence, scientific-law tables, and claim boundaries
+- Artifact-backed raw-hybrid package regression tests plus README and implementation documentation that preserve evidence boundaries
+
+---
+
 ## v1.8 Centered-Family Viability and Full Evidence Run (Shipped: 2026-04-17)
 
 **Phases completed:** 5 phases, 5 plans, 0 tasks

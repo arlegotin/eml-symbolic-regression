@@ -1,12 +1,12 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.9
-milestone_name: milestone
-current_phase: 53
-status: complete
-stopped_at: Phase 53 complete; ready for milestone audit
-last_updated: "2026-04-17T17:16:08.894Z"
-last_activity: 2026-04-17 -- Phase 53 complete; milestone ready for audit
+milestone: none
+milestone_name: none
+current_phase: null
+status: ready_for_next_milestone
+stopped_at: v1.9 milestone archived; ready for next milestone
+last_updated: "2026-04-17T17:30:00.000Z"
+last_activity: 2026-04-17 -- v1.9 archived and ready for next milestone
 progress:
   total_phases: 5
   completed_phases: 5
@@ -18,7 +18,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 53
+**Current phase:** None
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,14 +26,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-17)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 53 — Raw-Hybrid Paper Campaign and Claim Package
+**Current focus:** No active milestone. v1.9 is shipped and archived.
 
 ## Current Position
 
-Phase: 53 - Raw-Hybrid Paper Campaign and Claim Package
+Phase: None
 Plan: None
-Status: Ready for milestone audit
-Last activity: 2026-04-17 -- Phase 53 complete; milestone ready for audit
+Status: Ready for next milestone
+Last activity: 2026-04-17 -- v1.9 archived and ready for next milestone
 Progress: [██████████] 100% by completed plans (v1.9: 14/14 plans complete)
 
 ## Performance Metrics
@@ -51,7 +51,8 @@ Progress: [██████████] 100% by completed plans (v1.9: 14/14 
 - v1.6 delivered search-quality upgrades that weakly dominate the prior exact-candidate selector on declared paths while keeping archived baselines intact.
 - v1.7 built centered/scaled operator-family infrastructure but did not run the full centered-family evidence matrix.
 - A quick post-v1.7 `family-smoke` run showed raw EML recovering the smoke `exp` blind and Beer-Lambert warm-start paths, while centered blind `exp` variants failed and centered warm-starts were unsupported. v1.8 therefore starts with triage and blocker fixes before full campaigns.
-- v1.8 produced negative centered-family evidence under scoped local campaigns and selected a raw-EML searchability paper path. v1.9 should now convert that decision into stronger raw-hybrid scientific-law results.
+- v1.8 produced negative centered-family evidence under scoped local campaigns and selected a raw-EML searchability paper path.
+- v1.9 converted that decision into a raw-hybrid paper package with source locks, regime-separated claims, focused Arrhenius and Michaelis same-AST warm-start evidence, and expanded cleanup diagnostics.
 
 ## Artifacts
 
@@ -83,8 +84,11 @@ Progress: [██████████] 100% by completed plans (v1.9: 14/14 
 | v1.8 archived roadmap | `.planning/milestones/v1.8-ROADMAP.md` | Complete |
 | v1.8 archived phase artifacts | `.planning/milestones/v1.8-phases/` | Complete |
 | v1.8 milestone audit | `.planning/milestones/v1.8-MILESTONE-AUDIT.md` | Complete |
-| v1.9 active requirements | `.planning/REQUIREMENTS.md` | Complete |
-| v1.9 active roadmap | `.planning/ROADMAP.md` | Complete |
+| v1.9 archived requirements | `.planning/milestones/v1.9-REQUIREMENTS.md` | Complete |
+| v1.9 archived roadmap | `.planning/milestones/v1.9-ROADMAP.md` | Complete |
+| v1.9 milestone audit | `.planning/milestones/v1.9-MILESTONE-AUDIT.md` | Complete |
+| v1.9 archived phase artifacts | `.planning/milestones/v1.9-phases/` | Complete |
+| v1.9 raw-hybrid paper package | `artifacts/paper/v1.9/raw-hybrid/` | Complete |
 | Phase 49 P01 | 4 min | 2 tasks | 4 files |
 | Phase 49 P02 | 13 min | 3 tasks | 6 files |
 | Phase 50 P01 | 4min | 3 tasks | 4 files |
@@ -100,33 +104,25 @@ Progress: [██████████] 100% by completed plans (v1.9: 14/14 
 | Phase 53 P02 | 9min | 2 tasks | 11 files |
 | Phase 53 P03 | 7min | 2 tasks | 5 files |
 
-## Completed Milestone
-
-**v1.8: Centered-Family Viability and Full Evidence Run**
-
-Goal: Determine whether centered/scaled operator families are actually viable improvements over raw EML after fixing missing integration support, calibrating the family grid, running full evidence campaigns, and regenerating the paper decision artifacts.
-
-Target features:
-
-- Centered-family smoke triage, calibration, and missing-support gates.
-- Explicit fail-closed handling for centered warm-start, compiler-seed, scaffold, and perturbed-tree paths.
-- Fixed-scale and continuation family matrix calibration.
-- Scoped family evidence campaigns and paper decision artifacts.
-- Raw-EML searchability note recommendation with centered results reported as negative diagnostics.
-
-## Current Milestone
+## Last Completed Milestone
 
 **v1.9: Raw-EML Hybrid Recovery and Paper Suite**
 
 Goal: Produce a stronger raw-EML hybrid paper package by fixing centered scaffold correctness, adding Arrhenius exact recovery, materially improving Michaelis-Menten support, expanding exact cleanup, and generating a regime-separated paper-facing campaign.
 
-Target work:
+Shipped features:
 
-- Add a witness registry and prevent raw `exp`/`log` scaffolds under centered semantics.
-- Add Arrhenius as a normalized strict-compile and exact warm-start recovery demo.
-- Add reciprocal-shift and saturation compiler motifs for Michaelis-Menten support.
-- Expand exact post-snap cleanup with verifier-gated deduped neighborhoods.
-- Generate a raw-hybrid paper suite with regime-separated tables, reports, and claim language.
+- Raw-only scaffold witness registry and centered-family scaffold exclusions with explicit reason codes.
+- Normalized Arrhenius strict compile and exact same-AST warm-start evidence.
+- Reusable reciprocal-shift and saturation-ratio compiler motifs with Michaelis-Menten same-AST warm-start evidence.
+- Opt-in expanded verifier-gated cleanup over selected, fallback, and retained exact roots.
+- Synthesis-only raw-hybrid paper package with source locks, regime-separated reports, scientific-law tables, claim boundaries, centered caveats, README/docs, and regression tests.
+
+## Current Milestone
+
+None. Run `$gsd-new-milestone` to define the next milestone.
+
+Likely next directions include matched-budget external baselines, constructive centered-family same-family witnesses, or deeper raw-EML blind-search improvements.
 
 ## Phase Status
 
@@ -219,7 +215,7 @@ None recorded.
 
 ### Blockers/Concerns
 
-The milestone must not claim universal blind recovery of arbitrary deep elementary expressions or completeness of the centered/scaled family. v1.9 warm-start, scaffolded, perturbed-basin, repair, refit, and pure-blind results must remain separated in every report. Centered empirical scaling remains paused until same-family witnesses exist.
+Future work must not claim universal blind recovery of arbitrary deep elementary expressions or completeness of the centered/scaled family. v1.9 warm-start, scaffolded, perturbed-basin, repair, refit, and pure-blind results must remain separated in every report. Centered empirical scaling remains paused until same-family witnesses exist.
 
 ### Quick Tasks Completed
 
@@ -229,9 +225,9 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 ## Session Continuity
 
-Last session: 2026-04-17T16:45:14.937Z
-Stopped at: Completed 53-03-PLAN.md
+Last session: 2026-04-17T17:30:00.000Z
+Stopped at: v1.9 milestone archived; ready for next milestone
 Resume file: None
 
 ---
-*Last updated: 2026-04-17 after completing Phase 53 execution*
+*Last updated: 2026-04-17 after archiving v1.9*
