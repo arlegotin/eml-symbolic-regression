@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
-import shutil
-import csv
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,6 +34,17 @@ SCIENTIFIC_LAW_COLUMNS = (
     "evidence_regime",
     "artifact_path",
 )
+EXPECTED_RAW_HYBRID_OUTPUTS = {
+    "manifest.json",
+    "source-locks.json",
+    "regime-summary.json",
+    "raw-hybrid-report.md",
+    "scientific-law-table.json",
+    "scientific-law-table.csv",
+    "scientific-law-table.md",
+    "claim-boundaries.md",
+    "centered-negative-diagnostics.md",
+}
 
 
 class RawHybridPaperError(RuntimeError):
@@ -756,11 +766,39 @@ def _package_paths(output_dir: Path) -> RawHybridPaperPaths:
 
 
 def _prepare_output_dir(output_dir: Path, *, overwrite: bool) -> None:
+    resolved = output_dir.resolve()
+    forbidden = {Path.cwd().resolve(), Path.home().resolve(), Path(resolved.anchor).resolve()}
+    if resolved in forbidden:
+        raise RawHybridPaperError(f"refusing to use unsafe output directory: {output_dir}")
+    if output_dir.exists() and not output_dir.is_dir():
+        raise RawHybridPaperError(f"output path is not a directory: {output_dir}")
     if output_dir.exists() and any(output_dir.iterdir()):
         if not overwrite:
             raise RawHybridPaperError(f"output directory is not empty: {output_dir}")
-        shutil.rmtree(output_dir)
+        if not _is_raw_hybrid_package_dir(output_dir):
+            raise RawHybridPaperError(f"refusing to overwrite unmanaged directory: {output_dir}")
+        for name in EXPECTED_RAW_HYBRID_OUTPUTS:
+            path = output_dir / name
+            if path.is_dir() and not path.is_symlink():
+                raise RawHybridPaperError(f"refusing to overwrite directory at generated output path: {path}")
+            if path.exists() or path.is_symlink():
+                path.unlink()
     output_dir.mkdir(parents=True, exist_ok=True)
+
+
+def _is_raw_hybrid_package_dir(output_dir: Path) -> bool:
+    manifest = output_dir / "manifest.json"
+    if not manifest.is_file():
+        return False
+    try:
+        payload = json.loads(manifest.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return False
+    return (
+        isinstance(payload, Mapping)
+        and payload.get("schema") == "eml.raw_hybrid_paper.v1"
+        and payload.get("preset_id") == RAW_HYBRID_PAPER_PRESET_ID
+    )
 
 
 def _load_sources(sources: tuple[RawHybridSource, ...], *, require_existing: bool) -> dict[str, Any]:
