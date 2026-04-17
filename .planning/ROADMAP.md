@@ -53,6 +53,12 @@ Produce a stronger raw-EML hybrid paper package by fixing centered scaffold corr
 
 **Requirements:** WIT-01, WIT-02, WIT-03, WIT-04
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 49-01-PLAN.md — Add the raw-only scaffold witness registry and route benchmark budget filtering through it.
+- [ ] 49-02-PLAN.md — Close direct optimizer/helper bypasses and prove centered scaffold exclusions survive artifacts.
+
 ### Phase 50: Arrhenius Exact Warm-Start Demo
 
 **Goal:** Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return.
