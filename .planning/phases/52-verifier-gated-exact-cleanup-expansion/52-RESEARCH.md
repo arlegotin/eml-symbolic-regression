@@ -133,7 +133,7 @@ PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-repair-evide
 - **Subtree overreach:** cross-root subtree grafting would become a new search algorithm and provenance schema. Keep Phase 52 to per-root serialized alternatives unless evidence proves otherwise. [VERIFIED: current provenance shape]
 - **Report compatibility:** `RepairReport` is constructed directly in tests; new fields must be optional defaults and `as_dict()` must remain backward-compatible. [VERIFIED: `tests/test_repair.py:159`]
 
-## Unresolved Questions
+## Execution Unknowns
 
 1. Do the real archived near-miss subsets improve under expanded candidate-pool cleanup? This requires implementation and the targeted `v1.9-repair-evidence` run. [VERIFIED: artifact scan found near misses but did not prove future repair success]
 2. Are the proposed expanded caps (`top_k=3`, `max_slots=8`, `beam_width=32`, `max_moves=3`) fast enough for benchmark-runner tests and the focused evidence suite? Start there, then reduce only if the focused slice is too slow. [ASSUMED: engineering budget estimate]
