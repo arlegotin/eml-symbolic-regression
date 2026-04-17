@@ -484,12 +484,12 @@ Use a focused v1.9 suite or equivalently focused case so ARR-04 has a reproducib
 
 All claims in this research were verified from the codebase, local command probes, or cited project source documents; no `[ASSUMED]` claims are used. [VERIFIED: source review and local probes]
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should the focused benchmark path be a new `v1.9-arrhenius-evidence` suite or an added row in `for-demo-diagnostics`?** [VERIFIED: src/eml_symbolic_regression/benchmark.py]
    - What we know: ARR-04 only needs a reproducible benchmark or report artifact, and the context prefers small registry extensions over broad reruns. [VERIFIED: .planning/REQUIREMENTS.md] [VERIFIED: .planning/phases/50-arrhenius-exact-warm-start-demo/50-CONTEXT.md]
-   - What's unclear: The phase context does not name the exact suite. [VERIFIED: .planning/phases/50-arrhenius-exact-warm-start-demo/50-CONTEXT.md]
-   - Recommendation: Add a new focused `v1.9-arrhenius-evidence` built-in suite with `arrhenius-warm`; this avoids changing older broad campaign semantics while giving a stable artifact command. [VERIFIED: src/eml_symbolic_regression/benchmark.py] [VERIFIED: .planning/PROJECT.md]
+   - RESOLVED decision: Add a new focused `v1.9-arrhenius-evidence` built-in suite with `arrhenius-warm`; this avoids changing older broad campaign semantics while giving a stable artifact command. [VERIFIED: src/eml_symbolic_regression/benchmark.py] [VERIFIED: .planning/PROJECT.md]
+   - Required scope: Do not alter `for-demo-diagnostics` denominators in this phase; docs may mention the new focused suite and CLI artifact command after tests pass.
 
 ## Environment Availability
 
