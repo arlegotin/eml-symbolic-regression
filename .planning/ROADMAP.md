@@ -26,13 +26,13 @@ Produce a stronger raw-EML hybrid paper package by fixing centered scaffold corr
 | Phase | Name | Goal | Requirements | Status |
 |-------|------|------|--------------|--------|
 | 49 | Witness Registry and Centered Scaffold Correctness | 2/2 | Complete    | 2026-04-17 |
-| 50 | Arrhenius Exact Warm-Start Demo | 2/3 | In Progress|  |
+| 50 | Arrhenius Exact Warm-Start Demo | 3/3 | Complete   | 2026-04-17 |
 | 51 | Reciprocal and Saturation Compiler Motifs | Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics. | MIC-01, MIC-02, MIC-03, MIC-04 | Not Started |
 | 52 | Verifier-Gated Exact Cleanup Expansion | Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. | REP-01, REP-02, REP-03, REP-04 | Not Started |
 | 53 | Raw-Hybrid Paper Campaign and Claim Package | Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 | Not Started |
 
 - [x] **Phase 49: Witness Registry and Centered Scaffold Correctness** - Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. (requirements: WIT-01, WIT-02, WIT-03, WIT-04) (completed 2026-04-17)
-- [ ] **Phase 50: Arrhenius Exact Warm-Start Demo** - Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return. (requirements: ARR-01, ARR-02, ARR-03, ARR-04)
+- [x] **Phase 50: Arrhenius Exact Warm-Start Demo** - Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return. (requirements: ARR-01, ARR-02, ARR-03, ARR-04) (completed 2026-04-17)
 - [ ] **Phase 51: Reciprocal and Saturation Compiler Motifs** - Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics. (requirements: MIC-01, MIC-02, MIC-03, MIC-04)
 - [ ] **Phase 52: Verifier-Gated Exact Cleanup Expansion** - Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. (requirements: REP-01, REP-02, REP-03, REP-04)
 - [ ] **Phase 53: Raw-Hybrid Paper Campaign and Claim Package** - Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. (requirements: RHY-01, RHY-02, RHY-03, RHY-04, RHY-05)
@@ -73,12 +73,12 @@ Plans:
 
 **Requirements:** ARR-01, ARR-02, ARR-03, ARR-04
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 50-01-PLAN.md - Add normalized Arrhenius demo and strict same-AST warm-start/CLI tests.
 - [x] 50-02-PLAN.md - Add focused Arrhenius benchmark suite and artifact regression tests.
-- [ ] 50-03-PLAN.md - Generate focused evidence artifact and document regime-safe commands.
+- [x] 50-03-PLAN.md - Generate focused evidence artifact and document regime-safe commands.
 
 ### Phase 51: Reciprocal and Saturation Compiler Motifs
 
