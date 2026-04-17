@@ -28,7 +28,7 @@ from eml_symbolic_regression.datasets import get_demo
 from eml_symbolic_regression.expression import Const, Eml, Var
 from eml_symbolic_regression.master_tree import SoftEMLTree
 from eml_symbolic_regression.optimize import ExactCandidate, FitResult, TrainingConfig
-from eml_symbolic_regression.repair import RepairConfig, RepairReport
+from eml_symbolic_regression.repair import RepairConfig, RepairMove, RepairReport
 from eml_symbolic_regression.verify import SplitResult, VerificationReport, verify_candidate
 from eml_symbolic_regression.warm_start import WarmStartResult
 
@@ -114,6 +114,81 @@ def _repairable_fit_for_exp() -> FitResult:
     )
 
 
+def _candidate_from_tree(
+    tree: SoftEMLTree,
+    *,
+    candidate_id: str,
+    source: str,
+    slot_alternatives_top_k: int = 1,
+) -> ExactCandidate:
+    snap = tree.snap()
+    return ExactCandidate(
+        candidate_id=candidate_id,
+        attempt_index=0,
+        random_restart=0,
+        seed=0,
+        attempt_kind="random",
+        source=source,
+        checkpoint_index=None,
+        hardening_step=None,
+        global_step=0,
+        temperature=0.25,
+        best_fit_loss=1.0,
+        post_snap_loss=1.0,
+        snap=snap,
+        verification=_verification_report("failed"),
+        slot_alternatives=() if slot_alternatives_top_k <= 0 else tree.active_slot_alternatives(top_k=slot_alternatives_top_k),
+    )
+
+
+def _candidate_pool_repairable_fit_for_exp() -> FitResult:
+    selected_tree = SoftEMLTree(1, ("x",), (1.0,))
+    selected_tree.set_slot("root", "left", "const:1", strength=40.0)
+    selected_tree.set_slot("root", "right", "var:x", strength=40.0)
+    selected = _candidate_from_tree(
+        selected_tree,
+        candidate_id="selected",
+        source="legacy_final_snap",
+        slot_alternatives_top_k=0,
+    )
+
+    fallback_tree = SoftEMLTree(1, ("x",), (1.0,))
+    fallback_tree.set_slot("root", "right", "const:1", strength=40.0)
+    with torch.no_grad():
+        fallback_tree.root.left_logits.copy_(torch.tensor([2.0, 1.85], dtype=torch.float64))
+    fallback = _candidate_from_tree(
+        fallback_tree,
+        candidate_id="fallback",
+        source="hardening_checkpoint",
+        slot_alternatives_top_k=1,
+    )
+    manifest = {
+        "schema": "eml.run_manifest.v1",
+        "status": "snapped_candidate",
+        "snap": selected.snap.as_dict(),
+        "candidates": [selected.as_dict(), fallback.as_dict()],
+        "selection": {
+            "mode": "verifier_gated_exact_candidate_pool",
+            "candidate_count": 2,
+            "selected_candidate_id": "selected",
+            "fallback_candidate_id": "fallback",
+        },
+        "selected_candidate": selected.as_dict(),
+        "fallback_candidate": fallback.as_dict(),
+    }
+    return FitResult(
+        status="snapped_candidate",
+        best_loss=1.0,
+        post_snap_loss=1.0,
+        snap=selected.snap,
+        manifest=manifest,
+        verification=_verification_report("failed"),
+        selected_candidate=selected,
+        fallback_candidate=fallback,
+        candidates=(selected, fallback),
+    )
+
+
 def _not_repaired_report(*, original_status: str = "snapped_but_failed", return_kind: str = "snapped_but_failed") -> RepairReport:
     return RepairReport(
         status="not_repaired",
@@ -124,6 +199,35 @@ def _not_repaired_report(*, original_status: str = "snapped_but_failed", return_
         repaired_expression=None,
         verification=None,
         reason="no_verified_slot_neighborhood",
+        variant_count=1,
+    )
+
+
+def _repaired_report(
+    expression,
+    *,
+    original_status: str = "snapped_but_failed",
+    return_kind: str = "snapped_but_failed",
+    source: str = "slot_alternative",
+) -> RepairReport:
+    move = RepairMove(
+        kind="leaf_replacement",
+        slot="root.left",
+        before="const:1",
+        after="var:x",
+        source=source,
+        accepted=True,
+        verifier_status="recovered",
+    )
+    return RepairReport(
+        status="repaired_candidate",
+        original_status=original_status,
+        return_kind=return_kind,
+        moves_attempted=(move,),
+        accepted_moves=(move,),
+        repaired_expression=expression,
+        verification=_verification_report("recovered"),
+        reason="verified_slot_neighborhood",
         variant_count=1,
     )
 
@@ -608,6 +712,114 @@ def test_expanded_repair_config_routes_to_target_free_cleanup(monkeypatch, tmp_p
     execute_benchmark_run(run)
 
     assert captured_configs == [RepairConfig.expanded_candidate_pool()]
+
+
+def test_candidate_pool_cleanup_promotes_artifact_without_mutating_selected_or_fallback(monkeypatch, tmp_path):
+    fit = _candidate_pool_repairable_fit_for_exp()
+    monkeypatch.setattr(benchmark_module, "fit_eml_tree", lambda *args, **kwargs: fit)
+    run = BenchmarkRun(
+        suite_id="phase52",
+        case_id="candidate-pool-cleanup",
+        formula="exp",
+        start_mode="blind",
+        seed=0,
+        perturbation_noise=0.0,
+        dataset=DatasetConfig(points=12),
+        optimizer=OptimizerBudget(depth=1, steps=1, restarts=1, refit_steps=0),
+        artifact_path=tmp_path / "candidate-pool-cleanup.json",
+        training_mode="blind_training",
+        repair=BenchmarkRepairConfig(preset="expanded_candidate_pool"),
+    )
+
+    result = execute_benchmark_run(run)
+    artifact = json.loads(result.artifact_path.read_text(encoding="utf-8"))
+    candidate = artifact["trained_eml_candidate"]
+
+    assert result.status == "repaired_candidate"
+    assert artifact["status"] == "repaired_candidate"
+    assert artifact["repair_status"] == "repaired"
+    assert artifact["claim_status"] == "recovered"
+    assert artifact["evidence_class"] == "repaired_candidate"
+    assert candidate["selected_candidate"]["candidate_id"] == "selected"
+    assert candidate["fallback_candidate"]["candidate_id"] == "fallback"
+    assert candidate["selection"]["selected_candidate_id"] == "selected"
+    assert candidate["selection"]["fallback_candidate_id"] == "fallback"
+    assert artifact["repair"]["accepted_candidate_id"] == "fallback"
+    assert artifact["repair"]["accepted_candidate_source"] == "hardening_checkpoint"
+    assert artifact["repair"]["accepted_candidate_root_source"] == "fallback"
+    assert artifact["repair"]["accepted_moves"][0]["candidate_id"] == "fallback"
+    assert artifact["repair"]["accepted_moves"][0]["candidate_root_source"] == "fallback"
+    assert artifact["metrics"]["repair_candidate_root_count"] == 2
+    assert artifact["metrics"]["repair_deduped_variant_count"] >= 1
+    assert artifact["metrics"]["repair_accepted_candidate_id"] == "fallback"
+    assert artifact["metrics"]["repair_accepted_candidate_source"] == "hardening_checkpoint"
+    assert artifact["metrics"]["repair_accepted_candidate_root_source"] == "fallback"
+
+
+def test_perturbed_target_aware_repair_still_runs_after_expanded_target_free_miss(monkeypatch, tmp_path):
+    calls = []
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    raw_fit = _fit_from_slots({"root.left": "var:x", "root.right": "const:1"})
+    embedding = SoftEMLTree(2, ("x",), (1.0,)).embed_expr(target_expr)
+    raw_verification = _verification_report("failed")
+
+    def fake_fit_perturbed_true_tree(*args, **kwargs):
+        return BasinTrainingResult(
+            status="snapped_but_failed",
+            return_kind="snapped_but_failed",
+            fit=raw_fit,
+            embedding=embedding,
+            verification=raw_verification,
+            manifest={
+                "schema": "eml.perturbed_true_tree_manifest.v1",
+                "status": "snapped_but_failed",
+                "raw_status": "snapped_but_failed",
+                "return_kind": "snapped_but_failed",
+                "optimizer": raw_fit.manifest,
+                "verification": raw_verification.as_dict(),
+            },
+        )
+
+    def fake_cleanup_failed_candidate(*args, **kwargs):
+        calls.append(("target_free", kwargs.get("config")))
+        return _not_repaired_report(original_status=kwargs["original_status"], return_kind=kwargs["return_kind"])
+
+    def fake_repair_perturbed_candidate(*args, **kwargs):
+        calls.append(("target_aware", kwargs.get("config")))
+        return _repaired_report(
+            target_expr,
+            original_status=kwargs["original_status"],
+            return_kind=kwargs["return_kind"],
+            source="embedded_target_slot",
+        )
+
+    monkeypatch.setattr(benchmark_module, "fit_perturbed_true_tree", fake_fit_perturbed_true_tree)
+    monkeypatch.setattr(benchmark_module, "cleanup_failed_candidate", fake_cleanup_failed_candidate)
+    monkeypatch.setattr(benchmark_module, "repair_perturbed_candidate", fake_repair_perturbed_candidate)
+    run = BenchmarkRun(
+        suite_id="phase52",
+        case_id="perturbed-expanded-repair-fallback",
+        formula="basin_depth2_exp_exp",
+        start_mode="perturbed_tree",
+        seed=0,
+        perturbation_noise=0.05,
+        dataset=DatasetConfig(points=12),
+        optimizer=OptimizerBudget(depth=2, warm_steps=1, warm_restarts=1, refit_steps=0),
+        artifact_path=tmp_path / "perturbed-expanded-repair-fallback.json",
+        training_mode="perturbed_true_tree_training",
+        repair=BenchmarkRepairConfig(preset="expanded_candidate_pool"),
+    )
+
+    result = execute_benchmark_run(run)
+    artifact = json.loads(result.artifact_path.read_text(encoding="utf-8"))
+
+    assert result.status == "repaired_candidate"
+    assert artifact["repair_status"] == "repaired"
+    assert artifact["repair"]["accepted_moves"][0]["source"] == "embedded_target_slot"
+    assert calls == [
+        ("target_free", RepairConfig.expanded_candidate_pool()),
+        ("target_aware", None),
+    ]
 
 
 @pytest.mark.parametrize("start_mode", ["blind", "warm_start"])

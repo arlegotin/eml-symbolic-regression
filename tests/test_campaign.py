@@ -65,6 +65,9 @@ def _proof_basin_run(
             "repair_status": repair_status,
             "repair_verifier_status": "recovered" if repair_status == "repaired" else None,
             "repair_accepted_move_count": 1 if repair_status == "repaired" else 0,
+            "repair_candidate_root_count": 2 if repair_status == "repaired" else None,
+            "repair_deduped_variant_count": 7 if repair_status == "repaired" else None,
+            "repair_accepted_candidate_root_source": "fallback" if repair_status == "repaired" else None,
         },
         "stage_statuses": {"perturbed_true_tree_attempt": raw_status},
     }
@@ -359,6 +362,9 @@ def test_campaign_tables_preserve_perturbed_repair_status_columns(tmp_path):
         "repair_status",
         "repair_verifier_status",
         "repair_accepted_move_count",
+        "repair_candidate_root_count",
+        "repair_deduped_variant_count",
+        "repair_accepted_candidate_root_source",
     } <= set(run_rows[0])
     repaired = next(row for row in run_rows if row["evidence_class"] == "repaired_candidate")
     assert repaired["return_kind"] == "snapped_but_failed"
@@ -366,12 +372,18 @@ def test_campaign_tables_preserve_perturbed_repair_status_columns(tmp_path):
     assert repaired["repair_status"] == "repaired"
     assert repaired["repair_verifier_status"] == "recovered"
     assert repaired["repair_accepted_move_count"] == "1"
+    assert repaired["repair_candidate_root_count"] == "2"
+    assert repaired["repair_deduped_variant_count"] == "7"
+    assert repaired["repair_accepted_candidate_root_source"] == "fallback"
 
     failures = list(csv.DictReader(paths["failures_csv"].open(encoding="utf-8")))
     assert len(failures) == 1
     assert failures[0]["classification"] == "repaired_candidate"
     assert failures[0]["raw_status"] == "snapped_but_failed"
     assert failures[0]["repair_status"] == "repaired"
+    assert failures[0]["repair_candidate_root_count"] == "2"
+    assert failures[0]["repair_deduped_variant_count"] == "7"
+    assert failures[0]["repair_accepted_candidate_root_source"] == "fallback"
 
 
 def test_proof_campaign_tables_and_manifest_preserve_claim_metadata(tmp_path):
