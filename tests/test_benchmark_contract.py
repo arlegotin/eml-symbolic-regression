@@ -158,6 +158,7 @@ def test_arrhenius_evidence_suite_contains_exact_warm_start_case():
     assert demo.train_domain == (0.5, 3.0)
     assert demo.heldout_domain == (0.6, 2.7)
     assert demo.extrap_domain == (3.1, 4.2)
+    assert run.run_id == "v1-9-arrhenius-evidence-arrhenius-warm-75f6e9c1764d"
     assert run.run_id == suite.expanded_runs()[0].run_id
 
 
@@ -250,6 +251,74 @@ def test_benchmark_run_id_includes_repair_only_when_declared():
     assert base.run_id != with_repair.run_id
     assert "repair" not in base.as_dict()
     assert with_repair.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+
+
+def test_repair_evidence_suite_contains_default_and_expanded_near_miss_pairs():
+    suite = builtin_suite("v1.9-repair-evidence")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.9-repair-evidence"
+    assert [case.id for case in suite.cases] == [
+        "repair-radioactive-blind-default",
+        "repair-radioactive-blind-expanded",
+        "repair-beer-warm-default",
+        "repair-beer-warm-expanded",
+    ]
+    assert [run.run_id for run in runs] == [run.run_id for run in suite.expanded_runs()]
+    assert {run.claim_id for run in runs} == {None}
+    assert {run.threshold_policy_id for run in runs} == {None}
+    assert {run.expect_recovery for run in runs} == {False}
+
+    by_case = {run.case_id: run for run in runs}
+    radioactive_default = by_case["repair-radioactive-blind-default"]
+    radioactive_expanded = by_case["repair-radioactive-blind-expanded"]
+    beer_default = by_case["repair-beer-warm-default"]
+    beer_expanded = by_case["repair-beer-warm-expanded"]
+
+    assert radioactive_default.formula == "radioactive_decay"
+    assert radioactive_default.start_mode == "blind"
+    assert radioactive_default.training_mode == "blind_training"
+    assert radioactive_default.seed == 1
+    assert radioactive_default.perturbation_noise == 0.0
+    assert radioactive_default.dataset.points == 24
+    assert radioactive_default.optimizer.depth == 4
+    assert radioactive_default.optimizer.steps == 80
+    assert radioactive_default.optimizer.restarts == 1
+    assert radioactive_default.repair is None
+    assert "repair" not in radioactive_default.as_dict()
+    assert {"v1.9", "repair", "near_miss", "default_cleanup"} <= set(radioactive_default.tags)
+
+    assert radioactive_expanded.formula == radioactive_default.formula
+    assert radioactive_expanded.start_mode == radioactive_default.start_mode
+    assert radioactive_expanded.seed == radioactive_default.seed
+    assert radioactive_expanded.optimizer.as_dict() == radioactive_default.optimizer.as_dict()
+    assert radioactive_expanded.repair == BenchmarkRepairConfig(preset="expanded_candidate_pool")
+    assert radioactive_expanded.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+    assert {"v1.9", "repair", "near_miss", "expanded_cleanup"} <= set(radioactive_expanded.tags)
+    assert radioactive_expanded.run_id != radioactive_default.run_id
+
+    assert beer_default.formula == "beer_lambert"
+    assert beer_default.start_mode == "warm_start"
+    assert beer_default.training_mode == "compiler_warm_start_training"
+    assert beer_default.seed == 1
+    assert beer_default.perturbation_noise == 35.0
+    assert beer_default.dataset.points == 24
+    assert beer_default.optimizer.depth == 2
+    assert beer_default.optimizer.warm_steps == 60
+    assert beer_default.optimizer.warm_restarts == 1
+    assert beer_default.repair is None
+    assert "repair" not in beer_default.as_dict()
+    assert {"v1.9", "repair", "near_miss", "default_cleanup"} <= set(beer_default.tags)
+
+    assert beer_expanded.formula == beer_default.formula
+    assert beer_expanded.start_mode == beer_default.start_mode
+    assert beer_expanded.seed == beer_default.seed
+    assert beer_expanded.perturbation_noise == beer_default.perturbation_noise
+    assert beer_expanded.optimizer.as_dict() == beer_default.optimizer.as_dict()
+    assert beer_expanded.repair == BenchmarkRepairConfig(preset="expanded_candidate_pool")
+    assert beer_expanded.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+    assert {"v1.9", "repair", "near_miss", "expanded_cleanup"} <= set(beer_expanded.tags)
+    assert beer_expanded.run_id != beer_default.run_id
 
 
 def test_family_matrix_suites_clone_regimes_with_operator_variants():
