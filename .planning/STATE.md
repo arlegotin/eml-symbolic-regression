@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 milestone: v1.9
 milestone_name: milestone
 current_phase: 52
-status: verifying
-stopped_at: Completed 51-03-PLAN.md
+status: planning
+stopped_at: Phase 51 complete; ready to plan Phase 52
 last_updated: "2026-04-17T14:38:42.585Z"
-last_activity: 2026-04-17
+last_activity: 2026-04-17 -- Phase 51 complete; Phase 52 ready to plan
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 8
   completed_plans: 8
-  percent: 100
+  percent: 60
 ---
 
 # GSD State: EML Symbolic Regression
@@ -26,14 +26,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-17)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 51 — Reciprocal and Saturation Compiler Motifs
+**Current focus:** Phase 52 — Verifier-Gated Exact Cleanup Expansion
 
 ## Current Position
 
-Phase: 51 (Reciprocal and Saturation Compiler Motifs) — READY FOR VERIFICATION
+Phase: 52 - Verifier-Gated Exact Cleanup Expansion
 Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-17
+Status: Ready to plan
+Last activity: 2026-04-17 -- Phase 51 complete; Phase 52 ready to plan
 Progress: [██████----] 60% by completed phases (v1.9: 3/5 complete)
 
 ## Performance Metrics
@@ -129,7 +129,7 @@ Target work:
 | 49 | Witness Registry and Centered Scaffold Correctness | Complete (2/2 plans) | WIT-01, WIT-02, WIT-03, WIT-04 |
 | 50 | Arrhenius Exact Warm-Start Demo | Complete (3/3 plans) | ARR-01, ARR-02, ARR-03, ARR-04 |
 | 51 | Reciprocal and Saturation Compiler Motifs | Complete (3/3 plans) | MIC-01, MIC-02, MIC-03, MIC-04 |
-| 52 | Verifier-Gated Exact Cleanup Expansion | Not Started | REP-01, REP-02, REP-03, REP-04 |
+| 52 | Verifier-Gated Exact Cleanup Expansion | Ready to plan | REP-01, REP-02, REP-03, REP-04 |
 | 53 | Raw-Hybrid Paper Campaign and Claim Package | Not Started | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 |
 
 ## Accumulated Context
@@ -214,4 +214,4 @@ Stopped at: Completed 51-03-PLAN.md
 Resume file: None
 
 ---
-*Last updated: 2026-04-17 after completing Phase 49*
+*Last updated: 2026-04-17 after completing Phase 51*

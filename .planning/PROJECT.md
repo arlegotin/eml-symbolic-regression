@@ -16,7 +16,7 @@ The repo now has strong representation, verification, reproducibility, proof-bun
 
 The current evidence says raw EML is representationally viable but blind basin finding degrades sharply with depth. Perturbed true-tree recovery remains strong, scaffolded/warm-start regimes are useful when clearly labeled, and centered-family evidence is negative under the supplied v1.8 setup.
 
-v1.9 pivots from trying to rescue centered families as the main story toward a raw-EML hybrid paper path: Phase 49 fixed the centered scaffold correctness confound with an explicit raw-only scaffold witness registry, Phase 50 added normalized Arrhenius exact compiler warm-start evidence, and the next phases shorten Michaelis-Menten through reusable compiler motifs, strengthen verifier-gated exact cleanup, and generate a regime-separated raw-hybrid paper suite.
+v1.9 pivots from trying to rescue centered families as the main story toward a raw-EML hybrid paper path: Phase 49 fixed the centered scaffold correctness confound with an explicit raw-only scaffold witness registry, Phase 50 added normalized Arrhenius exact compiler warm-start evidence, Phase 51 shortened Michaelis-Menten through reusable reciprocal/saturation motifs, and the next phases strengthen verifier-gated exact cleanup and generate a regime-separated raw-hybrid paper suite.
 
 ## Last Completed Milestone: v1.8 Centered-Family Viability and Full Evidence Run
 
@@ -89,10 +89,10 @@ v1.9 pivots from trying to rescue centered families as the main story toward a r
 - ✓ Expanded v1.8 family smoke triage, calibration, same-family seed gates, scoped evidence manifest, and raw-EML paper decision package — v1.8 Phases 44-48
 - ✓ Explicit raw-only scaffold witness registry, centered-family scaffold exclusions, direct helper fail-closed guards, and artifact reason-code visibility — v1.9 Phase 49
 - ✓ Normalized Arrhenius demo, strict `direct_division_template` compile support, exact same-AST warm-start return, and focused `v1.9-arrhenius-evidence` artifacts — v1.9 Phase 50
+- ✓ Reusable `reciprocal_shift_template` and `saturation_ratio_template` compiler motifs, Michaelis-Menten strict support, same-AST warm-start return, and focused `v1.9-michaelis-evidence` artifacts — v1.9 Phase 51
 
 ### Active
 
-- [ ] Add reciprocal/saturation compiler motifs and materially reduce Michaelis-Menten compile depth, preferably to supported exact recovery.
 - [ ] Strengthen verifier-gated exact post-snap cleanup without changing the recovery contract.
 - [ ] Generate a raw-hybrid paper-facing campaign/report with regime-separated claims and centered-family caveats.
 
@@ -172,7 +172,9 @@ v1.8 found no positive centered-family recovery signal under the scoped local se
 | Centered empirical scaling pauses until same-family witnesses exist | Current centered results are negative, and Phase 49 now blocks raw scaffold reuse under centered semantics while preserving the same-family witness caveat. | ✓ Good |
 | Arrhenius exact warm-start evidence is same-AST evidence, not blind discovery | Phase 50 records `same_ast_return`, verifier `recovered`, and evidence class `same_ast` for `arrhenius-warm`. | ✓ Good |
 | Focused scientific-law evidence should stay out of broad campaign denominators until paper packaging | Phase 50 isolates Arrhenius in `v1.9-arrhenius-evidence` rather than altering v1.3/v1.8 suites. | ✓ Good |
-| Michaelis-Menten is the preferred next compiler/search win before Planck | Michaelis is near the support gate while Planck remains materially deeper under current compile diagnostics. | — Pending |
+| Michaelis-Menten is the preferred next compiler/search win before Planck | Michaelis was near the support gate and Phase 51 brought it under the strict gate with reusable motifs while Planck remains stretch. | ✓ Good |
+| Reciprocal and saturation macros must stay structural and validation-gated | Phase 51 review fixes enforced constant policy, finite derived constants, explicit unit-coefficient support, and non-unit rejection. | ✓ Good |
+| Michaelis-Menten support is same-AST compiler warm-start evidence, not blind discovery | Phase 51 records `same_ast_return`, verifier `recovered`, and evidence class `same_ast` for `michaelis-warm`. | ✓ Good |
 | Raw scaffold helpers are registry-gated by operator family | Phase 49 proved current `exp`, `log`, and `scaled_exp` scaffold witnesses are raw EML only; centered runs now record missing same-family witness exclusions instead of reusing raw helpers. | ✓ Good |
 
 ## Evolution
@@ -193,4 +195,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-17 after completing Phase 50*
+*Last updated: 2026-04-17 after completing Phase 51*
