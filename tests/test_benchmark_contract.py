@@ -12,6 +12,7 @@ from eml_symbolic_regression.benchmark import (
     load_suite,
 )
 from eml_symbolic_regression.cli import build_parser
+from eml_symbolic_regression.datasets import get_demo
 from eml_symbolic_regression.proof import paper_claim
 
 
@@ -110,6 +111,7 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "v1.8-family-depth-curve",
         "v1.8-family-standard",
         "v1.8-family-showcase",
+        "v1.9-arrhenius-evidence",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -120,6 +122,36 @@ def test_builtin_suite_registry_expands_stable_run_ids():
     assert runs[0].claim_id is None
     assert runs[0].threshold_policy_id is None
     assert runs[0].training_mode == "blind_training"
+
+
+def test_arrhenius_evidence_suite_contains_exact_warm_start_case():
+    suite = builtin_suite("v1.9-arrhenius-evidence")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.9-arrhenius-evidence"
+    assert [case.id for case in suite.cases] == ["arrhenius-warm"]
+    assert len(runs) == 1
+
+    run = runs[0]
+    demo = get_demo("arrhenius")
+    provenance = demo.formula_provenance()
+
+    assert run.case_id == "arrhenius-warm"
+    assert run.formula == "arrhenius"
+    assert provenance["symbolic_expression"] == "exp(-0.8/x)"
+    assert run.start_mode == "warm_start"
+    assert run.training_mode == "compiler_warm_start_training"
+    assert run.seed == 0
+    assert run.perturbation_noise == 0.0
+    assert run.dataset.points == 24
+    assert run.optimizer.warm_steps == 1
+    assert run.optimizer.max_warm_depth == 14
+    assert run.expect_recovery is True
+    assert {"v1.9", "arrhenius", "warm_start", "same_ast"} <= set(run.tags)
+    assert demo.train_domain == (0.5, 3.0)
+    assert demo.heldout_domain == (0.6, 2.7)
+    assert demo.extrap_domain == (3.1, 4.2)
+    assert run.run_id == suite.expanded_runs()[0].run_id
 
 
 def test_family_matrix_suites_clone_regimes_with_operator_variants():
