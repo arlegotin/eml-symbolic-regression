@@ -136,6 +136,14 @@ def test_raw_hybrid_report_keeps_required_regimes_separate(tmp_path):
     assert summary["scaffolded"]["runs"]
     assert summary["perturbed_basin"]["runs"]
     assert summary["repaired"]["runs"]
+    assert all(run["start_mode"] == "blind" for run in summary["pure_blind"]["runs"])
+    assert not any(
+        run["evidence_class"] in {"scaffolded_blind_training_recovered", "repaired_candidate"}
+        or run["repair_status"] == "repaired"
+        for run in summary["pure_blind"]["runs"]
+    )
+    assert all(run["evidence_class"] == "scaffolded_blind_training_recovered" for run in summary["scaffolded"]["runs"])
+    assert all(run["start_mode"] == "perturbed_tree" for run in summary["perturbed_basin"]["runs"])
     assert "overall recovery" not in report.lower()
     assert "merged recovery" not in report.lower()
     for heading in (

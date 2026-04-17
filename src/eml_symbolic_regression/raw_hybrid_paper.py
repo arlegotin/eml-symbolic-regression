@@ -525,11 +525,12 @@ def _regimes_for_run(source: RawHybridSource, row: Mapping[str, Any]) -> tuple[s
     repair_status = str(row.get("repair_status") or "")
     refit_status = str(row.get("refit_status") or "")
 
-    if source.evidence_regime == "pure_blind" or (
-        start_mode == "blind" and evidence_class == "blind_training_recovered"
-    ):
+    is_scaffolded = evidence_class == "scaffolded_blind_training_recovered"
+    is_repaired = repair_status == "repaired" or evidence_class == "repaired_candidate"
+
+    if start_mode == "blind" and not is_scaffolded and not is_repaired and source.role != "repair_evidence":
         regimes.add("pure_blind")
-    if source.evidence_regime == "scaffolded" or evidence_class == "scaffolded_blind_training_recovered":
+    if is_scaffolded or (source.evidence_regime == "scaffolded" and start_mode == "blind"):
         regimes.add("scaffolded")
     if source.evidence_regime == "compile_only" or start_mode == "compile" or evidence_class == "compile_only_verified":
         regimes.add("compile_only")
@@ -543,11 +544,11 @@ def _regimes_for_run(source: RawHybridSource, row: Mapping[str, Any]) -> tuple[s
         or status == "same_ast_return"
     ):
         regimes.add("same_ast_return")
-    if source.evidence_regime == "repaired" or repair_status == "repaired" or evidence_class == "repaired_candidate":
+    if source.evidence_regime == "repaired" or is_repaired:
         regimes.add("repaired")
     if refit_status and refit_status not in {"not_attempted", "None", "null"}:
         regimes.add("refit")
-    if source.evidence_regime == "perturbed_basin" or start_mode == "perturbed_tree":
+    if start_mode == "perturbed_tree" or (source.evidence_regime == "perturbed_basin" and not start_mode):
         regimes.add("perturbed_basin")
     return tuple(regime for regime in REGIME_KEYS if regime in regimes)
 
