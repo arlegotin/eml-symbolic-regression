@@ -8,10 +8,10 @@
 
 ### Witness Registry and Centered Scaffold Correctness
 
-- [ ] **WIT-01**: Developer can inspect an explicit witness/initializer registry that declares scaffold availability by operator family.
-- [ ] **WIT-02**: Centered families no longer receive raw `exp`, `log`, or `scaled_exp` scaffold attempts unless a tested same-family witness is registered.
+- [x] **WIT-01**: Developer can inspect an explicit witness/initializer registry that declares scaffold availability by operator family.
+- [x] **WIT-02**: Centered families no longer receive raw `exp`, `log`, or `scaled_exp` scaffold attempts unless a tested same-family witness is registered.
 - [ ] **WIT-03**: Raw-specific scaffold helpers fail closed or are only reachable through raw-family registry entries.
-- [ ] **WIT-04**: Benchmark and optimizer artifacts record centered scaffold exclusions with explicit reason codes such as `centered_family_same_family_witness_missing`.
+- [x] **WIT-04**: Benchmark and optimizer artifacts record centered scaffold exclusions with explicit reason codes such as `centered_family_same_family_witness_missing`.
 
 ### Arrhenius Exact Recovery
 
@@ -82,10 +82,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WIT-01 | Phase 49 | Pending |
-| WIT-02 | Phase 49 | Pending |
+| WIT-01 | Phase 49 | Complete |
+| WIT-02 | Phase 49 | Complete |
 | WIT-03 | Phase 49 | Pending |
-| WIT-04 | Phase 49 | Pending |
+| WIT-04 | Phase 49 | Complete |
 | ARR-01 | Phase 50 | Pending |
 | ARR-02 | Phase 50 | Pending |
 | ARR-03 | Phase 50 | Pending |

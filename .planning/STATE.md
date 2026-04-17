@@ -4,15 +4,15 @@ milestone: v1.9
 milestone_name: milestone
 current_phase: 49
 status: executing
-stopped_at: v1.9 initialized; ready to plan Phase 49
-last_updated: "2026-04-17T11:27:45.774Z"
-last_activity: 2026-04-17 -- Phase 49 execution started
+stopped_at: Completed 49-01-PLAN.md
+last_updated: "2026-04-17T11:35:06.803Z"
+last_activity: 2026-04-17
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 2
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 50
 ---
 
 # GSD State: EML Symbolic Regression
@@ -31,9 +31,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-17)
 ## Current Position
 
 Phase: 49 (Witness Registry and Centered Scaffold Correctness) — EXECUTING
-Plan: 1 of 2
-Status: Executing Phase 49
-Last activity: 2026-04-17 -- Phase 49 execution started
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-17
 Progress: [----------] 0% by completed phases (v1.9: 0/5 complete)
 
 ## Performance Metrics
@@ -85,6 +85,7 @@ Progress: [----------] 0% by completed phases (v1.9: 0/5 complete)
 | v1.8 milestone audit | `.planning/milestones/v1.8-MILESTONE-AUDIT.md` | Complete |
 | v1.9 active requirements | `.planning/REQUIREMENTS.md` | Complete |
 | v1.9 active roadmap | `.planning/ROADMAP.md` | Complete |
+| Phase 49 P01 | 4 min | 2 tasks | 4 files |
 
 ## Completed Milestone
 
@@ -118,7 +119,7 @@ Target work:
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 49 | Witness Registry and Centered Scaffold Correctness | Not Started | WIT-01, WIT-02, WIT-03, WIT-04 |
+| 49 | Witness Registry and Centered Scaffold Correctness | In Progress (1/2 plans) | WIT-01, WIT-02, WIT-03, WIT-04 |
 | 50 | Arrhenius Exact Warm-Start Demo | Not Started | ARR-01, ARR-02, ARR-03, ARR-04 |
 | 51 | Reciprocal and Saturation Compiler Motifs | Not Started | MIC-01, MIC-02, MIC-03, MIC-04 |
 | 52 | Verifier-Gated Exact Cleanup Expansion | Not Started | REP-01, REP-02, REP-03, REP-04 |
@@ -161,6 +162,9 @@ Target work:
 - Phase 46 expanded v1.8 family suites to fixed `s in {1,2,4,8}` plus declared ZEML continuation schedules and added focused `family-calibration`.
 - Phase 47 ran scoped v1.8 standard evidence after calibration and recorded deliberate scope decisions for larger shallow, basin, depth-curve, and showcase campaigns.
 - Phase 48 generated `artifacts/paper/v1.8/` and chose `publish_raw_eml_searchability_note` because raw EML recovered 80.0% across supplied v1.8 aggregates while the best centered recovery rate was 0.0%.
+- [Phase 49]: Current exp, log, and scaled_exp scaffold witnesses are registered only for raw_eml.
+- [Phase 49]: Centered benchmark variants serialize exp/log/scaled_exp exclusions with centered_family_same_family_witness_missing.
+- [Phase 49]: Continuation benchmark variants resolve scaffold availability against the first scheduled operator.
 
 ### Pending Todos
 
@@ -178,8 +182,8 @@ The milestone must not claim universal blind recovery of arbitrary deep elementa
 
 ## Session Continuity
 
-Last session: 2026-04-17
-Stopped at: v1.9 initialized; ready to plan Phase 49
+Last session: 2026-04-17T11:35:06.799Z
+Stopped at: Completed 49-01-PLAN.md
 Resume file: None
 
 ---
