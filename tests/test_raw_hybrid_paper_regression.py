@@ -71,6 +71,7 @@ REQUIRED_LAWS = {
     "Michaelis-Menten",
     "Planck diagnostic",
     "Logistic diagnostic",
+    "Historical Michaelis diagnostic",
 }
 
 FORBIDDEN_PHRASES = {
@@ -150,6 +151,8 @@ def test_scientific_law_table_locks_required_rows_and_fields():
     assert by_law["Michaelis-Menten"]["evidence_regime"] == "same_ast_return"
     assert by_law["Planck diagnostic"]["compile_support"] == "unsupported"
     assert by_law["Logistic diagnostic"]["compile_support"] == "unsupported"
+    assert by_law["Historical Michaelis diagnostic"]["evidence_regime"] == "historical_context"
+    assert by_law["Historical Michaelis diagnostic"]["compile_support"] == "unsupported"
 
 
 def test_report_claim_wording_preserves_boundaries():
