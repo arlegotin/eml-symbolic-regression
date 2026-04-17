@@ -264,6 +264,35 @@ def test_arrhenius_warm_start_returns_same_ast_and_verifies():
     assert result.manifest["compiler_metadata"]["macro_diagnostics"]["hits"] == ["direct_division_template"]
 
 
+def test_michaelis_warm_start_returns_same_ast_and_verifies():
+    spec = get_demo("michaelis_menten")
+    splits = spec.make_splits(points=24, seed=0)
+    compiled = compile_and_validate(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+    result = fit_warm_started_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(depth=compiled.metadata.depth, variables=(spec.variable,), steps=1, restarts=1, seed=0),
+        compiled.expression,
+        perturbation_config=PerturbationConfig(seed=0, noise_scale=0.0),
+        verification_splits=splits,
+        compiler_metadata=compiled.metadata.as_dict(),
+    )
+
+    assert result.status == "same_ast_return"
+    assert result.verification is not None
+    assert result.verification.status == "recovered"
+    assert result.manifest["status"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["mechanism"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["changed_slot_count"] == 0
+    assert result.manifest["compiler_metadata"]["depth"] == 12
+    assert result.manifest["compiler_metadata"]["node_count"] == 41
+    assert result.manifest["compiler_metadata"]["macro_diagnostics"]["hits"] == ["saturation_ratio_template"]
+
+
 def test_perturbation_is_seeded_and_reports_active_slots():
     spec = get_demo("beer_lambert")
     compiled = compile_and_validate(
@@ -408,9 +437,9 @@ def test_cli_warm_start_promotes_arrhenius_same_ast_evidence(tmp_path):
     assert payload["warm_start_eml"]["diagnosis"]["changed_slot_count"] == 0
 
 
-def test_cli_reports_michaelis_menten_depth_gate_without_promotion(tmp_path):
+def test_cli_warm_start_promotes_michaelis_same_ast_evidence(tmp_path):
     output = tmp_path / "mm-warm.json"
-    subprocess.run(
+    result = subprocess.run(
         [
             sys.executable,
             "-m",
@@ -428,13 +457,23 @@ def test_cli_reports_michaelis_menten_depth_gate_without_promotion(tmp_path):
         env=CLI_ENV,
         text=True,
     )
+    assert "compiled_seed=recovered" in result.stdout
+    assert "warm_start_attempt=same_ast_return" in result.stdout
+    assert "trained_exact_recovery=recovered" in result.stdout
+
     payload = json.loads(output.read_text())
-    assert payload["claim_status"] == "verified_showcase"
-    assert payload["stage_statuses"]["compiled_seed"] == "unsupported"
-    assert payload["warm_start_eml"]["status"] == "unsupported"
-    relaxed_macro = payload["compiled_eml"]["diagnostic"]["relaxed"]["metadata"]["macro_diagnostics"]
-    assert relaxed_macro["hits"] == ["direct_division_template"]
-    assert relaxed_macro["depth_delta"] > 0
+    assert payload["demo"] == "michaelis_menten"
+    assert payload["claim_status"] == "recovered"
+    assert payload["stage_statuses"]["compiled_seed"] == "recovered"
+    assert payload["stage_statuses"]["warm_start_attempt"] == "same_ast_return"
+    assert payload["stage_statuses"]["trained_exact_recovery"] == "recovered"
+    assert "blind_baseline" not in payload["stage_statuses"]
+    assert payload["compiled_eml"]["metadata"]["depth"] == 12
+    assert payload["compiled_eml"]["metadata"]["node_count"] == 41
+    assert payload["compiled_eml"]["metadata"]["macro_diagnostics"]["hits"] == ["saturation_ratio_template"]
+    assert payload["warm_start_eml"]["status"] == "same_ast_return"
+    assert payload["warm_start_eml"]["verification"]["status"] == "recovered"
+    assert payload["warm_start_eml"]["diagnosis"]["changed_slot_count"] == 0
 
 
 def test_cli_reports_planck_as_stretch_without_promotion(tmp_path):
