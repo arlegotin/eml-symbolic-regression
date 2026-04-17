@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.9
 milestone_name: milestone
-current_phase: Phase 49 - Witness Registry and Centered Scaffold Correctness
+current_phase: 49
 status: executing
 stopped_at: v1.9 initialized; ready to plan Phase 49
-last_updated: "2026-04-17T11:27:02.770Z"
-last_activity: 2026-04-17 -- Phase 49 planning complete
+last_updated: "2026-04-17T11:27:45.774Z"
+last_activity: 2026-04-17 -- Phase 49 execution started
 progress:
   total_phases: 5
   completed_phases: 0
@@ -18,7 +18,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 49 - Witness Registry and Centered Scaffold Correctness
+**Current phase:** 49
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,14 +26,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-17)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.9 Raw-EML Hybrid Recovery and Paper Suite.
+**Current focus:** Phase 49 — Witness Registry and Centered Scaffold Correctness
 
 ## Current Position
 
-Phase: 49 - Witness Registry and Centered Scaffold Correctness
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-04-17 -- Phase 49 planning complete
+Phase: 49 (Witness Registry and Centered Scaffold Correctness) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 49
+Last activity: 2026-04-17 -- Phase 49 execution started
 Progress: [----------] 0% by completed phases (v1.9: 0/5 complete)
 
 ## Performance Metrics
