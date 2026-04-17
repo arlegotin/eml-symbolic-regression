@@ -293,9 +293,17 @@ class _Compiler:
         offset = self._constant_value(numeric_terms[0])
         return _UnitShift(variable=variable, offset=offset)
 
-    def _build_unit_shift(self, match: _UnitShift) -> Expr:
+    def _build_unit_shift(self, match: _UnitShift) -> Expr | None:
+        with np.errstate(over="ignore", invalid="ignore", under="ignore"):
+            derived = complex(np.exp(-match.offset))
+        if not (np.isfinite(derived.real) and np.isfinite(derived.imag)):
+            return None
+        if self.config.constant_policy == "basis_only" and abs(derived - 1.0) > 1e-12:
+            return None
+        if self.config.constant_policy not in {"basis_only", "literal_constants"}:
+            return None
         self.assumptions.append("unit shift x+b compiled as eml(log(x), exp(-b)) behind validation")
-        return Eml(log_of(Var(match.variable)), Const(np.exp(-match.offset)))
+        return Eml(log_of(Var(match.variable)), Const(derived))
 
     def _compile_reciprocal_shift(self, expr: sp.Pow) -> Expr | None:
         base, exponent = expr.args
@@ -307,6 +315,8 @@ class _Compiler:
             return None
 
         shifted = self._build_unit_shift(match)
+        if shifted is None:
+            return None
         self.assumptions.append("reciprocal shift shortcut lowers shifted denominator before exact divide identity")
         return self._record(
             "reciprocal_shift_template",
@@ -352,6 +362,8 @@ class _Compiler:
 
         numerator = multiply_expr(Const(coefficient), Var(variable))
         denominator = self._build_unit_shift(shift)
+        if denominator is None:
+            return None
         self.assumptions.append("saturation ratio shortcut lowers c*x/(x+b) as one structural motif")
         return self._record(
             "saturation_ratio_template",

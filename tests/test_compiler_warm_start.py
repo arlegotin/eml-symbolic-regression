@@ -111,6 +111,31 @@ def test_compile_michaelis_uses_saturation_ratio_template():
     assert "direct_division_template" not in macro["hits"]
 
 
+def test_unit_shift_macros_do_not_smuggle_basis_only_constants():
+    x = sp.Symbol("x")
+    config = CompilerConfig(variables=("x",), constant_policy="basis_only", max_depth=13, max_nodes=256)
+
+    for expr in (1 / (x + 1), x / (x + 1)):
+        with pytest.raises(UnsupportedExpression) as error:
+            compile_sympy_expression(expr, config)
+        assert error.value.reason == CompileReason.DEPTH_EXCEEDED
+
+
+def test_unit_shift_macro_rejects_nonfinite_derived_constant():
+    x = sp.Symbol("x")
+    expr = 1 / (x + sp.Float("-1000"))
+
+    with pytest.raises(UnsupportedExpression) as error:
+        compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=13, max_nodes=256))
+    assert error.value.reason == CompileReason.DEPTH_EXCEEDED
+
+    relaxed = compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=64, max_nodes=512))
+
+    assert relaxed.metadata.macro_diagnostics is not None
+    assert relaxed.metadata.macro_diagnostics["hits"] == []
+    assert all(np.isfinite(value.real) and np.isfinite(value.imag) for value in relaxed.metadata.constants)
+
+
 def test_compile_arrhenius_uses_direct_division_template():
     spec = get_demo("arrhenius")
     splits = spec.make_splits(points=24, seed=0)
