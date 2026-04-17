@@ -280,12 +280,16 @@ class _Compiler:
         symbol_terms: list[sp.Symbol] = []
         numeric_terms: list[sp.Expr] = []
         for term in expr.args:
-            if isinstance(term, sp.Symbol):
-                symbol_terms.append(term)
-            elif term.is_number:
+            if term.is_number:
                 numeric_terms.append(term)
-            else:
-                return None
+                continue
+
+            coeff, rest = term.as_coeff_Mul()
+            if isinstance(rest, sp.Symbol) and sp.simplify(coeff - 1) == 0:
+                symbol_terms.append(rest)
+                continue
+
+            return None
         if len(symbol_terms) != 1 or len(numeric_terms) != 1:
             return None
 

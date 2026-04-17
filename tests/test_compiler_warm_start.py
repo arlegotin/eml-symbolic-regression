@@ -136,6 +136,55 @@ def test_unit_shift_macro_rejects_nonfinite_derived_constant():
     assert all(np.isfinite(value.real) and np.isfinite(value.imag) for value in relaxed.metadata.constants)
 
 
+def test_explicit_unit_coefficient_reciprocal_shift_uses_template():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        1 / (sp.Float("1.0") * x + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.depth == 10
+    assert result.metadata.node_count == 25
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["reciprocal_shift_template"]
+
+
+def test_explicit_unit_coefficient_saturation_ratio_uses_template():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        sp.Float("2.0") * x / (sp.Float("1.0") * x + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.depth == 12
+    assert result.metadata.node_count == 41
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["saturation_ratio_template"]
+
+
+def test_non_unit_coefficient_shift_does_not_use_unit_shift_templates():
+    x = sp.Symbol("x")
+
+    for expr in (1 / (2 * x + sp.Float("0.5")), sp.Float("2.0") * x / (2 * x + sp.Float("0.5"))):
+        with pytest.raises(UnsupportedExpression) as error:
+            compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=13, max_nodes=256))
+        assert error.value.reason == CompileReason.DEPTH_EXCEEDED
+
+        relaxed = compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=64, max_nodes=512))
+
+        assert relaxed.metadata.macro_diagnostics is not None
+        assert "reciprocal_shift_template" not in relaxed.metadata.macro_diagnostics["hits"]
+        assert "saturation_ratio_template" not in relaxed.metadata.macro_diagnostics["hits"]
+
+
 def test_compile_arrhenius_uses_direct_division_template():
     spec = get_demo("arrhenius")
     splits = spec.make_splits(points=24, seed=0)
