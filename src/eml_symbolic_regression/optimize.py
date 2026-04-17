@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from typing import Any, Callable, Mapping
 
 import numpy as np
@@ -10,8 +10,14 @@ import torch
 
 from .expression import format_constant_value
 from .master_tree import ActiveSlotAlternatives, SnapDecision, SnapResult, SoftEMLTree, constant_label
-from .semantics import AnomalyStats, TrainingSemanticsConfig, as_complex_tensor, mse_complex_numpy
+from .semantics import AnomalyStats, EmlOperator, TrainingSemanticsConfig, as_complex_tensor, mse_complex_numpy, raw_eml_operator
 from .verify import DataSplit, VerificationReport, verify_candidate
+from .witnesses import (
+    CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING,
+    known_scaffold_kinds,
+    resolve_scaffold_plan,
+    scaffold_witness_for,
+)
 
 
 @dataclass(frozen=True)
@@ -38,6 +44,8 @@ class TrainingConfig:
     refit_lr: float = 0.02
     seed: int = 0
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
+    operator_family: EmlOperator = field(default_factory=raw_eml_operator)
+    operator_schedule: tuple[EmlOperator, ...] = ()
 
     def semantics_config(self) -> TrainingSemanticsConfig:
         return TrainingSemanticsConfig(
@@ -47,6 +55,12 @@ class TrainingConfig:
             log_safety_margin=self.log_safety_margin,
             log_safety_imag_tolerance=self.log_safety_imag_tolerance,
         )
+
+    def operator_payload(self) -> dict[str, Any]:
+        return {
+            "operator_family": self.operator_family.as_dict(),
+            "operator_schedule": [operator.as_dict() for operator in self.operator_schedule],
+        }
 
 
 @dataclass(frozen=True)
@@ -146,8 +160,10 @@ def _train_step(
     *,
     temperature: float,
     config: TrainingConfig,
+    operator_family: EmlOperator,
 ) -> tuple[float | None, AnomalyStats]:
     optimizer.zero_grad()
+    model.set_operator(operator_family)
     stats = AnomalyStats()
     pred = model(
         tensor_inputs,
@@ -299,13 +315,21 @@ def fit_eml_tree(
     restart_logs: list[dict[str, Any]] = []
     candidates: list[ExactCandidate] = []
 
-    attempts = _training_attempts(config, initializer is not None)
+    initial_operator = _operator_for_step(config, 0, max(config.steps, 1))
+    scaffold_plan = resolve_scaffold_plan(config.scaffold_initializers, initial_operator)
+    effective_config = replace(config, scaffold_initializers=scaffold_plan.enabled)
+    attempts = _training_attempts(effective_config, initializer is not None)
 
     for attempt_index, attempt in enumerate(attempts):
         restart = int(attempt["restart"])
         seed = int(attempt["seed"])
         torch.manual_seed(seed)
-        model = SoftEMLTree(config.depth, config.variables, config.constants)
+        model = SoftEMLTree(
+            effective_config.depth,
+            effective_config.variables,
+            effective_config.constants,
+            operator_family=_operator_for_step(effective_config, 0, max(effective_config.steps, 1)),
+        )
         model.reset_parameters(seed=seed, scale=0.25)
         if initializer is not None:
             initialization_log = initializer(model, restart, seed)
@@ -313,19 +337,21 @@ def fit_eml_tree(
             initialization_log = _apply_scaffold(model, attempt)
         else:
             initialization_log = None
-        optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
+        optimizer = torch.optim.Adam(model.parameters(), lr=effective_config.lr)
         losses: list[float] = []
         final_stats = AnomalyStats()
 
-        for step in range(config.steps):
-            temp = _temperature(config, step)
+        for step in range(effective_config.steps):
+            temp = _temperature(effective_config, step)
+            operator_family = _operator_for_step(effective_config, step, max(effective_config.steps, 1))
             fit_loss, stats = _train_step(
                 model,
                 optimizer,
                 tensor_inputs,
                 target_tensor,
                 temperature=temp,
-                config=config,
+                config=effective_config,
+                operator_family=operator_family,
             )
             if fit_loss is None:
                 break
@@ -359,7 +385,7 @@ def fit_eml_tree(
             checkpoint_index=None,
             hardening_step=None,
             global_step=max(len(losses) - 1, 0),
-            temperature=_temperature(config, max(len(losses) - 1, 0)),
+            temperature=_temperature(effective_config, max(len(losses) - 1, 0)),
             best_fit_loss=attempt_best_loss,
         )
         candidates.append(legacy_candidate)
@@ -367,21 +393,23 @@ def fit_eml_tree(
 
         hardening_completed = 0
         checkpoint_index = 0
-        for hardening_step in range(config.hardening_steps):
-            temp = _hardening_temperature(config, hardening_step)
+        model.set_operator(_final_operator(effective_config))
+        for hardening_step in range(effective_config.hardening_steps):
+            temp = _hardening_temperature(effective_config, hardening_step)
             fit_loss, stats = _train_step(
                 model,
                 optimizer,
                 tensor_inputs,
                 target_tensor,
                 temperature=temp,
-                config=config,
+                config=effective_config,
+                operator_family=_final_operator(effective_config),
             )
             if fit_loss is None:
                 break
             hardening_completed = hardening_step + 1
             final_stats = stats
-            if _should_emit_hardening_candidate(config, hardening_step):
+            if _should_emit_hardening_candidate(effective_config, hardening_step):
                 candidate = _emit_candidate(
                     model,
                     inputs,
@@ -394,7 +422,7 @@ def fit_eml_tree(
                     source="hardening_checkpoint",
                     checkpoint_index=checkpoint_index,
                     hardening_step=hardening_step,
-                    global_step=config.steps + hardening_step,
+                    global_step=effective_config.steps + hardening_step,
                     temperature=temp,
                     best_fit_loss=attempt_best_loss,
                 )
@@ -428,7 +456,10 @@ def fit_eml_tree(
     status = "snapped_candidate" if np.isfinite(selected_candidate.post_snap_loss) else "failed"
     manifest = {
         "schema": "eml.run_manifest.v1",
-        "config": {**config.__dict__, "constants": [format_constant_value(value) for value in config.constants]},
+        "config": _training_config_payload(effective_config),
+        "operator_trace": _operator_trace(effective_config),
+        "scaffold_exclusions": list(scaffold_plan.exclusions),
+        "scaffold_witness_operator": initial_operator.as_dict(),
         "best_restart": best_log,
         "restarts": restart_logs,
         "candidates": [candidate.as_dict() for candidate in ranked_candidates],
@@ -466,8 +497,9 @@ def fit_eml_tree(
 def _training_attempts(config: TrainingConfig, has_external_initializer: bool) -> list[dict[str, Any]]:
     attempts: list[dict[str, Any]] = []
     if not has_external_initializer:
+        known_scaffolds = set(known_scaffold_kinds())
         for scaffold in config.scaffold_initializers:
-            if scaffold not in {"exp", "log", "scaled_exp"}:
+            if scaffold not in known_scaffolds:
                 continue
             if scaffold == "log" and config.depth < 3:
                 continue
@@ -506,6 +538,69 @@ def _training_attempts(config: TrainingConfig, has_external_initializer: bool) -
     return attempts
 
 
+def _operator_for_step(config: TrainingConfig, step: int, total_steps: int) -> EmlOperator:
+    if not config.operator_schedule:
+        return config.operator_family
+    if total_steps <= 1:
+        return config.operator_schedule[-1]
+    bucket = int((max(step, 0) * len(config.operator_schedule)) / total_steps)
+    return config.operator_schedule[min(bucket, len(config.operator_schedule) - 1)]
+
+
+def _final_operator(config: TrainingConfig) -> EmlOperator:
+    return config.operator_schedule[-1] if config.operator_schedule else config.operator_family
+
+
+def _training_config_payload(config: TrainingConfig) -> dict[str, Any]:
+    payload = {
+        key: value
+        for key, value in config.__dict__.items()
+        if key not in {"operator_family", "operator_schedule", "constants"}
+    }
+    payload["scaffold_initializers"] = list(config.scaffold_initializers)
+    payload["constants"] = [format_constant_value(value) for value in config.constants]
+    payload.update(config.operator_payload())
+    return payload
+
+
+def _operator_trace(config: TrainingConfig) -> list[dict[str, Any]]:
+    if not config.operator_schedule:
+        trace = [
+            {
+                "phase": "training",
+                "start_step": 0,
+                "end_step": max(config.steps - 1, 0),
+                "operator": config.operator_family.as_dict(),
+            }
+        ]
+    else:
+        trace = []
+        schedule = list(config.operator_schedule)
+        total_steps = max(config.steps, 1)
+        for index, operator in enumerate(schedule):
+            start = int((index * total_steps) / len(schedule))
+            end = int(((index + 1) * total_steps) / len(schedule)) - 1
+            trace.append(
+                {
+                    "phase": "training",
+                    "schedule_index": index,
+                    "start_step": start,
+                    "end_step": max(start, end),
+                    "operator": operator.as_dict(),
+                }
+            )
+    if config.hardening_steps > 0:
+        trace.append(
+            {
+                "phase": "hardening",
+                "start_step": config.steps,
+                "end_step": config.steps + config.hardening_steps - 1,
+                "operator": _final_operator(config).as_dict(),
+            }
+        )
+    return trace
+
+
 def _scaled_exp_constants(constants: tuple[complex, ...]) -> tuple[complex, ...]:
     result: list[complex] = []
     for value in constants:
@@ -521,6 +616,9 @@ def _scaled_exp_constants(constants: tuple[complex, ...]) -> tuple[complex, ...]
 def _apply_scaffold(model: SoftEMLTree, attempt: Mapping[str, Any]) -> dict[str, Any]:
     kind = str(attempt["kind"])
     variable = str(attempt["variable"])
+    scaffold_kind = kind.removeprefix("scaffold_")
+    if scaffold_witness_for(scaffold_kind, model.operator_family) is None:
+        raise ValueError(f"{scaffold_kind}:{CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING}")
     if kind == "scaffold_exp":
         model.force_exp(variable)
     elif kind == "scaffold_log":

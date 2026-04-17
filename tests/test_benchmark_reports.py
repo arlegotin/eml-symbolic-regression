@@ -459,10 +459,20 @@ def test_aggregate_evidence_keeps_perturbed_raw_and_repair_taxonomy_distinct():
             ),
         ),
     )
+    result.results[2].payload["metrics"].update(
+        {
+            "repair_candidate_root_count": 2,
+            "repair_deduped_variant_count": 7,
+            "repair_accepted_candidate_id": "fallback",
+            "repair_accepted_candidate_source": "hardening_checkpoint",
+            "repair_accepted_candidate_root_source": "fallback",
+        }
+    )
 
     aggregate = aggregate_evidence(result)
     markdown = render_aggregate_markdown(aggregate)
     classifications = {run["case_id"]: run["classification"] for run in aggregate["runs"]}
+    repair_metrics = next(run["metrics"] for run in aggregate["runs"] if run["case_id"] == "repair")
 
     assert classifications == {
         "same-ast": "same_ast_return",
@@ -476,6 +486,11 @@ def test_aggregate_evidence_keeps_perturbed_raw_and_repair_taxonomy_distinct():
     assert aggregate["counts"]["same_ast_return"] == 1
     assert aggregate["counts"]["verified_equivalent_ast"] == 1
     assert aggregate["counts"]["repaired_candidate"] == 1
+    assert repair_metrics["repair_candidate_root_count"] == 2
+    assert repair_metrics["repair_deduped_variant_count"] == 7
+    assert repair_metrics["repair_accepted_candidate_id"] == "fallback"
+    assert repair_metrics["repair_accepted_candidate_source"] == "hardening_checkpoint"
+    assert repair_metrics["repair_accepted_candidate_root_source"] == "fallback"
     assert {group["key"] for group in aggregate["groups"]["return_kind"]} >= {
         "same_ast_return",
         "verified_equivalent_ast",

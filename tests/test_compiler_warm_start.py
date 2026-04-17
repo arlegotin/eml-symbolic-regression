@@ -58,23 +58,150 @@ def test_compile_shockley_uses_lower_depth_template():
     assert result.metadata.macro_diagnostics["node_delta"] > 0
 
 
-def test_michaelis_relaxed_diagnostic_reports_direct_division_macro():
+def test_compile_reciprocal_shift_uses_template():
+    assert CompilerConfig().max_depth == 13
+    assert CompilerConfig().max_nodes == 256
+
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        1 / (x + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.unsupported_reason is None
+    assert result.metadata.depth == 10
+    assert result.metadata.node_count == 25
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["reciprocal_shift_template"]
+    assert result.metadata.macro_diagnostics["baseline_depth"] == 14
+    assert result.metadata.macro_diagnostics["baseline_node_count"] == 43
+    assert result.metadata.macro_diagnostics["depth_delta"] == 4
+    assert result.metadata.macro_diagnostics["node_delta"] == 18
+    assert [entry.rule for entry in result.metadata.trace].count("reciprocal_shift_template") == 1
+    assert "saturation_ratio_template" not in result.metadata.macro_diagnostics["hits"]
+
+
+def test_compile_michaelis_uses_saturation_ratio_template():
     spec = get_demo("michaelis_menten")
     splits = spec.make_splits(points=24, seed=0)
-    diagnostic = diagnose_compile_expression(
+    result = compile_and_validate(
         spec.candidate.to_sympy(),
         CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
         {spec.variable: splits[0].inputs[spec.variable]},
     )
 
-    assert diagnostic["status"] == "unsupported"
-    assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
-    relaxed_metadata = diagnostic["relaxed"]["metadata"]
-    macro = relaxed_metadata["macro_diagnostics"]
-    assert relaxed_metadata["depth"] <= 14
-    assert macro["hits"] == ["direct_division_template"]
-    assert macro["depth_delta"] > 0
-    assert macro["node_delta"] > 0
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.unsupported_reason is None
+    assert result.metadata.depth == 12
+    assert result.metadata.node_count == 41
+    assert result.metadata.macro_diagnostics is not None
+    macro = result.metadata.macro_diagnostics
+    assert macro["hits"] == ["saturation_ratio_template"]
+    assert macro["baseline_depth"] == 18
+    assert macro["baseline_node_count"] == 75
+    assert macro["depth_delta"] == 6
+    assert macro["node_delta"] == 34
+    assert [entry.rule for entry in result.metadata.trace].count("saturation_ratio_template") == 1
+    assert "reciprocal_shift_template" not in macro["hits"]
+    assert "direct_division_template" not in macro["hits"]
+
+
+def test_unit_shift_macros_do_not_smuggle_basis_only_constants():
+    x = sp.Symbol("x")
+    config = CompilerConfig(variables=("x",), constant_policy="basis_only", max_depth=13, max_nodes=256)
+
+    for expr in (1 / (x + 1), x / (x + 1)):
+        with pytest.raises(UnsupportedExpression) as error:
+            compile_sympy_expression(expr, config)
+        assert error.value.reason == CompileReason.DEPTH_EXCEEDED
+
+
+def test_unit_shift_macro_rejects_nonfinite_derived_constant():
+    x = sp.Symbol("x")
+    expr = 1 / (x + sp.Float("-1000"))
+
+    with pytest.raises(UnsupportedExpression) as error:
+        compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=13, max_nodes=256))
+    assert error.value.reason == CompileReason.DEPTH_EXCEEDED
+
+    relaxed = compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=64, max_nodes=512))
+
+    assert relaxed.metadata.macro_diagnostics is not None
+    assert relaxed.metadata.macro_diagnostics["hits"] == []
+    assert all(np.isfinite(value.real) and np.isfinite(value.imag) for value in relaxed.metadata.constants)
+
+
+def test_explicit_unit_coefficient_reciprocal_shift_uses_template():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        1 / (sp.Float("1.0") * x + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.depth == 10
+    assert result.metadata.node_count == 25
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["reciprocal_shift_template"]
+
+
+def test_explicit_unit_coefficient_saturation_ratio_uses_template():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        sp.Float("2.0") * x / (sp.Float("1.0") * x + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.depth == 12
+    assert result.metadata.node_count == 41
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["saturation_ratio_template"]
+
+
+def test_non_unit_coefficient_shift_does_not_use_unit_shift_templates():
+    x = sp.Symbol("x")
+
+    for expr in (1 / (2 * x + sp.Float("0.5")), sp.Float("2.0") * x / (2 * x + sp.Float("0.5"))):
+        with pytest.raises(UnsupportedExpression) as error:
+            compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=13, max_nodes=256))
+        assert error.value.reason == CompileReason.DEPTH_EXCEEDED
+
+        relaxed = compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=64, max_nodes=512))
+
+        assert relaxed.metadata.macro_diagnostics is not None
+        assert "reciprocal_shift_template" not in relaxed.metadata.macro_diagnostics["hits"]
+        assert "saturation_ratio_template" not in relaxed.metadata.macro_diagnostics["hits"]
+
+
+def test_compile_arrhenius_uses_direct_division_template():
+    spec = get_demo("arrhenius")
+    splits = spec.make_splits(points=24, seed=0)
+    result = compile_and_validate(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.unsupported_reason is None
+    assert result.metadata.depth == 7
+    assert result.metadata.node_count <= 256
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["direct_division_template"]
+    assert [entry.rule for entry in result.metadata.trace].count("direct_division_template") == 1
 
 
 def test_compiler_fail_closed_negative_cases():
@@ -183,6 +310,63 @@ def test_warm_start_manifest_returns_same_ast_and_verifies():
     assert result.manifest["diagnosis"]["changed_slot_count"] == 0
 
 
+def test_arrhenius_warm_start_returns_same_ast_and_verifies():
+    # v1.9-arrhenius-evidence / arrhenius-warm is same_ast evidence, not blind discovery.
+    spec = get_demo("arrhenius")
+    splits = spec.make_splits(points=24, seed=0)
+    compiled = compile_and_validate(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+    result = fit_warm_started_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(depth=compiled.metadata.depth, variables=(spec.variable,), steps=1, restarts=1, seed=0),
+        compiled.expression,
+        perturbation_config=PerturbationConfig(seed=0, noise_scale=0.0),
+        verification_splits=splits,
+        compiler_metadata=compiled.metadata.as_dict(),
+    )
+
+    assert result.status == "same_ast_return"
+    assert result.verification is not None
+    assert result.verification.status == "recovered"
+    assert result.manifest["status"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["mechanism"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["changed_slot_count"] == 0
+    assert result.manifest["compiler_metadata"]["macro_diagnostics"]["hits"] == ["direct_division_template"]
+
+
+def test_michaelis_warm_start_returns_same_ast_and_verifies():
+    spec = get_demo("michaelis_menten")
+    splits = spec.make_splits(points=24, seed=0)
+    compiled = compile_and_validate(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+    result = fit_warm_started_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(depth=compiled.metadata.depth, variables=(spec.variable,), steps=1, restarts=1, seed=0),
+        compiled.expression,
+        perturbation_config=PerturbationConfig(seed=0, noise_scale=0.0),
+        verification_splits=splits,
+        compiler_metadata=compiled.metadata.as_dict(),
+    )
+
+    assert result.status == "same_ast_return"
+    assert result.verification is not None
+    assert result.verification.status == "recovered"
+    assert result.manifest["status"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["mechanism"] == "same_ast_return"
+    assert result.manifest["diagnosis"]["changed_slot_count"] == 0
+    assert result.manifest["compiler_metadata"]["depth"] == 12
+    assert result.manifest["compiler_metadata"]["node_count"] == 41
+    assert result.manifest["compiler_metadata"]["macro_diagnostics"]["hits"] == ["saturation_ratio_template"]
+
+
 def test_perturbation_is_seeded_and_reports_active_slots():
     spec = get_demo("beer_lambert")
     compiled = compile_and_validate(
@@ -284,9 +468,52 @@ def test_cli_warm_start_promotes_shockley_after_macro_shortening(tmp_path):
     assert payload["compiled_eml"]["metadata"]["macro_diagnostics"]["hits"] == ["scaled_exp_minus_one_template"]
 
 
-def test_cli_reports_michaelis_menten_depth_gate_without_promotion(tmp_path):
+def test_cli_warm_start_promotes_arrhenius_same_ast_evidence(tmp_path):
+    # Benchmark suite v1.9-arrhenius-evidence case arrhenius-warm must classify this as same_ast.
+    spec = get_demo("arrhenius")
+    assert spec.train_domain == (0.5, 3.0)
+    assert spec.heldout_domain == (0.6, 2.7)
+    assert spec.extrap_domain == (3.1, 4.2)
+
+    output = tmp_path / "arrhenius-warm.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "demo",
+            "arrhenius",
+            "--warm-start-eml",
+            "--points",
+            "24",
+            "--output",
+            str(output),
+        ],
+        check=True,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+
+    assert "compiled_seed=recovered" in result.stdout
+    assert "trained_exact_recovery=recovered" in result.stdout
+    payload = json.loads(output.read_text())
+    assert payload["demo"] == "arrhenius"
+    assert payload["candidate"]["sympy"] == "exp(-0.8/x)"
+    assert payload["claim_status"] == "recovered"
+    assert payload["stage_statuses"]["compiled_seed"] == "recovered"
+    assert payload["stage_statuses"]["warm_start_attempt"] == "same_ast_return"
+    assert payload["stage_statuses"]["trained_exact_recovery"] == "recovered"
+    assert payload["compiled_eml"]["metadata"]["macro_diagnostics"]["hits"] == ["direct_division_template"]
+    assert payload["compiled_eml"]["metadata"]["depth"] == 7
+    assert payload["warm_start_eml"]["status"] == "same_ast_return"
+    assert payload["warm_start_eml"]["verification"]["status"] == "recovered"
+    assert payload["warm_start_eml"]["diagnosis"]["changed_slot_count"] == 0
+
+
+def test_cli_warm_start_promotes_michaelis_same_ast_evidence(tmp_path):
     output = tmp_path / "mm-warm.json"
-    subprocess.run(
+    result = subprocess.run(
         [
             sys.executable,
             "-m",
@@ -304,13 +531,23 @@ def test_cli_reports_michaelis_menten_depth_gate_without_promotion(tmp_path):
         env=CLI_ENV,
         text=True,
     )
+    assert "compiled_seed=recovered" in result.stdout
+    assert "warm_start_attempt=same_ast_return" in result.stdout
+    assert "trained_exact_recovery=recovered" in result.stdout
+
     payload = json.loads(output.read_text())
-    assert payload["claim_status"] == "verified_showcase"
-    assert payload["stage_statuses"]["compiled_seed"] == "unsupported"
-    assert payload["warm_start_eml"]["status"] == "unsupported"
-    relaxed_macro = payload["compiled_eml"]["diagnostic"]["relaxed"]["metadata"]["macro_diagnostics"]
-    assert relaxed_macro["hits"] == ["direct_division_template"]
-    assert relaxed_macro["depth_delta"] > 0
+    assert payload["demo"] == "michaelis_menten"
+    assert payload["claim_status"] == "recovered"
+    assert payload["stage_statuses"]["compiled_seed"] == "recovered"
+    assert payload["stage_statuses"]["warm_start_attempt"] == "same_ast_return"
+    assert payload["stage_statuses"]["trained_exact_recovery"] == "recovered"
+    assert "blind_baseline" not in payload["stage_statuses"]
+    assert payload["compiled_eml"]["metadata"]["depth"] == 12
+    assert payload["compiled_eml"]["metadata"]["node_count"] == 41
+    assert payload["compiled_eml"]["metadata"]["macro_diagnostics"]["hits"] == ["saturation_ratio_template"]
+    assert payload["warm_start_eml"]["status"] == "same_ast_return"
+    assert payload["warm_start_eml"]["verification"]["status"] == "recovered"
+    assert payload["warm_start_eml"]["diagnosis"]["changed_slot_count"] == 0
 
 
 def test_cli_reports_planck_as_stretch_without_promotion(tmp_path):

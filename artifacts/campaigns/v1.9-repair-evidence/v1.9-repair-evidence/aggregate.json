@@ -1,0 +1,1292 @@
+{
+  "counts": {
+    "evidence_classes": {
+      "snapped_but_failed": 4
+    },
+    "execution_error": 0,
+    "failed": 4,
+    "repaired_candidate": 0,
+    "same_ast_return": 0,
+    "total": 4,
+    "unsupported": 0,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 0,
+    "verifier_recovery_rate": 0.0
+  },
+  "depth_curve": [],
+  "environment": {
+    "code_version": "9fcda6e",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-17T15:36:13.443223+00:00",
+  "groups": {
+    "depth": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "2",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "4",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "evidence_class": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "snapped_but_failed",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "formula": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "beer_lambert",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "radioactive_decay",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "0.0",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "35.0",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "raw_status": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "repair_status": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "not_repaired",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "return_kind": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "seed_group": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "all",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "start_mode": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "blind",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "warm_start",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/campaigns/v1.9-repair-evidence/v1.9-repair-evidence/v1-9-repair-evidence-repair-radioactive-blind-default-1074c1beacc2.json",
+      "case_id": "repair-radioactive-blind-default",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "radioactive_decay",
+        "manifest_sha256": "bb0f6c4b9299fbcaa067b034644ab49c6ffabf3f8fbd3da92b39928fedf98d1d",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "radioactive_decay_catalog",
+          "description": "FOR_DEMO-style one-term exponential decay baseline.",
+          "formula_id": "radioactive_decay",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+          "symbolic_expression": "exp(-0.4*t)",
+          "variable": "t"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.0,
+              5.0
+            ],
+            "input_sha256": "41ea22a60abf29e691d332b78a7473fafd7446cbd489b0f0a6e706844704e100",
+            "name": "train",
+            "target_sha256": "084797718156f67a2e584e284cd237d3346a6fdf6d1e3f164d4522c30e545723"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              4.7
+            ],
+            "input_sha256": "24986c48e247571a315a891275bebdb53677011b5a1faedf9262c67eda6fcf5f",
+            "name": "heldout",
+            "target_sha256": "bd000efc2d6fe478ddd21ecf40638d1824810fe13ac4370ee5a8da0ba9df437f"
+          },
+          {
+            "count": 16,
+            "domain": [
+              5.1,
+              7.0
+            ],
+            "input_sha256": "472494cedb7780f448da31c8258dfa5c0da32090a4e10e2f069905f349b4ef6c",
+            "name": "extrapolation",
+            "target_sha256": "c3882692d7a0522f1516de7601af5616ff2235109bf7857e6b5e19673da9497a"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "t"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "radioactive_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 2.962632700433437,
+        "candidate_complexity": null,
+        "candidate_pool_size": 12,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 2.962632700433438,
+        "high_precision_max_error": 6.666307787858862,
+        "legacy_best_loss": 2.962632700433437,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 2.962632700433438,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 24,
+        "repair_move_count": 40,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 24,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "scaffold_log",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 4,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "radioactive_decay_catalog",
+        "description": "FOR_DEMO-style one-term exponential decay baseline.",
+        "formula_id": "radioactive_decay",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+        "symbolic_expression": "exp(-0.4*t)",
+        "variable": "t"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "v1-9-repair-evidence-repair-radioactive-blind-default-1074c1beacc2",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.9-repair-evidence",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.9-repair-evidence/v1.9-repair-evidence/v1-9-repair-evidence-repair-radioactive-blind-expanded-52a3670eccfb.json",
+      "case_id": "repair-radioactive-blind-expanded",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "radioactive_decay",
+        "manifest_sha256": "bb0f6c4b9299fbcaa067b034644ab49c6ffabf3f8fbd3da92b39928fedf98d1d",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "radioactive_decay_catalog",
+          "description": "FOR_DEMO-style one-term exponential decay baseline.",
+          "formula_id": "radioactive_decay",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+          "symbolic_expression": "exp(-0.4*t)",
+          "variable": "t"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.0,
+              5.0
+            ],
+            "input_sha256": "41ea22a60abf29e691d332b78a7473fafd7446cbd489b0f0a6e706844704e100",
+            "name": "train",
+            "target_sha256": "084797718156f67a2e584e284cd237d3346a6fdf6d1e3f164d4522c30e545723"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              4.7
+            ],
+            "input_sha256": "24986c48e247571a315a891275bebdb53677011b5a1faedf9262c67eda6fcf5f",
+            "name": "heldout",
+            "target_sha256": "bd000efc2d6fe478ddd21ecf40638d1824810fe13ac4370ee5a8da0ba9df437f"
+          },
+          {
+            "count": 16,
+            "domain": [
+              5.1,
+              7.0
+            ],
+            "input_sha256": "472494cedb7780f448da31c8258dfa5c0da32090a4e10e2f069905f349b4ef6c",
+            "name": "extrapolation",
+            "target_sha256": "c3882692d7a0522f1516de7601af5616ff2235109bf7857e6b5e19673da9497a"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "t"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "radioactive_decay",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 2.962632700433437,
+        "candidate_complexity": null,
+        "candidate_pool_size": 12,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 2.962632700433438,
+        "high_precision_max_error": 6.666307787858862,
+        "legacy_best_loss": 2.962632700433437,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 2.962632700433438,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 3,
+        "repair_candidate_root_summary_count": 3,
+        "repair_deduped_variant_count": 156,
+        "repair_move_count": 359,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 156,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "scaffold_log",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 4,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "radioactive_decay_catalog",
+        "description": "FOR_DEMO-style one-term exponential decay baseline.",
+        "formula_id": "radioactive_decay",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Radioactive decay / Newton cooling smoke-test family",
+        "symbolic_expression": "exp(-0.4*t)",
+        "variable": "t"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "v1-9-repair-evidence-repair-radioactive-blind-expanded-52a3670eccfb",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.9-repair-evidence",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.9-repair-evidence/v1.9-repair-evidence/v1-9-repair-evidence-repair-beer-warm-default-bf1ad372adab.json",
+      "case_id": "repair-beer-warm-default",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "beer_lambert",
+        "manifest_sha256": "d3074e308145e8a5e13ad2e6fcb58fd9256c0d106bf6c8f68b4d005c5c65d3f6",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "beer_lambert_catalog",
+          "description": "High-probability exponential-decay showcase.",
+          "formula_id": "beer_lambert",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+          "symbolic_expression": "exp(-0.8*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.0,
+              3.0
+            ],
+            "input_sha256": "392bc45b6354a4fc94af57f5910d460e7de516bd2339cc6316313e77051bd4a7",
+            "name": "train",
+            "target_sha256": "f21965aa7b27eeba75b6793ab1a626ecf7f241d679885e70c44f2e90f86312e9"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              2.7
+            ],
+            "input_sha256": "f6664c3e97150b626d4a1572b90ba50ae77ac6ae7741a0f555d08f0918eec4cb",
+            "name": "heldout",
+            "target_sha256": "d0389432a7623720e656159f433bd213cc01b5b9da5a084769fc366e6ee61cf9"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.5
+            ],
+            "input_sha256": "11653f4ed944c57efdb35a755f9af2d1d44f5e02562b386d6e1dc353a0b60530",
+            "name": "extrapolation",
+            "target_sha256": "58fe459bc0c668928b16e3e261e1eb119409f60677a583c1be38bf2df41ab249"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "anomaly_clamp_count": 58,
+        "anomaly_exp_overflow_count": 44,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 3584,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 3602,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 0.21927529113730626,
+        "candidate_complexity": null,
+        "candidate_pool_size": 4,
+        "changed_slot_count": 3,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.21927561010523208,
+        "high_precision_max_error": 0.9983425650007711,
+        "legacy_best_loss": 0.21927529113730626,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 0.21927561010523208,
+        "refit_accepted": true,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 0.21400430885929023,
+        "refit_status": "accepted",
+        "refit_verifier_status": "failed",
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 24,
+        "repair_move_count": 40,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 24,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "compiled_warm_start",
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 0.9999976754580311,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": "active_slot_perturbation",
+        "warm_start_status": "snapped_but_failed"
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 60
+      },
+      "perturbation_noise": 35.0,
+      "provenance": {
+        "candidate_name": "beer_lambert_catalog",
+        "description": "High-probability exponential-decay showcase.",
+        "formula_id": "beer_lambert",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+        "symbolic_expression": "exp(-0.8*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "v1-9-repair-evidence-repair-beer-warm-default-bf1ad372adab",
+      "seed": 1,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "accepted",
+        "trained_exact_recovery": "failed",
+        "warm_start_attempt": "snapped_but_failed"
+      },
+      "start_mode": "warm_start",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.9-repair-evidence",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "compiler_warm_start_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.9-repair-evidence/v1.9-repair-evidence/v1-9-repair-evidence-repair-beer-warm-expanded-5a37dc178e67.json",
+      "case_id": "repair-beer-warm-expanded",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "beer_lambert",
+        "manifest_sha256": "d3074e308145e8a5e13ad2e6fcb58fd9256c0d106bf6c8f68b4d005c5c65d3f6",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "beer_lambert_catalog",
+          "description": "High-probability exponential-decay showcase.",
+          "formula_id": "beer_lambert",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+          "symbolic_expression": "exp(-0.8*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.0,
+              3.0
+            ],
+            "input_sha256": "392bc45b6354a4fc94af57f5910d460e7de516bd2339cc6316313e77051bd4a7",
+            "name": "train",
+            "target_sha256": "f21965aa7b27eeba75b6793ab1a626ecf7f241d679885e70c44f2e90f86312e9"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.15,
+              2.7
+            ],
+            "input_sha256": "f6664c3e97150b626d4a1572b90ba50ae77ac6ae7741a0f555d08f0918eec4cb",
+            "name": "heldout",
+            "target_sha256": "d0389432a7623720e656159f433bd213cc01b5b9da5a084769fc366e6ee61cf9"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.5
+            ],
+            "input_sha256": "11653f4ed944c57efdb35a755f9af2d1d44f5e02562b386d6e1dc353a0b60530",
+            "name": "extrapolation",
+            "target_sha256": "58fe459bc0c668928b16e3e261e1eb119409f60677a583c1be38bf2df41ab249"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "beer_lambert",
+      "metrics": {
+        "active_slot_count": 18,
+        "anomaly_clamp_count": 58,
+        "anomaly_exp_overflow_count": 44,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 3584,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 3602,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 0.21927529113730626,
+        "candidate_complexity": null,
+        "candidate_pool_size": 4,
+        "changed_slot_count": 3,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.21927561010523208,
+        "high_precision_max_error": 0.9983425650007711,
+        "legacy_best_loss": 0.21927529113730626,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 0.21927561010523208,
+        "refit_accepted": true,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 0.21400430885929023,
+        "refit_status": "accepted",
+        "refit_verifier_status": "failed",
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 88,
+        "repair_move_count": 204,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 88,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "compiled_warm_start",
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 0.9999976754580311,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": "active_slot_perturbation",
+        "warm_start_status": "snapped_but_failed"
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 60
+      },
+      "perturbation_noise": 35.0,
+      "provenance": {
+        "candidate_name": "beer_lambert_catalog",
+        "description": "High-probability exponential-decay showcase.",
+        "formula_id": "beer_lambert",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Beer-Lambert law high-success-probability sanity check",
+        "symbolic_expression": "exp(-0.8*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "v1-9-repair-evidence-repair-beer-warm-expanded-5a37dc178e67",
+      "seed": 1,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "accepted",
+        "trained_exact_recovery": "failed",
+        "warm_start_attempt": "snapped_but_failed"
+      },
+      "start_mode": "warm_start",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.9-repair-evidence",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "compiler_warm_start_training"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/campaigns/v1.9-repair-evidence",
+    "cases": [
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "radioactive_decay",
+        "id": "repair-radioactive-blind-default",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 4,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 80,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          1
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.9",
+          "repair",
+          "near_miss",
+          "default_cleanup"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      },
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "radioactive_decay",
+        "id": "repair-radioactive-blind-expanded",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 4,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 80,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "repair": {
+          "preset": "expanded_candidate_pool"
+        },
+        "seeds": [
+          1
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.9",
+          "repair",
+          "near_miss",
+          "expanded_cleanup"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      },
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "beer_lambert",
+        "id": "repair-beer-warm-default",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 60
+        },
+        "perturbation_noise": [
+          35.0
+        ],
+        "seeds": [
+          1
+        ],
+        "start_mode": "warm_start",
+        "tags": [
+          "v1.9",
+          "repair",
+          "near_miss",
+          "default_cleanup"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      },
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "beer_lambert",
+        "id": "repair-beer-warm-expanded",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 60
+        },
+        "perturbation_noise": [
+          35.0
+        ],
+        "repair": {
+          "preset": "expanded_candidate_pool"
+        },
+        "seeds": [
+          1
+        ],
+        "start_mode": "warm_start",
+        "tags": [
+          "v1.9",
+          "repair",
+          "near_miss",
+          "expanded_cleanup"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      }
+    ],
+    "description": "Focused v1.9 near-miss before/after suite for default versus expanded verifier-gated cleanup.",
+    "id": "v1.9-repair-evidence",
+    "schema": "eml.benchmark_suite.v1"
+  },
+  "thresholds": []
+}

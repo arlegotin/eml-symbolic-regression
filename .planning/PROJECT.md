@@ -4,41 +4,39 @@
 
 This project implements a hybrid symbolic-regression engine based on the paper "All elementary functions from a single binary operator." It searches over complete depth-bounded EML trees, optimizes soft categorical choices with PyTorch, snaps the result into an exact EML tree, cleans it up symbolically, and verifies candidate formulas against held-out data and high-precision evaluators.
 
-The current release is a research-grade Python package and CLI for recovering compact elementary laws from synthetic scientific datasets, with demos, benchmark campaigns, and proof artifacts drawn from `sources/FOR_DEMO.md`. The next milestone should turn the implementation and archived evidence into a paper package: claims, figures, manuscript structure, and any focused validation still needed before submission.
+The current release is a research-grade Python package and CLI for recovering compact elementary laws from synthetic scientific datasets, with demos, benchmark campaigns, proof artifacts, centered/scaled operator-family experiments, and paper-decision artifacts drawn from `sources/FOR_DEMO.md`.
 
 ## Core Value
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.6 Shipped
+## Current State: v1.9 Shipped
 
-The repo now has strong representation, verification, and reproducibility foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, and a one-command proof bundle are all in place and archived through v1.5.
+The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, and paper-package foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, and the v1.9 raw-hybrid paper package are all in place and archived through v1.9.
 
-v1.6 upgraded the optimizer into a verifier-gated hybrid discrete-continuous pipeline: hardening and checkpoint snaps, exact-candidate ranking, low-margin discrete cleanup, post-snap constant refit, shorter compiler macros, and regime-aware reporting that preserves archived v1.5 and v1.4 evidence.
+The current evidence says raw EML is representationally viable but blind basin finding degrades sharply with depth. Perturbed true-tree recovery remains strong, scaffolded/warm-start regimes are useful when clearly labeled, centered-family evidence is negative under the supplied v1.8 setup, and v1.9 has a verified raw-hybrid paper package that keeps those regimes separate.
 
-The final `artifacts/proof/v1.6` bundle was regenerated from the latest code state and verified against campaign aggregates. It keeps the empirical story honest: pure random shallow blind recovery remains measured at `2/18` threshold-eligible recoveries plus one repaired candidate, scaffolded shallow proof remains `18/18`, perturbed true-tree basin proof remains `9/9` with same-AST returns, and depth-curve evidence remains reported rather than overclaimed.
+v1.9 completed the raw-EML hybrid paper path: Phase 49 fixed the centered scaffold correctness confound with an explicit raw-only scaffold witness registry, Phase 50 added normalized Arrhenius exact compiler warm-start evidence, Phase 51 shortened Michaelis-Menten through reusable reciprocal/saturation motifs, Phase 52 expanded verifier-gated cleanup evidence, and Phase 53 generated the regime-separated raw-hybrid paper suite at `artifacts/paper/v1.9/raw-hybrid/`.
 
-## Last Completed Milestone: v1.6 Hybrid Search Pipeline and Exact Candidate Recovery
+## Last Completed Milestone: v1.9 Raw-EML Hybrid Recovery and Paper Suite
 
-**Goal shipped:** Upgrade the recovery engine from a soft-loss-only final snap into a verifier-gated hybrid pipeline while preserving fallback candidates, exact evidence provenance, archived comparison anchors, and honest regime separation.
+**Goal:** Produce a stronger raw-EML hybrid paper package by fixing centered scaffold correctness, adding Arrhenius exact recovery, materially improving Michaelis-Menten support, expanding exact cleanup, and generating a regime-separated paper-facing campaign.
 
 **Shipped features:**
-- Late-hardening checkpoint snaps, exact-candidate pooling, verifier-owned final ranking, and legacy fallback provenance.
-- Target-free snap-neighborhood cleanup over low-margin active slots with exact AST deduplication.
-- Frozen exact-tree constant refit, pre/post-refit artifacts, and richer `exp`/`log` anomaly diagnostics.
-- Macro-aware compiler shortcuts with conservative fail-closed warm-start coverage expansion.
-- Final `artifacts/proof/v1.6/` proof bundle with regime-aware reporting, immutable current/archived anchor locks, and corrected measured-proof verdicts.
+- Raw-only scaffold witness registry and centered-family scaffold exclusions with explicit reason codes.
+- Normalized Arrhenius strict compile and exact same-AST warm-start evidence.
+- Reusable reciprocal-shift and saturation-ratio compiler motifs with Michaelis-Menten same-AST warm-start evidence.
+- Opt-in expanded verifier-gated cleanup over selected, fallback, and retained exact roots, with focused no-improvement repair evidence.
+- Synthesis-only raw-hybrid paper package with source locks, regime-separated reports, scientific-law tables, claim boundaries, centered caveats, README/docs, and regression tests.
 
-## Next Milestone: Paper Package and Publication Evidence
+## Next Milestone
 
-**Recommended goal:** Turn the current implementation and evidence into a defensible EML training paper.
+No active milestone is defined. Run `$gsd-new-milestone` to choose the next direction.
 
-**Likely target features:**
-- Claims-to-evidence table that maps each manuscript claim to archived proof/campaign artifacts.
-- Paper outline and first manuscript draft covering EML representation, differentiable training, snapping, cleanup, compiler warm starts, and verification.
-- Figure/table selection from `artifacts/proof/v1.6`, archived campaigns, and implementation diagnostics.
-- Explicit limitations section covering weak pure-blind recovery and depth degradation.
-- Decision on external baselines or ablations needed before submission.
+Likely candidates:
+- Matched-budget external symbolic-regression baselines for the paper package.
+- Constructive centered-family same-family witnesses or compiler seeds.
+- Further blind-search improvements for deeper raw EML targets.
 
 ## Requirements
 
@@ -81,19 +79,29 @@ The final `artifacts/proof/v1.6` bundle was regenerated from the latest code sta
 - ✓ Macro-aware compiler shortening and conservative warm-start coverage expansion — v1.6 Phase 37
 - ✓ Regime-aware proof/campaign reporting, immutable anchor locks, and aggregate-level hybrid regression locks — v1.6 Phase 38
 - ✓ Final `artifacts/proof/v1.6/` evidence bundle regenerated and verified from the archived code state — v1.6 closeout
+- ✓ Centered/scaled EML semantics, exact ASTs, serialization, mpmath/SymPy export, and shifted-singularity diagnostics — v1.7 Phase 39
+- ✓ Family-aware training, snapping, repair/refit, benchmark budgets, schedules, and raw-default regression coverage — v1.7 Phase 40
+- ✓ v1.7 raw-vs-centered family benchmark suites and campaign presets — v1.7 Phase 41
+- ✓ Operator-family recovery tables, diagnostics tables, comparison Markdown, and regression-lock JSON outputs — v1.7 Phase 42
+- ✓ Paper decision package with safe claims, unsafe claims, figure inventory, and incomplete completeness boundary — v1.7 Phase 43
+- ✓ Expanded v1.8 family smoke triage, calibration, same-family seed gates, scoped evidence manifest, and raw-EML paper decision package — v1.8 Phases 44-48
+- ✓ Explicit raw-only scaffold witness registry, centered-family scaffold exclusions, direct helper fail-closed guards, and artifact reason-code visibility — v1.9 Phase 49
+- ✓ Normalized Arrhenius demo, strict `direct_division_template` compile support, exact same-AST warm-start return, and focused `v1.9-arrhenius-evidence` artifacts — v1.9 Phase 50
+- ✓ Reusable `reciprocal_shift_template` and `saturation_ratio_template` compiler motifs, Michaelis-Menten strict support, same-AST warm-start return, and focused `v1.9-michaelis-evidence` artifacts — v1.9 Phase 51
+- ✓ Opt-in expanded candidate-pool cleanup over selected/fallback/retained exact roots, verifier-gated AST dedup, repair metrics, and focused `v1.9-repair-evidence` no-improvement evidence — v1.9 Phase 52
+- ✓ Regime-separated raw-hybrid paper package with source locks, scientific-law tables, claim boundaries, docs, and regression locks — v1.9 Phase 53
 
 ### Active
 
-- [ ] Define the paper's claims-to-evidence table before changing the algorithm again.
-- [ ] Draft the manuscript structure around evidence regimes instead of a single overstated recovery claim.
-- [ ] Choose which archived v1.6 figures/tables belong in the paper.
-- [ ] Decide whether external symbolic-regression baselines are required before submission.
+(None. Start the next milestone to define active requirements.)
 
 ### Out of Scope
 
-- Guaranteed improvement on every unseen future formula - the defensible promise for v1.6 is weak dominance on declared benchmark selection, not universal success.
-- Full blind recovery of arbitrary depth-6 formulas - the paper and v1.5 depth curve both show sharp degradation beyond shallow depths.
+- Guaranteed improvement on every unseen future formula - the defensible promise for v1.7 is measured comparison on declared benchmark and proof suites, not universal success.
+- Full blind recovery of arbitrary depth-6 formulas - the paper and v1.5/v1.6 depth curves both show sharp degradation beyond shallow depths.
 - Claiming warm-start same-AST return or scaffolded recovery as pure blind discovery - those evidence classes remain separate by design.
+- Claiming `CEML_s` is a full Sheffer successor family without constructive proof - v1.7 may search for evidence, but must not overclaim completeness.
+- Treating `ZEML_s` as a formal terminal-1 completeness replacement - closed zero-terminal trees collapse to zero, so `ZEML_s` is a training-centered form.
 - Replacing or rewriting archived v1.5 proof artifacts or v1.4 campaign baselines - the milestone must preserve them as comparison anchors.
 - Matched-budget external baseline competitions - important, but deferred until the hybrid recovery pipeline is materially stronger.
 - Custom CUDA kernels - use normal PyTorch execution first and profile before adding kernels.
@@ -106,18 +114,26 @@ The uploaded paper defines `eml(x, y) = exp(x) - ln(y)` and shows that EML plus 
 
 `sources/NORTH_STAR.md` turns that paper result into an implementation blueprint. Its core recommendation is a hybrid pipeline: continuous search, hardening, symbolic snapping, local discrete cleanup, and verification. It also warns that pure gradient descent is not enough because the paper's blind recovery success drops sharply with depth, while warm starts recover reliably from perturbed correct solutions.
 
-The committed v1.6 proof bundle now gives the stable evidence base for writing. Representation is strong, verifier ownership is strong, scaffolded and perturbed-basin regimes are strong, and pure-blind discovery remains the honest weak point. The paper should present EML training as a pipeline with separated evidence regimes rather than as a universal blind symbolic-regression solver.
+The committed v1.6 proof bundle now gives the stable evidence base for a research pivot. Representation is strong, verifier ownership is strong, scaffolded and perturbed-basin regimes are strong, and pure-blind discovery remains the honest weak point. v1.7 built the centered/scaled exp-log transport infrastructure, but did not run the full centered evidence matrix.
+
+A quick post-v1.7 `family-smoke` run showed that full campaigns should not be launched blindly yet: raw EML recovered the smoke `exp` blind case and Beer-Lambert warm-start case, while centered `exp` blind variants failed and centered warm-start paths were explicitly unsupported. v1.8 fixed or gated those paths, ran scoped evidence, and selected the raw-EML searchability note path.
+
+v1.8 found no positive centered-family recovery signal under the scoped local setup and identified a centered scaffold correctness confound: raw `exp`/`log` scaffold helpers are semantically raw witnesses and must not be silently reused for `CEML_s` or `ZEML_s`. v1.9 resolved that confound, added focused Arrhenius and Michaelis-Menten same-AST warm-start evidence, measured expanded cleanup as repair-only no-improvement evidence, and generated a raw-hybrid paper package with locked source artifacts and regime-separated claims.
 
 ## Constraints
 
 - **Paper fidelity**: EML semantics, complete-tree construction, snapping, hardening, and complex arithmetic must stay grounded in `sources/paper.pdf` and `sources/NORTH_STAR.md`.
 - **Verification**: A candidate is not "recovered" based on training loss alone; final selection is verifier-owned and exact-candidate based.
 - **Non-destructive evidence**: v1.4 and v1.5 artifacts stay archived and comparable; new results cannot overwrite the historical benchmark anchors.
-- **Weak dominance first**: Candidate-pool selection, beam cleanup, refit, and compiler macros keep the prior exact candidate available as fallback on declared benchmark paths.
+- **Centered-family honesty**: `cEML_{s,t}`, `CEML_s`, and `ZEML_s` must be reported as operator-family experiments unless constructive interdefinability or completeness evidence is actually produced.
 - **Numerics**: Training defaults to PyTorch `complex128`, with training-mode guards only where needed and faithful verification afterwards.
-- **Scope realism**: v1.6 must improve blind-discovery quality without overselling deep blind recovery or universal guarantees.
+- **Scope realism**: Future milestones must not oversell deep blind recovery, universal guarantees, or unproved successor-family completeness.
+- **Run discipline**: Full family campaigns should run only after smoke/calibration blockers are fixed or explicitly gated, so expensive artifacts answer the scientific question rather than restating known missing support.
 - **Demos**: Showcase examples must remain drawn from `sources/FOR_DEMO.md`, favoring normalized, dimensionless, visually distinctive laws.
 - **Repository state**: This project now has archived milestone planning and proof artifacts that must remain inspectable after the rollover.
+- **Witness honesty**: Raw EML witness/scaffold helpers are raw-only unless a same-family centered witness is explicitly constructed and tested.
+- **Reusable motifs**: Compiler improvements should target reusable structures such as reciprocal shifts and saturation ratios, not one-off formula recognizers.
+- **Paper claims**: Warm-start, same-AST return, scaffolded recovery, repair, refit, and pure-blind discovery must remain separately labeled in all v1.9 outputs.
 
 ## Key Decisions
 
@@ -146,6 +162,20 @@ The committed v1.6 proof bundle now gives the stable evidence base for writing. 
 | Preserve the current exact candidate as fallback in every new recovery stage | Weak-dominance upgrades should not make declared benchmark cases worse by construction. | ✓ Good |
 | Separate pure blind, scaffolded blind, compile, warm-start, and perturbed-basin evidence in every report | Honest regime separation is part of the scientific contribution, not just documentation. | ✓ Good |
 | Defer matched-budget external baselines until the hybrid pipeline is stronger | External comparisons matter, but they should follow a materially improved blind-discovery engine. | ⚠️ Revisit for paper |
+| v1.7 tests centered/scaled EML transports before writing the flagship paper | v1.6 evidence shows representation and basin return are strong while raw blind search geometry remains the dominant bottleneck. | ✓ Good |
+| Use `CEML_s` for unit-terminal/formal successor claims and `ZEML_s` for training-centered comparisons | Zero-terminal centered trees do not generate new constants from closed trees, so training convenience and formal completeness must stay separate. | ✓ Good |
+| v1.8 treats centered-family performance as unknown until blocker fixes and full campaigns run | The v1.7 infrastructure shipped without full centered evidence, and the quick smoke check showed centered failures and unsupported warm-start paths. | ✓ Good |
+| v1.8 does not support a centered-family improvement paper from the supplied local evidence | Expanded smoke, calibration, and scoped standard aggregates show raw EML recovery at 80.0% and best centered recovery at 0.0%. | ✓ Good |
+| The near-term paper path is a raw-EML searchability note | Centered variants are useful negative diagnostics but not an empirical improvement under v1.8 evidence. | ✓ Good |
+| v1.9 pivots to raw-EML hybrid recovery rather than centered-family rescue | The strongest evidence is representation viability, blind-search depth limits, and reliable basin return near exact witnesses. | ✓ Good |
+| Centered empirical scaling pauses until same-family witnesses exist | Current centered results are negative, and Phase 49 now blocks raw scaffold reuse under centered semantics while preserving the same-family witness caveat. | ✓ Good |
+| Arrhenius exact warm-start evidence is same-AST evidence, not blind discovery | Phase 50 records `same_ast_return`, verifier `recovered`, and evidence class `same_ast` for `arrhenius-warm`. | ✓ Good |
+| Focused scientific-law evidence should stay out of broad campaign denominators until paper packaging | Phase 50 isolates Arrhenius in `v1.9-arrhenius-evidence` rather than altering v1.3/v1.8 suites. | ✓ Good |
+| Michaelis-Menten is the preferred next compiler/search win before Planck | Michaelis was near the support gate and Phase 51 brought it under the strict gate with reusable motifs while Planck remains stretch. | ✓ Good |
+| Reciprocal and saturation macros must stay structural and validation-gated | Phase 51 review fixes enforced constant policy, finite derived constants, explicit unit-coefficient support, and non-unit rejection. | ✓ Good |
+| Michaelis-Menten support is same-AST compiler warm-start evidence, not blind discovery | Phase 51 records `same_ast_return`, verifier `recovered`, and evidence class `same_ast` for `michaelis-warm`. | ✓ Good |
+| Raw scaffold helpers are registry-gated by operator family | Phase 49 proved current `exp`, `log`, and `scaled_exp` scaffold witnesses are raw EML only; centered runs now record missing same-family witness exclusions instead of reusing raw helpers. | ✓ Good |
+| Expanded exact cleanup is repair-only evidence | Phase 52 can opt into selected/fallback/retained candidate roots and records no-improvement focused evidence; repaired candidates remain `repaired_candidate`, not blind, compile-only, same-AST, or perturbed true-tree recovery. | ✓ Good |
 
 ## Evolution
 
@@ -165,4 +195,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-16 after shipping milestone v1.6*
+*Last updated: 2026-04-17 after completing v1.9 milestone*

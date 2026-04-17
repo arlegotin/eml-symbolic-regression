@@ -1,18 +1,93 @@
 import json
+from pathlib import Path
 
 import pytest
 
 from eml_symbolic_regression.benchmark import (
+    BenchmarkRepairConfig,
     BenchmarkCase,
+    BenchmarkRun,
     BenchmarkSuite,
     BenchmarkValidationError,
+    DatasetConfig,
     OptimizerBudget,
     builtin_suite,
     list_builtin_suites,
     load_suite,
 )
 from eml_symbolic_regression.cli import build_parser
+from eml_symbolic_regression.datasets import get_demo
 from eml_symbolic_regression.proof import paper_claim
+
+
+EXPECTED_CENTERED_SCAFFOLD_EXCLUSIONS = (
+    "exp:centered_family_same_family_witness_missing",
+    "log:centered_family_same_family_witness_missing",
+    "scaled_exp:centered_family_same_family_witness_missing",
+)
+
+
+def test_scaffold_witness_registry_declares_raw_only_current_witnesses():
+    from eml_symbolic_regression import (
+        CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING,
+        ceml_s_operator,
+        known_scaffold_kinds,
+        list_scaffold_witnesses,
+        raw_eml_operator,
+        resolve_scaffold_plan,
+        scaffold_witness_for,
+        zeml_s_operator,
+    )
+
+    witnesses = list_scaffold_witnesses()
+
+    assert [witness["kind"] for witness in witnesses] == ["exp", "log", "scaled_exp"]
+    assert {witness["operator_family"] for witness in witnesses} == {"raw_eml"}
+    assert witnesses == [
+        {
+            "kind": "exp",
+            "operator_family": "raw_eml",
+            "attempt_kind": "scaffold_exp",
+            "min_depth": 1,
+            "strategy": "generic_paper_primitive",
+        },
+        {
+            "kind": "log",
+            "operator_family": "raw_eml",
+            "attempt_kind": "scaffold_log",
+            "min_depth": 3,
+            "strategy": "generic_paper_primitive",
+        },
+        {
+            "kind": "scaled_exp",
+            "operator_family": "raw_eml",
+            "attempt_kind": "scaffold_scaled_exp",
+            "min_depth": 9,
+            "strategy": "paper_scaled_exponential_family",
+        },
+    ]
+    assert known_scaffold_kinds() == ("exp", "log", "scaled_exp")
+
+    requested = ("exp", "log", "scaled_exp", "exp")
+    raw_plan = resolve_scaffold_plan(requested, raw_eml_operator())
+    assert raw_plan.as_dict() == {
+        "enabled": ["exp", "log", "scaled_exp"],
+        "exclusions": [],
+    }
+    assert scaffold_witness_for("exp", raw_eml_operator()).as_dict() == witnesses[0]
+
+    expected_exclusions = [
+        f"exp:{CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING}",
+        f"log:{CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING}",
+        f"scaled_exp:{CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING}",
+    ]
+    for operator in (ceml_s_operator(2.0), zeml_s_operator(8.0)):
+        centered_plan = resolve_scaffold_plan(requested, operator)
+        assert centered_plan.as_dict() == {
+            "enabled": [],
+            "exclusions": expected_exclusions,
+        }
+        assert scaffold_witness_for("exp", operator) is None
 
 
 def test_builtin_suite_registry_expands_stable_run_ids():
@@ -25,6 +100,24 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "proof-perturbed-basin",
         "proof-perturbed-basin-beer-probes",
         "proof-depth-curve",
+        "v1.7-family-smoke",
+        "v1.7-family-shallow-pure-blind",
+        "v1.7-family-shallow",
+        "v1.7-family-basin",
+        "v1.7-family-depth-curve",
+        "v1.7-family-standard",
+        "v1.7-family-showcase",
+        "v1.8-family-smoke",
+        "v1.8-family-calibration",
+        "v1.8-family-shallow-pure-blind",
+        "v1.8-family-shallow",
+        "v1.8-family-basin",
+        "v1.8-family-depth-curve",
+        "v1.8-family-standard",
+        "v1.8-family-showcase",
+        "v1.9-arrhenius-evidence",
+        "v1.9-michaelis-evidence",
+        "v1.9-repair-evidence",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -35,6 +128,271 @@ def test_builtin_suite_registry_expands_stable_run_ids():
     assert runs[0].claim_id is None
     assert runs[0].threshold_policy_id is None
     assert runs[0].training_mode == "blind_training"
+    assert "repair" not in runs[0].as_dict()
+
+
+def test_arrhenius_evidence_suite_contains_exact_warm_start_case():
+    suite = builtin_suite("v1.9-arrhenius-evidence")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.9-arrhenius-evidence"
+    assert [case.id for case in suite.cases] == ["arrhenius-warm"]
+    assert len(runs) == 1
+
+    run = runs[0]
+    demo = get_demo("arrhenius")
+    provenance = demo.formula_provenance()
+
+    assert run.case_id == "arrhenius-warm"
+    assert run.formula == "arrhenius"
+    assert provenance["symbolic_expression"] == "exp(-0.8/x)"
+    assert run.start_mode == "warm_start"
+    assert run.training_mode == "compiler_warm_start_training"
+    assert run.seed == 0
+    assert run.perturbation_noise == 0.0
+    assert run.dataset.points == 24
+    assert run.optimizer.warm_steps == 1
+    assert run.optimizer.max_warm_depth == 14
+    assert run.expect_recovery is True
+    assert {"v1.9", "arrhenius", "warm_start", "same_ast"} <= set(run.tags)
+    assert demo.train_domain == (0.5, 3.0)
+    assert demo.heldout_domain == (0.6, 2.7)
+    assert demo.extrap_domain == (3.1, 4.2)
+    assert run.run_id == "v1-9-arrhenius-evidence-arrhenius-warm-75f6e9c1764d"
+    assert run.run_id == suite.expanded_runs()[0].run_id
+
+
+def test_michaelis_evidence_suite_contains_exact_warm_start_case():
+    suite = builtin_suite("v1.9-michaelis-evidence")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.9-michaelis-evidence"
+    assert [case.id for case in suite.cases] == ["michaelis-warm"]
+    assert len(runs) == 1
+
+    run = runs[0]
+    demo = get_demo("michaelis_menten")
+    provenance = demo.formula_provenance()
+
+    assert run.case_id == "michaelis-warm"
+    assert run.formula == "michaelis_menten"
+    assert provenance["symbolic_expression"] == "2*x/(x + 0.5)"
+    assert run.start_mode == "warm_start"
+    assert run.training_mode == "compiler_warm_start_training"
+    assert run.seed == 0
+    assert run.perturbation_noise == 0.0
+    assert run.dataset.points == 24
+    assert run.optimizer.warm_steps == 1
+    assert run.optimizer.max_compile_depth == 13
+    assert run.optimizer.max_compile_nodes == 256
+    assert run.optimizer.max_warm_depth == 14
+    assert run.expect_recovery is True
+    assert run.tags == ("v1.9", "michaelis", "warm_start", "same_ast")
+    assert "repair" not in run.as_dict()
+    assert demo.train_domain == (0.05, 5.0)
+    assert demo.heldout_domain == (0.08, 4.5)
+    assert demo.extrap_domain == (5.1, 7.0)
+    assert run.run_id == "v1-9-michaelis-evidence-michaelis-warm-a67d8ccfb108"
+
+
+def test_benchmark_case_and_run_serialize_optional_repair_config():
+    payload = {
+        "id": "repair-radioactive-blind-expanded",
+        "formula": "radioactive_decay",
+        "start_mode": "blind",
+        "seeds": [1],
+        "dataset": {"points": 24},
+        "optimizer": {"depth": 4, "steps": 80, "restarts": 1},
+        "repair": {"preset": "expanded_candidate_pool"},
+    }
+
+    case = BenchmarkCase.from_mapping(payload, path="cases[0]")
+    default_case = BenchmarkCase.from_mapping({key: value for key, value in payload.items() if key != "repair"}, path="cases[0]")
+    suite = BenchmarkSuite("repair-suite", "repair config suite", (case,))
+    default_suite = BenchmarkSuite("repair-suite", "repair config suite", (default_case,))
+    run = suite.expanded_runs()[0]
+    default_run = default_suite.expanded_runs()[0]
+
+    assert case.repair == BenchmarkRepairConfig(preset="expanded_candidate_pool")
+    assert case.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+    assert run.repair == case.repair
+    assert run.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+    assert "repair" not in default_case.as_dict()
+    assert "repair" not in default_run.as_dict()
+    assert run.optimizer.as_dict() == default_run.optimizer.as_dict()
+    assert run.run_id != default_run.run_id
+
+
+def test_benchmark_run_id_includes_repair_only_when_declared():
+    base = BenchmarkRun(
+        suite_id="repair-suite",
+        case_id="radioactive",
+        formula="radioactive_decay",
+        start_mode="blind",
+        seed=1,
+        perturbation_noise=0.0,
+        dataset=DatasetConfig(points=24),
+        optimizer=OptimizerBudget(depth=4, steps=80, restarts=1),
+        artifact_path=Path("unused.json"),
+    )
+    with_repair = BenchmarkRun(
+        suite_id=base.suite_id,
+        case_id=base.case_id,
+        formula=base.formula,
+        start_mode=base.start_mode,
+        seed=base.seed,
+        perturbation_noise=base.perturbation_noise,
+        dataset=base.dataset,
+        optimizer=base.optimizer,
+        artifact_path=base.artifact_path,
+        repair=BenchmarkRepairConfig(preset="expanded_candidate_pool"),
+    )
+
+    assert base.run_id != with_repair.run_id
+    assert "repair" not in base.as_dict()
+    assert with_repair.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+
+
+def test_repair_evidence_suite_contains_default_and_expanded_near_miss_pairs():
+    suite = builtin_suite("v1.9-repair-evidence")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.9-repair-evidence"
+    assert [case.id for case in suite.cases] == [
+        "repair-radioactive-blind-default",
+        "repair-radioactive-blind-expanded",
+        "repair-beer-warm-default",
+        "repair-beer-warm-expanded",
+    ]
+    assert [run.run_id for run in runs] == [run.run_id for run in suite.expanded_runs()]
+    assert {run.claim_id for run in runs} == {None}
+    assert {run.threshold_policy_id for run in runs} == {None}
+    assert {run.expect_recovery for run in runs} == {False}
+
+    by_case = {run.case_id: run for run in runs}
+    radioactive_default = by_case["repair-radioactive-blind-default"]
+    radioactive_expanded = by_case["repair-radioactive-blind-expanded"]
+    beer_default = by_case["repair-beer-warm-default"]
+    beer_expanded = by_case["repair-beer-warm-expanded"]
+
+    assert radioactive_default.formula == "radioactive_decay"
+    assert radioactive_default.start_mode == "blind"
+    assert radioactive_default.training_mode == "blind_training"
+    assert radioactive_default.seed == 1
+    assert radioactive_default.perturbation_noise == 0.0
+    assert radioactive_default.dataset.points == 24
+    assert radioactive_default.optimizer.depth == 4
+    assert radioactive_default.optimizer.steps == 80
+    assert radioactive_default.optimizer.restarts == 1
+    assert radioactive_default.repair is None
+    assert "repair" not in radioactive_default.as_dict()
+    assert {"v1.9", "repair", "near_miss", "default_cleanup"} <= set(radioactive_default.tags)
+
+    assert radioactive_expanded.formula == radioactive_default.formula
+    assert radioactive_expanded.start_mode == radioactive_default.start_mode
+    assert radioactive_expanded.seed == radioactive_default.seed
+    assert radioactive_expanded.optimizer.as_dict() == radioactive_default.optimizer.as_dict()
+    assert radioactive_expanded.repair == BenchmarkRepairConfig(preset="expanded_candidate_pool")
+    assert radioactive_expanded.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+    assert {"v1.9", "repair", "near_miss", "expanded_cleanup"} <= set(radioactive_expanded.tags)
+    assert radioactive_expanded.run_id != radioactive_default.run_id
+
+    assert beer_default.formula == "beer_lambert"
+    assert beer_default.start_mode == "warm_start"
+    assert beer_default.training_mode == "compiler_warm_start_training"
+    assert beer_default.seed == 1
+    assert beer_default.perturbation_noise == 35.0
+    assert beer_default.dataset.points == 24
+    assert beer_default.optimizer.depth == 2
+    assert beer_default.optimizer.warm_steps == 60
+    assert beer_default.optimizer.warm_restarts == 1
+    assert beer_default.repair is None
+    assert "repair" not in beer_default.as_dict()
+    assert {"v1.9", "repair", "near_miss", "default_cleanup"} <= set(beer_default.tags)
+
+    assert beer_expanded.formula == beer_default.formula
+    assert beer_expanded.start_mode == beer_default.start_mode
+    assert beer_expanded.seed == beer_default.seed
+    assert beer_expanded.perturbation_noise == beer_default.perturbation_noise
+    assert beer_expanded.optimizer.as_dict() == beer_default.optimizer.as_dict()
+    assert beer_expanded.repair == BenchmarkRepairConfig(preset="expanded_candidate_pool")
+    assert beer_expanded.as_dict()["repair"] == {"preset": "expanded_candidate_pool"}
+    assert {"v1.9", "repair", "near_miss", "expanded_cleanup"} <= set(beer_expanded.tags)
+    assert beer_expanded.run_id != beer_default.run_id
+
+
+def test_family_matrix_suites_clone_regimes_with_operator_variants():
+    suite = load_suite("v1.7-family-shallow-pure-blind")
+    runs = suite.expanded_runs()
+
+    assert len(runs) == 72
+    assert {run.claim_id for run in runs} == {None}
+    assert {run.threshold_policy_id for run in runs} == {None}
+    assert {"shallow-exp-pure-blind-raw", "shallow-exp-pure-blind-ceml2", "shallow-exp-pure-blind-zeml8-4"} <= {
+        run.case_id for run in runs
+    }
+    assert {"raw_eml", "CEML_2", "ZEML_2", "ZEML_8"} <= {
+        run.optimizer.operator_family.label for run in runs
+    }
+    assert any([operator.label for operator in run.optimizer.operator_schedule] == ["ZEML_8", "ZEML_4"] for run in runs)
+    assert all({"v1.7", "family_matrix"} <= set(run.tags) for run in runs)
+
+    shallow = load_suite("v1.7-family-shallow")
+    centered_scaffolded = [
+        run for run in shallow.expanded_runs() if run.case_id == "shallow-beer-lambert-blind-ceml2"
+    ]
+    raw_scaffolded = [run for run in shallow.expanded_runs() if run.case_id == "shallow-beer-lambert-blind-raw"]
+    assert centered_scaffolded
+    assert raw_scaffolded
+    assert raw_scaffolded[0].optimizer.scaffold_initializers == ("exp", "log", "scaled_exp")
+    assert raw_scaffolded[0].optimizer.scaffold_exclusions == ()
+    assert centered_scaffolded[0].optimizer.operator_family.label == "CEML_2"
+    assert centered_scaffolded[0].optimizer.scaffold_initializers == ()
+    assert centered_scaffolded[0].optimizer.scaffold_exclusions == EXPECTED_CENTERED_SCAFFOLD_EXCLUSIONS
+
+
+def test_v18_family_matrix_expands_scales_and_schedules():
+    suite = load_suite("v1.8-family-calibration")
+    runs = suite.expanded_runs()
+
+    assert len(runs) == 22
+    assert {"cal-exp-blind-ceml1", "cal-log-blind-zeml8-4-2-1"} <= {run.case_id for run in runs}
+    assert {"raw_eml", "CEML_1", "CEML_2", "CEML_4", "CEML_8", "ZEML_1", "ZEML_2", "ZEML_4", "ZEML_8"} <= {
+        run.optimizer.operator_family.label for run in runs
+    }
+    assert any(
+        [operator.label for operator in run.optimizer.operator_schedule] == ["ZEML_8", "ZEML_4", "ZEML_2", "ZEML_1"]
+        for run in runs
+    )
+    v18_probe = next(run for run in runs if run.case_id == "cal-exp-blind-ceml1")
+    assert "v1.8" in v18_probe.tags
+    assert "v1.7" not in v18_probe.tags
+    raw_probe = next(run for run in runs if run.case_id == "cal-log-blind-raw")
+    continuation_probe = next(run for run in runs if run.case_id == "cal-log-blind-zeml8-4-2-1")
+    assert raw_probe.optimizer.scaffold_initializers == ("exp", "log", "scaled_exp")
+    assert raw_probe.optimizer.scaffold_exclusions == ()
+    assert [operator.label for operator in continuation_probe.optimizer.operator_schedule] == [
+        "ZEML_8",
+        "ZEML_4",
+        "ZEML_2",
+        "ZEML_1",
+    ]
+    assert continuation_probe.optimizer.operator_family.label == "ZEML_8"
+    assert continuation_probe.optimizer.scaffold_initializers == ()
+    assert continuation_probe.optimizer.scaffold_exclusions == EXPECTED_CENTERED_SCAFFOLD_EXCLUSIONS
+
+
+def test_family_basin_and_depth_curve_preserve_regime_shapes_without_thresholds():
+    basin_runs = load_suite("v1.7-family-basin").expanded_runs()
+    depth_runs = load_suite("v1.7-family-depth-curve").expanded_runs()
+
+    assert len(basin_runs) == 36
+    assert len(depth_runs) == 80
+    assert {"perturbed_tree"} == {run.start_mode for run in basin_runs}
+    assert {"blind", "perturbed_tree"} == {run.start_mode for run in depth_runs}
+    assert {run.claim_id for run in basin_runs + depth_runs} == {None}
+    assert any(run.case_id == "basin-depth1-perturbed-ceml2" for run in basin_runs)
+    assert any(run.case_id == "depth-6-perturbed-zeml8-4" for run in depth_runs)
 
 
 def test_v12_evidence_suite_contains_perturbation_matrix():
@@ -244,6 +602,58 @@ def test_optimizer_budget_parses_and_serializes_constants():
 
     assert exc.value.reason == "invalid_budget"
     assert exc.value.path == "optimizer.scaffold_initializers"
+
+
+def test_optimizer_budget_parses_operator_family_and_schedule():
+    budget = OptimizerBudget.from_mapping(
+        {
+            "operator_family": {"family": "ceml_s", "s": 2},
+            "operator_schedule": ["zeml_s:8", "zeml_s:4"],
+        }
+    )
+
+    assert budget.operator_family.label == "CEML_2"
+    assert [operator.label for operator in budget.operator_schedule] == ["ZEML_8", "ZEML_4"]
+    assert budget.as_dict()["operator_family"]["label"] == "CEML_2"
+    assert [item["label"] for item in budget.as_dict()["operator_schedule"]] == ["ZEML_8", "ZEML_4"]
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"operator_schedule": "zeml_s:8"}).validate("optimizer")
+
+    assert exc.value.reason == "malformed_budget"
+    assert exc.value.path == "optimizer.operator_schedule"
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"operator_family": "not-a-family"}).validate("optimizer")
+
+    assert exc.value.reason == "invalid_budget"
+    assert exc.value.path == "optimizer.operator_family"
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"operator_schedule": ["raw_eml"]}).validate("optimizer")
+
+    assert exc.value.reason == "invalid_budget"
+    assert exc.value.path == "optimizer.operator_schedule[0]"
+
+
+def test_operator_family_participates_in_benchmark_run_id():
+    raw_case = BenchmarkCase.from_mapping(
+        {"id": "exp-blind", "formula": "exp", "start_mode": "blind", "optimizer": {"depth": 1}},
+        path="cases[0]",
+    )
+    centered_case = BenchmarkCase.from_mapping(
+        {
+            "id": "exp-blind",
+            "formula": "exp",
+            "start_mode": "blind",
+            "optimizer": {"depth": 1, "operator_family": {"family": "ceml_s", "s": 2}},
+        },
+        path="cases[0]",
+    )
+    raw_run = BenchmarkSuite("custom", "raw", (raw_case,)).expanded_runs()[0]
+    centered_run = BenchmarkSuite("custom", "centered", (centered_case,)).expanded_runs()[0]
+
+    assert raw_run.run_id != centered_run.run_id
 
 
 @pytest.mark.parametrize(

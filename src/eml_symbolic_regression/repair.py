@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any
 
-from .expression import Expr
+from .expression import CenteredEml, Expr
 from .master_tree import EmbeddingResult, NeighborhoodMove, SoftEMLTree, expand_snap_neighborhood
-from .optimize import FitResult
+from .optimize import ExactCandidate, FitResult
 from .verify import DataSplit, VerificationReport, verify_candidate
 
 
@@ -21,6 +22,17 @@ class RepairConfig:
     cleanup_max_slots: int = 4
     cleanup_beam_width: int = 8
     cleanup_max_moves: int = 2
+    cleanup_candidate_sources: tuple[str, ...] = ("selected",)
+
+    @classmethod
+    def expanded_candidate_pool(cls) -> "RepairConfig":
+        return cls(
+            cleanup_top_k=3,
+            cleanup_max_slots=8,
+            cleanup_beam_width=32,
+            cleanup_max_moves=3,
+            cleanup_candidate_sources=("selected", "fallback", "retained"),
+        )
 
 
 @dataclass(frozen=True)
@@ -38,6 +50,9 @@ class RepairMove:
     slot_margin: float | None = None
     probability_gap: float | None = None
     rank: int | None = None
+    candidate_id: str | None = None
+    candidate_source: str | None = None
+    candidate_root_source: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -58,6 +73,12 @@ class RepairMove:
             payload["probability_gap"] = self.probability_gap
         if self.rank is not None:
             payload["rank"] = self.rank
+        if self.candidate_id is not None:
+            payload["candidate_id"] = self.candidate_id
+        if self.candidate_source is not None:
+            payload["candidate_source"] = self.candidate_source
+        if self.candidate_root_source is not None:
+            payload["candidate_root_source"] = self.candidate_root_source
         return payload
 
 
@@ -72,6 +93,13 @@ class RepairReport:
     verification: VerificationReport | None
     reason: str
     variant_count: int = 0
+    candidate_roots_considered: tuple[dict[str, Any], ...] = ()
+    candidate_root_count: int = 0
+    variants_by_candidate_root: tuple[dict[str, Any], ...] = ()
+    deduped_variant_count: int = 0
+    accepted_candidate_id: str | None = None
+    accepted_candidate_source: str | None = None
+    accepted_candidate_root_source: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         verified = self.status == "repaired_candidate" and self.verification is not None and self.verification.status == "recovered"
@@ -90,7 +118,29 @@ class RepairReport:
             "verification": self.verification.as_dict() if self.verification is not None else None,
             "reason": self.reason,
             "variant_count": self.variant_count,
+            "candidate_roots_considered": [dict(root) for root in self.candidate_roots_considered],
+            "candidate_root_count": self.candidate_root_count,
+            "variants_by_candidate_root": [dict(root) for root in self.variants_by_candidate_root],
+            "deduped_variant_count": self.deduped_variant_count,
+            "accepted_candidate_id": self.accepted_candidate_id,
+            "accepted_candidate_source": self.accepted_candidate_source,
+            "accepted_candidate_root_source": self.accepted_candidate_root_source,
         }
+
+
+@dataclass(frozen=True)
+class _CleanupRoot:
+    candidate: ExactCandidate
+    root_source: str
+    root_order: int
+    ast_key: str
+
+
+@dataclass(frozen=True)
+class _CleanupVariant:
+    expression: Expr
+    moves: tuple[RepairMove, ...]
+    root: _CleanupRoot
 
 
 def cleanup_failed_candidate(
@@ -106,8 +156,9 @@ def cleanup_failed_candidate(
     return_kind: str,
 ) -> RepairReport:
     config = config or RepairConfig()
-    selected = fit.selected_candidate
-    if selected is None or not selected.slot_alternatives:
+    roots = _cleanup_candidate_roots(fit, config)
+    candidate_roots = tuple(_candidate_root_payload(root) for root in roots)
+    if not roots:
         return RepairReport(
             status="not_repaired",
             original_status=original_status,
@@ -117,14 +168,66 @@ def cleanup_failed_candidate(
             repaired_expression=None,
             verification=None,
             reason="missing_slot_alternatives",
+            candidate_roots_considered=candidate_roots,
+            candidate_root_count=len(candidate_roots),
         )
 
-    slot_alternatives = tuple(
-        item
-        for item in selected.slot_alternatives[: config.cleanup_max_slots]
-        if item.alternatives[: config.cleanup_top_k]
+    variant_counts_by_root: dict[int, int] = {}
+    deduped_variants: dict[str, _CleanupVariant] = {}
+    roots_with_alternatives = 0
+    for root in roots:
+        bounded = _bounded_slot_alternatives(root.candidate, config)
+        variants = ()
+        if bounded:
+            roots_with_alternatives += 1
+            variants = expand_snap_neighborhood(
+                root.candidate.snap,
+                bounded,
+                depth=depth,
+                variables=variables,
+                constants=constants,
+                operator_family=(
+                    root.candidate.snap.expression.operator
+                    if isinstance(root.candidate.snap.expression, CenteredEml)
+                    else None
+                ),
+                beam_width=config.cleanup_beam_width,
+                max_moves=config.cleanup_max_moves,
+                max_slots=config.cleanup_max_slots,
+                strength=config.strength,
+            )
+            for variant in variants:
+                moves = tuple(
+                    _repair_move_from_neighborhood(
+                        move,
+                        candidate_id=root.candidate.candidate_id,
+                        candidate_source=root.candidate.source,
+                        candidate_root_source=root.root_source,
+                    )
+                    for move in variant.moves
+                )
+                cleanup_variant = _CleanupVariant(expression=variant.expression, moves=moves, root=root)
+                key = _expression_dedup_key(variant.expression)
+                existing = deduped_variants.get(key)
+                if existing is None:
+                    deduped_variants[key] = cleanup_variant
+                elif _cleanup_variant_dedup_key(cleanup_variant) < _cleanup_variant_dedup_key(existing):
+                    deduped_variants[key] = cleanup_variant
+        variant_counts_by_root[root.root_order] = len(variants)
+
+    deduped_variant_count = len(deduped_variants)
+    deduped_counts_by_root: dict[int, int] = {root.root_order: 0 for root in roots}
+    for variant in deduped_variants.values():
+        deduped_counts_by_root[variant.root.root_order] += 1
+    variants_by_root = tuple(
+        _candidate_root_variant_payload(
+            root,
+            variant_count=variant_counts_by_root.get(root.root_order, 0),
+            deduped_variant_count=deduped_counts_by_root.get(root.root_order, 0),
+        )
+        for root in roots
     )
-    if not slot_alternatives:
+    if roots_with_alternatives == 0:
         return RepairReport(
             status="not_repaired",
             original_status=original_status,
@@ -134,30 +237,12 @@ def cleanup_failed_candidate(
             repaired_expression=None,
             verification=None,
             reason="missing_slot_alternatives",
+            candidate_roots_considered=candidate_roots,
+            candidate_root_count=len(candidate_roots),
+            variants_by_candidate_root=variants_by_root,
+            deduped_variant_count=deduped_variant_count,
         )
-
-    bounded = tuple(
-        type(group)(
-            slot=group.slot,
-            current_choice=group.current_choice,
-            current_probability=group.current_probability,
-            current_margin=group.current_margin,
-            alternatives=group.alternatives[: config.cleanup_top_k],
-        )
-        for group in slot_alternatives
-    )
-    variants = expand_snap_neighborhood(
-        selected.snap,
-        bounded,
-        depth=depth,
-        variables=variables,
-        constants=constants,
-        beam_width=config.cleanup_beam_width,
-        max_moves=config.cleanup_max_moves,
-        max_slots=config.cleanup_max_slots,
-        strength=config.strength,
-    )
-    if not variants:
+    if not deduped_variants:
         return RepairReport(
             status="not_repaired",
             original_status=original_status,
@@ -167,22 +252,27 @@ def cleanup_failed_candidate(
             repaired_expression=None,
             verification=None,
             reason="empty_slot_neighborhood",
+            variant_count=0,
+            candidate_roots_considered=candidate_roots,
+            candidate_root_count=len(candidate_roots),
+            variants_by_candidate_root=variants_by_root,
+            deduped_variant_count=deduped_variant_count,
         )
 
     attempted: list[RepairMove] = []
-    evaluated: list[tuple[tuple[RepairMove, ...], Expr, VerificationReport]] = []
-    for variant in variants:
+    evaluated: list[tuple[tuple[RepairMove, ...], Expr, VerificationReport, _CleanupRoot]] = []
+    for variant in sorted(deduped_variants.values(), key=_cleanup_variant_dedup_key):
         verification = verify_candidate(variant.expression, verification_splits, tolerance=tolerance)
         moves = tuple(
-            _with_verification(_repair_move_from_neighborhood(move), verification.status, accepted=verification.status == "recovered")
-            for move in variant.moves
+            _with_verification(move, verification.status, accepted=verification.status == "recovered") for move in variant.moves
         )
         attempted.extend(moves)
-        evaluated.append((moves, variant.expression, verification))
+        evaluated.append((moves, variant.expression, verification, variant.root))
 
-    best_moves, best_expression, best_verification = min(
+    best_moves, best_expression, best_verification, best_root = min(
         evaluated,
-        key=lambda item: _cleanup_ranking_key(item[2], item[1], item[0]),
+        key=lambda item: _cleanup_ranking_key(item[2], item[1], item[0])
+        + (item[3].root_order, item[3].candidate.candidate_id),
     )
     if best_verification.status == "recovered":
         return RepairReport(
@@ -194,7 +284,14 @@ def cleanup_failed_candidate(
             repaired_expression=best_expression,
             verification=best_verification,
             reason="verified_slot_neighborhood",
-            variant_count=len(variants),
+            variant_count=deduped_variant_count,
+            candidate_roots_considered=candidate_roots,
+            candidate_root_count=len(candidate_roots),
+            variants_by_candidate_root=variants_by_root,
+            deduped_variant_count=deduped_variant_count,
+            accepted_candidate_id=best_root.candidate.candidate_id,
+            accepted_candidate_source=best_root.candidate.source,
+            accepted_candidate_root_source=best_root.root_source,
         )
 
     return RepairReport(
@@ -206,7 +303,11 @@ def cleanup_failed_candidate(
         repaired_expression=None,
         verification=None,
         reason="no_verified_slot_neighborhood",
-        variant_count=len(variants),
+        variant_count=deduped_variant_count,
+        candidate_roots_considered=candidate_roots,
+        candidate_root_count=len(candidate_roots),
+        variants_by_candidate_root=variants_by_root,
+        deduped_variant_count=deduped_variant_count,
     )
 
 
@@ -316,6 +417,93 @@ def repair_perturbed_candidate(
         verification=None,
         reason="no_verified_local_move",
         variant_count=len(moves),
+    )
+
+
+def _cleanup_candidate_roots(fit: FitResult, config: RepairConfig) -> tuple[_CleanupRoot, ...]:
+    enabled = set(config.cleanup_candidate_sources)
+    roots: list[_CleanupRoot] = []
+    seen: set[str] = set()
+
+    def add(candidate: ExactCandidate | None, root_source: str) -> None:
+        if candidate is None:
+            return
+        ast_key = _expression_dedup_key(candidate.snap.expression)
+        if ast_key in seen:
+            return
+        seen.add(ast_key)
+        roots.append(
+            _CleanupRoot(
+                candidate=candidate,
+                root_source=root_source,
+                root_order=len(roots),
+                ast_key=ast_key,
+            )
+        )
+
+    if "selected" in enabled:
+        add(fit.selected_candidate, "selected")
+    if "fallback" in enabled:
+        add(fit.fallback_candidate, "fallback")
+    if "retained" in enabled:
+        for candidate in fit.candidates:
+            add(candidate, "retained")
+
+    return tuple(roots)
+
+
+def _bounded_slot_alternatives(candidate: ExactCandidate, config: RepairConfig) -> tuple[Any, ...]:
+    slot_alternatives = tuple(
+        item
+        for item in candidate.slot_alternatives[: config.cleanup_max_slots]
+        if item.alternatives[: config.cleanup_top_k]
+    )
+    return tuple(
+        type(group)(
+            slot=group.slot,
+            current_choice=group.current_choice,
+            current_probability=group.current_probability,
+            current_margin=group.current_margin,
+            alternatives=group.alternatives[: config.cleanup_top_k],
+        )
+        for group in slot_alternatives
+    )
+
+
+def _candidate_root_payload(root: _CleanupRoot) -> dict[str, Any]:
+    return {
+        "candidate_id": root.candidate.candidate_id,
+        "candidate_source": root.candidate.source,
+        "candidate_root_source": root.root_source,
+        "root_order": root.root_order,
+        "slot_alternative_count": len(root.candidate.slot_alternatives),
+    }
+
+
+def _candidate_root_variant_payload(
+    root: _CleanupRoot,
+    *,
+    variant_count: int,
+    deduped_variant_count: int,
+) -> dict[str, Any]:
+    payload = _candidate_root_payload(root)
+    payload["variant_count"] = variant_count
+    payload["deduped_variant_count"] = deduped_variant_count
+    return payload
+
+
+def _expression_dedup_key(expression: Expr) -> str:
+    return json.dumps(expression.to_document(), sort_keys=True)
+
+
+def _cleanup_variant_dedup_key(variant: _CleanupVariant) -> tuple[Any, ...]:
+    return (
+        len(variant.moves),
+        sum(move.probability_gap or 0.0 for move in variant.moves),
+        variant.root.root_order,
+        variant.root.candidate.candidate_id,
+        tuple(move.slot for move in variant.moves),
+        tuple(move.after for move in variant.moves),
     )
 
 
@@ -457,10 +645,19 @@ def _with_verification(move: RepairMove, verifier_status: str, *, accepted: bool
         slot_margin=move.slot_margin,
         probability_gap=move.probability_gap,
         rank=move.rank,
+        candidate_id=move.candidate_id,
+        candidate_source=move.candidate_source,
+        candidate_root_source=move.candidate_root_source,
     )
 
 
-def _repair_move_from_neighborhood(move: NeighborhoodMove) -> RepairMove:
+def _repair_move_from_neighborhood(
+    move: NeighborhoodMove,
+    *,
+    candidate_id: str | None = None,
+    candidate_source: str | None = None,
+    candidate_root_source: str | None = None,
+) -> RepairMove:
     return RepairMove(
         kind=_move_kind(move.before, move.after),
         slot=move.slot,
@@ -474,6 +671,9 @@ def _repair_move_from_neighborhood(move: NeighborhoodMove) -> RepairMove:
         slot_margin=move.slot_margin,
         probability_gap=move.probability_gap,
         rank=move.rank,
+        candidate_id=candidate_id,
+        candidate_source=candidate_source,
+        candidate_root_source=candidate_root_source,
     )
 
 

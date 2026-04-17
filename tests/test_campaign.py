@@ -65,6 +65,9 @@ def _proof_basin_run(
             "repair_status": repair_status,
             "repair_verifier_status": "recovered" if repair_status == "repaired" else None,
             "repair_accepted_move_count": 1 if repair_status == "repaired" else 0,
+            "repair_candidate_root_count": 2 if repair_status == "repaired" else None,
+            "repair_deduped_variant_count": 7 if repair_status == "repaired" else None,
+            "repair_accepted_candidate_root_source": "fallback" if repair_status == "repaired" else None,
         },
         "stage_statuses": {"perturbed_true_tree_attempt": raw_status},
     }
@@ -80,6 +83,14 @@ def test_campaign_presets_map_to_budgeted_suites():
         "proof-basin",
         "proof-basin-probes",
         "proof-depth-curve",
+        "family-smoke",
+        "family-calibration",
+        "family-shallow-pure-blind",
+        "family-shallow",
+        "family-basin",
+        "family-depth-curve",
+        "family-standard",
+        "family-showcase",
     )
 
     standard = campaign_preset("standard")
@@ -115,6 +126,21 @@ def test_campaign_presets_map_to_budgeted_suites():
     assert depth_curve.suite == "proof-depth-curve"
     assert any(run.case_id == "depth-6-perturbed" for run in load_suite(depth_curve.suite).expanded_runs())
 
+    family_smoke = campaign_preset("family-smoke")
+    family_runs = load_suite(family_smoke.suite).expanded_runs()
+    assert family_smoke.suite == "v1.8-family-smoke"
+    assert any(run.case_id == "exp-blind-ceml2" for run in family_runs)
+    assert any(run.case_id == "exp-blind-ceml8" for run in family_runs)
+    assert any([operator.label for operator in run.optimizer.operator_schedule] == ["ZEML_8", "ZEML_4"] for run in family_runs)
+
+    family_calibration = campaign_preset("family-calibration")
+    assert family_calibration.suite == "v1.8-family-calibration"
+    assert len(load_suite(family_calibration.suite).expanded_runs()) == 22
+
+    family_standard = campaign_preset("family-standard")
+    assert family_standard.suite == "v1.8-family-standard"
+    assert family_standard.tier == "v1.8-family-matrix"
+
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
     result = run_campaign(
@@ -137,6 +163,35 @@ def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
     assert manifest["counts"]["total"] == 1
     assert manifest["run_filter"]["case_ids"] == ["planck-diagnostic"]
     assert "campaign smoke" in manifest["reproducibility"]["command"]
+
+
+def test_family_smoke_campaign_writes_family_manifest(tmp_path):
+    result = run_campaign(
+        "family-smoke",
+        output_root=tmp_path,
+        label="family-ci",
+        run_filter=RunFilter(case_ids=("exp-blind-raw", "exp-blind-ceml2")),
+    )
+
+    manifest = json.loads(result.manifest_path.read_text())
+    aggregate = json.loads(result.aggregate_paths["json"].read_text())
+    recovery_rows = list(csv.DictReader(result.table_paths["operator_family_recovery_csv"].open(encoding="utf-8")))
+    diagnostic_rows = list(csv.DictReader(result.table_paths["operator_family_diagnostics_csv"].open(encoding="utf-8")))
+    locks = json.loads(result.table_paths["operator_family_locks_json"].read_text())
+    comparison = result.table_paths["operator_family_comparison_md"].read_text(encoding="utf-8")
+
+    assert manifest["preset"]["name"] == "family-smoke"
+    assert manifest["suite"]["id"] == "v1.8-family-smoke"
+    assert manifest["counts"]["total"] == 2
+    assert manifest["run_filter"]["case_ids"] == ["exp-blind-raw", "exp-blind-ceml2"]
+    assert {"raw_eml", "CEML_2"} <= {row["operator_family"] for row in recovery_rows}
+    assert {"raw_eml", "CEML_2"} <= {row["operator_family"] for row in diagnostic_rows}
+    assert locks["schema"] == "eml.operator_family_locks.v1"
+    assert {row["operator_family"] for row in locks["groups"]} >= {"raw_eml", "CEML_2"}
+    assert "Operator-Family Comparison" in comparison
+    assert "operator_family_comparison_md" in result.table_paths
+    assert {run["metrics"]["operator_family"] for run in aggregate["runs"]} <= {"raw_eml", "CEML_2"}
+    assert "## Operator-Family Comparison" in result.report_path.read_text(encoding="utf-8")
 
 
 def test_reproduction_command_quotes_shell_sensitive_values(tmp_path):
@@ -199,6 +254,10 @@ def test_campaign_refuses_silent_overwrite(tmp_path):
             run_filter=RunFilter(case_ids=("planck-diagnostic",)),
         )
 
+    stale_artifact = tmp_path / "existing" / "runs" / "stale-suite" / "stale.json"
+    stale_artifact.parent.mkdir(parents=True)
+    stale_artifact.write_text("{}", encoding="utf-8")
+
     replacement = run_campaign(
         "smoke",
         output_root=tmp_path,
@@ -208,6 +267,7 @@ def test_campaign_refuses_silent_overwrite(tmp_path):
     )
 
     assert replacement.manifest_path.exists()
+    assert not stale_artifact.exists()
 
 
 def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
@@ -302,6 +362,9 @@ def test_campaign_tables_preserve_perturbed_repair_status_columns(tmp_path):
         "repair_status",
         "repair_verifier_status",
         "repair_accepted_move_count",
+        "repair_candidate_root_count",
+        "repair_deduped_variant_count",
+        "repair_accepted_candidate_root_source",
     } <= set(run_rows[0])
     repaired = next(row for row in run_rows if row["evidence_class"] == "repaired_candidate")
     assert repaired["return_kind"] == "snapped_but_failed"
@@ -309,12 +372,18 @@ def test_campaign_tables_preserve_perturbed_repair_status_columns(tmp_path):
     assert repaired["repair_status"] == "repaired"
     assert repaired["repair_verifier_status"] == "recovered"
     assert repaired["repair_accepted_move_count"] == "1"
+    assert repaired["repair_candidate_root_count"] == "2"
+    assert repaired["repair_deduped_variant_count"] == "7"
+    assert repaired["repair_accepted_candidate_root_source"] == "fallback"
 
     failures = list(csv.DictReader(paths["failures_csv"].open(encoding="utf-8")))
     assert len(failures) == 1
     assert failures[0]["classification"] == "repaired_candidate"
     assert failures[0]["raw_status"] == "snapped_but_failed"
     assert failures[0]["repair_status"] == "repaired"
+    assert failures[0]["repair_candidate_root_count"] == "2"
+    assert failures[0]["repair_deduped_variant_count"] == "7"
+    assert failures[0]["repair_accepted_candidate_root_source"] == "fallback"
 
 
 def test_proof_campaign_tables_and_manifest_preserve_claim_metadata(tmp_path):

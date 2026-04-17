@@ -10,7 +10,18 @@ import numpy as np
 import sympy as sp
 import torch
 
-from .semantics import AnomalyStats, TrainingSemanticsConfig, eml_numpy, eml_torch
+from .semantics import (
+    AnomalyStats,
+    EmlOperator,
+    TrainingSemanticsConfig,
+    ceml_operator,
+    ceml_s_operator,
+    centered_eml_numpy,
+    centered_eml_torch,
+    eml_numpy,
+    eml_torch,
+    zeml_s_operator,
+)
 
 AST_SCHEMA = "eml.ast.v1"
 
@@ -82,6 +93,14 @@ class Expr:
     def to_node(self) -> dict[str, Any]:
         raise NotImplementedError
 
+    def semantics_document(self) -> dict[str, Any]:
+        return {
+            "operator": "exp(x)-log(y)",
+            "log_branch": "principal",
+            "constant_basis": [format_constant_value(value) for value in sorted(self.constants(), key=lambda item: (item.real, item.imag))],
+            "verification_mode": "canonical",
+        }
+
     def node_count(self) -> int:
         raise NotImplementedError
 
@@ -89,15 +108,9 @@ class Expr:
         raise NotImplementedError
 
     def to_document(self, variables: list[str] | None = None, **metadata: Any) -> dict[str, Any]:
-        constants = sorted(self.constants(), key=lambda value: (value.real, value.imag))
         return {
             "schema": AST_SCHEMA,
-            "semantics": {
-                "operator": "exp(x)-log(y)",
-                "log_branch": "principal",
-                "constant_basis": [format_constant_value(value) for value in constants],
-                "verification_mode": "canonical",
-            },
+            "semantics": self.semantics_document(),
             "variables": variables or sorted(self.variables()),
             "root": self.to_node(),
             "metadata": {
@@ -327,6 +340,118 @@ class Eml(Expr):
         )
 
 
+@dataclass(frozen=True)
+class CenteredEml(Expr):
+    left: Expr
+    right: Expr
+    operator: EmlOperator
+
+    def __post_init__(self) -> None:
+        if self.operator.is_raw:
+            raise ValueError("CenteredEml requires a centered operator family")
+
+    def evaluate_numpy(self, context: Mapping[str, Any]) -> np.ndarray:
+        return centered_eml_numpy(
+            self.left.evaluate_numpy(context),
+            self.right.evaluate_numpy(context),
+            operator=self.operator,
+        )
+
+    def evaluate_torch(
+        self,
+        context: Mapping[str, torch.Tensor],
+        *,
+        training: bool = False,
+        stats: AnomalyStats | None = None,
+        semantics: TrainingSemanticsConfig | None = None,
+        constant_overrides: Mapping[str, torch.Tensor] | None = None,
+        node: str = "root",
+    ) -> torch.Tensor:
+        return centered_eml_torch(
+            self.left.evaluate_torch(
+                context,
+                training=training,
+                stats=stats,
+                semantics=semantics,
+                constant_overrides=constant_overrides,
+                node=f"{node}.L",
+            ),
+            self.right.evaluate_torch(
+                context,
+                training=training,
+                stats=stats,
+                semantics=semantics,
+                constant_overrides=constant_overrides,
+                node=f"{node}.R",
+            ),
+            operator=self.operator,
+            training=training,
+            semantics=semantics,
+            stats=stats,
+            node=node,
+        )
+
+    def evaluate_mpmath(self, context: Mapping[str, Any]) -> mp.mpc:
+        s = mp.mpf(self.operator.s)
+        t = mp.mpc(self.operator.t)
+        left = self.left.evaluate_mpmath(context)
+        right = self.right.evaluate_mpmath(context)
+        return s * mp.expm1(left / s) - s * mp.log1p((right - t) / s)
+
+    def to_sympy(self) -> sp.Expr:
+        s = sp.Float(self.operator.s)
+        t = sp.Float(self.operator.t.real) if abs(self.operator.t.imag) < 1e-15 else sp.Float(self.operator.t.real) + sp.I * sp.Float(self.operator.t.imag)
+        return s * (sp.exp(self.left.to_sympy() / s) - 1) - s * sp.log(1 + (self.right.to_sympy() - t) / s)
+
+    def to_node(self) -> dict[str, Any]:
+        return {
+            "kind": "centered_eml",
+            "operator": self.operator.as_dict(),
+            "left": self.left.to_node(),
+            "right": self.right.to_node(),
+        }
+
+    def semantics_document(self) -> dict[str, Any]:
+        constants = sorted(self.constants(), key=lambda value: (value.real, value.imag))
+        return {
+            "operator": "s*expm1(x/s)-s*log1p((y-t)/s)",
+            "operator_family": self.operator.as_dict(),
+            "log_branch": "principal",
+            "constant_basis": [format_constant_value(value) for value in constants],
+            "verification_mode": "canonical_centered",
+        }
+
+    def node_count(self) -> int:
+        return 1 + self.left.node_count() + self.right.node_count()
+
+    def depth(self) -> int:
+        return 1 + max(self.left.depth(), self.right.depth())
+
+    def variables(self) -> set[str]:
+        return self.left.variables() | self.right.variables()
+
+    def constants(self) -> set[complex]:
+        return self.left.constants() | self.right.constants()
+
+    def constant_occurrences(
+        self,
+        *,
+        path: str = "root",
+        fixed_basis: tuple[complex, ...] = (1.0 + 0.0j,),
+    ) -> tuple[ConstantOccurrence, ...]:
+        return (
+            *self.left.constant_occurrences(path=f"{path}.L", fixed_basis=fixed_basis),
+            *self.right.constant_occurrences(path=f"{path}.R", fixed_basis=fixed_basis),
+        )
+
+    def with_constant_updates(self, updates: Mapping[str, complex], *, path: str = "root") -> "Expr":
+        return CenteredEml(
+            self.left.with_constant_updates(updates, path=f"{path}.L"),
+            self.right.with_constant_updates(updates, path=f"{path}.R"),
+            self.operator,
+        )
+
+
 def expr_from_node(node: Mapping[str, Any]) -> Expr:
     kind = node["kind"]
     if kind == "const":
@@ -336,6 +461,12 @@ def expr_from_node(node: Mapping[str, Any]) -> Expr:
         return Var(str(node["name"]))
     if kind == "eml":
         return Eml(expr_from_node(node["left"]), expr_from_node(node["right"]))
+    if kind == "centered_eml":
+        return CenteredEml(
+            expr_from_node(node["left"]),
+            expr_from_node(node["right"]),
+            EmlOperator.from_mapping(dict(node["operator"])),
+        )
     raise ValueError(f"Unknown AST node kind: {kind}")
 
 
@@ -367,6 +498,24 @@ def log_of(expr: Expr) -> Expr:
     """Generalized paper identity for principal-branch log(a)."""
 
     return Eml(Const(1.0), Eml(Eml(Const(1.0), expr), Const(1.0)))
+
+
+def ceml_expr(left: Expr, right: Expr, *, s: float, t: complex = 1.0 + 0.0j) -> Expr:
+    """Exact centered/scaled EML node."""
+
+    return CenteredEml(left, right, ceml_operator(s, t))
+
+
+def ceml_s_expr(left: Expr, right: Expr, *, s: float) -> Expr:
+    """Unit-terminal centered EML node CEML_s."""
+
+    return CenteredEml(left, right, ceml_s_operator(s))
+
+
+def zeml_s_expr(left: Expr, right: Expr, *, s: float) -> Expr:
+    """Zero-terminal centered EML node ZEML_s."""
+
+    return CenteredEml(left, right, zeml_s_operator(s))
 
 
 @dataclass(frozen=True)

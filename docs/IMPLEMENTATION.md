@@ -33,6 +33,8 @@ Compiler output is also not enough by itself. A compiled seed can verify as an e
 
 If that selected exact candidate still fails, benchmark flows can now run a bounded target-free cleanup stage over serialized low-margin slot alternatives. Cleanup never overwrites the original selected candidate in place; it records attempted edits and only promotes a repaired candidate when verifier-owned ranking improves.
 
+Selected-only cleanup remains the default direct repair behavior. Benchmark cases can opt into `expanded_candidate_pool` cleanup when they need focused repair evidence over selected, fallback, and retained exact-candidate roots. Expanded cleanup deduplicates candidate roots and candidate variants by serialized exact AST before verifier work, keeps the original optimizer selected and fallback manifests intact, and accepts a repair only when the verifier reports a recovered candidate. Accepted repairs are reported as `repaired_candidate` evidence only; they are not blind discovery, compile-only evidence, same-AST warm-start evidence, or perturbed true-tree recovery.
+
 If the resulting exact candidate contains literal constants beyond the canonical `1` basis, benchmark flows can also run a frozen-structure post-snap refit stage. Refit exposes those literal leaves by stable AST path, keeps originally real constants on the real axis, records both pre-refit and post-refit exact candidates, and only promotes the refit candidate when verifier-owned ranking improves or matches the preserved fallback.
 
 ## Compiler Contract
@@ -48,7 +50,7 @@ Unsupported functions, unknown variables, unsafe constants, excessive powers, an
 
 `literal_constants` means fixed coefficients such as `-0.8`, `0.5`, and `2` are inserted as terminal constants and reported as such. It is not a pure `{1, eml}` synthesis claim.
 
-The compiler now routes supported shortcuts through an explicit macro layer. Current macro rules are `scaled_exp_minus_one_template` for Shockley-style `scale * (exp(a) - 1)` shapes and `direct_division_template` for true numerator-over-denominator motifs such as Michaelis-Menten. Compiler metadata records macro hits, misses, and the depth/node delta against a no-macro baseline so a shortcut can be audited instead of hidden behind an ad hoc branch.
+The compiler now routes supported shortcuts through an explicit macro layer. Current macro rules are `scaled_exp_minus_one_template` for Shockley-style `scale * (exp(a) - 1)` shapes, `direct_division_template` for true numerator-over-denominator motifs and Arrhenius reciprocal-temperature exponents, `reciprocal_shift_template` for reciprocal shifts such as `1/(x+b)`, and `saturation_ratio_template` for saturation ratios such as `c*x/(x+b)`. Compiler metadata records macro hits, misses, and the depth/node delta against a no-macro baseline so a shortcut can be audited instead of hidden behind an ad hoc branch.
 
 ## Warm Starts
 
@@ -77,6 +79,9 @@ Built-in suites:
 - `for-demo-diagnostics`: selected `sources/FOR_DEMO.md` formulas, including unsupported/stretch formulas as evidence rather than hidden failures.
 - `v1.3-standard`: the default campaign matrix with shallow blind baselines, Beer-Lambert perturbations, Michaelis-Menten, Planck, and selected FOR_DEMO diagnostics.
 - `v1.3-showcase`: an expanded campaign matrix with more seeds, more Beer-Lambert perturbation levels, and full FOR_DEMO diagnostics.
+- `v1.9-arrhenius-evidence`: a single focused `arrhenius-warm` run for normalized Arrhenius exact compiler warm-start evidence.
+- `v1.9-michaelis-evidence`: a single focused `michaelis-warm` run for normalized Michaelis-Menten exact compiler warm-start / same-AST evidence.
+- `v1.9-repair-evidence`: focused near-miss default-vs-expanded cleanup pairs for repair-only evidence with no proof threshold policy.
 
 Each run writes schema `eml.benchmark_run.v1` with:
 
@@ -89,6 +94,14 @@ Each run writes schema `eml.benchmark_run.v1` with:
 - structured errors for unsupported or failed execution paths.
 
 When a blind, warm-start, or perturbed-basin exact candidate fails verification, the run artifact can now include a `repair` section with attempted slot or subtree edits, their margins/probability gaps, accepted moves, and the repaired verifier report if cleanup wins. The original selected and fallback candidates from the optimizer manifest remain intact for weak-dominance comparisons.
+
+The Phase 52 repair evidence command is:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-repair-evidence --output-dir artifacts/campaigns/v1.9-repair-evidence
+```
+
+The generated repair evidence root is `artifacts/campaigns/v1.9-repair-evidence/v1.9-repair-evidence/`. The validated pair summary is `artifacts/campaigns/v1.9-repair-evidence/repair-evidence-summary.json`, with a readable companion at `artifacts/campaigns/v1.9-repair-evidence/repair-evidence-summary.md`. The committed run measured 2 default-vs-expanded pairs: default selected-only cleanup repaired 0, expanded candidate-pool cleanup repaired 0, expanded cleanup produced 0 improvements, final status regressed in 0 pairs, and selected/fallback optimizer manifests were preserved for all runs. This no-improvement result is still valid repair evidence because fallback preservation and verifier-owned taxonomy were checked.
 
 Run artifacts can also include a `refit` section. That section records:
 
@@ -107,12 +120,41 @@ The taxonomy intentionally separates:
 - `blind_recovery`
 - `same_ast_warm_start_return`
 - `verified_equivalent_warm_start_recovery`
+- `repaired_candidate`
 - `snapped_but_failed`
 - `soft_fit_only`
 - `unsupported`
 - `execution_failure`
 
-This prevents a same-AST return or low training loss from being read as blind symbolic discovery.
+This prevents a same-AST return, repaired candidate, or low training loss from being read as blind symbolic discovery.
+
+The generated Arrhenius evidence root is `artifacts/campaigns/v1.9-arrhenius-evidence/v1.9-arrhenius-evidence/`. The suite `v1.9-arrhenius-evidence` contains case `arrhenius-warm`, demo id `arrhenius`, normalized formula `exp(-0.8/x)`, positive domains `(0.5, 3.0)`, `(0.6, 2.7)`, and `(3.1, 4.2)`, macro hit `direct_division_template`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
+
+The generated Michaelis-Menten evidence root is `artifacts/campaigns/v1.9-michaelis-evidence/v1.9-michaelis-evidence/`. The suite `v1.9-michaelis-evidence` contains case `michaelis-warm`, demo id `michaelis_menten`, normalized formula `2*x/(x+0.5)`, domains `(0.05, 5.0)`, `(0.08, 4.5)`, and `(5.1, 7.0)`, macro hit `saturation_ratio_template`, compile depth `12`, node count `41`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
+
+## Raw-Hybrid Paper Package Contract
+
+`src/eml_symbolic_regression/raw_hybrid_paper.py` is a synthesis-only package writer. The CLI command is:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli raw-hybrid-paper --output-dir artifacts/paper/v1.9/raw-hybrid --require-existing
+```
+
+The command validates declared source artifacts, refuses a non-empty output directory unless `--overwrite` is passed, and does not run training, benchmarks, campaigns, proof campaigns, or paper-decision generation. Its source locks hash specific files, not directories, and write source id, role, path, required flag, and SHA-256 into `artifacts/paper/v1.9/raw-hybrid/source-locks.json`.
+
+The generated package root is `artifacts/paper/v1.9/raw-hybrid/`. It contains:
+
+- `manifest.json`: schema `eml.raw_hybrid_paper.v1`, preset `v1.9-raw-hybrid-paper`, reproduction command, output paths, source list, regime counts, and scientific-law row count.
+- `source-locks.json`: file-level evidence locks for v1.6 proof aggregates, v1.8 centered-family decision artifacts, v1.9 Arrhenius/Michaelis/repair evidence, and v1.6 Beer-Lambert/Shockley/Planck/logistic diagnostics.
+- `regime-summary.json`: separate `pure_blind`, `scaffolded`, `compile_only`, `warm_start`, `same_ast_return`, `repaired`, `refit`, and `perturbed_basin` buckets.
+- `raw-hybrid-report.md`: human-readable report with the same regime separation.
+- `scientific-law-table.json`, `scientific-law-table.csv`, and `scientific-law-table.md`: rows for Beer-Lambert, Shockley, Arrhenius, Michaelis-Menten, Planck diagnostic, logistic diagnostic, and historical Michaelis context.
+- `claim-boundaries.md`: explicit boundaries stating that warm-start, same-AST, scaffolded, repaired, refit, compile-only, and perturbed-basin evidence is not blind discovery.
+- `centered-negative-diagnostics.md`: centered-family negative diagnostic evidence with the same-family witness caveat.
+
+The `scientific-law-table` columns are `law`, `formula`, `compile_support`, `compile_depth`, `macro_hits`, `warm_start_status`, `verifier_status`, `evidence_regime`, and `artifact_path`. Beer-Lambert, Shockley, Arrhenius, and Michaelis-Menten are supported same-AST warm-start diagnostics. Arrhenius and Michaelis-Menten remain exact compiler warm-start / same-AST evidence, not blind discovery. Planck and logistic are unsupported/stretch compile diagnostics, not solved rows.
+
+The package deliberately reports centered-family material only as negative diagnostics under missing same-family witnesses. It does not claim centered-family impossibility.
 
 ## Campaign Report Contract
 
@@ -163,15 +205,30 @@ The built-in demos mirror `sources/FOR_DEMO.md`:
 - `logistic`
 - `shockley`
 - `damped_oscillator`
+- `arrhenius`
 - `planck`
 
-`exp` and `log` are exact EML candidates. The remaining demos are catalog showcase formulas with verifier reports, ready for future EML warm-start/curriculum work.
+`exp` and `log` are exact EML candidates. The remaining demos are catalog showcase formulas with verifier reports, with selected formulas promoted only when exact compiler warm-start evidence or another verifier-owned exact EML path exists.
 
-Beer-Lambert and Shockley now have compiler-driven warm-start paths:
+Beer-Lambert, Shockley, normalized Arrhenius, and normalized Michaelis-Menten now have compiler-driven warm-start paths:
 
 ```bash
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --warm-start-eml
 PYTHONPATH=src python -m eml_symbolic_regression.cli demo shockley --warm-start-eml --points 24
+PYTHONPATH=src python -m eml_symbolic_regression.cli demo arrhenius --warm-start-eml --points 24 --output artifacts/arrhenius-warm-report.json
+PYTHONPATH=src python -m eml_symbolic_regression.cli demo michaelis_menten --warm-start-eml --points 24 --output artifacts/michaelis-warm-report.json
 ```
 
-At the default gates, Michaelis-Menten and Planck remain honest stretch reports: their catalog formulas verify, the relaxed compiler diagnostics show the macro-shortened exact trees, but the shipped compile/warm-start stages still report unsupported depth instead of promotion.
+Arrhenius uses normalized dimensionless input `x` and formula `exp(-0.8/x)`. Its focused benchmark command is:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-arrhenius-evidence --case arrhenius-warm --seed 0 --perturbation-noise 0.0 --output-dir artifacts/campaigns/v1.9-arrhenius-evidence
+```
+
+Michaelis-Menten uses normalized dimensionless input `x` and formula `2*x/(x+0.5)`. Its focused benchmark command is:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-michaelis-evidence --case michaelis-warm --seed 0 --perturbation-noise 0.0 --output-dir artifacts/campaigns/v1.9-michaelis-evidence
+```
+
+At the default gates, Planck remains an honest stretch report: its catalog formula verifies, the relaxed compiler diagnostics show the macro-shortened exact tree, but the shipped compile/warm-start stage still reports unsupported depth instead of promotion. Michaelis-Menten is promoted only by the strict same-AST warm-start evidence above, not as blind discovery.

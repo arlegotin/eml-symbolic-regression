@@ -123,7 +123,7 @@ def fit_warm_started_eml_tree(
         raise ValueError(f"training depth {config.depth} is smaller than compiled depth {compiled_expr.depth()}")
     config = replace(config, variables=tuple(sorted(compiled_expr.variables())), constants=constants)
 
-    probe_tree = SoftEMLTree(config.depth, config.variables, config.constants)
+    probe_tree = SoftEMLTree(config.depth, config.variables, config.constants, operator_family=config.operator_family)
     embedding = embed_expr_into_tree(probe_tree, compiled_expr, config=embedding_config)
     if not embedding.success:
         raise ValueError(f"embedding failed: {embedding.diagnostics}")

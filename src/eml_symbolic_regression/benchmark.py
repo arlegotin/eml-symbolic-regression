@@ -11,7 +11,7 @@ import statistics
 import subprocess
 import time
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
@@ -32,9 +32,10 @@ from .proof import (
     threshold_policy,
     validate_claim_reference,
 )
-from .repair import cleanup_failed_candidate, repair_perturbed_candidate
-from .semantics import AnomalyStats, as_complex_tensor, mse_complex_numpy
+from .repair import RepairConfig, cleanup_failed_candidate, repair_perturbed_candidate
+from .semantics import AnomalyStats, EmlOperator, as_complex_tensor, eml_operator_from_spec, mse_complex_numpy, raw_eml_operator
 from .verify import verify_candidate
+from .witnesses import known_scaffold_kinds, resolve_scaffold_plan
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
 
@@ -50,6 +51,24 @@ BUILTIN_SUITES = (
     "proof-perturbed-basin",
     "proof-perturbed-basin-beer-probes",
     "proof-depth-curve",
+    "v1.7-family-smoke",
+    "v1.7-family-shallow-pure-blind",
+    "v1.7-family-shallow",
+    "v1.7-family-basin",
+    "v1.7-family-depth-curve",
+    "v1.7-family-standard",
+    "v1.7-family-showcase",
+    "v1.8-family-smoke",
+    "v1.8-family-calibration",
+    "v1.8-family-shallow-pure-blind",
+    "v1.8-family-shallow",
+    "v1.8-family-basin",
+    "v1.8-family-depth-curve",
+    "v1.8-family-standard",
+    "v1.8-family-showcase",
+    "v1.9-arrhenius-evidence",
+    "v1.9-michaelis-evidence",
+    "v1.9-repair-evidence",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
@@ -98,6 +117,35 @@ class DatasetConfig:
 
 
 @dataclass(frozen=True)
+class BenchmarkRepairConfig:
+    preset: str = "default"
+
+    @classmethod
+    def from_mapping(cls, payload: Mapping[str, Any] | None, *, path: str = "repair") -> "BenchmarkRepairConfig":
+        if payload is None:
+            payload = {}
+        elif not isinstance(payload, Mapping):
+            raise BenchmarkValidationError("malformed_repair", "repair must be a mapping", path=path)
+        return cls(preset=str(payload.get("preset", "default")))
+
+    def validate(self, path: str) -> None:
+        if self.preset not in {"default", "expanded_candidate_pool"}:
+            raise BenchmarkValidationError(
+                "invalid_repair",
+                "repair preset must be one of: default, expanded_candidate_pool",
+                path=f"{path}.preset",
+            )
+
+    def as_dict(self) -> dict[str, Any]:
+        return {"preset": self.preset}
+
+    def to_repair_config(self) -> RepairConfig:
+        if self.preset == "expanded_candidate_pool":
+            return RepairConfig.expanded_candidate_pool()
+        return RepairConfig()
+
+
+@dataclass(frozen=True)
 class OptimizerBudget:
     depth: int = 2
     constants: tuple[complex, ...] = (1.0,)
@@ -122,11 +170,15 @@ class OptimizerBudget:
     refit_steps: int = 80
     refit_lr: float = 0.02
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
+    scaffold_exclusions: tuple[str, ...] = ()
+    operator_family: EmlOperator = field(default_factory=raw_eml_operator)
+    operator_schedule: tuple[EmlOperator, ...] = ()
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any] | None, *, path: str = "optimizer") -> "OptimizerBudget":
         payload = payload or {}
-        values = {field_name: payload.get(field_name, getattr(cls, field_name)) for field_name in cls.__dataclass_fields__}
+        defaults = cls()
+        values = {field_name: payload.get(field_name, getattr(defaults, field_name)) for field_name in cls.__dataclass_fields__}
         constants = values["constants"]
         if not isinstance(constants, (list, tuple)):
             raise BenchmarkValidationError("malformed_budget", "constants must be a list", path=f"{path}.constants")
@@ -163,6 +215,39 @@ class OptimizerBudget:
                 path=f"{path}.scaffold_initializers",
             )
         values["scaffold_initializers"] = tuple(str(value) for value in scaffold_initializers)
+        scaffold_exclusions = values["scaffold_exclusions"]
+        if not isinstance(scaffold_exclusions, (list, tuple)):
+            raise BenchmarkValidationError(
+                "malformed_budget",
+                "scaffold_exclusions must be a list",
+                path=f"{path}.scaffold_exclusions",
+            )
+        values["scaffold_exclusions"] = tuple(str(value) for value in scaffold_exclusions)
+        try:
+            values["operator_family"] = eml_operator_from_spec(payload.get("operator_family"))
+        except (KeyError, TypeError, ValueError) as exc:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "operator_family must identify raw_eml, CEML_s, ZEML_s, or cEML_s_t",
+                path=f"{path}.operator_family",
+            ) from exc
+        operator_schedule = payload.get("operator_schedule", ())
+        if operator_schedule in (None, ""):
+            values["operator_schedule"] = ()
+        elif isinstance(operator_schedule, (list, tuple)):
+            parsed_schedule: list[EmlOperator] = []
+            for index, item in enumerate(operator_schedule):
+                try:
+                    parsed_schedule.append(eml_operator_from_spec(item))
+                except (KeyError, TypeError, ValueError) as exc:
+                    raise BenchmarkValidationError(
+                        "invalid_budget",
+                        "operator_schedule entries must identify centered-family operators",
+                        path=f"{path}.operator_schedule[{index}]",
+                    ) from exc
+            values["operator_schedule"] = tuple(parsed_schedule)
+        else:
+            raise BenchmarkValidationError("malformed_budget", "operator_schedule must be a list", path=f"{path}.operator_schedule")
         return cls(**values)
 
     def validate(self, path: str) -> None:
@@ -233,7 +318,7 @@ class OptimizerBudget:
         for index, value in enumerate(self.constants):
             if not (np.isfinite(value.real) and np.isfinite(value.imag)):
                 raise BenchmarkValidationError("invalid_budget", "constants must be finite", path=f"{path}.constants[{index}]")
-        allowed_scaffolds = {"exp", "log", "scaled_exp"}
+        allowed_scaffolds = set(known_scaffold_kinds())
         unknown_scaffolds = sorted(set(self.scaffold_initializers) - allowed_scaffolds)
         if unknown_scaffolds:
             raise BenchmarkValidationError(
@@ -241,6 +326,13 @@ class OptimizerBudget:
                 f"unknown scaffold initializers: {', '.join(unknown_scaffolds)}",
                 path=f"{path}.scaffold_initializers",
             )
+        for index, operator in enumerate(self.operator_schedule):
+            if operator.is_raw:
+                raise BenchmarkValidationError(
+                    "invalid_budget",
+                    "operator_schedule entries must be centered-family operators",
+                    path=f"{path}.operator_schedule[{index}]",
+                )
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -267,6 +359,9 @@ class OptimizerBudget:
             "refit_steps": self.refit_steps,
             "refit_lr": self.refit_lr,
             "scaffold_initializers": list(self.scaffold_initializers),
+            "scaffold_exclusions": list(self.scaffold_exclusions),
+            "operator_family": self.operator_family.as_dict(),
+            "operator_schedule": [operator.as_dict() for operator in self.operator_schedule],
         }
 
 
@@ -291,6 +386,7 @@ class BenchmarkCase:
     claim_id: str | None = None
     threshold_policy_id: str | None = None
     training_mode: str | None = None
+    repair: BenchmarkRepairConfig | None = None
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any], *, path: str) -> "BenchmarkCase":
@@ -320,6 +416,11 @@ class BenchmarkCase:
             claim_id=_optional_str(payload.get("claim_id")),
             threshold_policy_id=_optional_str(payload.get("threshold_policy_id")),
             training_mode=_optional_str(payload.get("training_mode")),
+            repair=(
+                BenchmarkRepairConfig.from_mapping(payload.get("repair"), path=f"{path}.repair")
+                if "repair" in payload and payload.get("repair") is not None
+                else None
+            ),
         )
 
     def validate(self, path: str) -> None:
@@ -360,6 +461,8 @@ class BenchmarkCase:
             self._validate_proof_contract(path)
         self.dataset.validate(f"{path}.dataset")
         self.optimizer.validate(f"{path}.optimizer")
+        if self.repair is not None:
+            self.repair.validate(f"{path}.repair")
 
     def _validate_proof_contract(self, path: str) -> None:
         training_mode = self.training_mode or _default_training_mode(self.start_mode)
@@ -485,7 +588,7 @@ class BenchmarkCase:
                 )
 
     def as_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "id": self.id,
             "formula": self.formula,
             "start_mode": self.start_mode,
@@ -499,6 +602,9 @@ class BenchmarkCase:
             "threshold_policy_id": self.threshold_policy_id,
             "training_mode": self.training_mode,
         }
+        if self.repair is not None:
+            payload["repair"] = self.repair.as_dict()
+        return payload
 
 
 @dataclass(frozen=True)
@@ -517,6 +623,7 @@ class BenchmarkRun:
     claim_id: str | None = None
     threshold_policy_id: str | None = None
     training_mode: str | None = None
+    repair: BenchmarkRepairConfig | None = None
 
     @property
     def run_id(self) -> str:
@@ -536,11 +643,13 @@ class BenchmarkRun:
                 "threshold_policy_id": self.threshold_policy_id,
                 "training_mode": self.training_mode,
             }
+        if self.repair is not None:
+            parts["repair"] = self.repair.as_dict()
         digest = hashlib.sha1(json.dumps(parts, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()[:12]
         return f"{_slug(self.suite_id)}-{_slug(self.case_id)}-{digest}"
 
     def as_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "suite_id": self.suite_id,
             "case_id": self.case_id,
             "run_id": self.run_id,
@@ -557,6 +666,9 @@ class BenchmarkRun:
             "threshold_policy_id": self.threshold_policy_id,
             "training_mode": self.training_mode,
         }
+        if self.repair is not None:
+            payload["repair"] = self.repair.as_dict()
+        return payload
 
 
 @dataclass(frozen=True)
@@ -698,6 +810,7 @@ class BenchmarkSuite:
                         claim_id=case.claim_id,
                         threshold_policy_id=case.threshold_policy_id,
                         training_mode=training_mode,
+                        repair=case.repair,
                     )
                     runs.append(
                         BenchmarkRun(
@@ -715,6 +828,7 @@ class BenchmarkSuite:
                             claim_id=placeholder.claim_id,
                             threshold_policy_id=placeholder.threshold_policy_id,
                             training_mode=placeholder.training_mode,
+                            repair=placeholder.repair,
                         )
                     )
         return tuple(runs)
@@ -805,6 +919,9 @@ def _case(
     claim_id: str | None = None,
     threshold_policy_id: str | None = None,
     training_mode: str | None = None,
+    operator_family: EmlOperator | None = None,
+    operator_schedule: Iterable[EmlOperator] = (),
+    repair: BenchmarkRepairConfig | None = None,
 ) -> BenchmarkCase:
     return BenchmarkCase(
         id=id,
@@ -822,12 +939,157 @@ def _case(
             warm_restarts=warm_restarts,
             max_warm_depth=max_warm_depth,
             scaffold_initializers=tuple(scaffold_initializers),
+            operator_family=operator_family or raw_eml_operator(),
+            operator_schedule=tuple(operator_schedule),
         ),
         tags=tuple(tags),
         expect_recovery=expect_recovery,
         claim_id=claim_id,
         threshold_policy_id=threshold_policy_id,
         training_mode=training_mode,
+        repair=repair,
+    )
+
+
+@dataclass(frozen=True)
+class _OperatorVariant:
+    id: str
+    operator_family: EmlOperator
+    operator_schedule: tuple[EmlOperator, ...] = ()
+
+    @property
+    def label(self) -> str:
+        if self.operator_schedule:
+            return " -> ".join(operator.label for operator in self.operator_schedule)
+        return self.operator_family.label
+
+    @property
+    def tags(self) -> tuple[str, ...]:
+        return ("operator_family", f"operator:{self.id}")
+
+
+def _family_variants(
+    *,
+    scales: Iterable[int] = (2,),
+    include_continuation: bool = True,
+    include_long_continuation: bool = False,
+) -> tuple[_OperatorVariant, ...]:
+    variants = [_OperatorVariant("raw", raw_eml_operator())]
+    for scale in scales:
+        variants.append(_OperatorVariant(f"ceml{scale}", eml_operator_from_spec(f"ceml_s:{scale}")))
+        variants.append(_OperatorVariant(f"zeml{scale}", eml_operator_from_spec(f"zeml_s:{scale}")))
+    if include_continuation:
+        variants.append(
+            _OperatorVariant(
+                "zeml8-4",
+                eml_operator_from_spec("zeml_s:8"),
+                (eml_operator_from_spec("zeml_s:8"), eml_operator_from_spec("zeml_s:4")),
+            )
+        )
+    if include_long_continuation:
+        variants.append(
+            _OperatorVariant(
+                "zeml8-4-2-1",
+                eml_operator_from_spec("zeml_s:8"),
+                (
+                    eml_operator_from_spec("zeml_s:8"),
+                    eml_operator_from_spec("zeml_s:4"),
+                    eml_operator_from_spec("zeml_s:2"),
+                    eml_operator_from_spec("zeml_s:1"),
+                ),
+            )
+        )
+    return tuple(variants)
+
+
+def _operator_variant_budget(base: OptimizerBudget, variant: _OperatorVariant) -> OptimizerBudget:
+    initial_operator = variant.operator_schedule[0] if variant.operator_schedule else variant.operator_family
+    scaffold_plan = resolve_scaffold_plan(base.scaffold_initializers, initial_operator)
+    return replace(
+        base,
+        scaffold_initializers=scaffold_plan.enabled,
+        scaffold_exclusions=tuple(dict.fromkeys((*base.scaffold_exclusions, *scaffold_plan.exclusions))),
+        operator_family=variant.operator_family,
+        operator_schedule=variant.operator_schedule,
+    )
+
+
+def _family_case(base: BenchmarkCase, variant: _OperatorVariant, *, suite_tag: str) -> BenchmarkCase:
+    return replace(
+        base,
+        id=f"{base.id}-{variant.id}",
+        optimizer=_operator_variant_budget(base.optimizer, variant),
+        tags=tuple(dict.fromkeys((*base.tags, suite_tag, "family_matrix", *variant.tags))),
+        claim_id=None,
+        threshold_policy_id=None,
+        expect_recovery=False if not variant.operator_family.is_raw else base.expect_recovery,
+    )
+
+
+def _family_suite(
+    *,
+    id: str,
+    description: str,
+    base_name: str,
+    include_continuation: bool = True,
+    scales: Iterable[int] = (2,),
+    include_long_continuation: bool = False,
+    suite_tag: str = "v1.7",
+) -> BenchmarkSuite:
+    base = builtin_suite(base_name)
+    variants = _family_variants(
+        scales=scales,
+        include_continuation=include_continuation,
+        include_long_continuation=include_long_continuation,
+    )
+    cases = tuple(_family_case(case, variant, suite_tag=suite_tag) for case in base.cases for variant in variants)
+    return BenchmarkSuite(id=id, description=description, cases=cases)
+
+
+def _v18_family_suite(*, id: str, description: str, base_name: str) -> BenchmarkSuite:
+    return _family_suite(
+        id=id,
+        description=description,
+        base_name=base_name,
+        scales=(1, 2, 4, 8),
+        include_continuation=True,
+        include_long_continuation=True,
+        suite_tag="v1.8",
+    )
+
+
+def _family_calibration_suite() -> BenchmarkSuite:
+    cases = (
+        _case(
+            "cal-exp-blind",
+            "exp",
+            "blind",
+            points=16,
+            depth=1,
+            steps=12,
+            restarts=1,
+            tags=("v1.8", "family_calibration", "exp_probe"),
+        ),
+        _case(
+            "cal-log-blind",
+            "log",
+            "blind",
+            points=16,
+            depth=3,
+            steps=18,
+            restarts=1,
+            tags=("v1.8", "family_calibration", "log_probe"),
+        ),
+    )
+    variants = _family_variants(
+        scales=(1, 2, 4, 8),
+        include_continuation=True,
+        include_long_continuation=True,
+    )
+    return BenchmarkSuite(
+        id="v1.8-family-calibration",
+        description="Focused v1.8 family calibration probes for shallow exp/log behavior across fixed scales and schedules.",
+        cases=tuple(_family_case(case, variant, suite_tag="v1.8") for case in cases for variant in variants),
     )
 
 
@@ -1167,6 +1429,188 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 ),
             ),
         )
+    if name == "v1.7-family-smoke":
+        return _family_suite(
+            id="v1.7-family-smoke",
+            description="CI-scale v1.7 raw-vs-centered operator-family smoke matrix.",
+            base_name="smoke",
+        )
+    if name == "v1.7-family-shallow-pure-blind":
+        return _family_suite(
+            id="v1.7-family-shallow-pure-blind",
+            description="v1.7 family matrix cloned from the shallow pure-blind proof denominator without proof thresholds.",
+            base_name="v1.5-shallow-pure-blind",
+        )
+    if name == "v1.7-family-shallow":
+        return _family_suite(
+            id="v1.7-family-shallow",
+            description="v1.7 family matrix cloned from the shallow scaffolded proof denominator without proof thresholds.",
+            base_name="v1.5-shallow-proof",
+        )
+    if name == "v1.7-family-basin":
+        return _family_suite(
+            id="v1.7-family-basin",
+            description="v1.7 family matrix cloned from the perturbed-basin proof denominator without proof thresholds.",
+            base_name="proof-perturbed-basin",
+        )
+    if name == "v1.7-family-depth-curve":
+        return _family_suite(
+            id="v1.7-family-depth-curve",
+            description="v1.7 family matrix cloned from the blind-vs-perturbed depth curve without proof thresholds.",
+            base_name="proof-depth-curve",
+        )
+    if name == "v1.7-family-standard":
+        return _family_suite(
+            id="v1.7-family-standard",
+            description="v1.7 standard-style raw-vs-centered operator-family comparison matrix.",
+            base_name="v1.3-standard",
+        )
+    if name == "v1.7-family-showcase":
+        return _family_suite(
+            id="v1.7-family-showcase",
+            description="v1.7 showcase-style raw-vs-centered operator-family comparison matrix.",
+            base_name="v1.3-showcase",
+        )
+    if name == "v1.8-family-smoke":
+        return _v18_family_suite(
+            id="v1.8-family-smoke",
+            description="CI-scale v1.8 raw-vs-centered operator-family smoke matrix with expanded fixed scales and schedules.",
+            base_name="smoke",
+        )
+    if name == "v1.8-family-calibration":
+        return _family_calibration_suite()
+    if name == "v1.8-family-shallow-pure-blind":
+        return _v18_family_suite(
+            id="v1.8-family-shallow-pure-blind",
+            description="v1.8 family matrix cloned from the shallow pure-blind proof denominator without proof thresholds.",
+            base_name="v1.5-shallow-pure-blind",
+        )
+    if name == "v1.8-family-shallow":
+        return _v18_family_suite(
+            id="v1.8-family-shallow",
+            description="v1.8 family matrix cloned from the shallow scaffolded proof denominator without proof thresholds.",
+            base_name="v1.5-shallow-proof",
+        )
+    if name == "v1.8-family-basin":
+        return _v18_family_suite(
+            id="v1.8-family-basin",
+            description="v1.8 family matrix cloned from the perturbed-basin proof denominator without proof thresholds.",
+            base_name="proof-perturbed-basin",
+        )
+    if name == "v1.8-family-depth-curve":
+        return _v18_family_suite(
+            id="v1.8-family-depth-curve",
+            description="v1.8 family matrix cloned from the blind-vs-perturbed depth curve without proof thresholds.",
+            base_name="proof-depth-curve",
+        )
+    if name == "v1.8-family-standard":
+        return _v18_family_suite(
+            id="v1.8-family-standard",
+            description="v1.8 standard-style raw-vs-centered operator-family comparison matrix.",
+            base_name="v1.3-standard",
+        )
+    if name == "v1.8-family-showcase":
+        return _v18_family_suite(
+            id="v1.8-family-showcase",
+            description="v1.8 showcase-style raw-vs-centered operator-family comparison matrix.",
+            base_name="v1.3-showcase",
+        )
+    if name == "v1.9-arrhenius-evidence":
+        return BenchmarkSuite(
+            id="v1.9-arrhenius-evidence",
+            description="Focused v1.9 Arrhenius exact warm-start evidence for normalized exp(-0.8/x).",
+            cases=(
+                _case(
+                    "arrhenius-warm",
+                    "arrhenius",
+                    "warm_start",
+                    seeds=(0,),
+                    perturbation_noise=(0.0,),
+                    points=24,
+                    warm_steps=1,
+                    tags=("v1.9", "arrhenius", "warm_start", "same_ast"),
+                    expect_recovery=True,
+                ),
+            ),
+        )
+    if name == "v1.9-michaelis-evidence":
+        return BenchmarkSuite(
+            id="v1.9-michaelis-evidence",
+            description="Focused v1.9 Michaelis-Menten exact warm-start evidence for normalized 2*x/(x+0.5).",
+            cases=(
+                _case(
+                    "michaelis-warm",
+                    "michaelis_menten",
+                    "warm_start",
+                    seeds=(0,),
+                    perturbation_noise=(0.0,),
+                    points=24,
+                    warm_steps=1,
+                    tags=("v1.9", "michaelis", "warm_start", "same_ast"),
+                    expect_recovery=True,
+                ),
+            ),
+        )
+    if name == "v1.9-repair-evidence":
+        expanded_repair = BenchmarkRepairConfig(preset="expanded_candidate_pool")
+        return BenchmarkSuite(
+            id="v1.9-repair-evidence",
+            description="Focused v1.9 near-miss before/after suite for default versus expanded verifier-gated cleanup.",
+            cases=(
+                _case(
+                    "repair-radioactive-blind-default",
+                    "radioactive_decay",
+                    "blind",
+                    seeds=(1,),
+                    points=24,
+                    depth=4,
+                    steps=80,
+                    restarts=1,
+                    tags=("v1.9", "repair", "near_miss", "default_cleanup"),
+                    expect_recovery=False,
+                ),
+                _case(
+                    "repair-radioactive-blind-expanded",
+                    "radioactive_decay",
+                    "blind",
+                    seeds=(1,),
+                    points=24,
+                    depth=4,
+                    steps=80,
+                    restarts=1,
+                    tags=("v1.9", "repair", "near_miss", "expanded_cleanup"),
+                    expect_recovery=False,
+                    repair=expanded_repair,
+                ),
+                _case(
+                    "repair-beer-warm-default",
+                    "beer_lambert",
+                    "warm_start",
+                    seeds=(1,),
+                    perturbation_noise=(35.0,),
+                    points=24,
+                    depth=2,
+                    warm_steps=60,
+                    warm_restarts=1,
+                    tags=("v1.9", "repair", "near_miss", "default_cleanup"),
+                    expect_recovery=False,
+                ),
+                _case(
+                    "repair-beer-warm-expanded",
+                    "beer_lambert",
+                    "warm_start",
+                    seeds=(1,),
+                    perturbation_noise=(35.0,),
+                    points=24,
+                    depth=2,
+                    warm_steps=60,
+                    warm_restarts=1,
+                    tags=("v1.9", "repair", "near_miss", "expanded_cleanup"),
+                    expect_recovery=False,
+                    repair=expanded_repair,
+                ),
+            ),
+        )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
 
 
@@ -1310,6 +1754,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 constants=_fit_constants(fit, run.optimizer.constants),
                 verification_splits=splits,
                 tolerance=run.dataset.tolerance,
+                config=_repair_config_for_run(run),
                 original_status=status,
                 return_kind=status,
             )
@@ -1340,7 +1785,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
         return {
             "status": status,
             "stage_statuses": stage_statuses,
-            "trained_eml_candidate": fit.manifest,
+            "trained_eml_candidate": _manifest_with_budget_scaffold_exclusions(fit.manifest, run.optimizer),
             "trained_eml_verification": report.as_dict(),
             "repair": repair_payload,
             "repair_status": repair_status,
@@ -1375,6 +1820,22 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                     "reason": "depth_too_large_for_warm_start",
                     "compiled_depth": compiled.metadata.depth,
                     "max_warm_depth": run.optimizer.max_warm_depth,
+                },
+            }
+        if not _budget_operator_family(run.optimizer).is_raw:
+            return {
+                "status": "unsupported",
+                "stage_statuses": {**stage_statuses, "warm_start_attempt": "unsupported"},
+                **compiled_payload,
+                "claim_status": "unsupported",
+                "warm_start_eml": {
+                    "status": "unsupported",
+                    "reason": "centered_family_same_family_seed_missing",
+                    **_centered_seed_unsupported_context(
+                        run,
+                        mode="warm_start",
+                        seed_source="compiler_warm_start",
+                    ),
                 },
             }
 
@@ -1417,6 +1878,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 constants=_fit_constants(warm.fit, run.optimizer.constants),
                 verification_splits=splits,
                 tolerance=run.dataset.tolerance,
+                config=_repair_config_for_run(run),
                 original_status=status,
                 return_kind=status,
             )
@@ -1504,6 +1966,22 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 },
                 "claim_status": "unsupported",
             }
+        if not _budget_operator_family(run.optimizer).is_raw:
+            return {
+                "status": "unsupported",
+                "stage_statuses": {**stage_statuses, "perturbed_true_tree_attempt": "unsupported"},
+                **target_payload,
+                "perturbed_true_tree": {
+                    "status": "unsupported",
+                    "reason": "centered_family_same_family_seed_missing",
+                    **_centered_seed_unsupported_context(
+                        run,
+                        mode="perturbed_tree",
+                        seed_source=str(target_metadata.get("source", "target_exact_tree")),
+                    ),
+                },
+                "claim_status": "unsupported",
+            }
 
         train = splits[0]
         training_depth = run.optimizer.warm_depth or max(run.optimizer.depth, target_expr.depth())
@@ -1546,6 +2024,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 constants=_fit_constants(basin.fit, repair_constants),
                 verification_splits=splits,
                 tolerance=run.dataset.tolerance,
+                config=_repair_config_for_run(run),
                 original_status=raw_status,
                 return_kind=basin.return_kind,
             )
@@ -1593,7 +2072,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
             "stage_statuses": stage_statuses,
             **target_payload,
             "perturbed_true_tree": basin.manifest,
-            "trained_eml_candidate": basin.fit.manifest,
+            "trained_eml_candidate": _manifest_with_budget_scaffold_exclusions(basin.fit.manifest, run.optimizer),
             "trained_eml_verification": basin.verification.as_dict() if basin.verification else None,
             "return_kind": basin.return_kind,
             "raw_status": raw_status,
@@ -1609,6 +2088,47 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
 def _fit_depth(fit: FitResult, default_depth: int) -> int:
     config = fit.manifest.get("config") if isinstance(fit.manifest, Mapping) else None
     return int(config.get("depth", default_depth)) if isinstance(config, Mapping) else int(default_depth)
+
+
+def _manifest_with_budget_scaffold_exclusions(manifest: Mapping[str, Any], budget: OptimizerBudget) -> dict[str, Any]:
+    payload = deepcopy(dict(manifest))
+    payload["scaffold_exclusions"] = list(
+        dict.fromkeys(
+            (
+                *payload.get("scaffold_exclusions", ()),
+                *budget.scaffold_exclusions,
+            )
+        )
+    )
+    return payload
+
+
+def _repair_config_for_run(run: BenchmarkRun) -> RepairConfig | None:
+    return run.repair.to_repair_config() if run.repair is not None else None
+
+
+def _budget_operator_family(budget: OptimizerBudget) -> EmlOperator:
+    return budget.operator_schedule[0] if budget.operator_schedule else budget.operator_family
+
+
+def _budget_operator_schedule_label(budget: OptimizerBudget) -> str:
+    return " -> ".join(operator.label for operator in budget.operator_schedule)
+
+
+def _centered_seed_unsupported_context(run: BenchmarkRun, *, mode: str, seed_source: str) -> dict[str, Any]:
+    operator = _budget_operator_family(run.optimizer)
+    return {
+        "operator_family": operator.as_dict(),
+        "operator_schedule": [item.as_dict() for item in run.optimizer.operator_schedule],
+        "unsupported_class": "missing_same_family_exact_seed",
+        "counts_in_denominator": True,
+        "mode": mode,
+        "seed_source": seed_source,
+        "detail": (
+            f"{mode} requires an exact target tree from {operator.label}; "
+            "raw EML compiler seeds are not embedded into centered-family trees as exact returns"
+        ),
+    }
 
 
 def _fit_variables(fit: FitResult, default_variables: tuple[str, ...]) -> tuple[str, ...]:
@@ -1663,6 +2183,8 @@ def _training_config_from_budget(
         refit_steps=run.optimizer.refit_steps,
         refit_lr=run.optimizer.refit_lr,
         scaffold_initializers=run.optimizer.scaffold_initializers if scaffold_initializers is None else scaffold_initializers,
+        operator_family=run.optimizer.operator_schedule[0] if run.optimizer.operator_schedule else run.optimizer.operator_family,
+        operator_schedule=run.optimizer.operator_schedule,
     )
 
 
@@ -2060,11 +2582,29 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     repair_attempts = repair.get("moves_attempted") if isinstance(repair, Mapping) else None
     repair_accepted = repair.get("accepted_moves") if isinstance(repair, Mapping) else None
     repair_variant_count = repair.get("variant_count") if isinstance(repair, Mapping) else None
+    repair_root_summaries = repair.get("variants_by_candidate_root") if isinstance(repair, Mapping) else None
 
     diagnosis = {}
     warm_start = payload.get("warm_start_eml")
     if isinstance(warm_start, Mapping):
         diagnosis = warm_start.get("diagnosis") or {}
+
+    budget = payload.get("budget") if isinstance(payload.get("budget"), Mapping) else {}
+    budget_operator = budget.get("operator_family") if isinstance(budget.get("operator_family"), Mapping) else {}
+    budget_schedule = budget.get("operator_schedule")
+    budget_schedule_label = (
+        " -> ".join(str(item.get("label", "")) for item in budget_schedule if isinstance(item, Mapping))
+        if isinstance(budget_schedule, list)
+        else None
+    )
+    candidate_config = candidate.get("config") if isinstance(candidate, Mapping) and isinstance(candidate.get("config"), Mapping) else {}
+    candidate_operator = candidate_config.get("operator_family") if isinstance(candidate_config.get("operator_family"), Mapping) else {}
+    candidate_schedule = candidate_config.get("operator_schedule")
+    candidate_schedule_label = (
+        " -> ".join(str(item.get("label", "")) for item in candidate_schedule if isinstance(item, Mapping))
+        if isinstance(candidate_schedule, list)
+        else None
+    )
 
     active_slot_changes = None
     changed_slots = None
@@ -2086,6 +2626,10 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     refit_constants = refit.get("refittable_constants")
 
     return {
+        "operator_family": candidate_operator.get("label") or budget_operator.get("label"),
+        "operator_schedule": candidate_schedule_label or budget_schedule_label,
+        "scaffold_exclusions": list(budget.get("scaffold_exclusions", ())) if isinstance(budget, Mapping) else [],
+        "unsupported_reason": _run_reason(payload) if payload.get("status") == "unsupported" else None,
         "best_loss": (
             selected.get("best_fit_loss")
             if isinstance(selected, Mapping)
@@ -2116,6 +2660,11 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
             if isinstance(candidate, Mapping)
             else None
         ),
+        "candidate_complexity": (
+            selected.get("metrics", {}).get("complexity")
+            if isinstance(selected, Mapping) and isinstance(selected.get("metrics"), Mapping)
+            else None
+        ),
         "candidate_pool_size": (
             selection.get("candidate_count")
             if isinstance(selection, Mapping)
@@ -2143,6 +2692,12 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "warm_start_status": diagnosis.get("status"),
         "repair_status": payload.get("repair_status"),
         "repair_variant_count": repair_variant_count,
+        "repair_candidate_root_count": repair.get("candidate_root_count") if isinstance(repair, Mapping) else None,
+        "repair_candidate_root_summary_count": len(repair_root_summaries) if isinstance(repair_root_summaries, list) else 0,
+        "repair_deduped_variant_count": repair.get("deduped_variant_count") if isinstance(repair, Mapping) else None,
+        "repair_accepted_candidate_id": repair.get("accepted_candidate_id") if isinstance(repair, Mapping) else None,
+        "repair_accepted_candidate_source": repair.get("accepted_candidate_source") if isinstance(repair, Mapping) else None,
+        "repair_accepted_candidate_root_source": repair.get("accepted_candidate_root_source") if isinstance(repair, Mapping) else None,
         "repair_move_count": len(repair_attempts) if isinstance(repair_attempts, list) else 0,
         "repair_accepted_move_count": len(repair_accepted) if isinstance(repair_accepted, list) else 0,
         "repair_verifier_status": repair_verification.get("status") if isinstance(repair_verification, Mapping) else None,
@@ -2158,6 +2713,12 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "anomaly_log_branch_cut_count": anomalies.get("log_branch_cut_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_log_non_finite_input_count": anomalies.get("log_non_finite_input_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_log_safety_penalty": anomalies.get("log_safety_penalty") if isinstance(anomalies, Mapping) else None,
+        "anomaly_expm1_overflow_count": anomalies.get("expm1_overflow_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_log1p_branch_cut_count": anomalies.get("log1p_branch_cut_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_shifted_singularity_near_count": anomalies.get("shifted_singularity_near_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_shifted_singularity_min_distance": (
+            anomalies.get("shifted_singularity_min_distance") if isinstance(anomalies, Mapping) else None
+        ),
     }
 
 
@@ -2451,6 +3012,10 @@ def _run_reason(payload: Mapping[str, Any]) -> str:
     warm = payload.get("warm_start_eml")
     if isinstance(warm, Mapping) and warm.get("status") == "unsupported":
         return str(warm.get("reason") or "unsupported")
+
+    perturbed = payload.get("perturbed_true_tree")
+    if isinstance(perturbed, Mapping) and perturbed.get("status") == "unsupported":
+        return str(perturbed.get("reason") or "unsupported")
 
     for key in ("trained_eml_verification", "compiled_eml_verification", "verification"):
         verification = payload.get(key)

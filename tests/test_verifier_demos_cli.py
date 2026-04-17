@@ -113,3 +113,47 @@ def test_cli_list_demos():
     )
     assert "planck:" in result.stdout
     assert "michaelis_menten:" in result.stdout
+
+
+def test_cli_paper_decision_writes_package(tmp_path):
+    aggregate = tmp_path / "aggregate.json"
+    aggregate.write_text(
+        json.dumps(
+            {
+                "schema": "eml.benchmark_aggregate.v1",
+                "suite": {"id": "synthetic"},
+                "runs": [
+                    {
+                        "claim_status": "recovered",
+                        "classification": "blind_training_recovered",
+                        "optimizer": {"operator_family": {"label": "raw_eml"}, "operator_schedule": []},
+                        "metrics": {"operator_family": "raw_eml"},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    output_dir = tmp_path / "paper"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "paper-decision",
+            "--aggregate",
+            str(aggregate),
+            "--output-dir",
+            str(output_dir),
+        ],
+        check=True,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+
+    assert "paper decision: memo" in result.stdout
+    payload = json.loads((output_dir / "decision-memo.json").read_text())
+    assert payload["decision"] == "wait_for_centered_family_evidence"
+    assert (output_dir / "safe-claims.md").exists()

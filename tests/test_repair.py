@@ -106,6 +106,98 @@ def _fit_with_selected_candidate(tree: SoftEMLTree) -> FitResult:
     )
 
 
+def _candidate_from_tree(
+    tree: SoftEMLTree,
+    *,
+    candidate_id: str,
+    source: str,
+    slot_alternatives: object = None,
+) -> ExactCandidate:
+    snap = tree.snap()
+    alternatives = tree.active_slot_alternatives(top_k=3) if slot_alternatives is None else slot_alternatives
+    return ExactCandidate(
+        candidate_id=candidate_id,
+        attempt_index=0,
+        random_restart=0,
+        seed=0,
+        attempt_kind="random",
+        source=source,
+        checkpoint_index=None,
+        hardening_step=None,
+        global_step=0,
+        temperature=0.25,
+        best_fit_loss=1.0,
+        post_snap_loss=1.0,
+        snap=snap,
+        slot_alternatives=alternatives,
+    )
+
+
+def _constant_root_tree() -> SoftEMLTree:
+    tree = SoftEMLTree(2, ("x",), (1.0,))
+    tree.set_slot("root", "left", "const:1", strength=40.0)
+    tree.set_slot("root", "right", "const:1", strength=40.0)
+    return tree
+
+
+def _terminal_to_child_repairable_tree() -> SoftEMLTree:
+    tree = SoftEMLTree(2, ("x",), (1.0,))
+    tree.set_slot("root", "right", "const:1", strength=40.0)
+    tree.set_slot("root.L", "left", "var:x", strength=40.0)
+    tree.set_slot("root.L", "right", "const:1", strength=40.0)
+    with torch.no_grad():
+        tree.root.left_logits.copy_(torch.tensor([0.0, 2.0, 1.85], dtype=torch.float64))
+    return tree
+
+
+def _constant_to_child_repairable_tree() -> SoftEMLTree:
+    tree = SoftEMLTree(2, ("x",), (1.0,))
+    tree.set_slot("root", "right", "const:1", strength=40.0)
+    tree.set_slot("root.L", "left", "var:x", strength=40.0)
+    tree.set_slot("root.L", "right", "const:1", strength=40.0)
+    with torch.no_grad():
+        tree.root.left_logits.copy_(torch.tensor([2.0, 0.0, 1.99], dtype=torch.float64))
+    return tree
+
+
+def _fit_with_candidate_pool(
+    *,
+    selected: ExactCandidate,
+    fallback: ExactCandidate | None = None,
+    candidates: tuple[ExactCandidate, ...] = (),
+) -> FitResult:
+    retained = candidates or ((selected,) if fallback is None else (selected, fallback))
+    return FitResult(
+        status="snapped_candidate",
+        best_loss=1.0,
+        post_snap_loss=1.0,
+        snap=selected.snap,
+        manifest={"schema": "eml.run_manifest.v1", "status": "snapped_candidate", "snap": selected.snap.as_dict()},
+        selected_candidate=selected,
+        fallback_candidate=fallback,
+        candidates=retained,
+    )
+
+
+def _run_candidate_pool_cleanup(
+    fit: FitResult,
+    target_expr: Eml,
+    *,
+    config: RepairConfig | None = None,
+) -> RepairReport:
+    return cleanup_failed_candidate(
+        fit,
+        depth=2,
+        variables=("x",),
+        constants=(1.0,),
+        verification_splits=_verification_splits(target_expr),
+        tolerance=1e-8,
+        config=config,
+        original_status="snapped_but_failed",
+        return_kind="snapped_but_failed",
+    )
+
+
 def test_repair_config_defaults_to_bounded_target_neighborhood() -> None:
     config = RepairConfig()
 
@@ -113,6 +205,25 @@ def test_repair_config_defaults_to_bounded_target_neighborhood() -> None:
     assert config.strength == 30.0
     assert config.allow_target_slot_reverts is True
     assert config.allow_catalog_alternatives is False
+    assert config.cleanup_top_k == 2
+    assert config.cleanup_max_slots == 4
+    assert config.cleanup_beam_width == 8
+    assert config.cleanup_max_moves == 2
+    assert config.cleanup_candidate_sources == ("selected",)
+
+
+def test_repair_config_expanded_candidate_pool_is_bounded() -> None:
+    config = RepairConfig.expanded_candidate_pool()
+
+    assert config.max_target_reverts == 8
+    assert config.strength == 30.0
+    assert config.allow_target_slot_reverts is True
+    assert config.allow_catalog_alternatives is False
+    assert config.cleanup_top_k == 3
+    assert config.cleanup_max_slots == 8
+    assert config.cleanup_beam_width == 32
+    assert config.cleanup_max_moves == 3
+    assert config.cleanup_candidate_sources == ("selected", "fallback", "retained")
 
 
 def test_repair_move_serializes_slot_and_subtree_provenance() -> None:
@@ -144,6 +255,25 @@ def test_repair_move_serializes_slot_and_subtree_provenance() -> None:
     ]
     assert payload["pruned_assignments"] == [{"slot": "root.L.right", "choice": "const:1"}]
     assert payload["subtree_root"] == "root.L"
+
+    candidate_move = RepairMove(
+        kind="terminal_to_child",
+        slot="root.left",
+        before="var:x",
+        after="child",
+        source="slot_alternative",
+        accepted=True,
+        verifier_status="recovered",
+        candidate_id="fallback-candidate",
+        candidate_source="hardening_checkpoint",
+        candidate_root_source="fallback",
+    )
+
+    candidate_payload = candidate_move.as_dict()
+
+    assert candidate_payload["candidate_id"] == "fallback-candidate"
+    assert candidate_payload["candidate_source"] == "hardening_checkpoint"
+    assert candidate_payload["candidate_root_source"] == "fallback"
 
 
 def test_unverified_repair_report_preserves_raw_status_without_repaired_ast() -> None:
@@ -207,6 +337,13 @@ def test_verified_repair_report_serializes_repaired_ast_and_verification() -> No
     assert payload["repaired_ast"]["root"]["kind"] == "eml"
     assert payload["repaired_ast"]["metadata"]["source"] == "repaired_candidate"
     assert payload["verification"]["status"] == "recovered"
+    assert payload["candidate_roots_considered"] == []
+    assert payload["candidate_root_count"] == 0
+    assert payload["variants_by_candidate_root"] == []
+    assert payload["deduped_variant_count"] == 0
+    assert payload["accepted_candidate_id"] is None
+    assert payload["accepted_candidate_source"] is None
+    assert payload["accepted_candidate_root_source"] is None
 
 
 def test_terminal_to_child_repair_applies_new_descendant_assignments() -> None:
@@ -351,3 +488,201 @@ def test_target_free_cleanup_recovers_from_low_margin_slot_alternative() -> None
         {"slot": "root.L.left", "choice": "var:x"},
         {"slot": "root.L.right", "choice": "const:1"},
     ]
+
+
+def test_target_free_cleanup_defaults_to_selected_root_only() -> None:
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    selected = _candidate_from_tree(
+        _constant_root_tree(),
+        candidate_id="selected",
+        source="legacy_final_snap",
+        slot_alternatives=(),
+    )
+    fallback = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="fallback",
+        source="hardening_checkpoint",
+    )
+    fit = _fit_with_candidate_pool(selected=selected, fallback=fallback)
+
+    report = _run_candidate_pool_cleanup(fit, target_expr)
+    payload = report.as_dict()
+
+    assert payload["status"] == "not_repaired"
+    assert payload["reason"] == "missing_slot_alternatives"
+    assert payload["candidate_root_count"] == 1
+    assert [root["candidate_root_source"] for root in payload["candidate_roots_considered"]] == ["selected"]
+    assert payload["accepted_candidate_id"] is None
+    assert payload["repaired_ast"] is None
+
+
+def test_expanded_candidate_pool_repairs_from_fallback_root() -> None:
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    selected = _candidate_from_tree(
+        _constant_root_tree(),
+        candidate_id="selected",
+        source="legacy_final_snap",
+        slot_alternatives=(),
+    )
+    fallback = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="fallback",
+        source="hardening_checkpoint",
+    )
+    fit = _fit_with_candidate_pool(selected=selected, fallback=fallback)
+
+    report = _run_candidate_pool_cleanup(fit, target_expr, config=RepairConfig.expanded_candidate_pool())
+    payload = report.as_dict()
+    accepted = payload["accepted_moves"][0]
+
+    assert payload["status"] == "repaired_candidate"
+    assert payload["reason"] == "verified_slot_neighborhood"
+    assert payload["candidate_root_count"] == 2
+    assert [root["candidate_root_source"] for root in payload["candidate_roots_considered"]] == ["selected", "fallback"]
+    assert payload["accepted_candidate_id"] == "fallback"
+    assert payload["accepted_candidate_source"] == "hardening_checkpoint"
+    assert payload["accepted_candidate_root_source"] == "fallback"
+    assert payload["variant_count"] == payload["deduped_variant_count"]
+    assert payload["variant_count"] >= 1
+    assert accepted["candidate_id"] == "fallback"
+    assert accepted["candidate_source"] == "hardening_checkpoint"
+    assert accepted["candidate_root_source"] == "fallback"
+
+
+def test_expanded_candidate_pool_repairs_from_retained_root() -> None:
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    selected = _candidate_from_tree(
+        _constant_root_tree(),
+        candidate_id="selected",
+        source="legacy_final_snap",
+        slot_alternatives=(),
+    )
+    retained = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="retained-001",
+        source="late_hardening_checkpoint",
+    )
+    fit = _fit_with_candidate_pool(selected=selected, candidates=(selected, retained))
+
+    report = _run_candidate_pool_cleanup(fit, target_expr, config=RepairConfig.expanded_candidate_pool())
+    payload = report.as_dict()
+
+    assert payload["status"] == "repaired_candidate"
+    assert payload["candidate_root_count"] == 2
+    assert [root["candidate_root_source"] for root in payload["candidate_roots_considered"]] == ["selected", "retained"]
+    assert payload["accepted_candidate_id"] == "retained-001"
+    assert payload["accepted_candidate_source"] == "late_hardening_checkpoint"
+    assert payload["accepted_candidate_root_source"] == "retained"
+
+
+def test_expanded_candidate_pool_deduplicates_duplicate_candidate_roots() -> None:
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    selected = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="selected",
+        source="legacy_final_snap",
+    )
+    fallback = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="fallback-duplicate",
+        source="hardening_checkpoint",
+    )
+    retained = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="retained-duplicate",
+        source="late_hardening_checkpoint",
+    )
+    fit = _fit_with_candidate_pool(selected=selected, fallback=fallback, candidates=(selected, fallback, retained))
+
+    report = _run_candidate_pool_cleanup(fit, target_expr, config=RepairConfig.expanded_candidate_pool())
+    payload = report.as_dict()
+
+    assert payload["status"] == "repaired_candidate"
+    assert payload["candidate_root_count"] == 1
+    assert payload["candidate_roots_considered"][0]["candidate_id"] == "selected"
+    assert payload["variant_count"] == payload["deduped_variant_count"]
+    assert payload["variant_count"] >= 1
+    assert {move["candidate_id"] for move in payload["moves_attempted"]} == {"selected"}
+
+
+def test_candidate_pool_dedup_counts_follow_replacement_owner() -> None:
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    selected = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="selected",
+        source="legacy_final_snap",
+    )
+    fallback = _candidate_from_tree(
+        _constant_to_child_repairable_tree(),
+        candidate_id="fallback-better-gap",
+        source="hardening_checkpoint",
+    )
+    fit = _fit_with_candidate_pool(selected=selected, fallback=fallback)
+
+    report = _run_candidate_pool_cleanup(fit, target_expr, config=RepairConfig.expanded_candidate_pool())
+    payload = report.as_dict()
+    by_root = {root["candidate_id"]: root for root in payload["variants_by_candidate_root"]}
+
+    assert payload["status"] == "repaired_candidate"
+    assert payload["accepted_candidate_id"] == "fallback-better-gap"
+    assert payload["accepted_candidate_root_source"] == "fallback"
+    assert by_root["fallback-better-gap"]["deduped_variant_count"] >= 1
+    assert sum(root["deduped_variant_count"] for root in by_root.values()) == payload["deduped_variant_count"]
+
+
+def test_candidate_pool_cleanup_preserves_subtree_move_provenance() -> None:
+    target_expr = Eml(Eml(Var("x"), Const(1.0)), Const(1.0))
+    selected = _candidate_from_tree(
+        _constant_root_tree(),
+        candidate_id="selected",
+        source="legacy_final_snap",
+        slot_alternatives=(),
+    )
+    fallback = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="fallback",
+        source="hardening_checkpoint",
+    )
+    fit = _fit_with_candidate_pool(selected=selected, fallback=fallback)
+
+    report = _run_candidate_pool_cleanup(fit, target_expr, config=RepairConfig.expanded_candidate_pool())
+    accepted = report.as_dict()["accepted_moves"][0]
+
+    assert accepted["kind"] == "terminal_to_child"
+    assert accepted["slot"] == "root.left"
+    assert accepted["before"] == "var:x"
+    assert accepted["after"] == "child"
+    assert accepted["subtree_root"] == "root.L"
+    assert accepted["descendant_assignments"] == [
+        {"slot": "root.L.left", "choice": "var:x"},
+        {"slot": "root.L.right", "choice": "const:1"},
+    ]
+    assert accepted["pruned_assignments"] == []
+    assert accepted["candidate_root_source"] == "fallback"
+
+
+def test_candidate_pool_cleanup_does_not_accept_unrecovered_variants() -> None:
+    target_expr = Eml(Eml(Eml(Var("x"), Const(1.0)), Const(1.0)), Const(1.0))
+    selected = _candidate_from_tree(
+        _constant_root_tree(),
+        candidate_id="selected",
+        source="legacy_final_snap",
+        slot_alternatives=(),
+    )
+    fallback = _candidate_from_tree(
+        _terminal_to_child_repairable_tree(),
+        candidate_id="fallback",
+        source="hardening_checkpoint",
+    )
+    fit = _fit_with_candidate_pool(selected=selected, fallback=fallback)
+
+    report = _run_candidate_pool_cleanup(fit, target_expr, config=RepairConfig.expanded_candidate_pool())
+    payload = report.as_dict()
+
+    assert payload["status"] == "not_repaired"
+    assert payload["reason"] == "no_verified_slot_neighborhood"
+    assert payload["accepted_moves"] == []
+    assert payload["verification"] is None
+    assert payload["repaired_ast"] is None
+    assert payload["deduped_variant_count"] >= 1
+    assert {move["verifier_status"] for move in payload["moves_attempted"]} == {"failed"}

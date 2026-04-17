@@ -1,5 +1,57 @@
 # Milestones
 
+## v1.9 milestone (Shipped: 2026-04-17)
+
+**Phases completed:** 5 phases, 14 plans, 33 tasks
+
+**Key accomplishments:**
+
+- Raw-only scaffold witness registry with benchmark budget filtering that removes raw exp/log/scaled_exp scaffolds from centered-family variants.
+- Registry-backed optimizer and helper guards that block raw exp/log/scaled_exp scaffolds under centered operators while preserving raw scaffold recovery artifacts.
+- Normalized Arrhenius demo `exp(-0.8/x)` with strict direct-division compile and verified same-AST warm-start evidence
+- Focused Arrhenius benchmark suite with same-AST warm-start artifact evidence for normalized `exp(-0.8/x)`
+- Focused Arrhenius same-AST warm-start artifacts with README and implementation docs tied to validated JSON evidence
+- Structural reciprocal-shift and saturation-ratio EML compiler macros with Michaelis-Menten same-AST warm-start recovery
+- Focused Michaelis-Menten same-AST warm-start benchmark evidence with saturation macro artifact locks
+- Validated Michaelis-Menten same-AST warm-start artifacts with regime-safe README and implementation documentation
+- Opt-in candidate-pool repair over selected, fallback, and retained exact roots with verifier-gated AST-deduped promotion
+- Benchmark opt-in for expanded verifier-gated cleanup with focused before/after repair evidence
+- Focused v1.9 repair evidence measured expanded cleanup against selected-only cleanup while preserving fallback manifests
+- Synthesis-only raw-hybrid paper package writer with file-level source locks, regime-separated reports, scientific-law tables, centered caveats, and a CLI entry point
+- Committed v1.9 raw-hybrid paper package with source locks, regime-separated evidence, scientific-law tables, and claim boundaries
+- Artifact-backed raw-hybrid package regression tests plus README and implementation documentation that preserve evidence boundaries
+
+---
+
+## v1.8 Centered-Family Viability and Full Evidence Run (Shipped: 2026-04-17)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Reproduced and classified expanded raw-vs-centered family smoke and calibration evidence with scoped go/no-go diagnostics.
+- Made centered warm-start, perturbed-tree, compiler-seed, initializer, and scaffold unsupported paths explicit instead of hidden raw-family reuse.
+- Expanded fixed-scale and continuation family suites, then scoped the full evidence run based on centered calibration failure.
+- Archived v1.8 family evidence manifests, campaign aggregates, comparison tables, and regression locks without overwriting earlier proof anchors.
+- Generated `artifacts/paper/v1.8/` and selected the raw-EML searchability note path after raw EML outperformed centered variants in supplied aggregates.
+
+---
+
+## v1.7 Centered-Family Baseline and Paper Decision (Shipped: 2026-04-16)
+
+**Phases completed:** 5 phases, 5 plans, 20 requirements
+
+**Key accomplishments:**
+
+- Added centered/scaled operator-family semantics and exact AST support for `cEML_{s,t}`, `CEML_s`, and `ZEML_s` with `expm1`/`log1p` and shifted-singularity diagnostics.
+- Threaded fixed-family and scheduled-continuation operators through the soft master tree, optimizer manifests, snapping, repair/refit, benchmark budgets, and campaign CSV rows.
+- Added v1.7 raw-vs-centered family benchmark suites and campaign presets for smoke, shallow, basin, depth-curve, standard, and showcase-style matrices.
+- Added operator-family recovery tables, diagnostic tables, comparison Markdown, and regression-lock JSON outputs for campaign reports.
+- Generated `artifacts/paper/v1.7/` with the decision memo, safe/unsafe claim language, figure/table inventory, and an explicit incomplete completeness boundary.
+- Audit decision: wait for centered-family campaign evidence before submitting the centered empirical paper; raw-EML searchability/geometry remains a viable note from archived proof evidence.
+
+---
+
 ## v1.6 Hybrid Search Pipeline and Exact Candidate Recovery (Shipped: 2026-04-16)
 
 **Phases completed:** 5 phases, 5 plans, 15 tasks

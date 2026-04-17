@@ -8,8 +8,9 @@ from typing import Any, Mapping, Sequence
 
 import torch
 
-from .expression import Const, Eml, Expr, Var
-from .semantics import AnomalyStats, TrainingSemanticsConfig, as_complex_tensor, eml_torch
+from .expression import CenteredEml, Const, Eml, Expr, Var
+from .semantics import AnomalyStats, EmlOperator, TrainingSemanticsConfig, as_complex_tensor, centered_eml_torch, raw_eml_operator
+from .witnesses import CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING, scaffold_witness_for
 
 
 def _canonical_constant(value: complex) -> complex:
@@ -52,6 +53,12 @@ def expressions_equal(left: Expr, right: Expr, *, constant_tolerance: float = 1e
         return expressions_equal(left.left, right.left, constant_tolerance=constant_tolerance) and expressions_equal(
             left.right, right.right, constant_tolerance=constant_tolerance
         )
+    if isinstance(left, CenteredEml) and isinstance(right, CenteredEml):
+        return left.operator == right.operator and expressions_equal(
+            left.left,
+            right.left,
+            constant_tolerance=constant_tolerance,
+        ) and expressions_equal(left.right, right.right, constant_tolerance=constant_tolerance)
     return False
 
 
@@ -222,6 +229,7 @@ class _SoftNode(torch.nn.Module):
         depth: int,
         variables: tuple[str, ...],
         constants: tuple[complex, ...],
+        operator_family: EmlOperator,
         path: str = "root",
     ) -> None:
         super().__init__()
@@ -230,9 +238,10 @@ class _SoftNode(torch.nn.Module):
         self.depth = depth
         self.variables = variables
         self.constants = constants
+        self.operator_family = operator_family
         self.path = path
-        self.left_child = _SoftNode(depth - 1, variables, constants, f"{path}.L") if depth > 1 else None
-        self.right_child = _SoftNode(depth - 1, variables, constants, f"{path}.R") if depth > 1 else None
+        self.left_child = _SoftNode(depth - 1, variables, constants, operator_family, f"{path}.L") if depth > 1 else None
+        self.right_child = _SoftNode(depth - 1, variables, constants, operator_family, f"{path}.R") if depth > 1 else None
         choices = len(self.base_labels) + (1 if depth > 1 else 0)
         self.left_logits = torch.nn.Parameter(torch.zeros(choices, dtype=torch.float64))
         self.right_logits = torch.nn.Parameter(torch.zeros(choices, dtype=torch.float64))
@@ -317,7 +326,15 @@ class _SoftNode(torch.nn.Module):
             )
         left, _ = self._slot_value(self.left_logits, left_candidates, temperature)
         right, _ = self._slot_value(self.right_logits, right_candidates, temperature)
-        return eml_torch(left, right, training=training_semantics, semantics=semantics, stats=stats, node=self.path)
+        return centered_eml_torch(
+            left,
+            right,
+            operator=self.operator_family,
+            training=training_semantics,
+            semantics=semantics,
+            stats=stats,
+            node=self.path,
+        )
 
     def gate_entropy(self, temperature: float = 1.0) -> torch.Tensor:
         entropy = torch.tensor(0.0, dtype=torch.float64, device=self.left_logits.device)
@@ -364,7 +381,9 @@ class _SoftNode(torch.nn.Module):
         raise RuntimeError(f"Unknown slot choice: {choice}")
 
     def _snap(self, decisions: list[SnapDecision]) -> Expr:
-        return Eml(self._snap_slot("left", decisions), self._snap_slot("right", decisions))
+        left = self._snap_slot("left", decisions)
+        right = self._snap_slot("right", decisions)
+        return Eml(left, right) if self.operator_family.is_raw else CenteredEml(left, right, self.operator_family)
 
     def _subtree_assignments(self) -> tuple[ReplayAssignment, ...]:
         decisions: list[SnapDecision] = []
@@ -386,6 +405,13 @@ class _SoftNode(torch.nn.Module):
                 return
         raise ValueError(f"Unknown node path: {node_path}")
 
+    def set_operator(self, operator_family: EmlOperator) -> None:
+        self.operator_family = operator_family
+        if self.left_child is not None:
+            self.left_child.set_operator(operator_family)
+        if self.right_child is not None:
+            self.right_child.set_operator(operator_family)
+
 
 class SoftEMLTree(torch.nn.Module):
     """A complete depth-bounded EML tree with soft categorical gates."""
@@ -395,18 +421,24 @@ class SoftEMLTree(torch.nn.Module):
         depth: int,
         variables: tuple[str, ...] = ("x",),
         constants: tuple[complex, ...] = (1.0,),
+        operator_family: EmlOperator | None = None,
     ) -> None:
         super().__init__()
         self.depth = depth
         self.variables = tuple(variables)
         self.constants = normalize_constants(constants)
-        self.root = _SoftNode(depth, self.variables, self.constants)
+        self.operator_family = operator_family or raw_eml_operator()
+        self.root = _SoftNode(depth, self.variables, self.constants, self.operator_family)
 
     def reset_parameters(self, seed: int | None = None, scale: float = 0.05) -> None:
         generator = torch.Generator()
         if seed is not None:
             generator.manual_seed(seed)
         self.root.reset_parameters(generator, scale)
+
+    def set_operator(self, operator_family: EmlOperator) -> None:
+        self.operator_family = operator_family
+        self.root.set_operator(operator_family)
 
     def forward(
         self,
@@ -522,11 +554,20 @@ class SoftEMLTree(torch.nn.Module):
     def set_slot(self, node_path: str, side: str, choice: str, strength: float = 30.0) -> None:
         self.root.set_slot(node_path, side, choice, strength=strength)
 
+    def _require_scaffold_witness(self, kind: str) -> None:
+        if scaffold_witness_for(kind, self.operator_family) is None:
+            raise EmbeddingError(
+                CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING,
+                f"{kind} scaffold has no same-family witness for operator {self.operator_family.label}",
+            )
+
     def force_exp(self, variable: str = "x") -> None:
+        self._require_scaffold_witness("exp")
         self.set_slot("root", "left", f"var:{variable}")
         self.set_slot("root", "right", constant_label(1.0))
 
     def force_log(self, variable: str = "x") -> None:
+        self._require_scaffold_witness("log")
         if self.depth < 3:
             raise ValueError("The paper log identity requires depth >= 3 in this scaffold")
         self.set_slot("root", "left", constant_label(1.0))
@@ -537,6 +578,7 @@ class SoftEMLTree(torch.nn.Module):
         self.set_slot("root.R.L", "right", f"var:{variable}")
 
     def force_scaled_exp(self, variable: str, coefficient: complex, strength: float = 30.0) -> EmbeddingResult:
+        self._require_scaffold_witness("scaled_exp")
         from .compiler import scaled_exponential_expr
 
         expression = scaled_exponential_expr(variable, coefficient)
@@ -560,6 +602,20 @@ def _leaf_choice(tree: SoftEMLTree, expression: Expr) -> str:
     raise EmbeddingError("incompatible_tree", f"expected leaf, got {type(expression).__name__}")
 
 
+def _operator_for_expression(expression: Expr) -> EmlOperator:
+    if isinstance(expression, Eml):
+        return raw_eml_operator()
+    if isinstance(expression, CenteredEml):
+        return expression.operator
+    raise EmbeddingError("incompatible_tree", f"expected operator node, got {type(expression).__name__}")
+
+
+def _operator_children(expression: Expr) -> tuple[Expr, Expr]:
+    if isinstance(expression, (Eml, CenteredEml)):
+        return expression.left, expression.right
+    raise EmbeddingError("incompatible_tree", f"expected operator node, got {type(expression).__name__}")
+
+
 def _embed_slot(
     tree: SoftEMLTree,
     node: _SoftNode,
@@ -569,7 +625,13 @@ def _embed_slot(
     assignments: list[EmbeddingAssignment],
 ) -> None:
     slot = f"{node.path}.{side}"
-    if isinstance(expression, Eml):
+    if isinstance(expression, (Eml, CenteredEml)):
+        expression_operator = _operator_for_expression(expression)
+        if expression_operator != tree.operator_family:
+            raise EmbeddingError(
+                "operator_family_mismatch",
+                f"tree operator {tree.operator_family.label} cannot embed {expression_operator.label}",
+            )
         child = node.left_child if side == "left" else node.right_child
         if child is None:
             raise EmbeddingError("depth_too_small", f"{slot} needs a child node for expression depth {expression.depth()}")
@@ -590,10 +652,15 @@ def _embed_node(
     config: EmbeddingConfig,
     assignments: list[EmbeddingAssignment],
 ) -> None:
-    if not isinstance(expression, Eml):
-        raise EmbeddingError("incompatible_tree", "SoftEMLTree root and child nodes represent EML nodes, not leaf roots")
-    _embed_slot(tree, node, "left", expression.left, config, assignments)
-    _embed_slot(tree, node, "right", expression.right, config, assignments)
+    expression_operator = _operator_for_expression(expression)
+    if expression_operator != tree.operator_family:
+        raise EmbeddingError(
+            "operator_family_mismatch",
+            f"tree operator {tree.operator_family.label} cannot embed {expression_operator.label}",
+        )
+    left, right = _operator_children(expression)
+    _embed_slot(tree, node, "left", left, config, assignments)
+    _embed_slot(tree, node, "right", right, config, assignments)
 
 
 def embed_expr_into_tree(
@@ -603,6 +670,12 @@ def embed_expr_into_tree(
     config: EmbeddingConfig | None = None,
 ) -> EmbeddingResult:
     config = config or EmbeddingConfig()
+    expression_operator = _operator_for_expression(expression)
+    if expression_operator != tree.operator_family:
+        raise EmbeddingError(
+            "operator_family_mismatch",
+            f"tree operator {tree.operator_family.label} cannot embed {expression_operator.label}",
+        )
     if expression.depth() > tree.depth:
         raise EmbeddingError("depth_too_small", f"expression depth {expression.depth()} exceeds tree depth {tree.depth}")
     missing_variables = sorted(expression.variables() - set(tree.variables))
@@ -634,9 +707,10 @@ def replay_slot_map_expression(
     depth: int,
     variables: tuple[str, ...],
     constants: tuple[complex, ...],
+    operator_family: EmlOperator | None = None,
     strength: float = 30.0,
 ) -> Expr:
-    tree = SoftEMLTree(depth, variables, constants)
+    tree = SoftEMLTree(depth, variables, constants, operator_family=operator_family)
     for slot, choice in _slot_items_for_replay(slot_map):
         node_path, side = slot.rsplit(".", 1)
         tree.set_slot(node_path, side, choice, strength=strength)
@@ -650,6 +724,7 @@ def expand_snap_neighborhood(
     depth: int,
     variables: tuple[str, ...],
     constants: tuple[complex, ...],
+    operator_family: EmlOperator | None = None,
     beam_width: int = 8,
     max_moves: int = 2,
     max_slots: int | None = None,
@@ -678,6 +753,7 @@ def expand_snap_neighborhood(
                     depth=depth,
                     variables=variables,
                     constants=constants,
+                    operator_family=operator_family,
                     strength=strength,
                 )
                 key = json.dumps(expression.to_document(source="snap_neighborhood_candidate"), sort_keys=True)

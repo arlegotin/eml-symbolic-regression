@@ -1,0 +1,443 @@
+{
+  "counts": {
+    "evidence_classes": {
+      "same_ast": 1
+    },
+    "execution_error": 0,
+    "failed": 0,
+    "repaired_candidate": 0,
+    "same_ast_return": 1,
+    "total": 1,
+    "unsupported": 0,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 1,
+    "verifier_recovery_rate": 1.0
+  },
+  "depth_curve": [],
+  "environment": {
+    "code_version": "98eb606",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-17T13:00:02.015478+00:00",
+  "groups": {
+    "depth": [
+      {
+        "evidence_classes": {
+          "same_ast": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "2",
+        "repaired_candidate": 0,
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "evidence_class": [
+      {
+        "evidence_classes": {
+          "same_ast": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "same_ast",
+        "repaired_candidate": 0,
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "formula": [
+      {
+        "evidence_classes": {
+          "same_ast": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "arrhenius",
+        "repaired_candidate": 0,
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "evidence_classes": {
+          "same_ast": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "0.0",
+        "repaired_candidate": 0,
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "raw_status": [
+      {
+        "evidence_classes": {
+          "same_ast": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "repair_status": [
+      {
+        "evidence_classes": {
+          "same_ast": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "not_attempted",
+        "repaired_candidate": 0,
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "return_kind": [
+      {
+        "evidence_classes": {
+          "same_ast": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "seed_group": [
+      {
+        "evidence_classes": {
+          "same_ast": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "all",
+        "repaired_candidate": 0,
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ],
+    "start_mode": [
+      {
+        "evidence_classes": {
+          "same_ast": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "warm_start",
+        "repaired_candidate": 0,
+        "same_ast_return": 1,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 1,
+        "verifier_recovery_rate": 1.0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/campaigns/v1.9-arrhenius-evidence/v1.9-arrhenius-evidence/v1-9-arrhenius-evidence-arrhenius-warm-75f6e9c1764d.json",
+      "case_id": "arrhenius-warm",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "recovered",
+      "classification": "same_ast_warm_start_return",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "arrhenius",
+        "manifest_sha256": "46c4985fa86ac8543a0c2ec869139947b0c9567671c8535e9cb921b05b3fadce",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "arrhenius_catalog",
+          "description": "Normalized reciprocal-temperature Arrhenius law from FOR_DEMO.md.",
+          "formula_id": "arrhenius",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Arrhenius law normalized reciprocal-temperature dimensionless input from FOR_DEMO.md",
+          "symbolic_expression": "exp(-0.8/x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.5,
+              3.0
+            ],
+            "input_sha256": "d6d914641139edf518d67442e8d81720feb1bcc339ce92d9a1774e30fdf157aa",
+            "name": "train",
+            "target_sha256": "6786e4f7b5f584298b8181039120d704b16924dcc007b370fa04d6a8b99b12bd"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.6,
+              2.7
+            ],
+            "input_sha256": "5467daa6b30fe4ae1b54ecf8cf63657a31bddd8c87a15b8151640420be84aac4",
+            "name": "heldout",
+            "target_sha256": "1070e109cf45f59fbf84036d15816e1b4aa6168530ac13429df53bc8f408a41b"
+          },
+          {
+            "count": 16,
+            "domain": [
+              3.1,
+              4.2
+            ],
+            "input_sha256": "301148227c1d0026c03b52fb2e00b8f46537a4074b925ce67339592267e9c736",
+            "name": "extrapolation",
+            "target_sha256": "5ca6f6ada2295b92a731d9f280e8b7e6bbae31b49981b00d5eddae87abce1f30"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "same_ast",
+      "formula": "arrhenius",
+      "metrics": {
+        "active_slot_count": 18,
+        "anomaly_clamp_count": 16,
+        "anomaly_exp_overflow_count": 16,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 618,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 658,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 9.421157240802948e-33,
+        "candidate_complexity": null,
+        "candidate_pool_size": 4,
+        "changed_slot_count": 0,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 9.421157240802948e-33,
+        "high_precision_max_error": 4.195055884745745e-81,
+        "legacy_best_loss": 9.421157240802948e-33,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 9.421157240802948e-33,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 9.421157240802948e-33,
+        "refit_status": "rejected",
+        "refit_verifier_status": "recovered",
+        "repair_accepted_move_count": 0,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "compiled_warm_start",
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 19,
+        "snap_min_margin": 1.0,
+        "unsupported_reason": null,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": "same_ast_return",
+        "warm_start_status": "same_ast_return"
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 1
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "arrhenius_catalog",
+        "description": "Normalized reciprocal-temperature Arrhenius law from FOR_DEMO.md.",
+        "formula_id": "arrhenius",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Arrhenius law normalized reciprocal-temperature dimensionless input from FOR_DEMO.md",
+        "symbolic_expression": "exp(-0.8/x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "v1-9-arrhenius-evidence-arrhenius-warm-75f6e9c1764d",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "recovered",
+        "post_snap_refit": "rejected",
+        "trained_exact_recovery": "recovered",
+        "warm_start_attempt": "same_ast_return"
+      },
+      "start_mode": "warm_start",
+      "status": "same_ast_return",
+      "suite_id": "v1.9-arrhenius-evidence",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "compiler_warm_start_training"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/campaigns/v1.9-arrhenius-evidence",
+    "cases": [
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": true,
+        "formula": "arrhenius",
+        "id": "arrhenius-warm",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 1
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "warm_start",
+        "tags": [
+          "v1.9",
+          "arrhenius",
+          "warm_start",
+          "same_ast"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      }
+    ],
+    "description": "Focused v1.9 Arrhenius exact warm-start evidence for normalized exp(-0.8/x).",
+    "id": "v1.9-arrhenius-evidence",
+    "schema": "eml.benchmark_suite.v1"
+  },
+  "thresholds": []
+}

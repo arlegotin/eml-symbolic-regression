@@ -119,6 +119,8 @@ class CompileResult:
 
 
 MACRO_RULES = (
+    "reciprocal_shift_template",
+    "saturation_ratio_template",
     "direct_division_template",
     "scaled_exp_minus_one_template",
 )
@@ -133,6 +135,12 @@ class UnsupportedExpression(ValueError):
 
     def as_dict(self) -> dict[str, str]:
         return {"reason": self.reason, "expression": self.expression, "detail": self.detail}
+
+
+@dataclass(frozen=True)
+class _UnitShift:
+    variable: str
+    offset: complex
 
 
 def subtract_expr(left: Expr, right: Expr) -> Expr:
@@ -252,13 +260,120 @@ class _Compiler:
     def _compile_special(self, expr: sp.Expr) -> Expr | None:
         if not self.config.enable_macros:
             return None
+        if isinstance(expr, sp.Pow):
+            return self._compile_reciprocal_shift(expr)
         if isinstance(expr, sp.Mul):
+            macro = self._compile_saturation_ratio(expr)
+            if macro is not None:
+                return macro
             macro = self._compile_direct_division(expr)
             if macro is not None:
                 return macro
         if isinstance(expr, sp.Add):
             return self._compile_scaled_exp_minus_one(expr)
         return None
+
+    def _match_unit_shift(self, expr: sp.Expr) -> _UnitShift | None:
+        if not isinstance(expr, sp.Add):
+            return None
+
+        symbol_terms: list[sp.Symbol] = []
+        numeric_terms: list[sp.Expr] = []
+        for term in expr.args:
+            if term.is_number:
+                numeric_terms.append(term)
+                continue
+
+            coeff, rest = term.as_coeff_Mul()
+            if isinstance(rest, sp.Symbol) and sp.simplify(coeff - 1) == 0:
+                symbol_terms.append(rest)
+                continue
+
+            return None
+        if len(symbol_terms) != 1 or len(numeric_terms) != 1:
+            return None
+
+        variable = self._variable_name(symbol_terms[0])
+        offset = self._constant_value(numeric_terms[0])
+        return _UnitShift(variable=variable, offset=offset)
+
+    def _build_unit_shift(self, match: _UnitShift) -> Expr | None:
+        with np.errstate(over="ignore", invalid="ignore", under="ignore"):
+            derived = complex(np.exp(-match.offset))
+        if not (np.isfinite(derived.real) and np.isfinite(derived.imag)):
+            return None
+        if self.config.constant_policy == "basis_only" and abs(derived - 1.0) > 1e-12:
+            return None
+        if self.config.constant_policy not in {"basis_only", "literal_constants"}:
+            return None
+        self.assumptions.append("unit shift x+b compiled as eml(log(x), exp(-b)) behind validation")
+        return Eml(log_of(Var(match.variable)), Const(derived))
+
+    def _compile_reciprocal_shift(self, expr: sp.Pow) -> Expr | None:
+        base, exponent = expr.args
+        if exponent != -1:
+            return None
+
+        match = self._match_unit_shift(base)
+        if match is None:
+            return None
+
+        shifted = self._build_unit_shift(match)
+        if shifted is None:
+            return None
+        self.assumptions.append("reciprocal shift shortcut lowers shifted denominator before exact divide identity")
+        return self._record(
+            "reciprocal_shift_template",
+            expr,
+            reciprocal_expr(shifted),
+        )
+
+    def _compile_saturation_ratio(self, expr: sp.Mul) -> Expr | None:
+        numerator_factors: list[sp.Expr] = []
+        denominator_matches: list[_UnitShift] = []
+
+        for factor in expr.args:
+            if isinstance(factor, sp.Pow) and factor.exp == -1:
+                match = self._match_unit_shift(factor.base)
+                if match is None:
+                    return None
+                denominator_matches.append(match)
+            else:
+                numerator_factors.append(factor)
+
+        if len(denominator_matches) != 1:
+            return None
+
+        coefficient = 1.0 + 0.0j
+        numerator_symbol: sp.Symbol | None = None
+        for factor in numerator_factors:
+            if factor.is_number:
+                coefficient *= self._constant_value(factor)
+            elif isinstance(factor, sp.Symbol):
+                if numerator_symbol is not None:
+                    return None
+                numerator_symbol = factor
+            else:
+                return None
+
+        if numerator_symbol is None:
+            return None
+
+        variable = self._variable_name(numerator_symbol)
+        shift = denominator_matches[0]
+        if variable != shift.variable:
+            return None
+
+        numerator = multiply_expr(Const(coefficient), Var(variable))
+        denominator = self._build_unit_shift(shift)
+        if denominator is None:
+            return None
+        self.assumptions.append("saturation ratio shortcut lowers c*x/(x+b) as one structural motif")
+        return self._record(
+            "saturation_ratio_template",
+            expr,
+            divide_expr(numerator, denominator),
+        )
 
     def _compile_direct_division(self, expr: sp.Mul) -> Expr | None:
         numerator_factors: list[sp.Expr] = []
