@@ -1,3 +1,4 @@
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -86,6 +87,14 @@ def _read_json(name: str):
     return json.loads((PACKAGE_ROOT / name).read_text(encoding="utf-8"))
 
 
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def test_raw_hybrid_package_files_exist():
     missing = sorted(name for name in EXPECTED_FILES if not (PACKAGE_ROOT / name).exists())
     assert not missing, (
@@ -108,8 +117,10 @@ def test_raw_hybrid_manifest_and_source_locks_are_stable():
     source_ids = {row["source_id"] for row in locks["sources"]}
     assert REQUIRED_SOURCE_IDS <= source_ids
     for row in locks["sources"]:
-        if row.get("required", True):
-            assert re.fullmatch(r"[0-9a-f]{64}", row["sha256"]), row["source_id"]
+        path = Path(row["path"])
+        assert path.is_file(), row["source_id"]
+        assert re.fullmatch(r"[0-9a-f]{64}", row["sha256"]), row["source_id"]
+        assert row["sha256"] == _sha256(path), row["source_id"]
 
 
 def test_raw_hybrid_regime_summary_preserves_required_buckets():
