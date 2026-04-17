@@ -73,6 +73,13 @@ Plans:
 
 **Requirements:** ARR-01, ARR-02, ARR-03, ARR-04
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 50-01-PLAN.md - Add normalized Arrhenius demo and strict same-AST warm-start/CLI tests.
+- [ ] 50-02-PLAN.md - Add focused Arrhenius benchmark suite and artifact regression tests.
+- [ ] 50-03-PLAN.md - Generate focused evidence artifact and document regime-safe commands.
+
 ### Phase 51: Reciprocal and Saturation Compiler Motifs
 
 **Goal:** Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics.
