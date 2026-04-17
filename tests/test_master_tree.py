@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import torch
 
-from eml_symbolic_regression.expression import CenteredEml, ceml_s_expr
+from eml_symbolic_regression.expression import ceml_s_expr
 from eml_symbolic_regression.master_tree import EmbeddingError, SoftEMLTree, expand_snap_neighborhood
 from eml_symbolic_regression.semantics import ceml_s_operator, zeml_s_operator
 
@@ -25,15 +25,26 @@ def test_force_exp_snaps_to_paper_identity():
     assert snap.min_margin > 0.99
 
 
-def test_centered_tree_snaps_to_centered_exact_node():
+@pytest.mark.parametrize(
+    ("kind", "call"),
+    (
+        ("exp", lambda tree: tree.force_exp("x")),
+        ("log", lambda tree: tree.force_log("x")),
+        ("scaled_exp", lambda tree: tree.force_scaled_exp("x", -0.8)),
+    ),
+)
+def test_centered_tree_rejects_raw_scaffold_helpers_without_same_family_witness(kind, call):
     tree = SoftEMLTree(1, ("x",), operator_family=ceml_s_operator(2.0))
-    tree.force_exp("x")
-    snap = tree.snap()
-    x = np.linspace(-1.0, 1.0, 10)
+    before = [(decision.path, decision.side, decision.choice) for decision in tree.snap().decisions]
 
-    assert isinstance(snap.expression, CenteredEml)
-    assert snap.expression.operator == ceml_s_operator(2.0)
-    np.testing.assert_allclose(snap.expression.evaluate_numpy({"x": x}), 2.0 * np.expm1(x / 2.0), atol=1e-12)
+    with pytest.raises(EmbeddingError) as exc:
+        call(tree)
+
+    after = [(decision.path, decision.side, decision.choice) for decision in tree.snap().decisions]
+    assert exc.value.reason == "centered_family_same_family_witness_missing"
+    assert kind in exc.value.detail
+    assert "CEML_2" in exc.value.detail
+    assert after == before
 
 
 def test_centered_embedding_requires_matching_operator_family():
