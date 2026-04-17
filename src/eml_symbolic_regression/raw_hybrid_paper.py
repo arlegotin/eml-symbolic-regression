@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import csv
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,6 +14,27 @@ from typing import Any, Mapping
 
 RAW_HYBRID_PAPER_PRESET_ID = "v1.9-raw-hybrid-paper"
 DEFAULT_RAW_HYBRID_OUTPUT_DIR = Path("artifacts") / "paper" / "v1.9" / "raw-hybrid"
+REGIME_KEYS = (
+    "pure_blind",
+    "scaffolded",
+    "compile_only",
+    "warm_start",
+    "same_ast_return",
+    "repaired",
+    "refit",
+    "perturbed_basin",
+)
+SCIENTIFIC_LAW_COLUMNS = (
+    "law",
+    "formula",
+    "compile_support",
+    "compile_depth",
+    "macro_hits",
+    "warm_start_status",
+    "verifier_status",
+    "evidence_regime",
+    "artifact_path",
+)
 
 
 class RawHybridPaperError(RuntimeError):
@@ -249,6 +271,9 @@ def write_raw_hybrid_paper_package(
     _prepare_output_dir(output_dir, overwrite=overwrite)
 
     paths = _package_paths(output_dir)
+    regime_summary = build_regime_summary(sources, source_payloads)
+    law_rows = build_scientific_law_rows(sources, source_payloads)
+    centered_diagnostics = render_centered_negative_diagnostics(sources, source_payloads)
     locks = {
         "schema": "eml.raw_hybrid_source_locks.v1",
         "preset_id": RAW_HYBRID_PAPER_PRESET_ID,
@@ -259,13 +284,458 @@ def write_raw_hybrid_paper_package(
         paths,
         sources=sources,
         source_payloads=source_payloads,
+        regime_summary=regime_summary,
+        law_rows=law_rows,
         reproduction_command=reproduction_command
         or f"PYTHONPATH=src python -m eml_symbolic_regression.cli raw-hybrid-paper --output-dir {output_dir}",
     )
 
+    _write_json(paths.regime_summary_json, regime_summary)
+    paths.raw_hybrid_report_md.write_text(render_raw_hybrid_report(regime_summary), encoding="utf-8")
+    _write_json(paths.scientific_law_table_json, {"columns": list(SCIENTIFIC_LAW_COLUMNS), "rows": law_rows})
+    _write_scientific_law_csv(paths.scientific_law_table_csv, law_rows)
+    paths.scientific_law_table_md.write_text(render_scientific_law_table_markdown(law_rows), encoding="utf-8")
+    paths.claim_boundaries_md.write_text(render_claim_boundaries(), encoding="utf-8")
+    paths.centered_negative_diagnostics_md.write_text(centered_diagnostics, encoding="utf-8")
     _write_json(paths.source_locks_json, locks)
     _write_json(paths.manifest_json, manifest)
     return paths
+
+
+def build_regime_summary(
+    sources: tuple[RawHybridSource, ...],
+    source_payloads: Mapping[str, Any],
+) -> dict[str, dict[str, Any]]:
+    """Build separate evidence-regime buckets from aggregate and run artifacts."""
+
+    summary = {
+        key: {
+            "regime": key,
+            "description": _regime_description(key),
+            "sources": [],
+            "runs": [],
+            "counts": {
+                "total": 0,
+                "verifier_recovered": 0,
+                "same_ast_return": 0,
+                "repaired_candidate": 0,
+                "unsupported": 0,
+                "failed": 0,
+            },
+        }
+        for key in REGIME_KEYS
+    }
+    seen: dict[str, set[str]] = {key: set() for key in REGIME_KEYS}
+
+    for source in sources:
+        payload = source_payloads.get(source.source_id)
+        if not isinstance(payload, Mapping):
+            continue
+        for run in _source_runs(source, payload):
+            row = _regime_run_row(source, run)
+            for regime in _regimes_for_run(source, row):
+                identity = row.get("artifact_path") or row.get("run_id") or f"{source.source_id}:{len(seen[regime])}"
+                if identity in seen[regime]:
+                    continue
+                seen[regime].add(identity)
+                bucket = summary[regime]
+                bucket["runs"].append(row)
+                if source.source_id not in bucket["sources"]:
+                    bucket["sources"].append(source.source_id)
+
+    for bucket in summary.values():
+        bucket["sources"].sort()
+        bucket["runs"].sort(key=lambda item: (str(item.get("source_id")), str(item.get("run_id")), str(item.get("artifact_path"))))
+        bucket["counts"] = _regime_counts(bucket["runs"])
+    return summary
+
+
+def build_scientific_law_rows(
+    sources: tuple[RawHybridSource, ...],
+    source_payloads: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    """Extract paper-facing scientific-law table rows from declared run artifacts."""
+
+    rows: list[dict[str, Any]] = []
+    for source in sources:
+        if source.role != "scientific_law_run":
+            continue
+        payload = source_payloads.get(source.source_id)
+        if not isinstance(payload, Mapping):
+            continue
+        row = _scientific_law_row(source, payload)
+        rows.append(row)
+    return sorted(rows, key=lambda row: _law_sort_key(row["law"]))
+
+
+def render_raw_hybrid_report(regime_summary: Mapping[str, Mapping[str, Any]]) -> str:
+    lines = [
+        "# v1.9 Raw-Hybrid Paper Evidence Report",
+        "",
+        "This package synthesizes locked evidence artifacts without running training, campaigns, or proof suites.",
+        "Each evidence path is reported in its own regime bucket so paper claims do not merge incompatible starts.",
+        "",
+    ]
+    for regime in REGIME_KEYS:
+        bucket = regime_summary.get(regime, {})
+        counts = bucket.get("counts", {}) if isinstance(bucket.get("counts"), Mapping) else {}
+        lines.extend(
+            [
+                f"## {_regime_title(regime)}",
+                "",
+                str(bucket.get("description") or _regime_description(regime)),
+                "",
+                "| Metric | Value |",
+                "|--------|-------|",
+                f"| runs | {counts.get('total', 0)} |",
+                f"| verifier_recovered | {counts.get('verifier_recovered', 0)} |",
+                f"| same_ast_return | {counts.get('same_ast_return', 0)} |",
+                f"| repaired_candidate | {counts.get('repaired_candidate', 0)} |",
+                f"| unsupported | {counts.get('unsupported', 0)} |",
+                f"| failed | {counts.get('failed', 0)} |",
+                "",
+                "| Source | Run | Formula | Mode | Evidence Class | Status | Artifact |",
+                "|--------|-----|---------|------|----------------|--------|----------|",
+            ]
+        )
+        runs = list(bucket.get("runs", ())) if isinstance(bucket.get("runs"), list) else []
+        if runs:
+            for run in runs[:12]:
+                lines.append(
+                    f"| {run.get('source_id', '')} | {run.get('run_id', '')} | {run.get('formula', '')} | "
+                    f"{run.get('start_mode', '')} | {run.get('evidence_class', '')} | {run.get('status', '')} | "
+                    f"{run.get('artifact_path', '')} |"
+                )
+            if len(runs) > 12:
+                lines.append(f"| ... | {len(runs) - 12} additional runs omitted from this view |  |  |  |  |  |")
+        else:
+            lines.append("| none |  |  |  |  |  |  |")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def render_scientific_law_table_markdown(rows: list[Mapping[str, Any]]) -> str:
+    lines = [
+        "# Scientific-Law Diagnostics",
+        "",
+        "| law | formula | compile_support | compile_depth | macro_hits | warm_start_status | verifier_status | evidence_regime | artifact_path |",
+        "|-----|---------|-----------------|---------------|------------|-------------------|-----------------|-----------------|---------------|",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row['law']} | `{row['formula']}` | {row['compile_support']} | {_format_cell(row['compile_depth'])} | "
+            f"{', '.join(row['macro_hits']) if row['macro_hits'] else ''} | {row['warm_start_status']} | "
+            f"{row['verifier_status']} | {row['evidence_regime']} | {row['artifact_path']} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_claim_boundaries() -> str:
+    return "\n".join(
+        [
+            "# Raw-Hybrid Claim Boundaries",
+            "",
+            "- warm-start evidence is not pure blind discovery.",
+            "- same-AST evidence is not pure blind discovery.",
+            "- scaffolded evidence is not pure blind discovery.",
+            "- repaired evidence is not pure blind discovery.",
+            "- refit evidence is not pure blind discovery.",
+            "- compile-only evidence is not pure blind discovery.",
+            "- perturbed-basin evidence is not pure blind discovery.",
+            "- centered-family evidence is reported as negative diagnostic evidence under missing same-family witnesses.",
+            "",
+        ]
+    )
+
+
+def render_centered_negative_diagnostics(
+    sources: tuple[RawHybridSource, ...],
+    source_payloads: Mapping[str, Any],
+) -> str:
+    decision = source_payloads.get("v1.8-centered-decision-json")
+    summary = decision.get("evidence_summary", {}) if isinstance(decision, Mapping) else {}
+    operator_groups = summary.get("operator_groups", {}) if isinstance(summary, Mapping) else {}
+    lines = [
+        "# Centered-Family Negative Diagnostics",
+        "",
+        "These rows are negative diagnostic evidence from v1.8, not a claim that centered families cannot work.",
+        "The same-family witness caveat remains active: raw `exp`, `log`, and `scaled_exp` scaffolds are not valid centered-family witnesses.",
+        "",
+        f"- Decision: `{decision.get('decision') if isinstance(decision, Mapping) else 'unknown'}`",
+        f"- Raw recovery rate: {_format_rate(summary.get('raw_recovery_rate') if isinstance(summary, Mapping) else None)}",
+        f"- Best centered recovery rate: {_format_rate(summary.get('best_centered_recovery_rate') if isinstance(summary, Mapping) else None)}",
+        "",
+        "| Operator | Runs | Recovered | Recovery Rate | Unsupported Rate | Schedules |",
+        "|----------|------|-----------|---------------|------------------|-----------|",
+    ]
+    for operator, row in sorted(operator_groups.items()):
+        if operator == "raw_eml" or not isinstance(row, Mapping):
+            continue
+        schedules = row.get("schedules") or []
+        lines.append(
+            f"| {operator} | {row.get('total', 0)} | {row.get('recovered', 0)} | "
+            f"{_format_rate(row.get('recovery_rate'))} | {_format_rate(row.get('unsupported_rate'))} | "
+            f"{', '.join(str(item) for item in schedules) or 'fixed'} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _source_runs(source: RawHybridSource, payload: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    runs = payload.get("runs")
+    if isinstance(runs, list):
+        return [run for run in runs if isinstance(run, Mapping)]
+    if payload.get("schema") == "eml.benchmark_run.v1":
+        return [payload]
+    if source.role == "repair_evidence" and isinstance(payload.get("cases"), list):
+        return [case for case in payload["cases"] if isinstance(case, Mapping)]
+    return []
+
+
+def _regime_run_row(source: RawHybridSource, run: Mapping[str, Any]) -> dict[str, Any]:
+    run_payload = run.get("run") if isinstance(run.get("run"), Mapping) else {}
+    metrics = run.get("metrics") if isinstance(run.get("metrics"), Mapping) else {}
+    refit = run.get("refit") if isinstance(run.get("refit"), Mapping) else {}
+    return {
+        "source_id": source.source_id,
+        "run_id": run.get("run_id") or run_payload.get("run_id") or source.source_id,
+        "formula": run.get("formula") or run_payload.get("formula") or source.law,
+        "start_mode": run.get("start_mode") or run_payload.get("start_mode"),
+        "evidence_class": run.get("evidence_class"),
+        "classification": run.get("classification") or run.get("status"),
+        "return_kind": run.get("return_kind"),
+        "raw_status": run.get("raw_status"),
+        "repair_status": run.get("repair_status") or metrics.get("repair_status"),
+        "refit_status": metrics.get("refit_status") or refit.get("status"),
+        "claim_status": run.get("claim_status"),
+        "status": run.get("status") or run.get("claim_status"),
+        "artifact_path": str(run.get("artifact_path") or run_payload.get("artifact_path") or source.path),
+        "source_path": str(source.path),
+    }
+
+
+def _regimes_for_run(source: RawHybridSource, row: Mapping[str, Any]) -> tuple[str, ...]:
+    regimes: set[str] = set()
+    start_mode = str(row.get("start_mode") or "")
+    evidence_class = str(row.get("evidence_class") or "")
+    classification = str(row.get("classification") or "")
+    status = str(row.get("status") or "")
+    return_kind = str(row.get("return_kind") or "")
+    repair_status = str(row.get("repair_status") or "")
+    refit_status = str(row.get("refit_status") or "")
+
+    if source.evidence_regime == "pure_blind" or (
+        start_mode == "blind" and evidence_class == "blind_training_recovered"
+    ):
+        regimes.add("pure_blind")
+    if source.evidence_regime == "scaffolded" or evidence_class == "scaffolded_blind_training_recovered":
+        regimes.add("scaffolded")
+    if source.evidence_regime == "compile_only" or start_mode == "compile" or evidence_class == "compile_only_verified":
+        regimes.add("compile_only")
+    if start_mode == "warm_start" or source.evidence_regime in {"same_ast_return", "warm_start"}:
+        regimes.add("warm_start")
+    if (
+        source.evidence_regime == "same_ast_return"
+        or "same_ast" in evidence_class
+        or "same_ast" in classification
+        or return_kind == "same_ast_return"
+        or status == "same_ast_return"
+    ):
+        regimes.add("same_ast_return")
+    if source.evidence_regime == "repaired" or repair_status == "repaired" or evidence_class == "repaired_candidate":
+        regimes.add("repaired")
+    if refit_status and refit_status not in {"not_attempted", "None", "null"}:
+        regimes.add("refit")
+    if source.evidence_regime == "perturbed_basin" or start_mode == "perturbed_tree":
+        regimes.add("perturbed_basin")
+    return tuple(regime for regime in REGIME_KEYS if regime in regimes)
+
+
+def _regime_counts(runs: list[Mapping[str, Any]]) -> dict[str, int]:
+    return {
+        "total": len(runs),
+        "verifier_recovered": sum(1 for run in runs if run.get("claim_status") == "recovered"),
+        "same_ast_return": sum(
+            1
+            for run in runs
+            if "same_ast" in str(run.get("evidence_class") or "")
+            or "same_ast" in str(run.get("classification") or "")
+            or run.get("return_kind") == "same_ast_return"
+            or run.get("status") == "same_ast_return"
+        ),
+        "repaired_candidate": sum(
+            1
+            for run in runs
+            if run.get("repair_status") == "repaired" or run.get("evidence_class") == "repaired_candidate"
+        ),
+        "unsupported": sum(
+            1
+            for run in runs
+            if run.get("status") == "unsupported"
+            or run.get("claim_status") == "unsupported"
+            or run.get("classification") == "unsupported"
+        ),
+        "failed": sum(
+            1
+            for run in runs
+            if run.get("claim_status") == "failed"
+            or run.get("status") in {"failed", "snapped_but_failed", "soft_fit_only", "execution_error"}
+        ),
+    }
+
+
+def _scientific_law_row(source: RawHybridSource, payload: Mapping[str, Any]) -> dict[str, Any]:
+    compiled = payload.get("compiled_eml") if isinstance(payload.get("compiled_eml"), Mapping) else {}
+    warm = payload.get("warm_start_eml") if isinstance(payload.get("warm_start_eml"), Mapping) else {}
+    stage_statuses = payload.get("stage_statuses") if isinstance(payload.get("stage_statuses"), Mapping) else {}
+    provenance = payload.get("provenance") if isinstance(payload.get("provenance"), Mapping) else {}
+    compiled_verification = (
+        payload.get("compiled_eml_verification") if isinstance(payload.get("compiled_eml_verification"), Mapping) else {}
+    )
+    return {
+        "law": _law_label(source.law),
+        "formula": str(provenance.get("symbolic_expression") or _nested(compiled, ("metadata", "source_expression")) or ""),
+        "compile_support": _compile_support(compiled, stage_statuses),
+        "compile_depth": _compile_depth(compiled),
+        "macro_hits": _macro_hits(compiled),
+        "warm_start_status": str(stage_statuses.get("warm_start_attempt") or warm.get("status") or "not_applicable"),
+        "verifier_status": str(
+            _nested(warm, ("verification", "status"))
+            or compiled_verification.get("status")
+            or payload.get("claim_status")
+            or payload.get("status")
+            or "unknown"
+        ),
+        "evidence_regime": source.evidence_regime or "unknown",
+        "artifact_path": str(source.path),
+    }
+
+
+def _compile_support(compiled: Mapping[str, Any], stage_statuses: Mapping[str, Any]) -> str:
+    if compiled.get("status") == "unsupported" or stage_statuses.get("compiled_seed") == "unsupported":
+        return "unsupported"
+    if compiled:
+        return "supported"
+    return "unknown"
+
+
+def _compile_depth(compiled: Mapping[str, Any]) -> int | None:
+    for path in (
+        ("metadata", "depth"),
+        ("diagnostic", "relaxed", "metadata", "depth"),
+        ("diagnostic", "metadata", "depth"),
+        ("diagnostic", "depth"),
+    ):
+        value = _nested(compiled, path)
+        if value is not None:
+            try:
+                return int(value)
+            except (TypeError, ValueError):
+                return None
+    return None
+
+
+def _macro_hits(compiled: Mapping[str, Any]) -> list[str]:
+    for path in (
+        ("metadata", "macro_diagnostics", "hits"),
+        ("diagnostic", "relaxed", "metadata", "macro_diagnostics", "hits"),
+        ("diagnostic", "metadata", "macro_diagnostics", "hits"),
+    ):
+        value = _nested(compiled, path)
+        if isinstance(value, list):
+            return [str(item) for item in value]
+    return []
+
+
+def _nested(payload: Mapping[str, Any], path: tuple[str, ...]) -> Any:
+    current: Any = payload
+    for key in path:
+        if not isinstance(current, Mapping):
+            return None
+        current = current.get(key)
+    return current
+
+
+def _write_scientific_law_csv(path: Path, rows: list[Mapping[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(SCIENTIFIC_LAW_COLUMNS))
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({key: _csv_value(row.get(key)) for key in SCIENTIFIC_LAW_COLUMNS})
+
+
+def _csv_value(value: Any) -> Any:
+    if isinstance(value, list):
+        return ";".join(str(item) for item in value)
+    if value is None:
+        return ""
+    return value
+
+
+def _law_label(law: str | None) -> str:
+    return {
+        "arrhenius": "Arrhenius",
+        "beer_lambert": "Beer-Lambert",
+        "shockley": "Shockley diode",
+        "michaelis_menten": "Michaelis-Menten",
+        "planck": "Planck diagnostic",
+        "logistic": "Logistic diagnostic",
+        "michaelis_menten_historical": "Historical Michaelis diagnostic",
+    }.get(str(law), str(law or "unknown"))
+
+
+def _law_sort_key(label: str) -> tuple[int, str]:
+    order = {
+        "Beer-Lambert": 0,
+        "Shockley diode": 1,
+        "Arrhenius": 2,
+        "Michaelis-Menten": 3,
+        "Planck diagnostic": 4,
+        "Logistic diagnostic": 5,
+        "Historical Michaelis diagnostic": 6,
+    }
+    return (order.get(label, 99), label)
+
+
+def _regime_title(regime: str) -> str:
+    return {
+        "pure_blind": "Pure Blind",
+        "scaffolded": "Scaffolded",
+        "compile_only": "Compile Only",
+        "warm_start": "Warm Start",
+        "same_ast_return": "Same-AST Return",
+        "repaired": "Repaired",
+        "refit": "Refit",
+        "perturbed_basin": "Perturbed Basin",
+    }[regime]
+
+
+def _regime_description(regime: str) -> str:
+    return {
+        "pure_blind": "Random-initialized blind training evidence, kept separate from repairs and scaffolds.",
+        "scaffolded": "Blind training with declared scaffold initializers, not pure blind discovery.",
+        "compile_only": "Exact compiler diagnostics that do not train from random initialization.",
+        "warm_start": "Compiler-seeded warm-start training attempts.",
+        "same_ast_return": "Runs that returned the exact same AST or equivalent same-AST evidence.",
+        "repaired": "Verifier-gated local repair evidence, separate from the original selected candidate.",
+        "refit": "Frozen exact-tree constant refit diagnostics, separate from discovery evidence.",
+        "perturbed_basin": "Perturbed true-tree basin evidence with known starts.",
+    }[regime]
+
+
+def _format_cell(value: Any) -> str:
+    return "" if value is None else str(value)
+
+
+def _format_rate(value: Any) -> str:
+    try:
+        if value is None or value == "":
+            return "n/a"
+        return f"{float(value):.3f}"
+    except (TypeError, ValueError):
+        return "n/a"
 
 
 def _package_paths(output_dir: Path) -> RawHybridPaperPaths:
@@ -313,6 +783,8 @@ def _manifest_payload(
     *,
     sources: tuple[RawHybridSource, ...],
     source_payloads: Mapping[str, Any],
+    regime_summary: Mapping[str, Mapping[str, Any]],
+    law_rows: list[Mapping[str, Any]],
     reproduction_command: str,
 ) -> dict[str, Any]:
     return {
@@ -325,6 +797,12 @@ def _manifest_payload(
         "outputs": paths.as_dict(),
         "sources": [source.as_dict() for source in sources],
         "loaded_json_sources": sorted(source_payloads),
+        "regime_counts": {
+            regime: bucket.get("counts", {})
+            for regime, bucket in regime_summary.items()
+            if isinstance(bucket, Mapping)
+        },
+        "scientific_law_rows": len(law_rows),
     }
 
 
