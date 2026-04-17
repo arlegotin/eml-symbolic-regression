@@ -32,7 +32,7 @@
 - [x] **REP-01**: Developer can repair from more than the selected snapped candidate, including fallback and retained exact candidates where available.
 - [x] **REP-02**: Exact cleanup uses AST deduplication and verifier-gated ranking while allowing a larger configurable neighborhood than the v1.6/v1.8 defaults.
 - [x] **REP-03**: Cleanup can consider subtree-level alternatives where candidate provenance exposes them, not only single-slot leaf flips.
-- [ ] **REP-04**: Developer can inspect targeted before/after evidence showing whether the expanded cleanup improves declared near-miss subsets without weakening fallback behavior.
+- [x] **REP-04**: Developer can inspect targeted before/after evidence showing whether the expanded cleanup improves declared near-miss subsets without weakening fallback behavior.
 
 ### Raw-Hybrid Paper Evidence
 
@@ -97,7 +97,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REP-01 | Phase 52 | Complete |
 | REP-02 | Phase 52 | Complete |
 | REP-03 | Phase 52 | Complete |
-| REP-04 | Phase 52 | Pending |
+| REP-04 | Phase 52 | Complete |
 | RHY-01 | Phase 53 | Pending |
 | RHY-02 | Phase 53 | Pending |
 | RHY-03 | Phase 53 | Pending |
