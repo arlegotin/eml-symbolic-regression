@@ -30,6 +30,8 @@ The paper shows that EML plus the constant `1` can generate the scientific-calcu
 
 The implementation is intentionally honest about scope: exact EML recovery is demonstrated for paper-grounded shallow formulas, for Beer-Lambert via a compiler-generated warm start, and for normalized Arrhenius and Michaelis-Menten as exact compiler warm-start / same-AST basin evidence. Harder showcase demos remain verified catalog candidates or explicit unsupported/depth reports unless a trained exact EML candidate passes the verifier.
 
+Verifier-gated cleanup can also produce repair evidence for failed exact candidates. Those repairs are classified as `repaired_candidate` only; they are not blind discovery, not compile-only evidence, not same-AST warm-start evidence, and not perturbed true-tree recovery.
+
 ## Quick Commands
 
 Run the paper identity checks:
@@ -104,6 +106,12 @@ Reproduce the focused Michaelis-Menten evidence artifact:
 PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-michaelis-evidence --case michaelis-warm --seed 0 --perturbation-noise 0.0 --output-dir artifacts/campaigns/v1.9-michaelis-evidence
 ```
 
+Reproduce the focused repair evidence artifacts:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-repair-evidence --output-dir artifacts/campaigns/v1.9-repair-evidence
+```
+
 List campaign presets:
 
 ```bash
@@ -164,7 +172,7 @@ python -m pytest
 
 ## Benchmark Evidence
 
-Benchmark runs use the built-in suites `smoke`, `v1.2-evidence`, `for-demo-diagnostics`, and focused evidence suites such as `v1.9-arrhenius-evidence` and `v1.9-michaelis-evidence`, or a custom JSON suite with schema `eml.benchmark_suite.v1`. Each expanded run writes a JSON artifact containing the suite/run identity, formula, start mode, seed, perturbation, optimizer config, stage statuses, normalized losses/snap metrics when training ran, verifier status, timing, and errors.
+Benchmark runs use the built-in suites `smoke`, `v1.2-evidence`, `for-demo-diagnostics`, and focused evidence suites such as `v1.9-arrhenius-evidence`, `v1.9-michaelis-evidence`, and `v1.9-repair-evidence`, or a custom JSON suite with schema `eml.benchmark_suite.v1`. Each expanded run writes a JSON artifact containing the suite/run identity, formula, start mode, seed, perturbation, optimizer config, stage statuses, normalized losses/snap metrics when training ran, verifier status, timing, and errors.
 
 The CLI also writes:
 
@@ -177,12 +185,15 @@ Interpretation rules:
 - `verifier_recovered` means the snapped exact candidate passed the verifier.
 - `same_ast_return` means a warm-started run snapped back to the compiled seed; this is useful basin-stability evidence, not blind discovery.
 - `verified_equivalent_ast` means a warm-started run snapped to a different exact AST that still verified.
+- `repaired_candidate` means verifier-gated cleanup found and verified a repair candidate; it is repair evidence, not blind discovery, compile-only evidence, same-AST warm-start evidence, or perturbed true-tree recovery.
 - `unsupported` and failed cases are kept in the denominator; they are part of the evidence.
 - `verifier_recovery_rate` is computed from verifier-owned recovery, not from training loss.
 
 The focused Arrhenius artifact is rooted at `artifacts/campaigns/v1.9-arrhenius-evidence/v1.9-arrhenius-evidence/`. It contains suite `v1.9-arrhenius-evidence` case `arrhenius-warm` for demo id `arrhenius`, normalized formula `exp(-0.8/x)`, domains `(0.5, 3.0)`, `(0.6, 2.7)`, and `(3.1, 4.2)`, compiler macro `direct_division_template`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
 
 The focused Michaelis-Menten artifact is rooted at `artifacts/campaigns/v1.9-michaelis-evidence/v1.9-michaelis-evidence/`. It contains suite `v1.9-michaelis-evidence` case `michaelis-warm` for demo id `michaelis_menten`, normalized formula `2*x/(x+0.5)`, domains `(0.05, 5.0)`, `(0.08, 4.5)`, and `(5.1, 7.0)`, compiler macro `saturation_ratio_template`, compile depth `12`, node count `41`, warm-start status `same_ast_return`, verifier status `recovered`, and evidence class `same_ast`. This is exact compiler warm-start / same-AST basin evidence, not blind discovery.
+
+The focused repair evidence root is `artifacts/campaigns/v1.9-repair-evidence/v1.9-repair-evidence/`. It contains suite `v1.9-repair-evidence` with paired default selected-only cleanup and `expanded_candidate_pool` cleanup runs for radioactive-decay blind and Beer-Lambert warm-start near misses. The validated summaries are `artifacts/campaigns/v1.9-repair-evidence/repair-evidence-summary.json` and `artifacts/campaigns/v1.9-repair-evidence/repair-evidence-summary.md`. The committed run measured 2 pairs, 0 default repairs, 0 expanded repairs, 0 expanded improvements, 0 final-status regressions, and preserved selected/fallback optimizer manifests for every run. Expanded candidate-pool cleanup therefore produced no measured improvement in this focused suite, but it preserved fallback behavior and stayed in repair-only taxonomy.
 
 ## Campaign Reports
 
