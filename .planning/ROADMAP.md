@@ -28,7 +28,7 @@ Produce a stronger raw-EML hybrid paper package by fixing centered scaffold corr
 | 49 | Witness Registry and Centered Scaffold Correctness | 2/2 | Complete    | 2026-04-17 |
 | 50 | Arrhenius Exact Warm-Start Demo | 3/3 | Complete    | 2026-04-17 |
 | 51 | Reciprocal and Saturation Compiler Motifs | 3/3 | Complete    | 2026-04-17 |
-| 52 | Verifier-Gated Exact Cleanup Expansion | 3/3 | Complete   | 2026-04-17 |
+| 52 | Verifier-Gated Exact Cleanup Expansion | 3/3 | Complete    | 2026-04-17 |
 | 53 | Raw-Hybrid Paper Campaign and Claim Package | Generate the paper-facing raw-hybrid suite, reports, tables, claim boundaries, and docs after the new evidence exists. | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 | Not Started |
 
 - [x] **Phase 49: Witness Registry and Centered Scaffold Correctness** - Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. (requirements: WIT-01, WIT-02, WIT-03, WIT-04) (completed 2026-04-17)
@@ -146,10 +146,10 @@ Plans:
 | MIC-02 | Phase 51 | Complete |
 | MIC-03 | Phase 51 | Complete |
 | MIC-04 | Phase 51 | Complete |
-| REP-01 | Phase 52 | Pending |
-| REP-02 | Phase 52 | Pending |
-| REP-03 | Phase 52 | Pending |
-| REP-04 | Phase 52 | Pending |
+| REP-01 | Phase 52 | Complete |
+| REP-02 | Phase 52 | Complete |
+| REP-03 | Phase 52 | Complete |
+| REP-04 | Phase 52 | Complete |
 | RHY-01 | Phase 53 | Pending |
 | RHY-02 | Phase 53 | Pending |
 | RHY-03 | Phase 53 | Pending |
@@ -163,10 +163,10 @@ Plans:
 
 ## Next Step
 
-Continue with Phase 52 to expand verifier-gated exact cleanup before the paper-suite phase.
+Continue with Phase 53 to package the raw-hybrid paper-facing suite, reports, tables, and claim language.
 
 `$gsd-plan-phase 52`
 
 ---
 *Roadmap created: 2026-04-17 for milestone v1.9*
-*Last updated: 2026-04-17 after completing Phase 51*
+*Last updated: 2026-04-17 after completing Phase 52*

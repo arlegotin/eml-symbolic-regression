@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.9
 milestone_name: milestone
-current_phase: 52
-status: verifying
-stopped_at: Completed 52-03-PLAN.md
-last_updated: "2026-04-17T15:42:03.031Z"
+current_phase: 53
+status: planning
+stopped_at: Phase 52 complete; ready to plan Phase 53
+last_updated: "2026-04-17T16:02:41.407Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 11
   completed_plans: 11
-  percent: 100
+  percent: 80
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 52
+**Current phase:** 53
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,15 +26,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-17)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 52 — Verifier-Gated Exact Cleanup Expansion
+**Current focus:** Phase 53 — Raw-Hybrid Paper Campaign and Claim Package
 
 ## Current Position
 
-Phase: 52 (Verifier-Gated Exact Cleanup Expansion) — EXECUTING
-Plan: 3 of 3
-Status: Phase complete — ready for verification
-Last activity: 2026-04-17
-Progress: [██████----] 60% by completed phases (v1.9: 3/5 complete)
+Phase: 53 - Raw-Hybrid Paper Campaign and Claim Package
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-04-17 -- Phase 52 complete; Phase 53 ready to plan
+Progress: [████████--] 80% by completed phases (v1.9: 4/5 complete)
 
 ## Performance Metrics
 
@@ -132,8 +132,8 @@ Target work:
 | 49 | Witness Registry and Centered Scaffold Correctness | Complete (2/2 plans) | WIT-01, WIT-02, WIT-03, WIT-04 |
 | 50 | Arrhenius Exact Warm-Start Demo | Complete (3/3 plans) | ARR-01, ARR-02, ARR-03, ARR-04 |
 | 51 | Reciprocal and Saturation Compiler Motifs | Complete (3/3 plans) | MIC-01, MIC-02, MIC-03, MIC-04 |
-| 52 | Verifier-Gated Exact Cleanup Expansion | Ready to plan | REP-01, REP-02, REP-03, REP-04 |
-| 53 | Raw-Hybrid Paper Campaign and Claim Package | Not Started | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 |
+| 52 | Verifier-Gated Exact Cleanup Expansion | Complete (3/3 plans) | REP-01, REP-02, REP-03, REP-04 |
+| 53 | Raw-Hybrid Paper Campaign and Claim Package | Ready to plan | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 |
 
 ## Accumulated Context
 
@@ -227,4 +227,4 @@ Stopped at: Completed 52-03-PLAN.md
 Resume file: None
 
 ---
-*Last updated: 2026-04-17 after completing Phase 51*
+*Last updated: 2026-04-17 after completing Phase 52*

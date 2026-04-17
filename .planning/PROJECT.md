@@ -90,10 +90,10 @@ v1.9 pivots from trying to rescue centered families as the main story toward a r
 - ✓ Explicit raw-only scaffold witness registry, centered-family scaffold exclusions, direct helper fail-closed guards, and artifact reason-code visibility — v1.9 Phase 49
 - ✓ Normalized Arrhenius demo, strict `direct_division_template` compile support, exact same-AST warm-start return, and focused `v1.9-arrhenius-evidence` artifacts — v1.9 Phase 50
 - ✓ Reusable `reciprocal_shift_template` and `saturation_ratio_template` compiler motifs, Michaelis-Menten strict support, same-AST warm-start return, and focused `v1.9-michaelis-evidence` artifacts — v1.9 Phase 51
+- ✓ Opt-in expanded candidate-pool cleanup over selected/fallback/retained exact roots, verifier-gated AST dedup, repair metrics, and focused `v1.9-repair-evidence` no-improvement evidence — v1.9 Phase 52
 
 ### Active
 
-- [ ] Strengthen verifier-gated exact post-snap cleanup without changing the recovery contract.
 - [ ] Generate a raw-hybrid paper-facing campaign/report with regime-separated claims and centered-family caveats.
 
 ### Out of Scope
@@ -176,6 +176,7 @@ v1.8 found no positive centered-family recovery signal under the scoped local se
 | Reciprocal and saturation macros must stay structural and validation-gated | Phase 51 review fixes enforced constant policy, finite derived constants, explicit unit-coefficient support, and non-unit rejection. | ✓ Good |
 | Michaelis-Menten support is same-AST compiler warm-start evidence, not blind discovery | Phase 51 records `same_ast_return`, verifier `recovered`, and evidence class `same_ast` for `michaelis-warm`. | ✓ Good |
 | Raw scaffold helpers are registry-gated by operator family | Phase 49 proved current `exp`, `log`, and `scaled_exp` scaffold witnesses are raw EML only; centered runs now record missing same-family witness exclusions instead of reusing raw helpers. | ✓ Good |
+| Expanded exact cleanup is repair-only evidence | Phase 52 can opt into selected/fallback/retained candidate roots and records no-improvement focused evidence; repaired candidates remain `repaired_candidate`, not blind, compile-only, same-AST, or perturbed true-tree recovery. | ✓ Good |
 
 ## Evolution
 
@@ -195,4 +196,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-17 after completing Phase 51*
+*Last updated: 2026-04-17 after completing Phase 52*
