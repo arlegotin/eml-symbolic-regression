@@ -10,6 +10,7 @@ import torch
 
 from .expression import CenteredEml, Const, Eml, Expr, Var
 from .semantics import AnomalyStats, EmlOperator, TrainingSemanticsConfig, as_complex_tensor, centered_eml_torch, raw_eml_operator
+from .witnesses import CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING, scaffold_witness_for
 
 
 def _canonical_constant(value: complex) -> complex:
@@ -553,11 +554,20 @@ class SoftEMLTree(torch.nn.Module):
     def set_slot(self, node_path: str, side: str, choice: str, strength: float = 30.0) -> None:
         self.root.set_slot(node_path, side, choice, strength=strength)
 
+    def _require_scaffold_witness(self, kind: str) -> None:
+        if scaffold_witness_for(kind, self.operator_family) is None:
+            raise EmbeddingError(
+                CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING,
+                f"{kind} scaffold has no same-family witness for operator {self.operator_family.label}",
+            )
+
     def force_exp(self, variable: str = "x") -> None:
+        self._require_scaffold_witness("exp")
         self.set_slot("root", "left", f"var:{variable}")
         self.set_slot("root", "right", constant_label(1.0))
 
     def force_log(self, variable: str = "x") -> None:
+        self._require_scaffold_witness("log")
         if self.depth < 3:
             raise ValueError("The paper log identity requires depth >= 3 in this scaffold")
         self.set_slot("root", "left", constant_label(1.0))
@@ -568,6 +578,7 @@ class SoftEMLTree(torch.nn.Module):
         self.set_slot("root.R.L", "right", f"var:{variable}")
 
     def force_scaled_exp(self, variable: str, coefficient: complex, strength: float = 30.0) -> EmbeddingResult:
+        self._require_scaffold_witness("scaled_exp")
         from .compiler import scaled_exponential_expr
 
         expression = scaled_exponential_expr(variable, coefficient)
