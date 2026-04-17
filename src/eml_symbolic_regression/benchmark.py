@@ -32,7 +32,7 @@ from .proof import (
     threshold_policy,
     validate_claim_reference,
 )
-from .repair import cleanup_failed_candidate, repair_perturbed_candidate
+from .repair import RepairConfig, cleanup_failed_candidate, repair_perturbed_candidate
 from .semantics import AnomalyStats, EmlOperator, as_complex_tensor, eml_operator_from_spec, mse_complex_numpy, raw_eml_operator
 from .verify import verify_candidate
 from .witnesses import known_scaffold_kinds, resolve_scaffold_plan
@@ -113,6 +113,35 @@ class DatasetConfig:
 
     def as_dict(self) -> dict[str, Any]:
         return {"points": self.points, "tolerance": self.tolerance}
+
+
+@dataclass(frozen=True)
+class BenchmarkRepairConfig:
+    preset: str = "default"
+
+    @classmethod
+    def from_mapping(cls, payload: Mapping[str, Any] | None, *, path: str = "repair") -> "BenchmarkRepairConfig":
+        if payload is None:
+            payload = {}
+        elif not isinstance(payload, Mapping):
+            raise BenchmarkValidationError("malformed_repair", "repair must be a mapping", path=path)
+        return cls(preset=str(payload.get("preset", "default")))
+
+    def validate(self, path: str) -> None:
+        if self.preset not in {"default", "expanded_candidate_pool"}:
+            raise BenchmarkValidationError(
+                "invalid_repair",
+                "repair preset must be one of: default, expanded_candidate_pool",
+                path=f"{path}.preset",
+            )
+
+    def as_dict(self) -> dict[str, Any]:
+        return {"preset": self.preset}
+
+    def to_repair_config(self) -> RepairConfig:
+        if self.preset == "expanded_candidate_pool":
+            return RepairConfig.expanded_candidate_pool()
+        return RepairConfig()
 
 
 @dataclass(frozen=True)
@@ -356,6 +385,7 @@ class BenchmarkCase:
     claim_id: str | None = None
     threshold_policy_id: str | None = None
     training_mode: str | None = None
+    repair: BenchmarkRepairConfig | None = None
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any], *, path: str) -> "BenchmarkCase":
@@ -385,6 +415,11 @@ class BenchmarkCase:
             claim_id=_optional_str(payload.get("claim_id")),
             threshold_policy_id=_optional_str(payload.get("threshold_policy_id")),
             training_mode=_optional_str(payload.get("training_mode")),
+            repair=(
+                BenchmarkRepairConfig.from_mapping(payload.get("repair"), path=f"{path}.repair")
+                if "repair" in payload and payload.get("repair") is not None
+                else None
+            ),
         )
 
     def validate(self, path: str) -> None:
@@ -425,6 +460,8 @@ class BenchmarkCase:
             self._validate_proof_contract(path)
         self.dataset.validate(f"{path}.dataset")
         self.optimizer.validate(f"{path}.optimizer")
+        if self.repair is not None:
+            self.repair.validate(f"{path}.repair")
 
     def _validate_proof_contract(self, path: str) -> None:
         training_mode = self.training_mode or _default_training_mode(self.start_mode)
@@ -550,7 +587,7 @@ class BenchmarkCase:
                 )
 
     def as_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "id": self.id,
             "formula": self.formula,
             "start_mode": self.start_mode,
@@ -564,6 +601,9 @@ class BenchmarkCase:
             "threshold_policy_id": self.threshold_policy_id,
             "training_mode": self.training_mode,
         }
+        if self.repair is not None:
+            payload["repair"] = self.repair.as_dict()
+        return payload
 
 
 @dataclass(frozen=True)
@@ -582,6 +622,7 @@ class BenchmarkRun:
     claim_id: str | None = None
     threshold_policy_id: str | None = None
     training_mode: str | None = None
+    repair: BenchmarkRepairConfig | None = None
 
     @property
     def run_id(self) -> str:
@@ -601,11 +642,13 @@ class BenchmarkRun:
                 "threshold_policy_id": self.threshold_policy_id,
                 "training_mode": self.training_mode,
             }
+        if self.repair is not None:
+            parts["repair"] = self.repair.as_dict()
         digest = hashlib.sha1(json.dumps(parts, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()[:12]
         return f"{_slug(self.suite_id)}-{_slug(self.case_id)}-{digest}"
 
     def as_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "suite_id": self.suite_id,
             "case_id": self.case_id,
             "run_id": self.run_id,
@@ -622,6 +665,9 @@ class BenchmarkRun:
             "threshold_policy_id": self.threshold_policy_id,
             "training_mode": self.training_mode,
         }
+        if self.repair is not None:
+            payload["repair"] = self.repair.as_dict()
+        return payload
 
 
 @dataclass(frozen=True)
@@ -763,6 +809,7 @@ class BenchmarkSuite:
                         claim_id=case.claim_id,
                         threshold_policy_id=case.threshold_policy_id,
                         training_mode=training_mode,
+                        repair=case.repair,
                     )
                     runs.append(
                         BenchmarkRun(
@@ -780,6 +827,7 @@ class BenchmarkSuite:
                             claim_id=placeholder.claim_id,
                             threshold_policy_id=placeholder.threshold_policy_id,
                             training_mode=placeholder.training_mode,
+                            repair=placeholder.repair,
                         )
                     )
         return tuple(runs)
@@ -872,6 +920,7 @@ def _case(
     training_mode: str | None = None,
     operator_family: EmlOperator | None = None,
     operator_schedule: Iterable[EmlOperator] = (),
+    repair: BenchmarkRepairConfig | None = None,
 ) -> BenchmarkCase:
     return BenchmarkCase(
         id=id,
@@ -897,6 +946,7 @@ def _case(
         claim_id=claim_id,
         threshold_policy_id=threshold_policy_id,
         training_mode=training_mode,
+        repair=repair,
     )
 
 
@@ -1643,6 +1693,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 constants=_fit_constants(fit, run.optimizer.constants),
                 verification_splits=splits,
                 tolerance=run.dataset.tolerance,
+                config=_repair_config_for_run(run),
                 original_status=status,
                 return_kind=status,
             )
@@ -1766,6 +1817,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 constants=_fit_constants(warm.fit, run.optimizer.constants),
                 verification_splits=splits,
                 tolerance=run.dataset.tolerance,
+                config=_repair_config_for_run(run),
                 original_status=status,
                 return_kind=status,
             )
@@ -1911,6 +1963,7 @@ def _execute_benchmark_run_inner(run: BenchmarkRun) -> dict[str, Any]:
                 constants=_fit_constants(basin.fit, repair_constants),
                 verification_splits=splits,
                 tolerance=run.dataset.tolerance,
+                config=_repair_config_for_run(run),
                 original_status=raw_status,
                 return_kind=basin.return_kind,
             )
@@ -1987,6 +2040,10 @@ def _manifest_with_budget_scaffold_exclusions(manifest: Mapping[str, Any], budge
         )
     )
     return payload
+
+
+def _repair_config_for_run(run: BenchmarkRun) -> RepairConfig | None:
+    return run.repair.to_repair_config() if run.repair is not None else None
 
 
 def _budget_operator_family(budget: OptimizerBudget) -> EmlOperator:
