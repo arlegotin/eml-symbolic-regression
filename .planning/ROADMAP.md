@@ -25,7 +25,7 @@ Produce a stronger raw-EML hybrid paper package by fixing centered scaffold corr
 
 | Phase | Name | Goal | Requirements | Status |
 |-------|------|------|--------------|--------|
-| 49 | Witness Registry and Centered Scaffold Correctness | Make scaffold/witness availability explicit by operator family and prevent raw witnesses from contaminating centered-family runs. | WIT-01, WIT-02, WIT-03, WIT-04 | Complete |
+| 49 | Witness Registry and Centered Scaffold Correctness | 2/2 | Complete    | 2026-04-17 |
 | 50 | Arrhenius Exact Warm-Start Demo | Add Arrhenius as a normalized scientific-law demo with strict compile support and exact verified warm-start return. | ARR-01, ARR-02, ARR-03, ARR-04 | Not Started |
 | 51 | Reciprocal and Saturation Compiler Motifs | Add reusable reciprocal-shift and saturation-ratio compiler motifs to reduce Michaelis-Menten depth and support honest recovery diagnostics. | MIC-01, MIC-02, MIC-03, MIC-04 | Not Started |
 | 52 | Verifier-Gated Exact Cleanup Expansion | Broaden exact post-snap cleanup over deduplicated candidate neighborhoods while preserving verifier-owned fallback behavior. | REP-01, REP-02, REP-03, REP-04 | Not Started |
