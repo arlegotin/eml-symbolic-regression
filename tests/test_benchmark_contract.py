@@ -15,6 +15,13 @@ from eml_symbolic_regression.cli import build_parser
 from eml_symbolic_regression.proof import paper_claim
 
 
+EXPECTED_CENTERED_SCAFFOLD_EXCLUSIONS = (
+    "exp:centered_family_same_family_witness_missing",
+    "log:centered_family_same_family_witness_missing",
+    "scaled_exp:centered_family_same_family_witness_missing",
+)
+
+
 def test_scaffold_witness_registry_declares_raw_only_current_witnesses():
     from eml_symbolic_regression import (
         CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING,
@@ -135,11 +142,14 @@ def test_family_matrix_suites_clone_regimes_with_operator_variants():
     centered_scaffolded = [
         run for run in shallow.expanded_runs() if run.case_id == "shallow-beer-lambert-blind-ceml2"
     ]
+    raw_scaffolded = [run for run in shallow.expanded_runs() if run.case_id == "shallow-beer-lambert-blind-raw"]
     assert centered_scaffolded
-    assert "scaled_exp" not in centered_scaffolded[0].optimizer.scaffold_initializers
-    assert centered_scaffolded[0].optimizer.scaffold_exclusions == (
-        "scaled_exp:centered_family_incompatible_raw_witness",
-    )
+    assert raw_scaffolded
+    assert raw_scaffolded[0].optimizer.scaffold_initializers == ("exp", "log", "scaled_exp")
+    assert raw_scaffolded[0].optimizer.scaffold_exclusions == ()
+    assert centered_scaffolded[0].optimizer.operator_family.label == "CEML_2"
+    assert centered_scaffolded[0].optimizer.scaffold_initializers == ()
+    assert centered_scaffolded[0].optimizer.scaffold_exclusions == EXPECTED_CENTERED_SCAFFOLD_EXCLUSIONS
 
 
 def test_v18_family_matrix_expands_scales_and_schedules():
@@ -158,6 +168,19 @@ def test_v18_family_matrix_expands_scales_and_schedules():
     v18_probe = next(run for run in runs if run.case_id == "cal-exp-blind-ceml1")
     assert "v1.8" in v18_probe.tags
     assert "v1.7" not in v18_probe.tags
+    raw_probe = next(run for run in runs if run.case_id == "cal-log-blind-raw")
+    continuation_probe = next(run for run in runs if run.case_id == "cal-log-blind-zeml8-4-2-1")
+    assert raw_probe.optimizer.scaffold_initializers == ("exp", "log", "scaled_exp")
+    assert raw_probe.optimizer.scaffold_exclusions == ()
+    assert [operator.label for operator in continuation_probe.optimizer.operator_schedule] == [
+        "ZEML_8",
+        "ZEML_4",
+        "ZEML_2",
+        "ZEML_1",
+    ]
+    assert continuation_probe.optimizer.operator_family.label == "ZEML_8"
+    assert continuation_probe.optimizer.scaffold_initializers == ()
+    assert continuation_probe.optimizer.scaffold_exclusions == EXPECTED_CENTERED_SCAFFOLD_EXCLUSIONS
 
 
 def test_family_basin_and_depth_curve_preserve_regime_shapes_without_thresholds():
