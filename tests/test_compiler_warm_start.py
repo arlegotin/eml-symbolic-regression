@@ -331,6 +331,49 @@ def test_cli_warm_start_promotes_shockley_after_macro_shortening(tmp_path):
     assert payload["compiled_eml"]["metadata"]["macro_diagnostics"]["hits"] == ["scaled_exp_minus_one_template"]
 
 
+def test_cli_warm_start_promotes_arrhenius_same_ast_evidence(tmp_path):
+    # Benchmark suite v1.9-arrhenius-evidence case arrhenius-warm must classify this as same_ast.
+    spec = get_demo("arrhenius")
+    assert spec.train_domain == (0.5, 3.0)
+    assert spec.heldout_domain == (0.6, 2.7)
+    assert spec.extrap_domain == (3.1, 4.2)
+
+    output = tmp_path / "arrhenius-warm.json"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "eml_symbolic_regression.cli",
+            "demo",
+            "arrhenius",
+            "--warm-start-eml",
+            "--points",
+            "24",
+            "--output",
+            str(output),
+        ],
+        check=True,
+        capture_output=True,
+        env=CLI_ENV,
+        text=True,
+    )
+
+    assert "compiled_seed=recovered" in result.stdout
+    assert "trained_exact_recovery=recovered" in result.stdout
+    payload = json.loads(output.read_text())
+    assert payload["demo"] == "arrhenius"
+    assert payload["candidate"]["sympy"] == "exp(-0.8/x)"
+    assert payload["claim_status"] == "recovered"
+    assert payload["stage_statuses"]["compiled_seed"] == "recovered"
+    assert payload["stage_statuses"]["warm_start_attempt"] == "same_ast_return"
+    assert payload["stage_statuses"]["trained_exact_recovery"] == "recovered"
+    assert payload["compiled_eml"]["metadata"]["macro_diagnostics"]["hits"] == ["direct_division_template"]
+    assert payload["compiled_eml"]["metadata"]["depth"] == 7
+    assert payload["warm_start_eml"]["status"] == "same_ast_return"
+    assert payload["warm_start_eml"]["verification"]["status"] == "recovered"
+    assert payload["warm_start_eml"]["diagnosis"]["changed_slot_count"] == 0
+
+
 def test_cli_reports_michaelis_menten_depth_gate_without_promotion(tmp_path):
     output = tmp_path / "mm-warm.json"
     subprocess.run(
