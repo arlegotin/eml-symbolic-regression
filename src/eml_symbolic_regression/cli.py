@@ -32,6 +32,7 @@ from .optimize import TrainingConfig, fit_eml_tree
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
+from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, write_raw_hybrid_paper_package
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
@@ -419,6 +420,42 @@ def paper_decision_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def raw_hybrid_paper_command(args: argparse.Namespace) -> int:
+    paths = write_raw_hybrid_paper_package(
+        output_dir=Path(args.output_dir),
+        require_existing=args.require_existing,
+        overwrite=args.overwrite,
+        reproduction_command=_raw_hybrid_paper_reproduction_command(args),
+    )
+    print(
+        f"raw hybrid paper: manifest -> {paths.manifest_json}; "
+        f"report -> {paths.raw_hybrid_report_md}; "
+        f"scientific laws -> {paths.scientific_law_table_json}; "
+        f"claim boundaries -> {paths.claim_boundaries_md}; "
+        f"source locks -> {paths.source_locks_json}"
+    )
+    return 0
+
+
+def _raw_hybrid_paper_reproduction_command(args: argparse.Namespace) -> str:
+    parts = [
+        "PYTHONPATH=src",
+        "python",
+        "-m",
+        "eml_symbolic_regression.cli",
+        "raw-hybrid-paper",
+        "--output-dir",
+        str(args.output_dir),
+    ]
+    if args.require_existing:
+        parts.append("--require-existing")
+    else:
+        parts.append("--allow-missing")
+    if args.overwrite:
+        parts.append("--overwrite")
+    return shlex.join(parts)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="eml-sr")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -521,6 +558,29 @@ def build_parser() -> argparse.ArgumentParser:
     paper_decision.add_argument("--aggregate", action="append", help="Benchmark aggregate JSON to summarize. Repeatable.")
     paper_decision.add_argument("--output-dir", default=str(DEFAULT_PAPER_OUTPUT_ROOT), help="Directory for decision memo outputs.")
     paper_decision.set_defaults(func=paper_decision_command)
+
+    raw_hybrid_paper = sub.add_parser("raw-hybrid-paper", help="Write the v1.9 raw-hybrid paper package from locked sources.")
+    raw_hybrid_paper.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_RAW_HYBRID_OUTPUT_DIR),
+        help="Directory for raw-hybrid paper package outputs.",
+    )
+    source_group = raw_hybrid_paper.add_mutually_exclusive_group()
+    source_group.add_argument(
+        "--require-existing",
+        dest="require_existing",
+        action="store_true",
+        default=True,
+        help="Fail if any required source artifact is missing. This is the default.",
+    )
+    source_group.add_argument(
+        "--allow-missing",
+        dest="require_existing",
+        action="store_false",
+        help="Allow missing source artifacts for fixture/debug package generation.",
+    )
+    raw_hybrid_paper.add_argument("--overwrite", action="store_true", help="Allow replacing an existing non-empty package directory.")
+    raw_hybrid_paper.set_defaults(func=raw_hybrid_paper_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)
