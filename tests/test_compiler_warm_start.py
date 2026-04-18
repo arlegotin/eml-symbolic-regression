@@ -288,7 +288,7 @@ def test_compiler_fail_closed_negative_cases():
     assert depth_error.value.reason == CompileReason.DEPTH_EXCEEDED
 
 
-def test_compile_logistic_archived_relaxed_baseline():
+def test_compile_logistic_uses_exponential_saturation_template():
     spec = get_demo("logistic")
     splits = spec.make_splits(points=12, seed=0)
     diagnostic = diagnose_compile_expression(
@@ -300,9 +300,49 @@ def test_compile_logistic_archived_relaxed_baseline():
     assert diagnostic["status"] == "unsupported"
     assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
     relaxed = diagnostic["relaxed"]["metadata"]
-    assert relaxed["depth"] == 27
-    assert relaxed["node_count"] == 77
-    assert relaxed["macro_diagnostics"]["hits"] == []
+    assert relaxed["depth"] == 15
+    assert relaxed["node_count"] == 49
+    macro = relaxed["macro_diagnostics"]
+    assert macro["hits"] == ["exponential_saturation_template"]
+    assert macro["baseline_depth"] == 27
+    assert macro["baseline_node_count"] == 77
+    assert macro["depth_delta"] == 12
+    assert macro["node_delta"] == 28
+    assert macro["validation_status"] == "validated"
+    assert macro["validation_passed"] is True
+
+
+def test_exponential_saturation_template_supports_equivalent_ratio_shape():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        sp.exp(sp.Float("1.3") * x) / (sp.exp(sp.Float("1.3") * x) + sp.Float("2.0")),
+        CompilerConfig(variables=("x",), max_depth=15, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.depth == 15
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["exponential_saturation_template"]
+
+
+def test_exponential_saturation_template_normalizes_equal_scale_ratio_shape():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        sp.Float("2.0") * sp.exp(sp.Float("1.3") * x)
+        / (sp.Float("2.0") * sp.exp(sp.Float("1.3") * x) + sp.Float("3.0")),
+        CompilerConfig(variables=("x",), max_depth=15, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.depth == 15
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["exponential_saturation_template"]
 
 
 def test_compile_planck_archived_relaxed_baseline():

@@ -17,7 +17,7 @@
 ### Structural Motif Library
 
 - [x] **MOTIF-01**: Compiler motif matching can operate on validated compilable subexpressions, not only raw symbols, for reciprocal and saturation forms such as `1/(g(x)+b)` and `c*g(x)/(g(x)+b)`.
-- [ ] **MOTIF-02**: Compiler exposes a structural exponential-saturation motif for logistic-like laws such as `1/(1+c*exp(a))` or `exp(a)/(exp(a)+c)` without matching formula names or exact demo constants.
+- [x] **MOTIF-02**: Compiler exposes a structural exponential-saturation motif for logistic-like laws such as `1/(1+c*exp(a))` or `exp(a)/(exp(a)+c)` without matching formula names or exact demo constants.
 - [ ] **MOTIF-03**: Compiler exposes validation-backed low-degree positive-integer power compression, at minimum for `g(x)**2` and `g(x)**3`, and rejects the path when it is not shorter or not validated.
 - [ ] **MOTIF-04**: Any bounded motif-search helper records the target family, candidate construction, independent numeric samples, validation verdict, and codified winning template without acting as a general theorem prover.
 - [x] **MOTIF-05**: Every new motif emits macro diagnostics with template name, depth delta, node delta, validation status, and fail-closed reason when rejected.
@@ -25,11 +25,11 @@
 
 ### Logistic Evidence
 
-- [ ] **LOGI-01**: Logistic strict or relaxed compile depth is materially lower than the archived relaxed depth 27 through a structural macro-backed path.
-- [ ] **LOGI-02**: Logistic compile diagnostics include the new exponential-saturation motif in `macro_diagnostics["hits"]` when the motif is responsible for shortening.
-- [ ] **LOGI-03**: Logistic is promoted to strict-supported only under the existing shipped gate or an explicitly declared gate that is not silently looser than the shipped one.
-- [ ] **LOGI-04**: Logistic warm-start is attempted through the normal benchmark/verifier contract when strict compile support exists.
-- [ ] **LOGI-05**: Logistic warm-start evidence records same-AST or verified-equivalent recovery honestly, including verifier status and evidence class.
+- [x] **LOGI-01**: Logistic strict or relaxed compile depth is materially lower than the archived relaxed depth 27 through a structural macro-backed path.
+- [x] **LOGI-02**: Logistic compile diagnostics include the new exponential-saturation motif in `macro_diagnostics["hits"]` when the motif is responsible for shortening.
+- [x] **LOGI-03**: Logistic is promoted to strict-supported only under the existing shipped gate or an explicitly declared gate that is not silently looser than the shipped one.
+- [ ] **LOGI-04**: Logistic warm-start is attempted through the normal benchmark/verifier contract when strict compile support exists; otherwise focused evidence records that strict support did not exist.
+- [ ] **LOGI-05**: Logistic warm-start evidence records same-AST or verified-equivalent recovery honestly when warm-start runs; otherwise focused evidence records strict unsupported status and no warm-start promotion.
 
 ### Planck Diagnostics
 
@@ -78,16 +78,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BASE-04 | Phase 54 | Complete |
 | BASE-05 | Phase 54 | Complete |
 | MOTIF-01 | Phase 55 | Complete |
-| MOTIF-02 | Phase 56 | Pending |
+| MOTIF-02 | Phase 56 | Complete |
 | MOTIF-03 | Phase 57 | Pending |
 | MOTIF-04 | Phase 57 | Pending |
 | MOTIF-05 | Phase 55 | Complete |
 | MOTIF-06 | Phase 55 | Complete |
-| LOGI-01 | Phase 56 | Pending |
-| LOGI-02 | Phase 56 | Pending |
-| LOGI-03 | Phase 56 | Pending |
-| LOGI-04 | Phase 56 | Pending |
-| LOGI-05 | Phase 56 | Pending |
+| LOGI-01 | Phase 56 | Complete |
+| LOGI-02 | Phase 56 | Complete |
+| LOGI-03 | Phase 56 | Complete |
+| LOGI-04 | Phase 58 | Pending |
+| LOGI-05 | Phase 58 | Pending |
 | PLAN-01 | Phase 57 | Pending |
 | PLAN-02 | Phase 57 | Pending |
 | PLAN-03 | Phase 57 | Pending |
@@ -106,4 +106,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-18*
-*Last updated: 2026-04-18 after Phase 55*
+*Last updated: 2026-04-18 after Phase 56*

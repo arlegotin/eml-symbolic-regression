@@ -121,6 +121,7 @@ class CompileResult:
 MACRO_RULES = (
     "reciprocal_shift_template",
     "saturation_ratio_template",
+    "exponential_saturation_template",
     "direct_division_template",
     "scaled_exp_minus_one_template",
 )
@@ -141,6 +142,12 @@ class UnsupportedExpression(ValueError):
 class _UnitShift:
     base: sp.Expr
     offset: complex
+
+
+@dataclass(frozen=True)
+class _ExponentialSaturation:
+    exponent: sp.Expr
+    coefficient: complex
 
 
 def subtract_expr(left: Expr, right: Expr) -> Expr:
@@ -261,8 +268,14 @@ class _Compiler:
         if not self.config.enable_macros:
             return None
         if isinstance(expr, sp.Pow):
+            macro = self._compile_exponential_saturation(expr)
+            if macro is not None:
+                return macro
             return self._compile_reciprocal_shift(expr)
         if isinstance(expr, sp.Mul):
+            macro = self._compile_exponential_saturation(expr)
+            if macro is not None:
+                return macro
             macro = self._compile_saturation_ratio(expr)
             if macro is not None:
                 return macro
@@ -384,6 +397,134 @@ class _Compiler:
             expr,
             divide_expr(numerator, denominator),
         )
+
+    def _compile_exponential_saturation(self, expr: sp.Expr) -> Expr | None:
+        match = self._match_exponential_saturation(expr)
+        if match is None:
+            return None
+        compiled = self._build_exponential_saturation(match)
+        if compiled is None:
+            return None
+        self.assumptions.append("exponential saturation shortcut lowers 1/(1+c*exp(a)) behind validation")
+        return self._record("exponential_saturation_template", expr, compiled)
+
+    def _match_exponential_saturation(self, expr: sp.Expr) -> _ExponentialSaturation | None:
+        if isinstance(expr, sp.Pow) and expr.exp == -1:
+            return self._match_unit_plus_scaled_exp(expr.base)
+
+        if isinstance(expr, sp.Mul):
+            numerator_factors: list[sp.Expr] = []
+            denominator_bases: list[sp.Expr] = []
+            for factor in expr.args:
+                if isinstance(factor, sp.Pow) and factor.exp == -1:
+                    denominator_bases.append(factor.base)
+                else:
+                    numerator_factors.append(factor)
+            if len(denominator_bases) != 1:
+                return None
+
+            numerator = sp.Mul(*numerator_factors)
+            numerator_scaled_exp = self._match_scaled_exp_term(numerator)
+            if numerator_scaled_exp is None:
+                return None
+            numerator_scale, numerator_arg = numerator_scaled_exp
+
+            denominator_match = self._match_exp_plus_constant(denominator_bases[0])
+            if denominator_match is None:
+                return None
+            denominator_arg, denominator_scale, constant = denominator_match
+            if sp.simplify(numerator_arg - denominator_arg) != 0:
+                return None
+            scale_delta = abs(numerator_scale - denominator_scale)
+            scale_limit = 1e-12 * max(1.0, abs(numerator_scale), abs(denominator_scale))
+            if scale_delta > scale_limit:
+                return None
+            return _ExponentialSaturation(exponent=-denominator_arg, coefficient=constant / denominator_scale)
+
+        return None
+
+    def _match_unit_plus_scaled_exp(self, expr: sp.Expr) -> _ExponentialSaturation | None:
+        if not isinstance(expr, sp.Add):
+            return None
+
+        unit_terms: list[complex] = []
+        exp_terms: list[tuple[complex, sp.Expr]] = []
+        for term in expr.args:
+            if term.is_number:
+                unit_terms.append(self._constant_value(term))
+                continue
+            scaled_exp = self._match_scaled_exp_term(term)
+            if scaled_exp is None:
+                return None
+            exp_terms.append(scaled_exp)
+
+        if len(unit_terms) != 1 or len(exp_terms) != 1:
+            return None
+        if abs(unit_terms[0] - 1.0) > 1e-12:
+            return None
+
+        coefficient, exponent = exp_terms[0]
+        return _ExponentialSaturation(exponent=exponent, coefficient=coefficient)
+
+    def _match_exp_plus_constant(self, expr: sp.Expr) -> tuple[sp.Expr, complex, complex] | None:
+        if not isinstance(expr, sp.Add):
+            return None
+
+        constant_terms: list[complex] = []
+        exp_terms: list[tuple[complex, sp.Expr]] = []
+        for term in expr.args:
+            if term.is_number:
+                constant_terms.append(self._constant_value(term))
+                continue
+            scaled_exp = self._match_scaled_exp_term(term)
+            if scaled_exp is None:
+                return None
+            exp_terms.append(scaled_exp)
+
+        if len(constant_terms) != 1 or len(exp_terms) != 1:
+            return None
+        exp_scale, exponent = exp_terms[0]
+        return exponent, exp_scale, constant_terms[0]
+
+    def _match_scaled_exp_term(self, expr: sp.Expr) -> tuple[complex, sp.Expr] | None:
+        coefficient, rest = expr.as_coeff_Mul()
+        if rest.func != sp.exp or len(rest.args) != 1:
+            return None
+        scale = self._constant_value(coefficient) if coefficient.is_number else 1.0 + 0.0j
+        if not (np.isfinite(scale.real) and np.isfinite(scale.imag)):
+            return None
+        if abs(scale) <= 1e-15:
+            return None
+        return scale, rest.args[0]
+
+    def _build_exponential_saturation(self, match: _ExponentialSaturation) -> Expr | None:
+        if self.config.constant_policy != "literal_constants":
+            return None
+        if not (np.isfinite(match.coefficient.real) and np.isfinite(match.coefficient.imag)):
+            return None
+        if abs(match.coefficient) <= 1e-15:
+            return None
+
+        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+            shifted_constant = complex(np.log(np.e * match.coefficient))
+            exp_minus_e = complex(np.exp(-np.e))
+        if not (
+            np.isfinite(shifted_constant.real)
+            and np.isfinite(shifted_constant.imag)
+            and np.isfinite(exp_minus_e.real)
+            and np.isfinite(exp_minus_e.imag)
+        ):
+            return None
+
+        try:
+            compiled_exponent = self.compile(match.exponent)
+        except UnsupportedExpression:
+            return None
+
+        shifted_exponent = add_expr(compiled_exponent, Const(shifted_constant))
+        scaled_denominator = Eml(shifted_exponent, Const(exp_minus_e))
+        negative_log_denominator = Eml(Const(0.0), scaled_denominator)
+        return exp_of(negative_log_denominator)
 
     def _compile_direct_division(self, expr: sp.Mul) -> Expr | None:
         numerator_factors: list[sp.Expr] = []
@@ -601,17 +742,21 @@ def compile_and_validate(
             expression,
             f"max_abs_error={validation.max_abs_error:.3e}",
         )
-    metadata = result.metadata
-    if metadata.macro_diagnostics is not None:
-        metadata = replace(
-            metadata,
-            macro_diagnostics={
-                **dict(metadata.macro_diagnostics),
-                "validation_status": validation.reason,
-                "validation_passed": validation.passed,
-            },
-        )
+    metadata = _metadata_with_validation(result.metadata, validation)
     return CompileResult(result.expression, metadata, validation)
+
+
+def _metadata_with_validation(metadata: CompileMetadata, validation: CompileValidation) -> CompileMetadata:
+    if metadata.macro_diagnostics is None:
+        return metadata
+    return replace(
+        metadata,
+        macro_diagnostics={
+            **dict(metadata.macro_diagnostics),
+            "validation_status": validation.reason,
+            "validation_passed": validation.passed,
+        },
+    )
 
 
 def diagnose_compile_expression(
@@ -650,8 +795,9 @@ def diagnose_compile_expression(
     try:
         relaxed = compile_sympy_expression(expression, relaxed_config)
         validation = validate_compiled_expression(relaxed, inputs, tolerance=config.validation_tolerance)
+        relaxed_metadata = _metadata_with_validation(relaxed.metadata, validation)
         diagnostic["relaxed"] = {
-            "metadata": relaxed.metadata.as_dict(),
+            "metadata": relaxed_metadata.as_dict(),
             "validation": validation.as_dict(),
         }
     except UnsupportedExpression as relaxed_error:
