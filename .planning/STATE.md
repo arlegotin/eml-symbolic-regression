@@ -1,18 +1,18 @@
 ---
 gsd_state_version: 1.0
-milestone: none
-milestone_name: none
+milestone: v1.10
+milestone_name: Search-backed motif library and compiler shortening for logistic and Planck
 current_phase: null
-status: ready_for_next_milestone
-stopped_at: v1.9 milestone archived; ready for next milestone
-last_updated: "2026-04-17T17:30:00.000Z"
-last_activity: 2026-04-17 -- v1.9 archived and ready for next milestone
+status: defining_requirements
+stopped_at: v1.10 milestone started; defining requirements and roadmap
+last_updated: "2026-04-18T00:00:00.000Z"
+last_activity: 2026-04-18 -- Milestone v1.10 started
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 14
-  completed_plans: 14
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
@@ -23,18 +23,18 @@ progress:
 
 ## Project Reference
 
-See: `.planning/PROJECT.md` (updated 2026-04-17)
+See: `.planning/PROJECT.md` (updated 2026-04-18)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** No active milestone. v1.9 is shipped and archived.
+**Current focus:** v1.10 search-backed motif library and compiler shortening for logistic and Planck.
 
 ## Current Position
 
 Phase: None
 Plan: None
-Status: Ready for next milestone
-Last activity: 2026-04-17 -- v1.9 archived and ready for next milestone
-Progress: [██████████] 100% by completed plans (v1.9: 14/14 plans complete)
+Status: Defining requirements
+Last activity: 2026-04-18 -- Milestone v1.10 started
+Progress: [░░░░░░░░░░] 0% by completed plans (roadmap pending)
 
 ## Performance Metrics
 
@@ -120,19 +120,24 @@ Shipped features:
 
 ## Current Milestone
 
-None. Run `$gsd-new-milestone` to define the next milestone.
+**v1.10: Search-backed motif library and compiler shortening for logistic and Planck**
 
-Likely next directions include matched-budget external baselines, constructive centered-family same-family witnesses, or deeper raw-EML blind-search improvements.
+Goal: Build a reusable, validation-gated motif library that makes logistic strict compile support and warm-start recovery realistic while materially reducing Planck compile depth under the existing honest recovery contract.
+
+Target features:
+
+- Baseline-lock tests for archived logistic, Planck, Michaelis-Menten, Arrhenius, and Shockley compiler behavior.
+- Generalized reciprocal/saturation motif matching over compilable subexpressions.
+- Structural exponential-saturation support for logistic-like laws.
+- Bounded motif-search evidence for any codified non-obvious templates.
+- Low-degree power compression for Planck depth reduction.
+- Focused logistic and Planck benchmark evidence paths.
 
 ## Phase Status
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 49 | Witness Registry and Centered Scaffold Correctness | Complete (2/2 plans) | WIT-01, WIT-02, WIT-03, WIT-04 |
-| 50 | Arrhenius Exact Warm-Start Demo | Complete (3/3 plans) | ARR-01, ARR-02, ARR-03, ARR-04 |
-| 51 | Reciprocal and Saturation Compiler Motifs | Complete (3/3 plans) | MIC-01, MIC-02, MIC-03, MIC-04 |
-| 52 | Verifier-Gated Exact Cleanup Expansion | Complete (3/3 plans) | REP-01, REP-02, REP-03, REP-04 |
-| 53 | Raw-Hybrid Paper Campaign and Claim Package | Complete (3/3 plans) | RHY-01, RHY-02, RHY-03, RHY-04, RHY-05 |
+Roadmap pending. Phase numbering will continue after Phase 53.
 
 ## Accumulated Context
 
@@ -230,4 +235,4 @@ Stopped at: v1.9 milestone archived; ready for next milestone
 Resume file: None
 
 ---
-*Last updated: 2026-04-17 after archiving v1.9*
+*Last updated: 2026-04-18 after starting v1.10*
