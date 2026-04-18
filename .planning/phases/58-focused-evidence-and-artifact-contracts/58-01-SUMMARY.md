@@ -3,14 +3,7 @@ phase: 58-focused-evidence-and-artifact-contracts
 plan: 01
 status: complete
 completed: 2026-04-18
-requirements:
-  - LOGI-04
-  - LOGI-05
-  - EVID-01
-  - EVID-02
-  - EVID-03
-  - EVID-04
-  - EVID-05
+requirements-completed: [LOGI-04, LOGI-05, EVID-01, EVID-02, EVID-03, EVID-04, EVID-05]
 ---
 
 # Phase 58 Summary
