@@ -8,11 +8,11 @@
 
 ### Baseline Locks
 
-- [ ] **BASE-01**: Maintainer can run regression tests that pin archived logistic relaxed compile depth at 27 with no macro hits before motif changes.
-- [ ] **BASE-02**: Maintainer can run regression tests that pin archived Planck relaxed compile depth at 20 with `scaled_exp_minus_one_template` and `direct_division_template` hits before motif changes.
-- [ ] **BASE-03**: Maintainer can run regression tests that preserve Michaelis-Menten strict compile depth 12 with `saturation_ratio_template`.
-- [ ] **BASE-04**: Maintainer can run regression tests that preserve Arrhenius strict compile support through `direct_division_template`.
-- [ ] **BASE-05**: Maintainer can run regression tests that preserve Shockley strict compile support through `scaled_exp_minus_one_template`.
+- [x] **BASE-01**: Maintainer can run regression tests that pin archived logistic relaxed compile depth at 27 with no macro hits before motif changes.
+- [x] **BASE-02**: Maintainer can run regression tests that pin archived Planck relaxed compile depth at 20 with `scaled_exp_minus_one_template` and `direct_division_template` hits before motif changes.
+- [x] **BASE-03**: Maintainer can run regression tests that preserve Michaelis-Menten strict compile depth 12 with `saturation_ratio_template`.
+- [x] **BASE-04**: Maintainer can run regression tests that preserve Arrhenius strict compile support through `direct_division_template`.
+- [x] **BASE-05**: Maintainer can run regression tests that preserve Shockley strict compile support through `scaled_exp_minus_one_template`.
 
 ### Structural Motif Library
 
@@ -72,11 +72,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BASE-01 | Phase 54 | Pending |
-| BASE-02 | Phase 54 | Pending |
-| BASE-03 | Phase 54 | Pending |
-| BASE-04 | Phase 54 | Pending |
-| BASE-05 | Phase 54 | Pending |
+| BASE-01 | Phase 54 | Complete |
+| BASE-02 | Phase 54 | Complete |
+| BASE-03 | Phase 54 | Complete |
+| BASE-04 | Phase 54 | Complete |
+| BASE-05 | Phase 54 | Complete |
 | MOTIF-01 | Phase 55 | Pending |
 | MOTIF-02 | Phase 56 | Pending |
 | MOTIF-03 | Phase 57 | Pending |
@@ -106,4 +106,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-18*
-*Last updated: 2026-04-18 after roadmap creation*
+*Last updated: 2026-04-18 after Phase 54*

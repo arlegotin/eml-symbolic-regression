@@ -224,7 +224,24 @@ def test_compiler_fail_closed_negative_cases():
     assert depth_error.value.reason == CompileReason.DEPTH_EXCEEDED
 
 
-def test_compiler_diagnostics_include_relaxed_depth_metadata():
+def test_compile_logistic_archived_relaxed_baseline():
+    spec = get_demo("logistic")
+    splits = spec.make_splits(points=12, seed=0)
+    diagnostic = diagnose_compile_expression(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+
+    assert diagnostic["status"] == "unsupported"
+    assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
+    relaxed = diagnostic["relaxed"]["metadata"]
+    assert relaxed["depth"] == 27
+    assert relaxed["node_count"] == 77
+    assert relaxed["macro_diagnostics"]["hits"] == []
+
+
+def test_compile_planck_archived_relaxed_baseline():
     spec = get_demo("planck")
     splits = spec.make_splits(points=12, seed=0)
     diagnostic = diagnose_compile_expression(
@@ -235,12 +252,43 @@ def test_compiler_diagnostics_include_relaxed_depth_metadata():
 
     assert diagnostic["status"] == "unsupported"
     assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
-    assert diagnostic["relaxed"]["metadata"]["depth"] > 13
-    assert diagnostic["relaxed"]["metadata"]["trace"]
-    macro = diagnostic["relaxed"]["metadata"]["macro_diagnostics"]
+    relaxed = diagnostic["relaxed"]["metadata"]
+    assert relaxed["depth"] == 20
+    assert relaxed["node_count"] == 67
+    assert relaxed["trace"]
+    macro = relaxed["macro_diagnostics"]
     assert set(macro["hits"]) == {"scaled_exp_minus_one_template", "direct_division_template"}
     assert macro["depth_delta"] > 0
     assert macro["node_delta"] > 0
+
+
+def test_existing_macro_supported_demos_do_not_regress():
+    assert CompilerConfig().max_depth == 13
+    assert CompilerConfig().max_nodes == 256
+
+    cases = (
+        ("shockley", "scaled_exp_minus_one_template", None, None),
+        ("arrhenius", "direct_division_template", 7, None),
+        ("michaelis_menten", "saturation_ratio_template", 12, 41),
+    )
+    for demo_name, expected_macro, expected_depth, expected_nodes in cases:
+        spec = get_demo(demo_name)
+        splits = spec.make_splits(points=24, seed=0)
+        result = compile_and_validate(
+            spec.candidate.to_sympy(),
+            CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+            {spec.variable: splits[0].inputs[spec.variable]},
+        )
+
+        assert result.validation is not None
+        assert result.validation.passed
+        assert result.metadata.unsupported_reason is None
+        assert result.metadata.macro_diagnostics is not None
+        assert result.metadata.macro_diagnostics["hits"] == [expected_macro]
+        if expected_depth is not None:
+            assert result.metadata.depth == expected_depth
+        if expected_nodes is not None:
+            assert result.metadata.node_count == expected_nodes
 
 
 def test_damped_oscillator_diagnostic_defers_unsupported_cos():

@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.10
 milestone_name: Search-backed motif library and compiler shortening for logistic and Planck
-current_phase: 54
+current_phase: 55
 status: ready_to_plan
-stopped_at: v1.10 roadmap created; ready to plan Phase 54
+stopped_at: Phase 54 complete; ready to plan Phase 55
 last_updated: "2026-04-18T00:00:00.000Z"
-last_activity: 2026-04-18 -- v1.10 roadmap created
+last_activity: 2026-04-18 -- Phase 54 complete
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 20
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 54 - Compiler Baseline Locks
+**Current phase:** Phase 55 - Generalized Structural Motif Matching
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,11 +30,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-18)
 
 ## Current Position
 
-Phase: 54 of 58 (Phase 1 of 5 for v1.10)
+Phase: 55 of 58 (Phase 2 of 5 for v1.10)
 Plan: None
 Status: Ready to plan
-Last activity: 2026-04-18 -- v1.10 roadmap created
-Progress: [░░░░░░░░░░] 0% by completed phases
+Last activity: 2026-04-18 -- Phase 54 complete
+Progress: [██░░░░░░░░] 20% by completed phases
 
 ## Current Milestone
 
@@ -44,7 +44,7 @@ Goal: Build a reusable, validation-gated motif library that makes logistic stric
 
 | Phase | Name | Status | Requirements |
 |-------|------|--------|--------------|
-| 54 | Compiler Baseline Locks | Not started | BASE-01, BASE-02, BASE-03, BASE-04, BASE-05 |
+| 54 | Compiler Baseline Locks | Complete (1/1 plans) | BASE-01, BASE-02, BASE-03, BASE-04, BASE-05 |
 | 55 | Generalized Structural Motif Matching | Not started | MOTIF-01, MOTIF-05, MOTIF-06 |
 | 56 | Logistic Exponential-Saturation Support | Not started | MOTIF-02, LOGI-01, LOGI-02, LOGI-03, LOGI-04, LOGI-05 |
 | 57 | Planck Motif Search and Power Compression | Not started | MOTIF-03, MOTIF-04, PLAN-01, PLAN-02, PLAN-03, PLAN-04, PLAN-05 |
@@ -77,6 +77,7 @@ Goal: Build a reusable, validation-gated motif library that makes logistic stric
 - Formula-name recognizers, exact-constant recognizers, and silent gate relaxation remain out of scope.
 - Logistic can be warmed only after strict compile support exists under a non-looser gate.
 - Planck can improve compile depth while still remaining unsupported/stretch unless the full compile, warm-start, and verifier contract passes.
+- [Phase 54]: Archived compiler baselines are now locked in tests: logistic relaxed depth 27 with no macro hits, Planck relaxed depth 20 with the two existing macro hits, and existing supported macros remain intact.
 
 ### Pending Todos
 
@@ -89,8 +90,8 @@ Preserve Shockley, Arrhenius, and Michaelis-Menten support while changing motif 
 ## Session Continuity
 
 Last session: 2026-04-18
-Stopped at: v1.10 roadmap created; ready for `$gsd-plan-phase 54`
+Stopped at: Phase 54 complete; ready for `$gsd-plan-phase 55`
 Resume file: None
 
 ---
-*Last updated: 2026-04-18 after roadmap creation*
+*Last updated: 2026-04-18 after Phase 54*
