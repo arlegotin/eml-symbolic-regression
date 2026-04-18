@@ -1,5 +1,19 @@
 # Milestones
 
+## v1.10 Search-backed motif library and compiler shortening for logistic and Planck (Shipped: 2026-04-18)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Locked archived compiler baselines for logistic, Planck, Michaelis-Menten, Arrhenius, and Shockley before changing motif behavior.
+- Generalized reciprocal and saturation motifs to validated compilable subexpressions with validation-visible macro diagnostics and fail-closed rejection.
+- Added a structural exponential-saturation motif that lowers logistic relaxed compile depth from 27 to 15 while keeping strict unsupported status honest.
+- Added bounded motif-search evidence plus validation-backed low-degree power compression, dropping Planck relaxed compile depth from 20 to 14 while preserving unsupported/stretch classification.
+- Added focused v1.10 benchmark suites and campaign artifacts for logistic and Planck diagnostics under `artifacts/campaigns/`, with no warm-start promotion claimed.
+
+---
+
 ## v1.9 milestone (Shipped: 2026-04-17)
 
 **Phases completed:** 5 phases, 14 plans, 33 tasks

@@ -1,12 +1,12 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.10
-milestone_name: Search-backed motif library and compiler shortening for logistic and Planck
-current_phase: 58
-status: milestone_audit_passed
-stopped_at: v1.10 audit passed; ready for milestone completion
-last_updated: "2026-04-18T00:00:00.000Z"
-last_activity: 2026-04-18 -- v1.10 audit passed
+milestone: none
+milestone_name: None - v1.10 shipped
+current_phase: none
+status: milestone_complete
+stopped_at: v1.10 archived and ready for next milestone
+last_updated: "2026-04-18T14:41:51.262Z"
+last_activity: 2026-04-18 -- v1.10 archived
 progress:
   total_phases: 5
   completed_phases: 5
@@ -18,7 +18,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 58 - Focused Evidence and Artifact Contracts
+**Current phase:** None
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,40 +26,31 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-18)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.10 search-backed motif library and compiler shortening for logistic and Planck.
+**Current focus:** No active milestone. v1.10 is archived.
 
 ## Current Position
 
-Phase: 58 of 58 (Phase 5 of 5 for v1.10)
+Phase: None
 Plan: None
-Status: Milestone audit passed
-Last activity: 2026-04-18 -- v1.10 audit passed
+Status: v1.10 archived
+Last activity: 2026-04-18 -- v1.10 archived
 Progress: [██████████] 100% by completed phases
 
 ## Current Milestone
 
-**v1.10: Search-backed motif library and compiler shortening for logistic and Planck**
-
-Goal: Build a reusable, validation-gated motif library that makes logistic strict compile support and warm-start recovery realistic while materially reducing Planck compile depth under the existing honest recovery contract.
-
-| Phase | Name | Status | Requirements |
-|-------|------|--------|--------------|
-| 54 | Compiler Baseline Locks | Complete (1/1 plans) | BASE-01, BASE-02, BASE-03, BASE-04, BASE-05 |
-| 55 | Generalized Structural Motif Matching | Complete (1/1 plans) | MOTIF-01, MOTIF-05, MOTIF-06 |
-| 56 | Logistic Exponential-Saturation Support | Complete (1/1 plans; warm-start evidence deferred to Phase 58 because strict gate did not pass) | MOTIF-02, LOGI-01, LOGI-02, LOGI-03 |
-| 57 | Planck Motif Search and Power Compression | Complete (1/1 plans) | MOTIF-03, MOTIF-04, PLAN-01, PLAN-02, PLAN-03, PLAN-04, PLAN-05 |
-| 58 | Focused Evidence and Artifact Contracts | Complete (1/1 plans) | LOGI-04, LOGI-05, EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
+No active milestone. Start the next milestone with `$gsd-new-milestone`.
 
 ## Artifacts
 
 | Artifact | Path | Status |
 |----------|------|--------|
 | Project context | `.planning/PROJECT.md` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Traceability mapped |
-| Roadmap | `.planning/ROADMAP.md` | Ready |
+| Archived v1.10 requirements | `.planning/milestones/v1.10-REQUIREMENTS.md` | Complete |
+| Roadmap | `.planning/ROADMAP.md` | Collapsed after v1.10 |
 | Workflow config | `.planning/config.json` | Complete |
-| Milestone log | `.planning/MILESTONES.md` | Complete through v1.9 |
+| Milestone log | `.planning/MILESTONES.md` | Complete through v1.10 |
 | v1.9 raw-hybrid paper package | `artifacts/paper/v1.9/raw-hybrid/` | Complete |
+| v1.10 focused motif evidence | `artifacts/campaigns/v1.10-logistic-evidence/`, `artifacts/campaigns/v1.10-planck-diagnostics/` | Complete |
 
 ## Performance Metrics
 
@@ -97,8 +88,8 @@ Preserve Shockley, Arrhenius, and Michaelis-Menten support while changing motif 
 ## Session Continuity
 
 Last session: 2026-04-18
-Stopped at: `.planning/v1.10-MILESTONE-AUDIT.md` passed; ready for `$gsd-complete-milestone v1.10`
+Stopped at: v1.10 archived; ready for `$gsd-new-milestone`
 Resume file: None
 
 ---
-*Last updated: 2026-04-18 after Phase 58*
+*Last updated: 2026-04-18 after archiving v1.10*

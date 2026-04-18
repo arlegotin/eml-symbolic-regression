@@ -10,36 +10,29 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.10 Active
+## Current State: v1.10 Shipped
 
-The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, and paper-package foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, and the v1.9 raw-hybrid paper package are all in place and archived through v1.9.
+The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, and paper-package foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, the v1.9 raw-hybrid paper package, and v1.10 focused motif evidence are all in place and archived through v1.10.
 
 The current evidence says raw EML is representationally viable but blind basin finding degrades sharply with depth. Perturbed true-tree recovery remains strong, scaffolded/warm-start regimes are useful when clearly labeled, centered-family evidence is negative under the supplied v1.8 setup, and v1.9 has a verified raw-hybrid paper package that keeps those regimes separate.
 
-v1.10 is the next compiler-science milestone. It expands the compiler from a small set of useful macros into a search-backed reusable motif library, with first targets of exact logistic support plus warm-start recovery and material Planck compile-depth reduction without relaxing shipped gates or adding formula-name recognizers.
+v1.10 expanded the compiler from a small set of useful macros into a search-backed reusable motif library. Logistic now has structural exponential-saturation compile support at relaxed depth 15, down from 27, but remains above the strict depth-13 gate. Planck now has validation-backed low-degree power compression and relaxed depth 14, down from 20, but also remains above the strict gate. Focused campaign artifacts record both outcomes as unsupported diagnostics with no warm-start promotion.
 
-## Last Completed Milestone: v1.9 Raw-EML Hybrid Recovery and Paper Suite
-
-**Goal:** Produce a stronger raw-EML hybrid paper package by fixing centered scaffold correctness, adding Arrhenius exact recovery, materially improving Michaelis-Menten support, expanding exact cleanup, and generating a regime-separated paper-facing campaign.
-
-**Shipped features:**
-- Raw-only scaffold witness registry and centered-family scaffold exclusions with explicit reason codes.
-- Normalized Arrhenius strict compile and exact same-AST warm-start evidence.
-- Reusable reciprocal-shift and saturation-ratio compiler motifs with Michaelis-Menten same-AST warm-start evidence.
-- Opt-in expanded verifier-gated cleanup over selected, fallback, and retained exact roots, with focused no-improvement repair evidence.
-- Synthesis-only raw-hybrid paper package with source locks, regime-separated reports, scientific-law tables, claim boundaries, centered caveats, README/docs, and regression tests.
-
-## Current Milestone: v1.10 Search-backed motif library and compiler shortening for logistic and Planck
+## Last Completed Milestone: v1.10 Search-backed motif library and compiler shortening for logistic and Planck
 
 **Goal:** Build a reusable, validation-gated motif library that makes logistic strict compile support and warm-start recovery realistic while materially reducing Planck compile depth under the existing honest recovery contract.
 
-**Target features:**
-- Lock current compiler baselines before changing motif logic: logistic relaxed depth 27 with no macro hits, Planck relaxed depth 20 with existing macro hits, Michaelis-Menten strict depth 12 with `saturation_ratio_template`, Arrhenius with `direct_division_template`, and Shockley with `scaled_exp_minus_one_template`.
-- Generalize reciprocal and saturation matchers from plain symbol shifts to compilable subexpressions such as `g(x) + b` and `c*g(x)/(g(x)+b)`.
-- Add structural exponential-saturation motifs for logistic-like laws, visible macro diagnostics, and focused logistic compile and warm-start evidence when the strict gate passes.
-- Add a bounded motif-search harness if direct structural motifs are not enough, using independent numeric validation before codifying any compiler template.
-- Add validation-backed low-degree power compression, at minimum for squares and cubes, to reduce Planck compile depth without promoting Planck unless the full verifier contract passes.
-- Add focused benchmark suites and artifacts for `v1.10-logistic-evidence` and `v1.10-planck-diagnostics`.
+**Shipped features:**
+- Locked archived compiler baselines before motif changes, preserving Shockley, Arrhenius, and Michaelis-Menten wins.
+- Generalized reciprocal and saturation motif matching to compilable subexpressions with validation-visible diagnostics.
+- Added a structural exponential-saturation motif for logistic-like laws without formula-name or exact-constant recognition.
+- Added a bounded motif-search helper plus validation-backed low-degree power compression for `g(x)**2` and `g(x)**3`.
+- Dropped Planck relaxed compile depth from 20 to 14 while keeping strict unsupported/stretch status honest.
+- Added focused `v1.10-logistic-evidence` and `v1.10-planck-diagnostics` benchmark suites and campaign artifacts.
+
+## Current Milestone
+
+No active milestone. Start the next milestone with `$gsd-new-milestone`.
 
 ## Requirements
 
@@ -93,15 +86,15 @@ v1.10 is the next compiler-science milestone. It expands the compiler from a sma
 - ✓ Reusable `reciprocal_shift_template` and `saturation_ratio_template` compiler motifs, Michaelis-Menten strict support, same-AST warm-start return, and focused `v1.9-michaelis-evidence` artifacts — v1.9 Phase 51
 - ✓ Opt-in expanded candidate-pool cleanup over selected/fallback/retained exact roots, verifier-gated AST dedup, repair metrics, and focused `v1.9-repair-evidence` no-improvement evidence — v1.9 Phase 52
 - ✓ Regime-separated raw-hybrid paper package with source locks, scientific-law tables, claim boundaries, docs, and regression locks — v1.9 Phase 53
+- ✓ Archived compiler baselines for logistic, Planck, Michaelis-Menten, Arrhenius, and Shockley before motif-library changes — v1.10 Phase 54
+- ✓ Generalized reciprocal and saturation motifs over validated compilable subexpressions with validation-visible diagnostics and fail-closed behavior — v1.10 Phase 55
+- ✓ Structural exponential-saturation motif for logistic-like laws, lowering logistic relaxed depth from 27 to 15 while preserving strict unsupported status — v1.10 Phase 56
+- ✓ Bounded motif-search evidence and validation-backed low-degree power compression, lowering Planck relaxed depth from 20 to 14 while preserving unsupported/stretch honesty — v1.10 Phase 57
+- ✓ Focused logistic and Planck benchmark suites, CLI artifact paths, campaign evidence, and tests recording unsupported diagnostics with no warm-start promotion — v1.10 Phase 58
 
 ### Active
 
-- [ ] Logistic compile depth is materially lower than the archived relaxed depth 27 through a structural, validation-gated macro path.
-- [ ] Logistic gets a real compiler warm-start attempt under the normal verifier contract if strict compile support is achieved.
-- [ ] Planck relaxed compile depth drops materially below the archived relaxed depth 20, or remains explicitly unsupported with improved diagnostics.
-- [ ] New compiler motifs are structural, validation-gated, diagnostic-visible, and not formula-name recognizers.
-- [ ] Existing supported compiler wins for Shockley, Arrhenius, and Michaelis-Menten remain preserved by regression tests.
-- [ ] Focused benchmark suites and artifact paths record compile support, depth, node count, macro hits, warm-start status, and verifier status.
+No active milestone requirements. Start the next milestone with `$gsd-new-milestone`.
 
 ### Out of Scope
 
@@ -185,7 +178,7 @@ v1.8 found no positive centered-family recovery signal under the scoped local se
 | Michaelis-Menten support is same-AST compiler warm-start evidence, not blind discovery | Phase 51 records `same_ast_return`, verifier `recovered`, and evidence class `same_ast` for `michaelis-warm`. | ✓ Good |
 | Raw scaffold helpers are registry-gated by operator family | Phase 49 proved current `exp`, `log`, and `scaled_exp` scaffold witnesses are raw EML only; centered runs now record missing same-family witness exclusions instead of reusing raw helpers. | ✓ Good |
 | Expanded exact cleanup is repair-only evidence | Phase 52 can opt into selected/fallback/retained candidate roots and records no-improvement focused evidence; repaired candidates remain `repaired_candidate`, not blind, compile-only, same-AST, or perturbed true-tree recovery. | ✓ Good |
-| v1.10 prioritizes reusable compiler motifs over reporting work or gate changes | Logistic and Planck are high-visibility unsupported laws, and prior Shockley/Arrhenius/Michaelis wins came from reusable motif compression rather than looser recovery claims. | - Pending |
+| v1.10 prioritizes reusable compiler motifs over reporting work or gate changes | Logistic and Planck are high-visibility unsupported laws, and prior Shockley/Arrhenius/Michaelis wins came from reusable motif compression rather than looser recovery claims. | ✓ Good |
 
 ## Evolution
 
@@ -205,4 +198,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-18 after starting v1.10 milestone*
+*Last updated: 2026-04-18 after completing v1.10 milestone*
