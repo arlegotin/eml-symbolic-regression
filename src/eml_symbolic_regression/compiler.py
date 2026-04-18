@@ -122,6 +122,7 @@ MACRO_RULES = (
     "reciprocal_shift_template",
     "saturation_ratio_template",
     "exponential_saturation_template",
+    "low_degree_power_template",
     "direct_division_template",
     "scaled_exp_minus_one_template",
 )
@@ -271,7 +272,10 @@ class _Compiler:
             macro = self._compile_exponential_saturation(expr)
             if macro is not None:
                 return macro
-            return self._compile_reciprocal_shift(expr)
+            macro = self._compile_reciprocal_shift(expr)
+            if macro is not None:
+                return macro
+            return self._compile_low_degree_power(expr)
         if isinstance(expr, sp.Mul):
             macro = self._compile_exponential_saturation(expr)
             if macro is not None:
@@ -526,6 +530,29 @@ class _Compiler:
         negative_log_denominator = Eml(Const(0.0), scaled_denominator)
         return exp_of(negative_log_denominator)
 
+    def _compile_low_degree_power(self, expr: sp.Pow) -> Expr | None:
+        base, exponent = expr.args
+        if not exponent.is_Integer:
+            return None
+        power = int(exponent)
+        if power <= 1 or power > self.config.max_power:
+            return None
+        if self.config.constant_policy != "literal_constants":
+            return None
+
+        try:
+            compiled_base = self.compile(base)
+        except UnsupportedExpression:
+            return None
+
+        repeated = self._positive_power(compiled_base, power)
+        candidate = exp_of(multiply_expr(Const(float(power)), log_of(compiled_base)))
+        if (candidate.depth(), candidate.node_count()) >= (repeated.depth(), repeated.node_count()):
+            return None
+
+        self.assumptions.append("low-degree power shortcut lowers g**n as exp(n*log(g)) behind validation")
+        return self._record("low_degree_power_template", expr, candidate)
+
     def _compile_direct_division(self, expr: sp.Mul) -> Expr | None:
         numerator_factors: list[sp.Expr] = []
         denominator_factors: list[sp.Expr] = []
@@ -578,8 +605,8 @@ class _Compiler:
 
     def _compile_power(self, expr: sp.Pow) -> Expr:
         base, exponent = expr.args
-        if not exponent.is_integer:
-            raise UnsupportedExpression(CompileReason.UNSUPPORTED_POWER, expr, "only integer powers are supported")
+        if not exponent.is_Integer:
+            raise UnsupportedExpression(CompileReason.UNSUPPORTED_POWER, expr, "only literal integer powers are supported")
         power = int(exponent)
         if abs(power) > self.config.max_power:
             raise UnsupportedExpression(

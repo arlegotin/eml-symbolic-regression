@@ -18,8 +18,8 @@
 
 - [x] **MOTIF-01**: Compiler motif matching can operate on validated compilable subexpressions, not only raw symbols, for reciprocal and saturation forms such as `1/(g(x)+b)` and `c*g(x)/(g(x)+b)`.
 - [x] **MOTIF-02**: Compiler exposes a structural exponential-saturation motif for logistic-like laws such as `1/(1+c*exp(a))` or `exp(a)/(exp(a)+c)` without matching formula names or exact demo constants.
-- [ ] **MOTIF-03**: Compiler exposes validation-backed low-degree positive-integer power compression, at minimum for `g(x)**2` and `g(x)**3`, and rejects the path when it is not shorter or not validated.
-- [ ] **MOTIF-04**: Any bounded motif-search helper records the target family, candidate construction, independent numeric samples, validation verdict, and codified winning template without acting as a general theorem prover.
+- [x] **MOTIF-03**: Compiler exposes validation-backed low-degree positive-integer power compression, at minimum for `g(x)**2` and `g(x)**3`, and rejects the path when it is not shorter or not validated.
+- [x] **MOTIF-04**: Any bounded motif-search helper records the target family, candidate construction, independent numeric samples, validation verdict, and codified winning template without acting as a general theorem prover.
 - [x] **MOTIF-05**: Every new motif emits macro diagnostics with template name, depth delta, node delta, validation status, and fail-closed reason when rejected.
 - [x] **MOTIF-06**: Compiler fail-closed behavior rejects malformed, unsupported, non-finite, or validation-failing motif variants without mutating support gates.
 
@@ -33,11 +33,11 @@
 
 ### Planck Diagnostics
 
-- [ ] **PLAN-01**: Planck relaxed compile depth is materially lower than the archived relaxed depth 20, primarily through reusable motif compression such as low-degree power support.
-- [ ] **PLAN-02**: Planck diagnostics report macro hits, compile depth, node count, support status, and reasons for any remaining unsupported/stretch classification.
-- [ ] **PLAN-03**: Planck is promoted to strict-supported only if the full compile gate passes without silent relaxation.
-- [ ] **PLAN-04**: Planck warm-start is attempted only if strict compile support exists, and verifier-owned recovery remains the promotion gate.
-- [ ] **PLAN-05**: Planck remains an unsupported or stretch row if it only improves depth but does not pass the full support and verification contract.
+- [x] **PLAN-01**: Planck relaxed compile depth is materially lower than the archived relaxed depth 20, primarily through reusable motif compression such as low-degree power support.
+- [x] **PLAN-02**: Planck diagnostics report macro hits, compile depth, node count, support status, and reasons for any remaining unsupported/stretch classification.
+- [x] **PLAN-03**: Planck is promoted to strict-supported only if the full compile gate passes without silent relaxation.
+- [x] **PLAN-04**: Planck warm-start is attempted only if strict compile support exists, and verifier-owned recovery remains the promotion gate.
+- [x] **PLAN-05**: Planck remains an unsupported or stretch row if it only improves depth but does not pass the full support and verification contract.
 
 ### Benchmarks, CLI, and Artifacts
 
@@ -79,8 +79,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BASE-05 | Phase 54 | Complete |
 | MOTIF-01 | Phase 55 | Complete |
 | MOTIF-02 | Phase 56 | Complete |
-| MOTIF-03 | Phase 57 | Pending |
-| MOTIF-04 | Phase 57 | Pending |
+| MOTIF-03 | Phase 57 | Complete |
+| MOTIF-04 | Phase 57 | Complete |
 | MOTIF-05 | Phase 55 | Complete |
 | MOTIF-06 | Phase 55 | Complete |
 | LOGI-01 | Phase 56 | Complete |
@@ -88,11 +88,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LOGI-03 | Phase 56 | Complete |
 | LOGI-04 | Phase 58 | Pending |
 | LOGI-05 | Phase 58 | Pending |
-| PLAN-01 | Phase 57 | Pending |
-| PLAN-02 | Phase 57 | Pending |
-| PLAN-03 | Phase 57 | Pending |
-| PLAN-04 | Phase 57 | Pending |
-| PLAN-05 | Phase 57 | Pending |
+| PLAN-01 | Phase 57 | Complete |
+| PLAN-02 | Phase 57 | Complete |
+| PLAN-03 | Phase 57 | Complete |
+| PLAN-04 | Phase 57 | Complete |
+| PLAN-05 | Phase 57 | Complete |
 | EVID-01 | Phase 58 | Pending |
 | EVID-02 | Phase 58 | Pending |
 | EVID-03 | Phase 58 | Pending |
@@ -106,4 +106,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-18*
-*Last updated: 2026-04-18 after Phase 56*
+*Last updated: 2026-04-18 after Phase 57*
