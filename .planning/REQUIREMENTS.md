@@ -72,38 +72,38 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| BASE-01 | TBD | Pending |
-| BASE-02 | TBD | Pending |
-| BASE-03 | TBD | Pending |
-| BASE-04 | TBD | Pending |
-| BASE-05 | TBD | Pending |
-| MOTIF-01 | TBD | Pending |
-| MOTIF-02 | TBD | Pending |
-| MOTIF-03 | TBD | Pending |
-| MOTIF-04 | TBD | Pending |
-| MOTIF-05 | TBD | Pending |
-| MOTIF-06 | TBD | Pending |
-| LOGI-01 | TBD | Pending |
-| LOGI-02 | TBD | Pending |
-| LOGI-03 | TBD | Pending |
-| LOGI-04 | TBD | Pending |
-| LOGI-05 | TBD | Pending |
-| PLAN-01 | TBD | Pending |
-| PLAN-02 | TBD | Pending |
-| PLAN-03 | TBD | Pending |
-| PLAN-04 | TBD | Pending |
-| PLAN-05 | TBD | Pending |
-| EVID-01 | TBD | Pending |
-| EVID-02 | TBD | Pending |
-| EVID-03 | TBD | Pending |
-| EVID-04 | TBD | Pending |
-| EVID-05 | TBD | Pending |
+| BASE-01 | Phase 54 | Pending |
+| BASE-02 | Phase 54 | Pending |
+| BASE-03 | Phase 54 | Pending |
+| BASE-04 | Phase 54 | Pending |
+| BASE-05 | Phase 54 | Pending |
+| MOTIF-01 | Phase 55 | Pending |
+| MOTIF-02 | Phase 56 | Pending |
+| MOTIF-03 | Phase 57 | Pending |
+| MOTIF-04 | Phase 57 | Pending |
+| MOTIF-05 | Phase 55 | Pending |
+| MOTIF-06 | Phase 55 | Pending |
+| LOGI-01 | Phase 56 | Pending |
+| LOGI-02 | Phase 56 | Pending |
+| LOGI-03 | Phase 56 | Pending |
+| LOGI-04 | Phase 56 | Pending |
+| LOGI-05 | Phase 56 | Pending |
+| PLAN-01 | Phase 57 | Pending |
+| PLAN-02 | Phase 57 | Pending |
+| PLAN-03 | Phase 57 | Pending |
+| PLAN-04 | Phase 57 | Pending |
+| PLAN-05 | Phase 57 | Pending |
+| EVID-01 | Phase 58 | Pending |
+| EVID-02 | Phase 58 | Pending |
+| EVID-03 | Phase 58 | Pending |
+| EVID-04 | Phase 58 | Pending |
+| EVID-05 | Phase 58 | Pending |
 
 **Coverage:**
 - v1.10 requirements: 26 total
-- Mapped to phases: 0
-- Unmapped: 26
+- Mapped to phases: 26
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-18*
-*Last updated: 2026-04-18 after milestone requirements definition*
+*Last updated: 2026-04-18 after roadmap creation*
