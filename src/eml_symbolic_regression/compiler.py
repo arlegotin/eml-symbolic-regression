@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Mapping, Sequence
 
 import numpy as np
@@ -139,7 +139,7 @@ class UnsupportedExpression(ValueError):
 
 @dataclass(frozen=True)
 class _UnitShift:
-    variable: str
+    base: sp.Expr
     offset: complex
 
 
@@ -277,7 +277,7 @@ class _Compiler:
         if not isinstance(expr, sp.Add):
             return None
 
-        symbol_terms: list[sp.Symbol] = []
+        base_terms: list[sp.Expr] = []
         numeric_terms: list[sp.Expr] = []
         for term in expr.args:
             if term.is_number:
@@ -285,17 +285,16 @@ class _Compiler:
                 continue
 
             coeff, rest = term.as_coeff_Mul()
-            if isinstance(rest, sp.Symbol) and sp.simplify(coeff - 1) == 0:
-                symbol_terms.append(rest)
+            if not rest.is_number and sp.simplify(coeff - 1) == 0:
+                base_terms.append(rest)
                 continue
 
             return None
-        if len(symbol_terms) != 1 or len(numeric_terms) != 1:
+        if len(base_terms) != 1 or len(numeric_terms) != 1:
             return None
 
-        variable = self._variable_name(symbol_terms[0])
         offset = self._constant_value(numeric_terms[0])
-        return _UnitShift(variable=variable, offset=offset)
+        return _UnitShift(base=base_terms[0], offset=offset)
 
     def _build_unit_shift(self, match: _UnitShift) -> Expr | None:
         with np.errstate(over="ignore", invalid="ignore", under="ignore"):
@@ -306,8 +305,12 @@ class _Compiler:
             return None
         if self.config.constant_policy not in {"basis_only", "literal_constants"}:
             return None
-        self.assumptions.append("unit shift x+b compiled as eml(log(x), exp(-b)) behind validation")
-        return Eml(log_of(Var(match.variable)), Const(derived))
+        try:
+            compiled_base = self.compile(match.base)
+        except UnsupportedExpression:
+            return None
+        self.assumptions.append("unit shift g+b compiled as eml(log(g), exp(-b)) behind validation")
+        return Eml(log_of(compiled_base), Const(derived))
 
     def _compile_reciprocal_shift(self, expr: sp.Pow) -> Expr | None:
         base, exponent = expr.args
@@ -345,30 +348,37 @@ class _Compiler:
             return None
 
         coefficient = 1.0 + 0.0j
-        numerator_symbol: sp.Symbol | None = None
+        numerator_base_factors: list[sp.Expr] = []
         for factor in numerator_factors:
             if factor.is_number:
                 coefficient *= self._constant_value(factor)
-            elif isinstance(factor, sp.Symbol):
-                if numerator_symbol is not None:
-                    return None
-                numerator_symbol = factor
             else:
-                return None
+                factor_coeff, factor_rest = factor.as_coeff_Mul()
+                if factor_coeff.is_number and sp.simplify(factor_coeff - 1) != 0:
+                    coefficient *= self._constant_value(factor_coeff)
+                else:
+                    factor_rest = factor
+                if factor_rest.is_number:
+                    return None
+                numerator_base_factors.append(factor_rest)
 
-        if numerator_symbol is None:
+        if not numerator_base_factors:
             return None
 
-        variable = self._variable_name(numerator_symbol)
+        numerator_base = sp.Mul(*numerator_base_factors)
         shift = denominator_matches[0]
-        if variable != shift.variable:
+        if sp.simplify(numerator_base - shift.base) != 0:
             return None
 
-        numerator = multiply_expr(Const(coefficient), Var(variable))
+        try:
+            compiled_base = self.compile(numerator_base)
+        except UnsupportedExpression:
+            return None
+        numerator = multiply_expr(Const(coefficient), compiled_base)
         denominator = self._build_unit_shift(shift)
         if denominator is None:
             return None
-        self.assumptions.append("saturation ratio shortcut lowers c*x/(x+b) as one structural motif")
+        self.assumptions.append("saturation ratio shortcut lowers c*g/(g+b) as one structural motif")
         return self._record(
             "saturation_ratio_template",
             expr,
@@ -542,6 +552,8 @@ def _macro_diagnostics(
         "baseline_node_count": baseline_nodes,
         "depth_delta": baseline_depth - compiled.depth() if baseline_depth is not None else 0,
         "node_delta": baseline_nodes - compiled.node_count() if baseline_nodes is not None else 0,
+        "validation_status": "not_run",
+        "validation_passed": None,
     }
 
 
@@ -589,7 +601,17 @@ def compile_and_validate(
             expression,
             f"max_abs_error={validation.max_abs_error:.3e}",
         )
-    return CompileResult(result.expression, result.metadata, validation)
+    metadata = result.metadata
+    if metadata.macro_diagnostics is not None:
+        metadata = replace(
+            metadata,
+            macro_diagnostics={
+                **dict(metadata.macro_diagnostics),
+                "validation_status": validation.reason,
+                "validation_passed": validation.passed,
+            },
+        )
+    return CompileResult(result.expression, metadata, validation)
 
 
 def diagnose_compile_expression(

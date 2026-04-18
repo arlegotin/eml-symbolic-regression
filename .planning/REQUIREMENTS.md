@@ -16,12 +16,12 @@
 
 ### Structural Motif Library
 
-- [ ] **MOTIF-01**: Compiler motif matching can operate on validated compilable subexpressions, not only raw symbols, for reciprocal and saturation forms such as `1/(g(x)+b)` and `c*g(x)/(g(x)+b)`.
+- [x] **MOTIF-01**: Compiler motif matching can operate on validated compilable subexpressions, not only raw symbols, for reciprocal and saturation forms such as `1/(g(x)+b)` and `c*g(x)/(g(x)+b)`.
 - [ ] **MOTIF-02**: Compiler exposes a structural exponential-saturation motif for logistic-like laws such as `1/(1+c*exp(a))` or `exp(a)/(exp(a)+c)` without matching formula names or exact demo constants.
 - [ ] **MOTIF-03**: Compiler exposes validation-backed low-degree positive-integer power compression, at minimum for `g(x)**2` and `g(x)**3`, and rejects the path when it is not shorter or not validated.
 - [ ] **MOTIF-04**: Any bounded motif-search helper records the target family, candidate construction, independent numeric samples, validation verdict, and codified winning template without acting as a general theorem prover.
-- [ ] **MOTIF-05**: Every new motif emits macro diagnostics with template name, depth delta, node delta, validation status, and fail-closed reason when rejected.
-- [ ] **MOTIF-06**: Compiler fail-closed behavior rejects malformed, unsupported, non-finite, or validation-failing motif variants without mutating support gates.
+- [x] **MOTIF-05**: Every new motif emits macro diagnostics with template name, depth delta, node delta, validation status, and fail-closed reason when rejected.
+- [x] **MOTIF-06**: Compiler fail-closed behavior rejects malformed, unsupported, non-finite, or validation-failing motif variants without mutating support gates.
 
 ### Logistic Evidence
 
@@ -77,12 +77,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BASE-03 | Phase 54 | Complete |
 | BASE-04 | Phase 54 | Complete |
 | BASE-05 | Phase 54 | Complete |
-| MOTIF-01 | Phase 55 | Pending |
+| MOTIF-01 | Phase 55 | Complete |
 | MOTIF-02 | Phase 56 | Pending |
 | MOTIF-03 | Phase 57 | Pending |
 | MOTIF-04 | Phase 57 | Pending |
-| MOTIF-05 | Phase 55 | Pending |
-| MOTIF-06 | Phase 55 | Pending |
+| MOTIF-05 | Phase 55 | Complete |
+| MOTIF-06 | Phase 55 | Complete |
 | LOGI-01 | Phase 56 | Pending |
 | LOGI-02 | Phase 56 | Pending |
 | LOGI-03 | Phase 56 | Pending |
@@ -106,4 +106,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-18*
-*Last updated: 2026-04-18 after Phase 54*
+*Last updated: 2026-04-18 after Phase 55*

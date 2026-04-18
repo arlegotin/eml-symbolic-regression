@@ -170,6 +170,70 @@ def test_explicit_unit_coefficient_saturation_ratio_uses_template():
     assert result.metadata.macro_diagnostics["hits"] == ["saturation_ratio_template"]
 
 
+def test_reciprocal_shift_accepts_compilable_subexpression():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        1 / (sp.exp(x) + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.macro_diagnostics is not None
+    macro = result.metadata.macro_diagnostics
+    assert macro["hits"] == ["reciprocal_shift_template"]
+    assert macro["validation_status"] == "validated"
+    assert macro["validation_passed"] is True
+
+
+def test_saturation_ratio_accepts_compilable_subexpression():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        sp.Float("2.0") * sp.exp(x) / (sp.exp(x) + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.macro_diagnostics is not None
+    macro = result.metadata.macro_diagnostics
+    assert macro["hits"] == ["saturation_ratio_template"]
+    assert macro["validation_status"] == "validated"
+    assert macro["validation_passed"] is True
+
+
+def test_generalized_shift_templates_fail_closed_on_non_unit_base_coefficient():
+    x = sp.Symbol("x")
+
+    for expr, forbidden in (
+        (1 / (sp.Float("2.0") * sp.exp(x) + sp.Float("0.5")), "reciprocal_shift_template"),
+        (
+            sp.Float("2.0") * sp.exp(x) / (sp.Float("2.0") * sp.exp(x) + sp.Float("0.5")),
+            "saturation_ratio_template",
+        ),
+    ):
+        relaxed = compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=64, max_nodes=512))
+        assert relaxed.metadata.macro_diagnostics is not None
+        assert forbidden not in relaxed.metadata.macro_diagnostics["hits"]
+
+
+def test_plain_compile_macro_diagnostics_mark_validation_not_run():
+    x = sp.Symbol("x")
+    result = compile_sympy_expression(
+        1 / (sp.exp(x) + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+    )
+
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["reciprocal_shift_template"]
+    assert result.metadata.macro_diagnostics["validation_status"] == "not_run"
+    assert result.metadata.macro_diagnostics["validation_passed"] is None
+
+
 def test_non_unit_coefficient_shift_does_not_use_unit_shift_templates():
     x = sp.Symbol("x")
 
