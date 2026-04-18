@@ -1279,3 +1279,98 @@ def test_michaelis_warm_benchmark_records_same_ast_evidence(tmp_path):
     assert aggregate_run["classification"] == "same_ast_warm_start_return"
     assert aggregate_run["classification"] != "blind_recovery"
     assert aggregate_run["start_mode"] == "warm_start"
+
+
+def test_logistic_v110_compile_benchmark_records_improved_unsupported_diagnostic(tmp_path):
+    base = builtin_suite("v1.10-logistic-evidence")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(suite, run_filter=RunFilter(case_ids=("logistic-compile",), seeds=(0,)))
+
+    assert len(result.results) == 1
+    assert result.results[0].status == "unsupported"
+    assert result.results[0].artifact_path.exists()
+    assert suite.id in result.results[0].artifact_path.parts
+
+    artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
+    compiled = artifact["compiled_eml"]
+    relaxed = compiled["diagnostic"]["relaxed"]
+    macro_diagnostics = relaxed["metadata"]["macro_diagnostics"]
+
+    assert artifact["run"]["suite_id"] == "v1.10-logistic-evidence"
+    assert artifact["run"]["case_id"] == "logistic-compile"
+    assert artifact["run"]["formula"] == "logistic"
+    assert artifact["run"]["start_mode"] == "compile"
+    assert artifact["status"] == "unsupported"
+    assert artifact["claim_status"] == "unsupported"
+    assert artifact["stage_statuses"]["compiled_seed"] == "unsupported"
+    assert "warm_start_eml" not in artifact
+    assert compiled["reason"] == "depth_exceeded"
+    assert compiled["diagnostic"]["strict"]["reason"] == "depth_exceeded"
+    assert relaxed["metadata"]["depth"] == 15
+    assert relaxed["metadata"]["node_count"] == 49
+    assert relaxed["validation"]["passed"] is True
+    assert macro_diagnostics["hits"] == ["exponential_saturation_template"]
+    assert macro_diagnostics["depth_delta"] == 12
+    assert macro_diagnostics["node_delta"] == 28
+    assert macro_diagnostics["validation_status"] == "validated"
+    assert macro_diagnostics["validation_passed"] is True
+
+    aggregate = benchmark_module.aggregate_evidence(result)
+    aggregate_run = aggregate["runs"][0]
+
+    assert aggregate["counts"]["unsupported"] == 1
+    assert aggregate_run["classification"] == "unsupported"
+    assert aggregate_run["evidence_class"] == "unsupported"
+    assert aggregate_run["reason"] == "depth_exceeded"
+    assert aggregate_run["metrics"]["unsupported_reason"] == "depth_exceeded"
+
+
+def test_planck_v110_compile_benchmark_records_improved_unsupported_diagnostic(tmp_path):
+    base = builtin_suite("v1.10-planck-diagnostics")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(suite, run_filter=RunFilter(case_ids=("planck-compile",), seeds=(0,)))
+
+    assert len(result.results) == 1
+    assert result.results[0].status == "unsupported"
+    assert result.results[0].artifact_path.exists()
+    assert suite.id in result.results[0].artifact_path.parts
+
+    artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
+    compiled = artifact["compiled_eml"]
+    relaxed = compiled["diagnostic"]["relaxed"]
+    macro_diagnostics = relaxed["metadata"]["macro_diagnostics"]
+
+    assert artifact["run"]["suite_id"] == "v1.10-planck-diagnostics"
+    assert artifact["run"]["case_id"] == "planck-compile"
+    assert artifact["run"]["formula"] == "planck"
+    assert artifact["run"]["start_mode"] == "compile"
+    assert artifact["status"] == "unsupported"
+    assert artifact["claim_status"] == "unsupported"
+    assert artifact["stage_statuses"]["compiled_seed"] == "unsupported"
+    assert "warm_start_eml" not in artifact
+    assert compiled["reason"] == "depth_exceeded"
+    assert compiled["diagnostic"]["strict"]["reason"] == "depth_exceeded"
+    assert relaxed["metadata"]["depth"] == 14
+    assert relaxed["metadata"]["depth"] < 20
+    assert relaxed["metadata"]["node_count"] == 59
+    assert relaxed["validation"]["passed"] is True
+    assert macro_diagnostics["hits"] == [
+        "low_degree_power_template",
+        "scaled_exp_minus_one_template",
+        "direct_division_template",
+    ]
+    assert macro_diagnostics["depth_delta"] == 10
+    assert macro_diagnostics["node_delta"] == 34
+    assert macro_diagnostics["validation_status"] == "validated"
+    assert macro_diagnostics["validation_passed"] is True
+
+    aggregate = benchmark_module.aggregate_evidence(result)
+    aggregate_run = aggregate["runs"][0]
+
+    assert aggregate["counts"]["unsupported"] == 1
+    assert aggregate_run["classification"] == "unsupported"
+    assert aggregate_run["evidence_class"] == "unsupported"
+    assert aggregate_run["reason"] == "depth_exceeded"
+    assert aggregate_run["metrics"]["unsupported_reason"] == "depth_exceeded"

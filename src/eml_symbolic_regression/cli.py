@@ -516,7 +516,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     bench = sub.add_parser("benchmark", help="Run a benchmark suite or filtered subset.")
     bench.add_argument("suite", help="Built-in suite name or path to a suite JSON file.")
-    bench.add_argument("--output-dir", help="Override artifact root.")
+    bench.add_argument("--output-dir", help="Override artifact root; suite outputs are written under <root>/<suite-id>.")
     bench.add_argument("--formula", action="append", help="Only run this formula ID. Repeatable.")
     bench.add_argument("--start-mode", choices=START_MODES, action="append")
     bench.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")

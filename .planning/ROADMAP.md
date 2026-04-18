@@ -16,7 +16,7 @@
 - **v1.7 Centered-Family Baseline and Paper Decision** - Phases 39-43 complete (completed 2026-04-16; archive: `.planning/milestones/v1.7-ROADMAP.md`)
 - **v1.8 Centered-Family Viability and Full Evidence Run** - Phases 44-48 complete (completed 2026-04-17; archive: `.planning/milestones/v1.8-ROADMAP.md`)
 - **v1.9 Raw-EML Hybrid Recovery and Paper Suite** - Phases 49-53 complete (completed 2026-04-17; archive: `.planning/milestones/v1.9-ROADMAP.md`)
-- **v1.10 Search-backed motif library and compiler shortening for logistic and Planck** - Phases 54-58 planned
+- **v1.10 Search-backed motif library and compiler shortening for logistic and Planck** - Phases 54-58 complete (completed 2026-04-18)
 
 ## Milestone Goal
 
@@ -28,7 +28,7 @@ Build a reusable, validation-gated motif library that makes logistic strict comp
 - [x] **Phase 55: Generalized Structural Motif Matching** - Extend reciprocal and saturation matching to validated compilable subexpressions with diagnostics and fail-closed behavior.
 - [x] **Phase 56: Logistic Exponential-Saturation Support** - Add structural logistic-like exponential-saturation shortening and attempt warm-start only under unchanged strict gates.
 - [x] **Phase 57: Planck Motif Search and Power Compression** - Use bounded motif-search evidence and validation-backed square/cube compression to reduce Planck depth while preserving unsupported/stretch honesty.
-- [ ] **Phase 58: Focused Evidence and Artifact Contracts** - Add focused logistic/Planck suites, deterministic CLI artifact paths, and regression tests for milestone claims.
+- [x] **Phase 58: Focused Evidence and Artifact Contracts** - Add focused logistic/Planck suites, deterministic CLI artifact paths, and regression tests for milestone claims.
 
 ## Phase Details
 
@@ -103,7 +103,7 @@ Build a reusable, validation-gated motif library that makes logistic strict comp
 | 55. Generalized Structural Motif Matching | 1/1 | Complete | 2026-04-18 |
 | 56. Logistic Exponential-Saturation Support | 1/1 | Complete | 2026-04-18 |
 | 57. Planck Motif Search and Power Compression | 1/1 | Complete | 2026-04-18 |
-| 58. Focused Evidence and Artifact Contracts | 0/TBD | Not started | - |
+| 58. Focused Evidence and Artifact Contracts | 1/1 | Complete | 2026-04-18 |
 
 ## Coverage
 
@@ -123,18 +123,18 @@ Build a reusable, validation-gated motif library that makes logistic strict comp
 | LOGI-01 | Phase 56 | Complete |
 | LOGI-02 | Phase 56 | Complete |
 | LOGI-03 | Phase 56 | Complete |
-| LOGI-04 | Phase 58 | Pending |
-| LOGI-05 | Phase 58 | Pending |
+| LOGI-04 | Phase 58 | Complete |
+| LOGI-05 | Phase 58 | Complete |
 | PLAN-01 | Phase 57 | Complete |
 | PLAN-02 | Phase 57 | Complete |
 | PLAN-03 | Phase 57 | Complete |
 | PLAN-04 | Phase 57 | Complete |
 | PLAN-05 | Phase 57 | Complete |
-| EVID-01 | Phase 58 | Pending |
-| EVID-02 | Phase 58 | Pending |
-| EVID-03 | Phase 58 | Pending |
-| EVID-04 | Phase 58 | Pending |
-| EVID-05 | Phase 58 | Pending |
+| EVID-01 | Phase 58 | Complete |
+| EVID-02 | Phase 58 | Complete |
+| EVID-03 | Phase 58 | Complete |
+| EVID-04 | Phase 58 | Complete |
+| EVID-05 | Phase 58 | Complete |
 
 **Coverage summary:**
 - v1.10 requirements: 26 total
@@ -143,9 +143,9 @@ Build a reusable, validation-gated motif library that makes logistic strict comp
 
 ## Next Step
 
-Plan Phase 54:
+Run milestone audit and completion:
 
-`$gsd-plan-phase 54`
+`$gsd-audit-milestone`
 
 ---
 *Roadmap created: 2026-04-18 for milestone v1.10*

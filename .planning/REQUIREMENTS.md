@@ -28,8 +28,8 @@
 - [x] **LOGI-01**: Logistic strict or relaxed compile depth is materially lower than the archived relaxed depth 27 through a structural macro-backed path.
 - [x] **LOGI-02**: Logistic compile diagnostics include the new exponential-saturation motif in `macro_diagnostics["hits"]` when the motif is responsible for shortening.
 - [x] **LOGI-03**: Logistic is promoted to strict-supported only under the existing shipped gate or an explicitly declared gate that is not silently looser than the shipped one.
-- [ ] **LOGI-04**: Logistic warm-start is attempted through the normal benchmark/verifier contract when strict compile support exists; otherwise focused evidence records that strict support did not exist.
-- [ ] **LOGI-05**: Logistic warm-start evidence records same-AST or verified-equivalent recovery honestly when warm-start runs; otherwise focused evidence records strict unsupported status and no warm-start promotion.
+- [x] **LOGI-04**: Logistic warm-start is attempted through the normal benchmark/verifier contract when strict compile support exists; otherwise focused evidence records that strict support did not exist.
+- [x] **LOGI-05**: Logistic warm-start evidence records same-AST or verified-equivalent recovery honestly when warm-start runs; otherwise focused evidence records strict unsupported status and no warm-start promotion.
 
 ### Planck Diagnostics
 
@@ -41,11 +41,11 @@
 
 ### Benchmarks, CLI, and Artifacts
 
-- [ ] **EVID-01**: Benchmark registry includes focused `v1.10-logistic-evidence` cases for logistic compile and logistic warm-start when strict compile support exists.
-- [ ] **EVID-02**: Benchmark registry includes focused `v1.10-planck-diagnostics` cases for Planck compile diagnostics and optional warm-start only when strict support exists.
-- [ ] **EVID-03**: CLI can run the focused logistic and Planck suites and writes deterministic artifacts under `artifacts/campaigns/v1.10-logistic-evidence/` and `artifacts/campaigns/v1.10-planck-diagnostics/`.
-- [ ] **EVID-04**: Benchmark artifacts record compile support, compile depth, node count, macro hits, warm-start status, verifier status, and unsupported/stretch reasons.
-- [ ] **EVID-05**: Test coverage verifies focused suite contracts, CLI artifact paths, baseline preservation, logistic improvement, Planck diagnostic improvement, and motif fail-closed cases.
+- [x] **EVID-01**: Benchmark registry includes focused `v1.10-logistic-evidence` cases for logistic compile and logistic warm-start when strict compile support exists.
+- [x] **EVID-02**: Benchmark registry includes focused `v1.10-planck-diagnostics` cases for Planck compile diagnostics and optional warm-start only when strict support exists.
+- [x] **EVID-03**: CLI can run the focused logistic and Planck suites and writes deterministic artifacts under `artifacts/campaigns/v1.10-logistic-evidence/` and `artifacts/campaigns/v1.10-planck-diagnostics/`.
+- [x] **EVID-04**: Benchmark artifacts record compile support, compile depth, node count, macro hits, warm-start status, verifier status, and unsupported/stretch reasons.
+- [x] **EVID-05**: Test coverage verifies focused suite contracts, CLI artifact paths, baseline preservation, logistic improvement, Planck diagnostic improvement, and motif fail-closed cases.
 
 ## Future Requirements
 
@@ -86,18 +86,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 | LOGI-01 | Phase 56 | Complete |
 | LOGI-02 | Phase 56 | Complete |
 | LOGI-03 | Phase 56 | Complete |
-| LOGI-04 | Phase 58 | Pending |
-| LOGI-05 | Phase 58 | Pending |
+| LOGI-04 | Phase 58 | Complete |
+| LOGI-05 | Phase 58 | Complete |
 | PLAN-01 | Phase 57 | Complete |
 | PLAN-02 | Phase 57 | Complete |
 | PLAN-03 | Phase 57 | Complete |
 | PLAN-04 | Phase 57 | Complete |
 | PLAN-05 | Phase 57 | Complete |
-| EVID-01 | Phase 58 | Pending |
-| EVID-02 | Phase 58 | Pending |
-| EVID-03 | Phase 58 | Pending |
-| EVID-04 | Phase 58 | Pending |
-| EVID-05 | Phase 58 | Pending |
+| EVID-01 | Phase 58 | Complete |
+| EVID-02 | Phase 58 | Complete |
+| EVID-03 | Phase 58 | Complete |
+| EVID-04 | Phase 58 | Complete |
+| EVID-05 | Phase 58 | Complete |
 
 **Coverage:**
 - v1.10 requirements: 26 total
@@ -106,4 +106,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-18*
-*Last updated: 2026-04-18 after Phase 57*
+*Last updated: 2026-04-18 after Phase 58*

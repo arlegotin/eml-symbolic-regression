@@ -69,8 +69,11 @@ BUILTIN_SUITES = (
     "v1.9-arrhenius-evidence",
     "v1.9-michaelis-evidence",
     "v1.9-repair-evidence",
+    "v1.10-logistic-evidence",
+    "v1.10-planck-diagnostics",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
+CAMPAIGN_ARTIFACT_ROOT = Path("artifacts") / "campaigns"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
 STABLE_EVIDENCE_SNAPSHOT_CODE_VERSION = "snapshot"
 STABLE_EVIDENCE_SNAPSHOT_ELAPSED_SECONDS = 0.0
@@ -1610,6 +1613,40 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                     repair=expanded_repair,
                 ),
             ),
+        )
+    if name == "v1.10-logistic-evidence":
+        return BenchmarkSuite(
+            id="v1.10-logistic-evidence",
+            description="Focused v1.10 logistic compile evidence after exponential-saturation motif work.",
+            cases=(
+                _case(
+                    "logistic-compile",
+                    "logistic",
+                    "compile",
+                    seeds=(0,),
+                    points=24,
+                    tags=("v1.10", "logistic", "compile", "diagnostic", "unsupported"),
+                    expect_recovery=False,
+                ),
+            ),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
+    if name == "v1.10-planck-diagnostics":
+        return BenchmarkSuite(
+            id="v1.10-planck-diagnostics",
+            description="Focused v1.10 Planck compile diagnostics after low-degree power motif work.",
+            cases=(
+                _case(
+                    "planck-compile",
+                    "planck",
+                    "compile",
+                    seeds=(0,),
+                    points=24,
+                    tags=("v1.10", "planck", "compile", "diagnostic", "stretch", "unsupported"),
+                    expect_recovery=False,
+                ),
+            ),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
         )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
 

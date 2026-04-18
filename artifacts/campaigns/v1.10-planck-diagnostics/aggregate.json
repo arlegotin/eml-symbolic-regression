@@ -1,0 +1,448 @@
+{
+  "counts": {
+    "evidence_classes": {
+      "unsupported": 1
+    },
+    "execution_error": 0,
+    "failed": 0,
+    "repaired_candidate": 0,
+    "same_ast_return": 0,
+    "total": 1,
+    "unsupported": 1,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 0,
+    "verifier_recovery_rate": 0.0
+  },
+  "depth_curve": [],
+  "environment": {
+    "code_version": "1056879",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-18T11:35:35.257758+00:00",
+  "groups": {
+    "depth": [
+      {
+        "evidence_classes": {
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "2",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "evidence_class": [
+      {
+        "evidence_classes": {
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "unsupported",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "formula": [
+      {
+        "evidence_classes": {
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "planck",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "evidence_classes": {
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "0.0",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "raw_status": [
+      {
+        "evidence_classes": {
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "repair_status": [
+      {
+        "evidence_classes": {
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "return_kind": [
+      {
+        "evidence_classes": {
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "seed_group": [
+      {
+        "evidence_classes": {
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "all",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "start_mode": [
+      {
+        "evidence_classes": {
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "compile",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/campaigns/v1.10-planck-diagnostics/v1-10-planck-diagnostics-planck-compile-795067919a97.json",
+      "case_id": "planck-compile",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "unsupported",
+      "classification": "unsupported",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "planck",
+        "manifest_sha256": "021d09cad64656081182e9fb2b8993d4e224508b48e68e774004d9c2ede861de",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "planck_catalog",
+          "description": "Flagship normalized Planck spectrum from FOR_DEMO.md.",
+          "formula_id": "planck",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Normalized Planck spectrum flagship dimensionless physics demo",
+          "symbolic_expression": "x**3/(exp(x) - 1)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.2,
+              8.0
+            ],
+            "input_sha256": "56bca8cfb58a035251a67a1e1310ad92a9439c2293e4476f401d2e1e2ee96871",
+            "name": "train",
+            "target_sha256": "e81fbdec74860130c61a656f5038de4788afa89e291c07e9ae4febd26a63dcae"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.25,
+              7.5
+            ],
+            "input_sha256": "4af3af1dcadf90791243b013e6c70fb762313970467c199db894deeeefec8c2e",
+            "name": "heldout",
+            "target_sha256": "62d77fc799fd3c685b4d381c74845d8e926b548400193e615e284eebebc76649"
+          },
+          {
+            "count": 16,
+            "domain": [
+              8.1,
+              10.0
+            ],
+            "input_sha256": "0ac9e879219b864e72c03586b5ddd5f53ad9381c9937dacd957cfa4ed8020b7a",
+            "name": "extrapolation",
+            "target_sha256": "4bd8fe8996a6999e702b73d4ce9b5765f56fef3f4db3e2299dd38fa57c046299"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "unsupported",
+      "formula": "planck",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": null,
+        "anomaly_exp_overflow_count": null,
+        "anomaly_expm1_overflow_count": null,
+        "anomaly_log1p_branch_cut_count": null,
+        "anomaly_log_branch_cut_count": null,
+        "anomaly_log_non_finite_input_count": null,
+        "anomaly_log_non_positive_real_count": null,
+        "anomaly_log_safety_penalty": null,
+        "anomaly_log_small_magnitude_count": null,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": null,
+        "best_loss": null,
+        "candidate_complexity": null,
+        "candidate_pool_size": null,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": null,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": null,
+        "fallback_candidate_source": null,
+        "fallback_post_snap_loss": null,
+        "high_precision_max_error": null,
+        "legacy_best_loss": null,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": null,
+        "refit_accepted": null,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": null,
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": null,
+        "repair_candidate_root_summary_count": 0,
+        "repair_deduped_variant_count": null,
+        "repair_move_count": 0,
+        "repair_status": null,
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": null,
+        "selected_candidate_checkpoint_index": null,
+        "selected_candidate_id": null,
+        "selected_candidate_source": null,
+        "selection_mode": null,
+        "snap_active_node_count": null,
+        "snap_min_margin": null,
+        "unsupported_reason": "depth_exceeded",
+        "verifier_status": null,
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "planck_catalog",
+        "description": "Flagship normalized Planck spectrum from FOR_DEMO.md.",
+        "formula_id": "planck",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Normalized Planck spectrum flagship dimensionless physics demo",
+        "symbolic_expression": "x**3/(exp(x) - 1)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "depth_exceeded",
+      "repair_status": null,
+      "return_kind": null,
+      "run_id": "v1-10-planck-diagnostics-planck-compile-795067919a97",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "unsupported"
+      },
+      "start_mode": "compile",
+      "status": "unsupported",
+      "suite_id": "v1.10-planck-diagnostics",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "compile_only_verification"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/campaigns",
+    "cases": [
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "planck",
+        "id": "planck-compile",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "compile",
+        "tags": [
+          "v1.10",
+          "planck",
+          "compile",
+          "diagnostic",
+          "stretch",
+          "unsupported"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      }
+    ],
+    "description": "Focused v1.10 Planck compile diagnostics after low-degree power motif work.",
+    "id": "v1.10-planck-diagnostics",
+    "schema": "eml.benchmark_suite.v1"
+  },
+  "thresholds": []
+}

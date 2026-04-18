@@ -115,6 +115,61 @@ def test_cli_list_demos():
     assert "michaelis_menten:" in result.stdout
 
 
+def test_cli_benchmark_writes_v110_focused_campaign_artifacts(tmp_path):
+    output_root = tmp_path / "campaigns"
+
+    for suite_id, case_id, expected_depth, expected_hits in (
+        ("v1.10-logistic-evidence", "logistic-compile", 15, ["exponential_saturation_template"]),
+        (
+            "v1.10-planck-diagnostics",
+            "planck-compile",
+            14,
+            ["low_degree_power_template", "scaled_exp_minus_one_template", "direct_division_template"],
+        ),
+    ):
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "eml_symbolic_regression.cli",
+                "benchmark",
+                suite_id,
+                "--output-dir",
+                str(output_root),
+            ],
+            check=True,
+            capture_output=True,
+            env=CLI_ENV,
+            text=True,
+        )
+
+        suite_dir = output_root / suite_id
+        suite_result = suite_dir / "suite-result.json"
+        aggregate = suite_dir / "aggregate.json"
+        aggregate_md = suite_dir / "aggregate.md"
+
+        assert f"{suite_id}: 1 runs, 1 unsupported, 0 failed" in result.stdout
+        assert suite_result.exists()
+        assert aggregate.exists()
+        assert aggregate_md.exists()
+
+        suite_payload = json.loads(suite_result.read_text(encoding="utf-8"))
+        run_path = Path(suite_payload["results"][0]["artifact_path"])
+        run_payload = json.loads(run_path.read_text(encoding="utf-8"))
+        aggregate_payload = json.loads(aggregate.read_text(encoding="utf-8"))
+        relaxed = run_payload["compiled_eml"]["diagnostic"]["relaxed"]
+
+        assert suite_payload["suite"]["id"] == suite_id
+        assert suite_payload["counts"]["unsupported"] == 1
+        assert aggregate_payload["counts"]["unsupported"] == 1
+        assert run_payload["run"]["case_id"] == case_id
+        assert run_payload["status"] == "unsupported"
+        assert "warm_start_eml" not in run_payload
+        assert relaxed["metadata"]["depth"] == expected_depth
+        assert relaxed["metadata"]["macro_diagnostics"]["hits"] == expected_hits
+        assert aggregate_payload["runs"][0]["classification"] == "unsupported"
+
+
 def test_cli_paper_decision_writes_package(tmp_path):
     aggregate = tmp_path / "aggregate.json"
     aggregate.write_text(

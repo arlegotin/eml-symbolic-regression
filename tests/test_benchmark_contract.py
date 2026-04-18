@@ -118,6 +118,8 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "v1.9-arrhenius-evidence",
         "v1.9-michaelis-evidence",
         "v1.9-repair-evidence",
+        "v1.10-logistic-evidence",
+        "v1.10-planck-diagnostics",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -193,6 +195,62 @@ def test_michaelis_evidence_suite_contains_exact_warm_start_case():
     assert demo.heldout_domain == (0.08, 4.5)
     assert demo.extrap_domain == (5.1, 7.0)
     assert run.run_id == "v1-9-michaelis-evidence-michaelis-warm-a67d8ccfb108"
+
+
+def test_logistic_v110_evidence_suite_contains_compile_diagnostic_only():
+    suite = builtin_suite("v1.10-logistic-evidence")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.10-logistic-evidence"
+    assert [case.id for case in suite.cases] == ["logistic-compile"]
+    assert len(runs) == 1
+
+    run = runs[0]
+    demo = get_demo("logistic")
+    provenance = demo.formula_provenance()
+
+    assert run.case_id == "logistic-compile"
+    assert run.formula == "logistic"
+    assert provenance["symbolic_expression"] == "1/(1 + 2*exp(-1.3*x))"
+    assert run.start_mode == "compile"
+    assert run.training_mode == "compile_only_verification"
+    assert run.seed == 0
+    assert run.perturbation_noise == 0.0
+    assert run.dataset.points == 24
+    assert run.optimizer.max_compile_depth == 13
+    assert run.optimizer.max_compile_nodes == 256
+    assert run.expect_recovery is False
+    assert run.tags == ("v1.10", "logistic", "compile", "diagnostic", "unsupported")
+    assert "campaigns" in run.artifact_path.parts
+    assert str(run.artifact_path).endswith(f"v1.10-logistic-evidence/{run.run_id}.json")
+
+
+def test_planck_v110_diagnostics_suite_contains_compile_diagnostic_only():
+    suite = builtin_suite("v1.10-planck-diagnostics")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.10-planck-diagnostics"
+    assert [case.id for case in suite.cases] == ["planck-compile"]
+    assert len(runs) == 1
+
+    run = runs[0]
+    demo = get_demo("planck")
+    provenance = demo.formula_provenance()
+
+    assert run.case_id == "planck-compile"
+    assert run.formula == "planck"
+    assert provenance["symbolic_expression"] == "x**3/(exp(x) - 1)"
+    assert run.start_mode == "compile"
+    assert run.training_mode == "compile_only_verification"
+    assert run.seed == 0
+    assert run.perturbation_noise == 0.0
+    assert run.dataset.points == 24
+    assert run.optimizer.max_compile_depth == 13
+    assert run.optimizer.max_compile_nodes == 256
+    assert run.expect_recovery is False
+    assert run.tags == ("v1.10", "planck", "compile", "diagnostic", "stretch", "unsupported")
+    assert "campaigns" in run.artifact_path.parts
+    assert str(run.artifact_path).endswith(f"v1.10-planck-diagnostics/{run.run_id}.json")
 
 
 def test_benchmark_case_and_run_serialize_optional_repair_config():

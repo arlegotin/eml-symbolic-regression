@@ -3,16 +3,16 @@ gsd_state_version: 1.0
 milestone: v1.10
 milestone_name: Search-backed motif library and compiler shortening for logistic and Planck
 current_phase: 58
-status: ready_to_plan
-stopped_at: Phase 57 complete; ready to plan Phase 58
+status: milestone_ready_for_audit
+stopped_at: Phase 58 complete; ready for milestone audit
 last_updated: "2026-04-18T00:00:00.000Z"
-last_activity: 2026-04-18 -- Phase 57 complete
+last_activity: 2026-04-18 -- Phase 58 complete
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 4
-  completed_plans: 4
-  percent: 80
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
@@ -32,9 +32,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-18)
 
 Phase: 58 of 58 (Phase 5 of 5 for v1.10)
 Plan: None
-Status: Ready to plan
-Last activity: 2026-04-18 -- Phase 57 complete
-Progress: [████████░░] 80% by completed phases
+Status: Milestone ready for audit
+Last activity: 2026-04-18 -- Phase 58 complete
+Progress: [██████████] 100% by completed phases
 
 ## Current Milestone
 
@@ -48,7 +48,7 @@ Goal: Build a reusable, validation-gated motif library that makes logistic stric
 | 55 | Generalized Structural Motif Matching | Complete (1/1 plans) | MOTIF-01, MOTIF-05, MOTIF-06 |
 | 56 | Logistic Exponential-Saturation Support | Complete (1/1 plans; warm-start evidence deferred to Phase 58 because strict gate did not pass) | MOTIF-02, LOGI-01, LOGI-02, LOGI-03 |
 | 57 | Planck Motif Search and Power Compression | Complete (1/1 plans) | MOTIF-03, MOTIF-04, PLAN-01, PLAN-02, PLAN-03, PLAN-04, PLAN-05 |
-| 58 | Focused Evidence and Artifact Contracts | Not started | EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
+| 58 | Focused Evidence and Artifact Contracts | Complete (1/1 plans) | LOGI-04, LOGI-05, EVID-01, EVID-02, EVID-03, EVID-04, EVID-05 |
 
 ## Artifacts
 
@@ -83,6 +83,8 @@ Goal: Build a reusable, validation-gated motif library that makes logistic stric
 - [Phase 56]: Code review warning WR-01 was fixed by normalizing equal-scale ratio forms such as `k*exp(a)/(k*exp(a)+c)` into the same exponential-saturation family.
 - [Phase 57]: `low_degree_power_template` now shortens cubes via validated `exp(n*log(g))` only when shorter; `x**3` drops from depth 16 to 9 while `x**2` keeps the existing shorter path.
 - [Phase 57]: Planck relaxed compile depth drops from 20 to 14 with `low_degree_power_template`, `scaled_exp_minus_one_template`, and `direct_division_template`; strict depth 13 still fails, so Planck remains stretch/unsupported.
+- [Phase 58]: Focused suites `v1.10-logistic-evidence` and `v1.10-planck-diagnostics` now write compile-only campaign artifacts under `artifacts/campaigns/`; both rows remain unsupported because strict depth 13 still fails.
+- [Phase 58]: Logistic focused evidence records relaxed depth 15, node count 49, and `exponential_saturation_template`; Planck focused evidence records relaxed depth 14, node count 59, and the low-degree power plus existing denominator/division motifs.
 
 ### Pending Todos
 
@@ -95,8 +97,8 @@ Preserve Shockley, Arrhenius, and Michaelis-Menten support while changing motif 
 ## Session Continuity
 
 Last session: 2026-04-18
-Stopped at: Phase 57 complete; ready for `$gsd-plan-phase 58`
+Stopped at: Phase 58 complete; ready for `$gsd-audit-milestone`
 Resume file: None
 
 ---
-*Last updated: 2026-04-18 after Phase 57*
+*Last updated: 2026-04-18 after Phase 58*
