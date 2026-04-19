@@ -1,254 +1,297 @@
-# Technology Stack: v1.1 Compiler-Driven Warm Starts
+# Technology Stack: v1.11 Paper-Strength Evidence and Figure Package
 
-**Project:** EML Symbolic Regression
-**Research dimension:** Stack additions for v1.1 EML Compiler and Warm Starts
-**Researched:** 2026-04-15
-**Overall confidence:** HIGH for dependency recommendation; MEDIUM for pure-`1` constant compilation depth feasibility
+**Project:** EML Symbolic Regression  
+**Research dimension:** Stack additions/changes for v1.11 paper artifacts, plots, real training reruns, ablations, and scoped baseline diagnostics  
+**Researched:** 2026-04-19  
+**Overall confidence:** HIGH for core dependency posture and Matplotlib recommendation; MEDIUM for optional nonlinear baseline tooling
 
 ## Recommendation
 
-No new third-party runtime dependencies are needed for v1.1. The existing Python/PyTorch/SymPy/NumPy/mpmath/pytest stack is sufficient for compiler-driven warm starts.
+Keep the v1.11 runtime stack mostly unchanged. The existing Python/PyTorch/NumPy/SymPy/mpmath/pytest stack already supports real training, exact snapping, verification, campaign reports, JSON/CSV artifacts, and deterministic benchmark suites. The milestone should add project-owned evidence-package, ablation, baseline-diagnostic, and figure-generation modules instead of importing a new symbolic-regression engine or dataframe/reporting framework.
 
-The work should add project-owned modules and integration points, not a new CAS, parser generator, symbolic-regression engine, GPU layer, Rust backend, or theorem prover. SymPy already provides the ordinary expression tree, PyTorch already owns trainable logits and perturbations, and the existing exact AST / verifier stack already defines what counts as recovered.
+The only stack change I recommend for v1.11 is an optional `paper` extra with Matplotlib for publication-quality static figures:
 
-Recommended v1.1 stack shape:
-
-```text
-SymPy ordinary expression
-  -> local compiler subset / rule registry
-  -> exact EML Expr AST with compiler metadata
-  -> warm-start embedding into SoftEMLTree logits
-  -> optional deterministic logit perturbation
-  -> existing PyTorch optimizer / snap
-  -> existing verifier and cleanup reports
+```toml
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+]
+paper = [
+  "matplotlib>=3.7,<4",
+]
 ```
 
-The main implementation choice is to keep the compiler deterministic, explicit, and verifier-gated. It should compile only the supported subset and return structured unsupported-rule errors for everything else.
+Use Matplotlib only for paper-facing figures, not for training or benchmark execution. Keep the current hand-written SVG campaign plots as smoke/stability artifacts, and generate the richer v1.11 figure package from locked JSON/CSV evidence after runs finish.
+
+Default v1.11 baseline diagnostics should be implemented with NumPy and project-owned code. Do not add PySR, scikit-learn, gplearn, DEAP, pandas, seaborn, Plotly, notebooks, Rust, CUDA kernels, or a dashboard. If a phase explicitly decides to include nonlinear parametric curve-fit diagnostics, add SciPy as a separate optional `baselines` extra and keep those rows labeled as conventional curve-fit diagnostics, not symbolic-regression competitors.
+
+Recommended v1.11 stack shape:
+
+```text
+existing benchmark/proof/campaign runs
+  -> v1.11 suite presets and ablation case metadata
+  -> locked JSON/CSV evidence tables
+  -> optional NumPy conventional-baseline diagnostics
+  -> Matplotlib paper figure builder
+  -> v1.11 paper package with source locks, figures, tables, and claim boundaries
+```
 
 ## Local Baseline
 
-Observed locally on 2026-04-15:
+Observed locally on 2026-04-19:
 
-| Tool | Local / Project Version | Keep for v1.1? | Why |
-|------|-------------------------|----------------|-----|
-| Python | 3.11.5, `>=3.11,<3.13` in `pyproject.toml` | Yes | Existing package, dataclasses, argparse, JSON artifacts, deterministic compiler metadata. |
-| PyTorch | 2.10.0 local, `torch>=2.10` | Yes | Existing `SoftEMLTree`, logits, Adam loop, `complex128` evaluation, perturbation via seeded tensors. |
-| SymPy | 1.14.0 local, `sympy>=1.14` | Yes | Existing catalog candidates and cleanup already use SymPy; compiler should walk SymPy `Expr.func` / `Expr.args`. |
-| NumPy | 1.26.4 local, `numpy>=1.26` | Yes | Existing deterministic datasets and post-snap numeric checks. |
-| mpmath | 1.3.0 local, `mpmath>=1.3` | Yes | Existing high-precision verifier; compiler output must pass this before being called recovered. |
-| pytest | 7.4.0 local, dev extra | Yes | Add compiler, embedding, perturbation, and demo regression tests. |
+| Tool | Local / Project Version | v1.11 Recommendation | Confidence |
+|------|-------------------------|----------------------|------------|
+| Python | 3.11.5, `>=3.11,<3.13` in `pyproject.toml` | Keep as core | HIGH |
+| PyTorch | 2.10.0, `torch>=2.10`; CUDA unavailable locally | Keep as core training stack | HIGH |
+| NumPy | 1.26.4, `numpy>=1.26` | Keep as core; use for baseline diagnostics and table source arrays | HIGH |
+| SymPy | 1.14.0, `sympy>=1.14` | Keep as compiler/symbolic export layer | HIGH |
+| mpmath | 1.3.0, `mpmath>=1.3` | Keep as high-precision verifier | HIGH |
+| pytest | 7.4.0, dev extra | Keep; add tests for paper package, ablations, figures, and baseline diagnostics | HIGH |
+| Matplotlib | 3.7.2 installed, not declared | Add optional `paper` extra | HIGH |
+| pandas | 2.0.3 installed, not declared | Do not add | HIGH |
+| SciPy | 1.16.1 installed, not declared | Do not add by default; optional only for explicit nonlinear curve-fit diagnostics | MEDIUM |
+| scikit-learn | 1.3.0 installed, not declared | Do not add | HIGH |
+| seaborn | 0.12.2 installed, not declared | Do not add | HIGH |
+| Plotly | 5.9.0 installed, not declared | Do not add | HIGH |
 
-## Stack Additions
+Local Matplotlib imported, but emitted a cache warning because `/Users/artemlegotin/.matplotlib` is not writable. Any v1.11 Matplotlib command should set `MPLCONFIGDIR` to a writable artifact/temp directory before importing Matplotlib, for example:
 
-These are code-level additions inside the current stack, not package dependencies.
+```python
+import os
+from pathlib import Path
 
-| Addition | Likely Module | Primary Stack | Purpose |
-|----------|---------------|---------------|---------|
-| SymPy subset compiler | `src/eml_symbolic_regression/compiler.py` | SymPy, existing `expression.py` AST | Compile a defined ordinary-expression subset into exact `Expr` trees. |
-| Compiler report schema | `compiler.py` / CLI report payloads | dataclasses, JSON | Record source expression, normalized SymPy form, rules used, unsupported nodes, output depth/node count. |
-| Warm-start embedding | `src/eml_symbolic_regression/warm_start.py` or `master_tree.py` helper | PyTorch, existing `SoftEMLTree.set_slot` | Map exact EML AST paths onto compatible soft-tree slot logits. |
-| Logit perturbation | `warm_start.py` / `optimize.py` | PyTorch `Generator`, `torch.no_grad` | Test return-to-solution behavior from near-correct trees. |
-| Warm-start training config | `optimize.py` | dataclasses | Add optional initialization source, strength, noise, and seed fields without changing the optimizer dependency. |
-| Demo promotion metadata | `datasets.py`, `cli.py` | existing DemoSpec, JSON reports | Distinguish `catalog`, `compiled_exact`, `warm_start_recovered`, `warm_start_failed`, and `stretch` claims. |
-
-## Compiler Implementation Choices
-
-### Use SymPy Exprs as the Front End
-
-Use SymPy expressions as the compiler input. The current demo catalog already stores Beer-Lambert, Michaelis-Menten, logistic, Shockley, damped oscillator, and Planck as `SympyCandidate`, so v1.1 can compile those in-process without adding a string parser.
-
-If a CLI string input is added, keep it secondary and trusted. SymPy official docs warn that `parse_expr` uses `eval` and should not be used on unsanitized input. For v1.1, prefer named built-in demo specs or a whitelisted parser wrapper with restricted `local_dict`, restricted `global_dict`, and supported function names only.
-
-Implementation rule:
-
-```text
-Public compiler API accepts sp.Expr first.
-CLI string parsing, if present, is a thin trusted convenience layer.
+def configure_matplotlib_cache(output_dir: Path) -> None:
+    os.environ.setdefault("MPLCONFIGDIR", str(output_dir / ".matplotlib-cache"))
 ```
 
-### Walk SymPy Trees Directly
+Then force a file backend before importing `pyplot`:
 
-Use `expr.func` and `expr.args` rather than parsing printed strings. SymPy documents these as the core way to recurse through expression trees, while also warning that printed form and internal representation may differ.
+```python
+import matplotlib
 
-Practical implications:
-
-- Match `sp.Symbol`, `sp.Integer`, `sp.Rational`, `sp.Float`, `sp.Add`, `sp.Mul`, `sp.Pow`, `sp.exp`, and `sp.log` explicitly.
-- Normalize supported syntactic sugar into the subset before compilation: subtraction as `Add`, division as `Mul(..., Pow(denominator, -1))`, unary negation as multiplication by `-1`.
-- Treat unsupported functions (`sin`, `cos`, arbitrary `Pow`, special functions, piecewise) as structured compiler failures, not best-effort guesses.
-- Keep rule ordering deterministic and record every rule in compiler metadata.
-
-### Constant Handling Is the Key Design Choice
-
-Existing `expression.Const` can serialize and evaluate arbitrary complex constants, but existing `SoftEMLTree` only offers `const:1` as a terminal choice. Beer-Lambert (`exp(-0.8*x)`) and Michaelis-Menten (`2*x/(0.5+x)`) need numeric constants.
-
-Recommended v1.1 choice:
-
-1. Add a constant catalog to `SoftEMLTree`, defaulting to `(1.0,)` to preserve v1 behavior.
-2. Let compiler-driven demos pass the exact constants discovered in the source SymPy expression, for example `(1.0, -1.0, 0.5, 0.8, 2.0)`.
-3. Encode catalog entries as deterministic labels such as `const:1`, `const:-1`, `const:0.5`.
-4. Record `constant_basis` in artifacts as `["1", "literal_catalog"]` when non-`1` constants are used.
-
-This is the practical path for v1.1 demos. It should be reported honestly as constant-catalog warm-start recovery, not blind pure-paper-basis recovery. A pure `1`-only compiler for numeric constants can be researched later, but making every rational/scaled coefficient out of `1` through EML identities is likely to produce deeper, brittle trees and would distract from validating compiler warm starts.
-
-Confidence: HIGH that a literal constant catalog integrates cleanly with current code; MEDIUM that pure-`1` constant compilation is feasible at useful depths for v1.1 demos.
-
-### Compiler Rule Scope
-
-Recommended initial subset:
-
-| Ordinary Form | Compile Policy | Notes |
-|---------------|----------------|-------|
-| `1`, allowed numeric constants | Direct `Const(value)` | Requires matching master-tree constant catalog for warm start. |
-| variables | Direct `Var(name)` | Existing AST already supports named variables. |
-| `exp(x)` | Use existing paper identity `Eml(x, Const(1))` | Already present as `exp_expr`. |
-| `log(x)` | Use existing paper identity from `log_expr`, generalized to subexpressions | Verify branch behavior on positive/safe domains. |
-| `a - b`, `-a` | Compile only through explicit rule templates | Avoid algebraic guessing; record rule names. |
-| `a + b` | Compile through explicit EML arithmetic template where implemented | Keep unsupported if the template would exceed depth budget. |
-| `a * b` | Compile through explicit EML arithmetic template where implemented | Needed for Beer-Lambert and Michaelis-Menten. |
-| `a / b` | Compile as multiplication by reciprocal only if reciprocal template is implemented | Needed for Michaelis-Menten and Planck. |
-| `x**n` | Support small nonnegative integer powers by repeated multiplication | Planck needs `x**3`; keep this behind a max-power/depth guard. |
-
-The compiler should expose estimated output depth before training. If the compiled AST exceeds the requested master-tree depth, fail early with `requires_depth=N` rather than producing an unembeddable warm start.
-
-## Warm-Start Integration
-
-### Embedding Into `SoftEMLTree`
-
-Current `SoftEMLTree` already has the important primitive: `set_slot(node_path, side, choice, strength)`. v1.1 should generalize the existing `force_exp` and `force_log` style into a recursive embedder:
-
-```text
-embed_expr(model, expr, path="root", strength=30.0)
+matplotlib.use("Agg")
 ```
 
-Embedding rules:
+## Recommended Additions
 
-- If a slot expression is `Const(value)`, set that slot to the matching constant-catalog label.
-- If a slot expression is `Var(name)`, set that slot to `var:name`.
-- If a slot expression is `Eml(left, right)`, set that slot to `child` and recurse into `path.L` or `path.R`.
-- If the expression depth exceeds the remaining master depth, return a structured error.
-- If the compiler emits a leaf as the whole formula, require a wrapper identity or reject it because the current master root is an EML node.
+### Optional `paper` Extra: Matplotlib
 
-The embedder should verify round-trip compatibility immediately:
+| Technology | Version Policy | Purpose | Why |
+|------------|----------------|---------|-----|
+| Matplotlib | `>=3.7,<4`; local 3.7.2 works | Static paper figures as SVG/PDF/PNG | Official docs support non-interactive hardcopy backends for PNG/SVG/PDF, and `savefig` writes image/vector outputs. This is the smallest justified plotting addition for multi-panel publication figures, uncertainty/error-bar plots, and consistent typography. |
+
+Integration points:
+
+| Module | Change |
+|--------|--------|
+| `pyproject.toml` | Add optional `paper` extra only. Do not put Matplotlib in mandatory runtime dependencies. |
+| `src/eml_symbolic_regression/paper_figures.py` | New module that reads locked JSON/CSV evidence and writes `.svg`, `.pdf`, and optional high-DPI `.png` figures. |
+| `src/eml_symbolic_regression/cli.py` | Add a paper-facing command such as `paper-figures` or fold it into `paper-package-v1.11`. |
+| `src/eml_symbolic_regression/campaign.py` | Keep existing deterministic SVG plots for campaign reports; optionally call `paper_figures.py` only for v1.11 package output. |
+| `tests/test_paper_figures.py` | Smoke-test figure generation with tiny fixture evidence and assert expected files exist and are non-empty. |
+
+Implementation rules:
+
+- Use `Agg` / non-interactive output only.
+- Set `MPLCONFIGDIR` before importing `matplotlib.pyplot`.
+- Save source tables next to every figure as `.json` or `.csv`.
+- Save SVG and PDF for manuscript use; PNG is convenience only.
+- Do not make Matplotlib imports happen on normal CLI startup unless the figure command is invoked.
+
+### Project-Owned v1.11 Evidence Package
+
+Do not mutate the v1.9 raw-hybrid paper package in place. Add a new package writer for v1.11, or generalize `raw_hybrid_paper.py` with a new preset/schema while preserving v1.9 regression tests.
+
+Recommended module:
 
 ```text
-compiled Expr -> embed logits -> snap -> exact Expr
+src/eml_symbolic_regression/paper_package.py
 ```
 
-The snapped AST should match the compiled AST structurally before any perturbation or training is attempted.
-
-### Strength and Probability
-
-Keep logit initialization project-owned. Do not add a categorical-relaxation package.
-
-Use either:
-
-- existing `strength` convention: active choice `+strength`, inactive choices `-strength`; or
-- probability-derived gap: `gap = log(p * (k - 1) / (1 - p))` for a target active probability `p`.
-
-The existing `strength=30.0` is effectively one-hot. For perturbation experiments, use a smaller default such as `strength=8.0` to allow gradients to move while still starting near the compiled tree.
-
-### Perturbation
-
-Use PyTorch only:
+Recommended output root:
 
 ```text
-with torch.no_grad():
-    logits.add_(noise_std * torch.randn_like(logits, generator=generator))
+artifacts/paper/v1.11/evidence-package/
 ```
 
-Record:
+Recommended generated artifacts:
 
-- warm-start source hash / expression string,
-- logit strength,
-- perturbation distribution and seed,
-- initial snap before perturbation,
-- snap after perturbation,
-- final snap after training,
-- distance from compiled path as number of changed slot choices.
+| Artifact | Purpose |
+|----------|---------|
+| `manifest.json` | Schema, command, code version, environment, source list, output paths |
+| `source-locks.json` | SHA-256 locks for all training, ablation, baseline, v1.10 logistic/Planck, and figure source files |
+| `scientific-law-table.json/.csv/.md` | Paper table refreshed with v1.10 logistic/Planck diagnostics |
+| `regime-summary.json/.md` | Separate pure-blind, scaffolded, warm-start, same-AST, perturbed, repair/refit, and unsupported regimes |
+| `ablation-summary.json/.csv/.md` | Compiler motif, macro depth, warm-start-vs-blind, pool/repair/refit deltas |
+| `baseline-diagnostics.json/.csv/.md` | Conventional diagnostics, clearly scoped and not a broad SR benchmark |
+| `figure-index.json/.md` | Figure IDs, captions, source files, source hashes, and claim boundaries |
+| `claim-boundaries.md` | Explicit no-overclaim rules carried forward from v1.9 |
 
-This directly supports the v1.1 goal of demonstrating recovery from near-correct EML trees.
+Keep `raw_hybrid_paper.py` as the v1.9 compatibility writer unless refactoring is necessary. v1.11 should have its own preset id, for example `v1.11-paper-evidence-package`.
 
-## Optimizer Choices
+### Benchmark and Campaign Suite Additions
 
-Keep the existing Adam loop. Add initialization hooks, not a new optimizer.
+No new training framework is needed. Add v1.11 suites/presets to existing `benchmark.py` and `campaign.py`.
 
-Recommended `TrainingConfig` additions:
+Recommended benchmark suite families:
 
-| Field | Purpose |
-|-------|---------|
-| `initial_expr: Expr | None` | Optional exact AST to embed before training. |
-| `warm_start_strength: float` | Logit preference for compiled choices. |
-| `perturbation_std: float` | Gaussian logit noise after embedding. |
-| `warm_start_seed: int | None` | Deterministic perturbation independent of restart seed. |
-| `verify_initial_snap: bool` | Fail fast if embed/snap does not round-trip. |
+| Suite Family | Stack Used | Purpose |
+|--------------|------------|---------|
+| `v1.11-training-refresh-*` | existing PyTorch optimizer, verifier, JSON artifacts | Claim-safe reruns for shallow pure-blind, scaffolded, warm-start/same-AST, perturbed-basin, and focused logistic/Planck probes |
+| `v1.11-ablation-*` | existing compiler diagnostics, benchmark metadata, verifier | Measure motif on/off, macro depth deltas, warm-start versus blind, candidate-pool repair/refit behavior |
+| `v1.11-baseline-diagnostics` | NumPy project-owned diagnostics, optional SciPy only if explicitly chosen | Scoped conventional baselines over the same deterministic train/held-out/extrapolation splits |
+| `v1.11-paper-package-sources` | JSON/CSV source locks | Stable inputs for the final paper package |
 
-Restarts should support mixed initialization:
+Do not add parallel execution infrastructure unless a phase proves it is needed. Current suite sizes are small enough that deterministic sequential runs are easier to audit. If later needed, use Python `multiprocessing` already imported in `benchmark.py`, with explicit per-run artifact isolation and source locks.
 
-- one unperturbed compiled initialization,
-- several perturbed compiled initializations,
-- optional random restarts as a baseline.
+### NumPy-First Baseline Diagnostics
 
-Do not use `torch.nn.functional.gumbel_softmax` as a core dependency. Current PyTorch docs keep it available but say it is present for legacy reasons and may be removed from `nn.functional`; the existing softmax-plus-snap design is enough.
+Implement conventional baselines as a local module, not a third-party symbolic-regression dependency:
 
-## Demo Integration
+```text
+src/eml_symbolic_regression/baselines.py
+```
 
-### Beer-Lambert
+Default baselines should use NumPy only:
 
-Use as the first v1.1 trained warm-start demo.
+| Baseline | NumPy API | Scope |
+|----------|-----------|-------|
+| Mean predictor | `np.mean` | sanity floor |
+| Linear least squares | `np.linalg.lstsq` | simple trend baseline |
+| Low-degree polynomial | `numpy.polynomial.Polynomial.fit` preferred over old `np.polyfit` | curve-fit diagnostic, not formula recovery |
+| Log-linear transforms | `np.log`, `np.linalg.lstsq` with domain checks | exp/decay diagnostics on positive targets only |
+| Known-form residual evaluator | existing demo formulas and splits | compare held-out/extrapolation residual scale without claiming discovery |
 
-Recommended path:
+Baseline artifact schema should include:
 
-1. Compile `exp(-0.8*x)` from the existing SymPy catalog candidate.
-2. Include constants required by the expression in the master-tree constant catalog.
-3. Embed the compiled AST into a compatible depth.
-4. Perturb logits and train.
-5. Snap and verify with existing train/held-out/extrapolation/mpmath checks.
+- baseline id and type,
+- formula id and split manifest,
+- parameter count,
+- fitted coefficients,
+- train, held-out, extrapolation MSE/MAE/max error,
+- domain exclusions,
+- failure reason if a transform is invalid,
+- package versions used.
 
-Expected confidence: HIGH for constant-catalog warm-start recovery; lower for pure `1`-basis recovery.
+Only add SciPy if v1.11 explicitly needs nonlinear parametric curve fits such as bounded logistic or Planck-shaped templates. If added, keep it optional:
 
-### Michaelis-Menten
+```toml
+[project.optional-dependencies]
+baselines = [
+  "scipy>=1.16",
+]
+```
 
-Use as the second trained warm-start demo if arithmetic templates and depth budget are acceptable.
+SciPy curve-fit rows must record initial guesses, bounds, convergence status, warnings, covariance condition diagnostics, and the fact that these are parametric conventional fits, not symbolic-recovery competitors.
 
-Recommended path:
+### Ablation Support
 
-1. Compile `2*x/(0.5+x)` from the existing SymPy catalog candidate.
-2. Require compiler support for addition, multiplication, reciprocal/division, and numeric constants.
-3. Report compiler output depth and node count before training.
-4. Treat failure to fit within a practical depth as an honest v1.1 limitation, not a reason to add PySR or another search engine.
+Ablations should be suite metadata and local code switches, not new dependencies.
 
-Expected confidence: MEDIUM because rational templates can grow quickly and may require careful depth limits.
+Recommended switches:
 
-### Normalized Planck
+| Ablation | Integration Point | Output |
+|----------|-------------------|--------|
+| Motifs on/off | `CompilerConfig` / compiler macro layer | compile depth, node count, macro hits, unsupported reason |
+| Strict vs relaxed depth diagnostics | existing compile diagnostics with explicit gate labels | no silent promotion |
+| Warm-start vs blind | `BenchmarkCase.start_mode`, same formula/seed/split | regime-separated recovery table |
+| Candidate-pool repair/refit | existing `repair` and refit metadata in benchmark payloads | weak-dominance/no-regression table |
+| Logistic/Planck probes | existing v1.10 suites plus v1.11 focused probes | unsupported diagnostics unless verifier contract passes |
 
-Keep as stretch reporting.
+If current compiler config cannot disable individual macros, add project-owned flags such as:
 
-Planck requires `x**3`, `exp(x) - 1`, and division. It is an excellent compiler stress test and reporting target, but it should not gate v1.1 success. Use compiler output depth/node count and warm-start recovery status to report exactly where it succeeds or fails.
+```python
+CompilerConfig(enabled_macros=("direct_division_template", "saturation_ratio_template"))
+```
 
-Expected confidence: LOW to MEDIUM for practical warm-start recovery in v1.1, depending on compiled depth and optimization stability.
+Avoid monkeypatching or environment-variable-only ablations; they are hard to lock and reproduce in artifacts.
 
 ## What Not To Add
 
 | Candidate Addition | Recommendation | Why |
 |-------------------|----------------|-----|
-| Lark / ANTLR parser | Do not add | SymPy expressions are already available; string parsing is not the hard part. |
-| Pydantic | Do not add | Existing dataclasses + deterministic JSON are enough for compiler and warm-start reports. |
-| PySR / SymbolicRegression.jl | Do not add | Would change the project from EML-tree recovery to heterogeneous symbolic regression. |
-| JAX | Do not add | Existing implementation and paper blueprint are PyTorch-centered. |
-| Rust / PyO3 | Defer | Useful later for exhaustive local search, but v1.1 needs compiler semantics and logit embedding first. |
-| Custom CUDA kernels | Defer | Local CUDA is unavailable and v1.1 does not need kernel work. |
-| Mathematica | Optional oracle only | Do not make v1.1 depend on proprietary tooling. |
-| Lean / theorem prover | Do not add | Current recovery contract is numeric/high-precision/verifier-gated. |
-| Units libraries such as Pint | Do not add | Demo guidance favors normalized dimensionless laws; units would distract from compiler warm starts. |
-| `torch.nn.functional.gumbel_softmax` as public API | Do not add | Current PyTorch docs flag it as legacy; local softmax/snap is enough. |
+| PySR / SymbolicRegression.jl | Do not add for v1.11 | This milestone is paper-strength evidence for the EML hybrid pipeline, not a matched-budget SR competition. |
+| gplearn / DEAP / genetic programming frameworks | Do not add | Would create a broad baseline benchmark surface and distract from claim-safe EML evidence. |
+| scikit-learn | Do not add | NumPy is enough for the scoped conventional baseline diagnostics; sklearn would add ML pipeline concepts that are not needed. |
+| pandas | Do not add | Existing reports already write CSV/JSON with stdlib; table schemas are explicit and small. |
+| seaborn | Do not add | Matplotlib is sufficient and keeps styling deterministic. |
+| Plotly / dashboards | Do not add | v1.11 asks for paper artifacts, not interactive exploration. |
+| Jupyter notebooks | Do not add as required artifacts | Notebook state is harder to lock than CLI-generated JSON/CSV/figures. |
+| LaTeX/PGF dependency | Defer | Matplotlib SVG/PDF is enough; manuscript-specific LaTeX integration should not block reproducible evidence. |
+| Inkscape/ImageMagick conversion | Do not add | Matplotlib can emit SVG/PDF/PNG directly. |
+| Rust / PyO3 | Defer | Useful for future exhaustive verification speed, not needed for v1.11 evidence packaging. |
+| Custom CUDA kernels | Do not add | CUDA is unavailable locally and current constraints explicitly defer kernel work. |
+| Ray/Dask/joblib | Do not add | Deterministic, inspectable sequential campaigns are preferable until run time becomes a measured blocker. |
 
-## Installation
+## Integration Plan
 
-No installation changes are required for v1.1.
+### Phase 1: Package and Source Locks
 
-Current `pyproject.toml` already declares the needed runtime stack:
+Add a v1.11 paper package writer that consumes existing artifacts and new v1.11 outputs. It should refresh the scientific-law table with v1.10 logistic and Planck diagnostics instead of stale v1.6 depths.
+
+Touch points:
+
+- `raw_hybrid_paper.py` only if generalized safely.
+- Prefer new `paper_package.py`.
+- Add CLI command, for example:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli paper-package-v1.11 --output-dir artifacts/paper/v1.11/evidence-package --require-existing
+```
+
+### Phase 2: Training and Ablation Suites
+
+Extend `benchmark.py` with v1.11 suite ids and metadata. Reuse existing `BenchmarkCase`, `OptimizerBudget`, `BenchmarkRepairConfig`, and proof contract fields. Add only small config fields needed for macro ablations.
+
+Touch points:
+
+- `BUILTIN_SUITES`
+- `builtin_suite()`
+- aggregate evidence grouping only if a new ablation dimension needs a table
+- tests mirroring existing focused v1.9/v1.10 suite tests
+
+### Phase 3: Baseline Diagnostics
+
+Add NumPy-first `baselines.py` and a CLI/report path. Baselines should read the same demo split contracts and emit locked artifacts. They should not participate in `claim_status == "recovered"`.
+
+Recommended CLI:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli baseline-diagnostics v1.11 --output-dir artifacts/baselines/v1.11
+```
+
+### Phase 4: Paper Figures
+
+Add Matplotlib-backed figure generation after source tables exist. Figures should be deterministic, file-backed, and sourced from locked JSON/CSV tables.
+
+Recommended CLI:
+
+```bash
+MPLCONFIGDIR=artifacts/paper/v1.11/evidence-package/.matplotlib-cache \
+PYTHONPATH=src python -m eml_symbolic_regression.cli paper-figures \
+  --source artifacts/paper/v1.11/evidence-package/manifest.json \
+  --output-dir artifacts/paper/v1.11/evidence-package/figures
+```
+
+Recommended figure outputs:
+
+| Figure | Source |
+|--------|--------|
+| Regime recovery by evidence class | `regime-summary.json` |
+| Blind depth degradation | proof depth-curve aggregate |
+| Scientific-law support table plot | `scientific-law-table.csv` |
+| Motif depth deltas | compiler ablation summary |
+| Warm-start versus blind outcomes | v1.11 training refresh aggregate |
+| Candidate pool / repair / refit behavior | ablation summary |
+| Failure taxonomy | campaign/aggregate failure rows |
+
+## Dependency Policy
+
+Recommended `pyproject.toml` after v1.11 stack change:
 
 ```toml
+[project]
 dependencies = [
   "torch>=2.10",
   "numpy>=1.26",
@@ -260,59 +303,49 @@ dependencies = [
 dev = [
   "pytest>=7.4",
 ]
+paper = [
+  "matplotlib>=3.7,<4",
+]
 ```
 
-Do not expand runtime dependencies unless implementation uncovers a concrete blocker.
+Conditional only if nonlinear curve-fit baselines become a phase requirement:
 
-## Integration Checklist for Roadmap
-
-Recommended phase ordering for v1.1:
-
-1. **Compiler AST subset and reports** - Add deterministic SymPy-to-EML compilation with unsupported-node errors and metadata.
-2. **Constant catalog and embedding** - Extend `SoftEMLTree` labels to include compiler constants; implement embed/snap round-trip tests.
-3. **Perturbed warm-start training** - Add `TrainingConfig` initialization hooks and logit perturbation reports.
-4. **Demo promotion** - Promote Beer-Lambert first, then Michaelis-Menten if compiled depth and verification pass.
-5. **Stretch reporting** - Add Planck compiler/warm-start report without requiring recovery.
-
-Phase dependencies:
-
-```text
-compiler subset -> constant catalog -> embedding -> perturbation training -> trained demos
+```toml
+[project.optional-dependencies]
+baselines = [
+  "scipy>=1.16",
+]
 ```
+
+Do not combine `paper` and `baselines` into the default install. Paper readers should be able to regenerate evidence tables without a plotting stack, and core users should be able to run EML training without baseline diagnostics.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| No new dependencies | HIGH | Existing `pyproject.toml`, source modules, and official docs cover the needed compiler/warm-start functions. |
-| SymPy as compiler front end | HIGH | SymPy `Expr.func` / `Expr.args` are designed for expression-tree traversal; existing demos already use SymPy candidates. |
-| PyTorch for warm-start logits | HIGH | Current `SoftEMLTree` already exposes slot logits and `set_slot`; perturbation is simple tensor initialization. |
-| Literal constant catalog | HIGH | Existing `Const(value)` supports arbitrary constants; master-tree labels need a small extension. |
-| Pure `1`-basis constant compilation for demos | MEDIUM/LOW | Paper-fidelitous but likely deep and brittle for `0.8`, `0.5`, and `2.0`; defer unless v1.1 explicitly wants that research. |
-| Beer-Lambert warm-start recovery | HIGH | Formula is structurally simple once constants are available. |
-| Michaelis-Menten warm-start recovery | MEDIUM | Rational arithmetic can inflate EML depth; needs depth/node-count guardrails. |
-| Planck warm-start recovery | LOW/MEDIUM | Best treated as stretch due to power + exponential + subtraction + division depth. |
+| No new core training dependencies | HIGH | Existing `benchmark.py`, `campaign.py`, `cli.py`, and docs already support real PyTorch training, verification, JSON/CSV reports, and campaign artifacts. |
+| Matplotlib as optional paper extra | HIGH | Local 3.7.2 is installed; official docs support non-interactive file backends and `savefig` outputs for SVG/PDF/PNG. |
+| NumPy-first baseline diagnostics | HIGH | NumPy already installed and declared; `lstsq` and polynomial fitting cover scoped conventional diagnostics without importing ML/SR frameworks. |
+| Avoiding pandas/seaborn/Plotly | HIGH | Existing data tables are small explicit schemas; interactive or dataframe stacks add more dependency surface than value. |
+| Optional SciPy for nonlinear fits | MEDIUM | SciPy is locally installed and suitable for curve fitting, but adding it should be a phase-specific choice because it is a heavier dependency and can create overclaim risk. |
+| No parallel/distributed runner | MEDIUM | Sequential deterministic runs are preferable now; revisit only if v1.11 evidence generation time becomes a measured blocker. |
 
 ## Sources
 
-Local project sources:
+- `.planning/PROJECT.md` - v1.11 scope: paper-strength evidence, real claim-safe training, ablations, plot-rich artifacts, scoped baselines, no overclaiming.
+- `.planning/STATE.md` - v1.11 context and note that external baseline dependencies may be unavailable.
+- `README.md` - existing CLI, benchmark, campaign, paper package, proof bundle, and interpretation contracts.
+- `docs/IMPLEMENTATION.md` - current module boundaries, verifier-owned recovery contract, benchmark/campaign artifacts, raw-hybrid paper package contract.
+- `src/eml_symbolic_regression/benchmark.py` - current suite schema, v1.10 logistic/Planck focused suites, optimizer budget, proof contract validation, artifact payloads.
+- `src/eml_symbolic_regression/campaign.py` - current campaign presets, CSV exports, hand-written SVG plots, manifest/report structure.
+- `src/eml_symbolic_regression/cli.py` - current benchmark, campaign, diagnostics, proof, paper-decision, and raw-hybrid-paper commands.
+- `src/eml_symbolic_regression/raw_hybrid_paper.py` - current v1.9 paper package synthesis and source-lock pattern.
+- `pyproject.toml` - current mandatory dependencies and dev extra.
+- Local environment probe on 2026-04-19 - Python 3.11.5, PyTorch 2.10.0, NumPy 1.26.4, SymPy 1.14.0, mpmath 1.3.0, pytest 7.4.0, Matplotlib 3.7.2, pandas 2.0.3, SciPy 1.16.1, scikit-learn 1.3.0, seaborn 0.12.2, Plotly 5.9.0, CUDA unavailable.
+- Matplotlib backend docs: https://matplotlib.org/stable/users/explain/figure/backends.html
+- Matplotlib `savefig` docs: https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.savefig.html
+- NumPy `linalg.lstsq` docs: https://numpy.org/doc/stable/reference/generated/numpy.linalg.lstsq.html
+- NumPy polynomial fitting docs: https://numpy.org/doc/stable/reference/generated/numpy.polyfit.html
+- SciPy `curve_fit` docs, conditional only: https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.curve_fit.html
 
-- `.planning/PROJECT.md` - v1.1 goal: ordinary-expression compiler subset, warm-start embedding, perturbation recovery, Beer-Lambert/Michaelis-Menten trained demos, Planck stretch reporting.
-- `.planning/STATE.md` - confirms v1 is complete and v1.1 is defining requirements.
-- `.planning/REQUIREMENTS.md` and `.planning/ROADMAP.md` - v1 validated capabilities and verifier-owned recovery contract.
-- `src/eml_symbolic_regression/expression.py` - exact `Const`, `Var`, `Eml`, JSON artifacts, SymPy candidate support, paper identities.
-- `src/eml_symbolic_regression/master_tree.py` - current soft tree labels, logits, `set_slot`, snap, `force_exp`, `force_log`.
-- `src/eml_symbolic_regression/optimize.py` - current Adam training config and manifest shape.
-- `src/eml_symbolic_regression/datasets.py` - current demo catalog expressions for Beer-Lambert, Michaelis-Menten, and Planck.
-- `src/eml_symbolic_regression/verify.py`, `cleanup.py`, `cli.py` - existing verifier, cleanup, and demo report integration points.
-- `sources/NORTH_STAR.md` - warm-start/recovery rationale, hybrid pipeline, complex128 training, hardening/snap, verification.
-- `sources/FOR_DEMO.md` - demo ordering and cautions about depth, units, and Planck as a hard showcase.
-
-Official/current external sources checked:
-
-- SymPy parsing docs: https://docs.sympy.org/latest/modules/parsing.html
-- SymPy expression manipulation docs: https://docs.sympy.org/latest/tutorials/intro-tutorial/manipulation.html
-- PyTorch complex numbers docs: https://docs.pytorch.org/docs/stable/complex_numbers.html
-- PyTorch `gumbel_softmax` docs: https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.gumbel_softmax.html
-- Python dataclasses docs: https://docs.python.org/3/library/dataclasses.html
-
+Context7 MCP tools were not available in this environment. The CLI fallback command for Context7 was attempted for Matplotlib documentation but produced no output before being stopped; official documentation was used instead.

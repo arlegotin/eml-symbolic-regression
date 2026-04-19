@@ -1,0 +1,2514 @@
+{
+  "counts": {
+    "evidence_classes": {
+      "blind_training_recovered": 2,
+      "scaffolded_blind_training_recovered": 2,
+      "snapped_but_failed": 4
+    },
+    "execution_error": 0,
+    "failed": 4,
+    "repaired_candidate": 0,
+    "same_ast_return": 0,
+    "total": 8,
+    "unsupported": 0,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 4,
+    "verifier_recovery_rate": 0.5
+  },
+  "depth_curve": [
+    {
+      "best_loss_max": 1.6777470155487078e-06,
+      "best_loss_median": 8.399855357685602e-07,
+      "best_loss_min": 2.2240559884125333e-09,
+      "best_loss_values": [
+        2.2240559884125333e-09,
+        1.6777470155487078e-06
+      ],
+      "depth": 2,
+      "evidence_classes": {
+        "blind_training_recovered": 2
+      },
+      "post_snap_loss_max": 0.0,
+      "post_snap_loss_median": 0.0,
+      "post_snap_loss_min": 0.0,
+      "post_snap_loss_values": [
+        0.0,
+        0.0
+      ],
+      "recovered": 2,
+      "recovery_rate": 1.0,
+      "runtime_seconds_max": 1.3163876249454916,
+      "runtime_seconds_median": 1.272411978978198,
+      "runtime_seconds_min": 1.2284363330109045,
+      "runtime_seconds_values": [
+        1.3163876249454916,
+        1.2284363330109045
+      ],
+      "seed_count": 2,
+      "snap_min_margin_max": 0.8488985615917987,
+      "snap_min_margin_median": 0.7703720043734779,
+      "snap_min_margin_min": 0.691845447155157,
+      "snap_min_margin_values": [
+        0.8488985615917987,
+        0.691845447155157
+      ],
+      "start_mode": "blind",
+      "total": 2,
+      "training_mode": "blind_training"
+    },
+    {
+      "best_loss_max": 0.0,
+      "best_loss_median": 0.0,
+      "best_loss_min": 0.0,
+      "best_loss_values": [
+        0.0,
+        0.0
+      ],
+      "depth": 3,
+      "evidence_classes": {
+        "scaffolded_blind_training_recovered": 2
+      },
+      "post_snap_loss_max": 0.0,
+      "post_snap_loss_median": 0.0,
+      "post_snap_loss_min": 0.0,
+      "post_snap_loss_values": [
+        0.0,
+        0.0
+      ],
+      "recovered": 2,
+      "recovery_rate": 1.0,
+      "runtime_seconds_max": 1.8066479170229286,
+      "runtime_seconds_median": 1.795871396025177,
+      "runtime_seconds_min": 1.7850948750274256,
+      "runtime_seconds_values": [
+        1.7850948750274256,
+        1.8066479170229286
+      ],
+      "seed_count": 2,
+      "snap_min_margin_max": 1.0,
+      "snap_min_margin_median": 1.0,
+      "snap_min_margin_min": 1.0,
+      "snap_min_margin_values": [
+        1.0,
+        1.0
+      ],
+      "start_mode": "blind",
+      "total": 2,
+      "training_mode": "blind_training"
+    },
+    {
+      "best_loss_max": 0.3092836230176535,
+      "best_loss_median": 0.23188966292699678,
+      "best_loss_min": 0.15449570283634007,
+      "best_loss_values": [
+        0.3092836230176535,
+        0.15449570283634007
+      ],
+      "depth": 4,
+      "evidence_classes": {
+        "snapped_but_failed": 2
+      },
+      "post_snap_loss_max": 1.1174470556343234,
+      "post_snap_loss_median": 0.6359713792353318,
+      "post_snap_loss_min": 0.1544957028363401,
+      "post_snap_loss_values": [
+        1.1174470556343234,
+        0.1544957028363401
+      ],
+      "recovered": 0,
+      "recovery_rate": 0.0,
+      "runtime_seconds_max": 2.7423452079528943,
+      "runtime_seconds_median": 2.719772041484248,
+      "runtime_seconds_min": 2.6971988750156015,
+      "runtime_seconds_values": [
+        2.6971988750156015,
+        2.7423452079528943
+      ],
+      "seed_count": 2,
+      "snap_min_margin_max": 1.0,
+      "snap_min_margin_median": 0.5002908595469733,
+      "snap_min_margin_min": 0.0005817190939464978,
+      "snap_min_margin_values": [
+        0.0005817190939464978,
+        1.0
+      ],
+      "start_mode": "blind",
+      "total": 2,
+      "training_mode": "blind_training"
+    },
+    {
+      "best_loss_max": 2.0098300315543365,
+      "best_loss_median": 2.0070980065211708,
+      "best_loss_min": 2.004365981488005,
+      "best_loss_values": [
+        2.004365981488005,
+        2.0098300315543365
+      ],
+      "depth": 5,
+      "evidence_classes": {
+        "snapped_but_failed": 2
+      },
+      "post_snap_loss_max": 2.0147438200139702,
+      "post_snap_loss_median": 2.0137984788604744,
+      "post_snap_loss_min": 2.012853137706978,
+      "post_snap_loss_values": [
+        2.0147438200139702,
+        2.012853137706978
+      ],
+      "recovered": 0,
+      "recovery_rate": 0.0,
+      "runtime_seconds_max": 4.592692916048691,
+      "runtime_seconds_median": 4.590765978966374,
+      "runtime_seconds_min": 4.588839041884057,
+      "runtime_seconds_values": [
+        4.588839041884057,
+        4.592692916048691
+      ],
+      "seed_count": 2,
+      "snap_min_margin_max": 1.0,
+      "snap_min_margin_median": 1.0,
+      "snap_min_margin_min": 1.0,
+      "snap_min_margin_values": [
+        1.0,
+        1.0
+      ],
+      "start_mode": "blind",
+      "total": 2,
+      "training_mode": "blind_training"
+    }
+  ],
+  "environment": {
+    "code_version": "45b7420",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-19T18:04:06.555351+00:00",
+  "groups": {
+    "depth": [
+      {
+        "evidence_classes": {
+          "blind_training_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "2",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "3",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "4",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "5",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "evidence_class": [
+      {
+        "evidence_classes": {
+          "blind_training_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "blind_training_recovered",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "scaffolded_blind_training_recovered",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "snapped_but_failed",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "formula": [
+      {
+        "evidence_classes": {
+          "blind_training_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "depth_curve_depth2",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "scaffolded_blind_training_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "depth_curve_depth3",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 2,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "depth_curve_depth4",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "depth_curve_depth5",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "evidence_classes": {
+          "blind_training_recovered": 2,
+          "scaffolded_blind_training_recovered": 2,
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "0.0",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 8,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 4,
+        "verifier_recovery_rate": 0.5
+      }
+    ],
+    "raw_status": [
+      {
+        "evidence_classes": {
+          "blind_training_recovered": 2,
+          "scaffolded_blind_training_recovered": 2,
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 8,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 4,
+        "verifier_recovery_rate": 0.5
+      }
+    ],
+    "repair_status": [
+      {
+        "evidence_classes": {
+          "blind_training_recovered": 2,
+          "scaffolded_blind_training_recovered": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "not_attempted",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 4,
+        "verifier_recovery_rate": 1.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "not_repaired",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "return_kind": [
+      {
+        "evidence_classes": {
+          "blind_training_recovered": 2,
+          "scaffolded_blind_training_recovered": 2,
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 8,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 4,
+        "verifier_recovery_rate": 0.5
+      }
+    ],
+    "seed_group": [
+      {
+        "evidence_classes": {
+          "blind_training_recovered": 2,
+          "scaffolded_blind_training_recovered": 2,
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "all",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 8,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 4,
+        "verifier_recovery_rate": 0.5
+      }
+    ],
+    "start_mode": [
+      {
+        "evidence_classes": {
+          "blind_training_recovered": 2,
+          "scaffolded_blind_training_recovered": 2,
+          "snapped_but_failed": 4
+        },
+        "execution_error": 0,
+        "failed": 4,
+        "key": "blind",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 8,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 4,
+        "verifier_recovery_rate": 0.5
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/campaigns/v1.12-evidence-refresh/runs/proof-depth-curve/proof-depth-curve-depth-2-blind-496b59f4c7cc.json",
+      "case_id": "depth-2-blind",
+      "claim_class": "measured_depth_curve",
+      "claim_id": "paper-blind-depth-degradation",
+      "claim_status": "recovered",
+      "classification": "blind_recovery",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "depth_curve_depth2",
+        "manifest_sha256": "ec28510acc1aca3e8e61b5623f7225a210b1c67bf45e8058064947e35a2e6811",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Phase 32 depth-curve exact depth-2 target with linear real-axis behavior.",
+          "formula_id": "depth_curve_depth2",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-2 target",
+          "symbolic_expression": "E - log(exp(x))",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              1.2,
+              2.0
+            ],
+            "input_sha256": "acbb2090072328bc3a89b6cab9660341b9ca72c1684fe51733873d2545dceb83",
+            "name": "train",
+            "target_sha256": "1baf2a168b102506d1111abc625d52ec432810ae5340d116b124dc494fcd1b2c"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.25,
+              1.9
+            ],
+            "input_sha256": "c4eb12ac0a863ac5e5447945428d191c006bf25f74cc1d3c81faa33d69a50e8f",
+            "name": "heldout",
+            "target_sha256": "1091f2be9c5ef8399b12530b652bdd48c15d6b14bd22ab13e40d8fc0f1f88ad4"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.05,
+              2.4
+            ],
+            "input_sha256": "799e94dd35fcad6287bd92128a1f6cc76e8e96b1aa64e9515aad26f402397ee3",
+            "name": "extrapolation",
+            "target_sha256": "9aa3b7b1489cf3d0ddf7fc8ccb65512fc35df74e8ce9877999c1bd5758ad0600"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "blind_training_recovered",
+      "formula": "depth_curve_depth2",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 2.2240559884125333e-09,
+        "candidate_complexity": null,
+        "candidate_pool_size": 16,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.0,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 2.2240559884125333e-09,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 0.0,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": null,
+        "repair_candidate_root_summary_count": 0,
+        "repair_deduped_variant_count": null,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 5,
+        "snap_min_margin": 0.8488985615917987,
+        "unsupported_reason": null,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 3,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Phase 32 depth-curve exact depth-2 target with linear real-axis behavior.",
+        "formula_id": "depth_curve_depth2",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-2 target",
+        "symbolic_expression": "E - log(exp(x))",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "proof-depth-curve-depth-2-blind-496b59f4c7cc",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "proof-depth-curve",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "scaffolded_blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent",
+          "same_ast",
+          "soft_fit_only",
+          "snapped_but_failed",
+          "failed",
+          "unsupported",
+          "execution_failure"
+        ],
+        "description": "Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_depth_curve",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_depth_curve",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.12-evidence-refresh/runs/proof-depth-curve/proof-depth-curve-depth-2-blind-5ee1d10da503.json",
+      "case_id": "depth-2-blind",
+      "claim_class": "measured_depth_curve",
+      "claim_id": "paper-blind-depth-degradation",
+      "claim_status": "recovered",
+      "classification": "blind_recovery",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "depth_curve_depth2",
+        "manifest_sha256": "6e069aa80ab5244c081aefe561091962b6155c6bc4d30c3bb62ba066844f8245",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Phase 32 depth-curve exact depth-2 target with linear real-axis behavior.",
+          "formula_id": "depth_curve_depth2",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-2 target",
+          "symbolic_expression": "E - log(exp(x))",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              1.2,
+              2.0
+            ],
+            "input_sha256": "d967d32247d0e4325325b63bfc485cb85edc7992c0988fcff271b9c4a0b76d24",
+            "name": "train",
+            "target_sha256": "ed47408e8e52de95c3a8a210bc24bb9e58742eb5308eee86579aa8e8b25aa714"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.25,
+              1.9
+            ],
+            "input_sha256": "262172f6c192f999df3d4e954e55d136fb18f5678ac5ff520c2cacf2b21c2cc1",
+            "name": "heldout",
+            "target_sha256": "2bc52da9fa68cacdf60be6bf647566bb339e8a9589fef641b6e8053641a85bfd"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.05,
+              2.4
+            ],
+            "input_sha256": "0d767e0ea8a8a0e9be4e8ca22572f173ae9fcb1d5cd632a3743b1499d882ce8c",
+            "name": "extrapolation",
+            "target_sha256": "82d5b418e923957083781314465410ae4dc5417825bd80c1c84a319ab76a31cd"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "blind_training_recovered",
+      "formula": "depth_curve_depth2",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 1.6777470155487078e-06,
+        "candidate_complexity": null,
+        "candidate_pool_size": 16,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 2,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-002-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.0,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 1.6777470155487078e-06,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 0.0,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": null,
+        "repair_candidate_root_summary_count": 0,
+        "repair_deduped_variant_count": null,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-002-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 5,
+        "snap_min_margin": 0.691845447155157,
+        "unsupported_reason": null,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 3,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Phase 32 depth-curve exact depth-2 target with linear real-axis behavior.",
+        "formula_id": "depth_curve_depth2",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-2 target",
+        "symbolic_expression": "E - log(exp(x))",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "proof-depth-curve-depth-2-blind-5ee1d10da503",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "proof-depth-curve",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "scaffolded_blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent",
+          "same_ast",
+          "soft_fit_only",
+          "snapped_but_failed",
+          "failed",
+          "unsupported",
+          "execution_failure"
+        ],
+        "description": "Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_depth_curve",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_depth_curve",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.12-evidence-refresh/runs/proof-depth-curve/proof-depth-curve-depth-3-blind-4748c0afa168.json",
+      "case_id": "depth-3-blind",
+      "claim_class": "measured_depth_curve",
+      "claim_id": "paper-blind-depth-degradation",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "depth_curve_depth3",
+        "manifest_sha256": "79e8394311863c4a7884b25810ff9e1798b5f149e433c84b5ad3e4fbb1375b2b",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Phase 32 depth-curve exact depth-3 target matching the principal-branch log identity.",
+          "formula_id": "depth_curve_depth3",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-3 target",
+          "symbolic_expression": "E - log(exp(E)/x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              1.2,
+              2.0
+            ],
+            "input_sha256": "acbb2090072328bc3a89b6cab9660341b9ca72c1684fe51733873d2545dceb83",
+            "name": "train",
+            "target_sha256": "505d79c62d3aba0f83be50416b71e4dadebd5ee591b5a1d217cc8189401ec501"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.25,
+              1.9
+            ],
+            "input_sha256": "c4eb12ac0a863ac5e5447945428d191c006bf25f74cc1d3c81faa33d69a50e8f",
+            "name": "heldout",
+            "target_sha256": "3deb029be1e581e344526d21c0c35a7b02900314e5eafccfe31b117588b930d6"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.05,
+              2.4
+            ],
+            "input_sha256": "799e94dd35fcad6287bd92128a1f6cc76e8e96b1aa64e9515aad26f402397ee3",
+            "name": "extrapolation",
+            "target_sha256": "aec8dcd665500fbbf51e3b23120b7a3c79d142aca1110e530d661a3a73739744"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "depth_curve_depth3",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 0.0,
+        "candidate_complexity": null,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.0,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 0.0,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 0.0,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": null,
+        "repair_candidate_root_summary_count": 0,
+        "repair_deduped_variant_count": null,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "scaffold_log",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "unsupported_reason": null,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 3,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 3,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Phase 32 depth-curve exact depth-3 target matching the principal-branch log identity.",
+        "formula_id": "depth_curve_depth3",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-3 target",
+        "symbolic_expression": "E - log(exp(E)/x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "proof-depth-curve-depth-3-blind-4748c0afa168",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "proof-depth-curve",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "scaffolded_blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent",
+          "same_ast",
+          "soft_fit_only",
+          "snapped_but_failed",
+          "failed",
+          "unsupported",
+          "execution_failure"
+        ],
+        "description": "Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_depth_curve",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_depth_curve",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.12-evidence-refresh/runs/proof-depth-curve/proof-depth-curve-depth-3-blind-df010bca44c8.json",
+      "case_id": "depth-3-blind",
+      "claim_class": "measured_depth_curve",
+      "claim_id": "paper-blind-depth-degradation",
+      "claim_status": "recovered",
+      "classification": "scaffolded_blind_recovery",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "depth_curve_depth3",
+        "manifest_sha256": "d1a2607d71f5f85373b326cc5844fa68a977b993477c5cf6ce7b7fe5fbe0dfc7",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Phase 32 depth-curve exact depth-3 target matching the principal-branch log identity.",
+          "formula_id": "depth_curve_depth3",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-3 target",
+          "symbolic_expression": "E - log(exp(E)/x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              1.2,
+              2.0
+            ],
+            "input_sha256": "d967d32247d0e4325325b63bfc485cb85edc7992c0988fcff271b9c4a0b76d24",
+            "name": "train",
+            "target_sha256": "cf9949e3b789d6709116c0161665b07564fd0fa4e8a6fe174676e29ab42a02a0"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.25,
+              1.9
+            ],
+            "input_sha256": "262172f6c192f999df3d4e954e55d136fb18f5678ac5ff520c2cacf2b21c2cc1",
+            "name": "heldout",
+            "target_sha256": "ef3ced9cbe7498940f3f375c5bb4bb563ff44b72b3b719014a898dd0554c9c5c"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.05,
+              2.4
+            ],
+            "input_sha256": "0d767e0ea8a8a0e9be4e8ca22572f173ae9fcb1d5cd632a3743b1499d882ce8c",
+            "name": "extrapolation",
+            "target_sha256": "a14a4436f03f4175f4c6cc8e102f303d00b582913ca19bd7284b551311f54429"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "scaffolded_blind_training_recovered",
+      "formula": "depth_curve_depth3",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 0.0,
+        "candidate_complexity": null,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.0,
+        "high_precision_max_error": 0.0,
+        "legacy_best_loss": 0.0,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 0.0,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": null,
+        "repair_candidate_root_summary_count": 0,
+        "repair_deduped_variant_count": null,
+        "repair_move_count": 0,
+        "repair_status": "not_attempted",
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "scaffold_log",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "unsupported_reason": null,
+        "verifier_status": "recovered",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 3,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 3,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Phase 32 depth-curve exact depth-3 target matching the principal-branch log identity.",
+        "formula_id": "depth_curve_depth3",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-3 target",
+        "symbolic_expression": "E - log(exp(E)/x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "verified",
+      "repair_status": "not_attempted",
+      "return_kind": null,
+      "run_id": "proof-depth-curve-depth-3-blind-df010bca44c8",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "recovered",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "recovered",
+      "suite_id": "proof-depth-curve",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "scaffolded_blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent",
+          "same_ast",
+          "soft_fit_only",
+          "snapped_but_failed",
+          "failed",
+          "unsupported",
+          "execution_failure"
+        ],
+        "description": "Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_depth_curve",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_depth_curve",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.12-evidence-refresh/runs/proof-depth-curve/proof-depth-curve-depth-4-blind-bb92e8f39df6.json",
+      "case_id": "depth-4-blind",
+      "claim_class": "measured_depth_curve",
+      "claim_id": "paper-blind-depth-degradation",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "depth_curve_depth4",
+        "manifest_sha256": "5916b3c9ebe34210c3e5b8f9168406cf2cb29f2ed501b323e802a3551794ed4c",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Phase 32 depth-curve exact depth-4 target with blind training failures above shallow depth.",
+          "formula_id": "depth_curve_depth4",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-4 target",
+          "symbolic_expression": "x - log(exp(x) - log(x))",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              1.2,
+              2.0
+            ],
+            "input_sha256": "acbb2090072328bc3a89b6cab9660341b9ca72c1684fe51733873d2545dceb83",
+            "name": "train",
+            "target_sha256": "d3ea22da30b0b7511c012d14bb59a17504bac4fe5c13954fbe2206d506c9b590"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.25,
+              1.9
+            ],
+            "input_sha256": "c4eb12ac0a863ac5e5447945428d191c006bf25f74cc1d3c81faa33d69a50e8f",
+            "name": "heldout",
+            "target_sha256": "7f23db850ebd150fd88ada5dccf1e80abb8d31f9f307cc59c60d14f413870c45"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.05,
+              2.4
+            ],
+            "input_sha256": "799e94dd35fcad6287bd92128a1f6cc76e8e96b1aa64e9515aad26f402397ee3",
+            "name": "extrapolation",
+            "target_sha256": "68483813d129b6fbb33f5bdfd6b0ca03dffd58bfcc26e013a720f4d1e164b6d4"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "depth_curve_depth4",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 0.3092836230176535,
+        "candidate_complexity": null,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.15433735836199725,
+        "high_precision_max_error": 1.4615593765933579,
+        "legacy_best_loss": 0.15433735836199722,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 1.1174470556343234,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 24,
+        "repair_move_count": 40,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 24,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "scaffold_log",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 2,
+        "selected_candidate_checkpoint_index": 1,
+        "selected_candidate_id": "attempt-002-hardening-01",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 5,
+        "snap_min_margin": 0.0005817190939464978,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 4,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 3,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Phase 32 depth-curve exact depth-4 target with blind training failures above shallow depth.",
+        "formula_id": "depth_curve_depth4",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-4 target",
+        "symbolic_expression": "x - log(exp(x) - log(x))",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "proof-depth-curve-depth-4-blind-bb92e8f39df6",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "proof-depth-curve",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "scaffolded_blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent",
+          "same_ast",
+          "soft_fit_only",
+          "snapped_but_failed",
+          "failed",
+          "unsupported",
+          "execution_failure"
+        ],
+        "description": "Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_depth_curve",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_depth_curve",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.12-evidence-refresh/runs/proof-depth-curve/proof-depth-curve-depth-4-blind-53c3fee6869c.json",
+      "case_id": "depth-4-blind",
+      "claim_class": "measured_depth_curve",
+      "claim_id": "paper-blind-depth-degradation",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "depth_curve_depth4",
+        "manifest_sha256": "bf85025166ed205b8f17ef24138c555af4c4445578c23d3b85fea0ec1470e1d1",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Phase 32 depth-curve exact depth-4 target with blind training failures above shallow depth.",
+          "formula_id": "depth_curve_depth4",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-4 target",
+          "symbolic_expression": "x - log(exp(x) - log(x))",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              1.2,
+              2.0
+            ],
+            "input_sha256": "d967d32247d0e4325325b63bfc485cb85edc7992c0988fcff271b9c4a0b76d24",
+            "name": "train",
+            "target_sha256": "d628a69b169db6aa119baecbc10aa5c49158d0a68f58e935aedc5f08b2b52b97"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.25,
+              1.9
+            ],
+            "input_sha256": "262172f6c192f999df3d4e954e55d136fb18f5678ac5ff520c2cacf2b21c2cc1",
+            "name": "heldout",
+            "target_sha256": "ee2e3324ce01d0b6c6240f11da0c05091fbdccdde05f9f8cda560349bc2b8a2c"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.05,
+              2.4
+            ],
+            "input_sha256": "0d767e0ea8a8a0e9be4e8ca22572f173ae9fcb1d5cd632a3743b1499d882ce8c",
+            "name": "extrapolation",
+            "target_sha256": "6b1afcf56bac4e10e0560af784fbeb717510bedcc4eac34af3a9fb09a967ad18"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "depth_curve_depth4",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 0.15449570283634007,
+        "candidate_complexity": null,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 1,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-001-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.1544957028363401,
+        "high_precision_max_error": 0.792369998280209,
+        "legacy_best_loss": 0.15449570283634007,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 0.1544957028363401,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 24,
+        "repair_move_count": 40,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 24,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "scaffold_log",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 4,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 3,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Phase 32 depth-curve exact depth-4 target with blind training failures above shallow depth.",
+        "formula_id": "depth_curve_depth4",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-4 target",
+        "symbolic_expression": "x - log(exp(x) - log(x))",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "proof-depth-curve-depth-4-blind-53c3fee6869c",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "proof-depth-curve",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "scaffolded_blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent",
+          "same_ast",
+          "soft_fit_only",
+          "snapped_but_failed",
+          "failed",
+          "unsupported",
+          "execution_failure"
+        ],
+        "description": "Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_depth_curve",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_depth_curve",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.12-evidence-refresh/runs/proof-depth-curve/proof-depth-curve-depth-5-blind-59fab048ae26.json",
+      "case_id": "depth-5-blind",
+      "claim_class": "measured_depth_curve",
+      "claim_id": "paper-blind-depth-degradation",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "depth_curve_depth5",
+        "manifest_sha256": "672d55b6add2ed9524991d0118988ba3573d4a16616c88f23c761af8734a635e",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Phase 32 depth-curve exact depth-5 target chosen to keep the real-axis verification path finite.",
+          "formula_id": "depth_curve_depth5",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-5 target",
+          "symbolic_expression": "E - 2*log(x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              1.2,
+              2.0
+            ],
+            "input_sha256": "acbb2090072328bc3a89b6cab9660341b9ca72c1684fe51733873d2545dceb83",
+            "name": "train",
+            "target_sha256": "b362e9ba34ed34ba0b249ec7ea8f0c3e0a1c807752ec7d2403ef3d52f01ad5ea"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.25,
+              1.9
+            ],
+            "input_sha256": "c4eb12ac0a863ac5e5447945428d191c006bf25f74cc1d3c81faa33d69a50e8f",
+            "name": "heldout",
+            "target_sha256": "22f72e502fa62c91239bb1ea6255be60843d59be0cba2b2dc4ec8ba6ea104b5f"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.05,
+              2.4
+            ],
+            "input_sha256": "799e94dd35fcad6287bd92128a1f6cc76e8e96b1aa64e9515aad26f402397ee3",
+            "name": "extrapolation",
+            "target_sha256": "9521a9c4391f644f9347c3311d5928850db93a8a9482f045794794b659911a8e"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "depth_curve_depth5",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 44,
+        "anomaly_exp_overflow_count": 44,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 2.004365981488005,
+        "candidate_complexity": null,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 13.178778240394943,
+        "high_precision_max_error": 2.1708142793429994,
+        "legacy_best_loss": 1.7409793270570273,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 2.0147438200139702,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 24,
+        "repair_move_count": 40,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 24,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "scaffold_exp",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 5,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 3,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Phase 32 depth-curve exact depth-5 target chosen to keep the real-axis verification path finite.",
+        "formula_id": "depth_curve_depth5",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-5 target",
+        "symbolic_expression": "E - 2*log(x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "proof-depth-curve-depth-5-blind-59fab048ae26",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "proof-depth-curve",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "scaffolded_blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent",
+          "same_ast",
+          "soft_fit_only",
+          "snapped_but_failed",
+          "failed",
+          "unsupported",
+          "execution_failure"
+        ],
+        "description": "Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_depth_curve",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_depth_curve",
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.12-evidence-refresh/runs/proof-depth-curve/proof-depth-curve-depth-5-blind-20b87b5ab8f8.json",
+      "case_id": "depth-5-blind",
+      "claim_class": "measured_depth_curve",
+      "claim_id": "paper-blind-depth-degradation",
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "depth_curve_depth5",
+        "manifest_sha256": "4481042adf2dbd4c706b99cb3998dbc1f2147ff9ad635869e9d7a5a4c3d367e3",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Phase 32 depth-curve exact depth-5 target chosen to keep the real-axis verification path finite.",
+          "formula_id": "depth_curve_depth5",
+          "normalized_dimensionless": true,
+          "source_document": "sources/NORTH_STAR.md",
+          "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-5 target",
+          "symbolic_expression": "E - 2*log(x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 1,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              1.2,
+              2.0
+            ],
+            "input_sha256": "d967d32247d0e4325325b63bfc485cb85edc7992c0988fcff271b9c4a0b76d24",
+            "name": "train",
+            "target_sha256": "53a47be0111658381f1cd920e39ea9395a7139278d1c9781c5a8786c9d1ff24b"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.25,
+              1.9
+            ],
+            "input_sha256": "262172f6c192f999df3d4e954e55d136fb18f5678ac5ff520c2cacf2b21c2cc1",
+            "name": "heldout",
+            "target_sha256": "9868c37a2367d24b1b2bbb3022cb6dfa9acf6eb710ef157eba9442ace19924d4"
+          },
+          {
+            "count": 16,
+            "domain": [
+              2.05,
+              2.4
+            ],
+            "input_sha256": "0d767e0ea8a8a0e9be4e8ca22572f173ae9fcb1d5cd632a3743b1499d882ce8c",
+            "name": "extrapolation",
+            "target_sha256": "e5f8224f374d3a07bd195292afb7619eae02d598ee9283d1748350b971b783ef"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "depth_curve_depth5",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 64,
+        "anomaly_exp_overflow_count": 64,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 2.0098300315543365,
+        "candidate_complexity": null,
+        "candidate_pool_size": 20,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 13.194461769494842,
+        "high_precision_max_error": 2.1699351396869484,
+        "legacy_best_loss": 1.5436804689436923,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 2.012853137706978,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 24,
+        "repair_move_count": 40,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 24,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": "scaffold_exp",
+        "scaffold_strategy": "generic_paper_primitive",
+        "selected_candidate_attempt_index": 1,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-001-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 1.0,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 5,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 3,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 80,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Phase 32 depth-curve exact depth-5 target chosen to keep the real-axis verification path finite.",
+        "formula_id": "depth_curve_depth5",
+        "normalized_dimensionless": true,
+        "source_document": "sources/NORTH_STAR.md",
+        "source_linkage": "Phase 32 deterministic exact EML depth-curve inventory: depth-5 target",
+        "symbolic_expression": "E - 2*log(x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "proof-depth-curve-depth-5-blind-20b87b5ab8f8",
+      "seed": 1,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "proof-depth-curve",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "scaffolded_blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent",
+          "same_ast",
+          "soft_fit_only",
+          "snapped_but_failed",
+          "failed",
+          "unsupported",
+          "execution_failure"
+        ],
+        "description": "Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_depth_curve",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_depth_curve",
+      "training_mode": "blind_training"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/campaigns/v1.12-evidence-refresh/runs",
+    "cases": [
+      {
+        "claim_id": "paper-blind-depth-degradation",
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "depth_curve_depth2",
+        "id": "depth-2-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 3,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 80,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "depth_curve",
+          "blind"
+        ],
+        "threshold_policy_id": "measured_depth_curve",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-blind-depth-degradation",
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "depth_curve_depth3",
+        "id": "depth-3-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 3,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 3,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 80,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "depth_curve",
+          "blind"
+        ],
+        "threshold_policy_id": "measured_depth_curve",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-blind-depth-degradation",
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "depth_curve_depth4",
+        "id": "depth-4-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 4,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 3,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 80,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "depth_curve",
+          "blind"
+        ],
+        "threshold_policy_id": "measured_depth_curve",
+        "training_mode": "blind_training"
+      },
+      {
+        "claim_id": "paper-blind-depth-degradation",
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "depth_curve_depth5",
+        "id": "depth-5-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 5,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 3,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 80,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0,
+          1
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.5",
+          "proof",
+          "measured",
+          "depth_curve",
+          "blind"
+        ],
+        "threshold_policy_id": "measured_depth_curve",
+        "training_mode": "blind_training"
+      }
+    ],
+    "description": "v1.12 current-code subset of proof-depth-curve, blind depths 2 through 5 with two seeds each.",
+    "id": "proof-depth-curve",
+    "schema": "eml.benchmark_suite.v1"
+  },
+  "thresholds": [
+    {
+      "claim_class": "measured_depth_curve",
+      "claim_id": "paper-blind-depth-degradation",
+      "eligible": 8,
+      "evidence_classes": {
+        "blind_training_recovered": 2,
+        "scaffolded_blind_training_recovered": 2,
+        "snapped_but_failed": 4
+      },
+      "failed": 0,
+      "passed": 8,
+      "rate": 1.0,
+      "required_rate": null,
+      "status": "reported",
+      "threshold": {
+        "allowed_evidence_classes": [
+          "blind_training_recovered",
+          "scaffolded_blind_training_recovered",
+          "compiler_warm_start_recovered",
+          "perturbed_true_tree_recovered",
+          "repaired_candidate",
+          "verified_equivalent",
+          "same_ast",
+          "soft_fit_only",
+          "snapped_but_failed",
+          "failed",
+          "unsupported",
+          "execution_failure"
+        ],
+        "description": "Depth-curve suites report measured recovery by depth without requiring universal blind recovery.",
+        "fail_on_execution_error": false,
+        "fail_on_unsupported": false,
+        "id": "measured_depth_curve",
+        "policy_type": "measured_rate",
+        "required_rate": null
+      },
+      "threshold_policy_id": "measured_depth_curve"
+    }
+  ]
+}

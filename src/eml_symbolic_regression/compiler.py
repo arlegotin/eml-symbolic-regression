@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Mapping, Sequence
 
 import numpy as np
@@ -121,6 +121,8 @@ class CompileResult:
 MACRO_RULES = (
     "reciprocal_shift_template",
     "saturation_ratio_template",
+    "exponential_saturation_template",
+    "low_degree_power_template",
     "direct_division_template",
     "scaled_exp_minus_one_template",
 )
@@ -139,8 +141,14 @@ class UnsupportedExpression(ValueError):
 
 @dataclass(frozen=True)
 class _UnitShift:
-    variable: str
+    base: sp.Expr
     offset: complex
+
+
+@dataclass(frozen=True)
+class _ExponentialSaturation:
+    exponent: sp.Expr
+    coefficient: complex
 
 
 def subtract_expr(left: Expr, right: Expr) -> Expr:
@@ -261,8 +269,17 @@ class _Compiler:
         if not self.config.enable_macros:
             return None
         if isinstance(expr, sp.Pow):
-            return self._compile_reciprocal_shift(expr)
+            macro = self._compile_exponential_saturation(expr)
+            if macro is not None:
+                return macro
+            macro = self._compile_reciprocal_shift(expr)
+            if macro is not None:
+                return macro
+            return self._compile_low_degree_power(expr)
         if isinstance(expr, sp.Mul):
+            macro = self._compile_exponential_saturation(expr)
+            if macro is not None:
+                return macro
             macro = self._compile_saturation_ratio(expr)
             if macro is not None:
                 return macro
@@ -277,7 +294,7 @@ class _Compiler:
         if not isinstance(expr, sp.Add):
             return None
 
-        symbol_terms: list[sp.Symbol] = []
+        base_terms: list[sp.Expr] = []
         numeric_terms: list[sp.Expr] = []
         for term in expr.args:
             if term.is_number:
@@ -285,17 +302,16 @@ class _Compiler:
                 continue
 
             coeff, rest = term.as_coeff_Mul()
-            if isinstance(rest, sp.Symbol) and sp.simplify(coeff - 1) == 0:
-                symbol_terms.append(rest)
+            if not rest.is_number and sp.simplify(coeff - 1) == 0:
+                base_terms.append(rest)
                 continue
 
             return None
-        if len(symbol_terms) != 1 or len(numeric_terms) != 1:
+        if len(base_terms) != 1 or len(numeric_terms) != 1:
             return None
 
-        variable = self._variable_name(symbol_terms[0])
         offset = self._constant_value(numeric_terms[0])
-        return _UnitShift(variable=variable, offset=offset)
+        return _UnitShift(base=base_terms[0], offset=offset)
 
     def _build_unit_shift(self, match: _UnitShift) -> Expr | None:
         with np.errstate(over="ignore", invalid="ignore", under="ignore"):
@@ -306,8 +322,12 @@ class _Compiler:
             return None
         if self.config.constant_policy not in {"basis_only", "literal_constants"}:
             return None
-        self.assumptions.append("unit shift x+b compiled as eml(log(x), exp(-b)) behind validation")
-        return Eml(log_of(Var(match.variable)), Const(derived))
+        try:
+            compiled_base = self.compile(match.base)
+        except UnsupportedExpression:
+            return None
+        self.assumptions.append("unit shift g+b compiled as eml(log(g), exp(-b)) behind validation")
+        return Eml(log_of(compiled_base), Const(derived))
 
     def _compile_reciprocal_shift(self, expr: sp.Pow) -> Expr | None:
         base, exponent = expr.args
@@ -345,35 +365,193 @@ class _Compiler:
             return None
 
         coefficient = 1.0 + 0.0j
-        numerator_symbol: sp.Symbol | None = None
+        numerator_base_factors: list[sp.Expr] = []
         for factor in numerator_factors:
             if factor.is_number:
                 coefficient *= self._constant_value(factor)
-            elif isinstance(factor, sp.Symbol):
-                if numerator_symbol is not None:
-                    return None
-                numerator_symbol = factor
             else:
-                return None
+                factor_coeff, factor_rest = factor.as_coeff_Mul()
+                if factor_coeff.is_number and sp.simplify(factor_coeff - 1) != 0:
+                    coefficient *= self._constant_value(factor_coeff)
+                else:
+                    factor_rest = factor
+                if factor_rest.is_number:
+                    return None
+                numerator_base_factors.append(factor_rest)
 
-        if numerator_symbol is None:
+        if not numerator_base_factors:
             return None
 
-        variable = self._variable_name(numerator_symbol)
+        numerator_base = sp.Mul(*numerator_base_factors)
         shift = denominator_matches[0]
-        if variable != shift.variable:
+        if sp.simplify(numerator_base - shift.base) != 0:
             return None
 
-        numerator = multiply_expr(Const(coefficient), Var(variable))
+        try:
+            compiled_base = self.compile(numerator_base)
+        except UnsupportedExpression:
+            return None
+        numerator = multiply_expr(Const(coefficient), compiled_base)
         denominator = self._build_unit_shift(shift)
         if denominator is None:
             return None
-        self.assumptions.append("saturation ratio shortcut lowers c*x/(x+b) as one structural motif")
+        self.assumptions.append("saturation ratio shortcut lowers c*g/(g+b) as one structural motif")
         return self._record(
             "saturation_ratio_template",
             expr,
             divide_expr(numerator, denominator),
         )
+
+    def _compile_exponential_saturation(self, expr: sp.Expr) -> Expr | None:
+        match = self._match_exponential_saturation(expr)
+        if match is None:
+            return None
+        compiled = self._build_exponential_saturation(match)
+        if compiled is None:
+            return None
+        self.assumptions.append("exponential saturation shortcut lowers 1/(1+c*exp(a)) behind validation")
+        return self._record("exponential_saturation_template", expr, compiled)
+
+    def _match_exponential_saturation(self, expr: sp.Expr) -> _ExponentialSaturation | None:
+        if isinstance(expr, sp.Pow) and expr.exp == -1:
+            return self._match_unit_plus_scaled_exp(expr.base)
+
+        if isinstance(expr, sp.Mul):
+            numerator_factors: list[sp.Expr] = []
+            denominator_bases: list[sp.Expr] = []
+            for factor in expr.args:
+                if isinstance(factor, sp.Pow) and factor.exp == -1:
+                    denominator_bases.append(factor.base)
+                else:
+                    numerator_factors.append(factor)
+            if len(denominator_bases) != 1:
+                return None
+
+            numerator = sp.Mul(*numerator_factors)
+            numerator_scaled_exp = self._match_scaled_exp_term(numerator)
+            if numerator_scaled_exp is None:
+                return None
+            numerator_scale, numerator_arg = numerator_scaled_exp
+
+            denominator_match = self._match_exp_plus_constant(denominator_bases[0])
+            if denominator_match is None:
+                return None
+            denominator_arg, denominator_scale, constant = denominator_match
+            if sp.simplify(numerator_arg - denominator_arg) != 0:
+                return None
+            scale_delta = abs(numerator_scale - denominator_scale)
+            scale_limit = 1e-12 * max(1.0, abs(numerator_scale), abs(denominator_scale))
+            if scale_delta > scale_limit:
+                return None
+            return _ExponentialSaturation(exponent=-denominator_arg, coefficient=constant / denominator_scale)
+
+        return None
+
+    def _match_unit_plus_scaled_exp(self, expr: sp.Expr) -> _ExponentialSaturation | None:
+        if not isinstance(expr, sp.Add):
+            return None
+
+        unit_terms: list[complex] = []
+        exp_terms: list[tuple[complex, sp.Expr]] = []
+        for term in expr.args:
+            if term.is_number:
+                unit_terms.append(self._constant_value(term))
+                continue
+            scaled_exp = self._match_scaled_exp_term(term)
+            if scaled_exp is None:
+                return None
+            exp_terms.append(scaled_exp)
+
+        if len(unit_terms) != 1 or len(exp_terms) != 1:
+            return None
+        if abs(unit_terms[0] - 1.0) > 1e-12:
+            return None
+
+        coefficient, exponent = exp_terms[0]
+        return _ExponentialSaturation(exponent=exponent, coefficient=coefficient)
+
+    def _match_exp_plus_constant(self, expr: sp.Expr) -> tuple[sp.Expr, complex, complex] | None:
+        if not isinstance(expr, sp.Add):
+            return None
+
+        constant_terms: list[complex] = []
+        exp_terms: list[tuple[complex, sp.Expr]] = []
+        for term in expr.args:
+            if term.is_number:
+                constant_terms.append(self._constant_value(term))
+                continue
+            scaled_exp = self._match_scaled_exp_term(term)
+            if scaled_exp is None:
+                return None
+            exp_terms.append(scaled_exp)
+
+        if len(constant_terms) != 1 or len(exp_terms) != 1:
+            return None
+        exp_scale, exponent = exp_terms[0]
+        return exponent, exp_scale, constant_terms[0]
+
+    def _match_scaled_exp_term(self, expr: sp.Expr) -> tuple[complex, sp.Expr] | None:
+        coefficient, rest = expr.as_coeff_Mul()
+        if rest.func != sp.exp or len(rest.args) != 1:
+            return None
+        scale = self._constant_value(coefficient) if coefficient.is_number else 1.0 + 0.0j
+        if not (np.isfinite(scale.real) and np.isfinite(scale.imag)):
+            return None
+        if abs(scale) <= 1e-15:
+            return None
+        return scale, rest.args[0]
+
+    def _build_exponential_saturation(self, match: _ExponentialSaturation) -> Expr | None:
+        if self.config.constant_policy != "literal_constants":
+            return None
+        if not (np.isfinite(match.coefficient.real) and np.isfinite(match.coefficient.imag)):
+            return None
+        if abs(match.coefficient) <= 1e-15:
+            return None
+
+        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
+            shifted_constant = complex(np.log(np.e * match.coefficient))
+            exp_minus_e = complex(np.exp(-np.e))
+        if not (
+            np.isfinite(shifted_constant.real)
+            and np.isfinite(shifted_constant.imag)
+            and np.isfinite(exp_minus_e.real)
+            and np.isfinite(exp_minus_e.imag)
+        ):
+            return None
+
+        try:
+            compiled_exponent = self.compile(match.exponent)
+        except UnsupportedExpression:
+            return None
+
+        shifted_exponent = add_expr(compiled_exponent, Const(shifted_constant))
+        scaled_denominator = Eml(shifted_exponent, Const(exp_minus_e))
+        negative_log_denominator = Eml(Const(0.0), scaled_denominator)
+        return exp_of(negative_log_denominator)
+
+    def _compile_low_degree_power(self, expr: sp.Pow) -> Expr | None:
+        base, exponent = expr.args
+        if not exponent.is_Integer:
+            return None
+        power = int(exponent)
+        if power <= 1 or power > self.config.max_power:
+            return None
+        if self.config.constant_policy != "literal_constants":
+            return None
+
+        try:
+            compiled_base = self.compile(base)
+        except UnsupportedExpression:
+            return None
+
+        repeated = self._positive_power(compiled_base, power)
+        candidate = exp_of(multiply_expr(Const(float(power)), log_of(compiled_base)))
+        if (candidate.depth(), candidate.node_count()) >= (repeated.depth(), repeated.node_count()):
+            return None
+
+        self.assumptions.append("low-degree power shortcut lowers g**n as exp(n*log(g)) behind validation")
+        return self._record("low_degree_power_template", expr, candidate)
 
     def _compile_direct_division(self, expr: sp.Mul) -> Expr | None:
         numerator_factors: list[sp.Expr] = []
@@ -427,8 +605,8 @@ class _Compiler:
 
     def _compile_power(self, expr: sp.Pow) -> Expr:
         base, exponent = expr.args
-        if not exponent.is_integer:
-            raise UnsupportedExpression(CompileReason.UNSUPPORTED_POWER, expr, "only integer powers are supported")
+        if not exponent.is_Integer:
+            raise UnsupportedExpression(CompileReason.UNSUPPORTED_POWER, expr, "only literal integer powers are supported")
         power = int(exponent)
         if abs(power) > self.config.max_power:
             raise UnsupportedExpression(
@@ -542,6 +720,8 @@ def _macro_diagnostics(
         "baseline_node_count": baseline_nodes,
         "depth_delta": baseline_depth - compiled.depth() if baseline_depth is not None else 0,
         "node_delta": baseline_nodes - compiled.node_count() if baseline_nodes is not None else 0,
+        "validation_status": "not_run",
+        "validation_passed": None,
     }
 
 
@@ -589,7 +769,21 @@ def compile_and_validate(
             expression,
             f"max_abs_error={validation.max_abs_error:.3e}",
         )
-    return CompileResult(result.expression, result.metadata, validation)
+    metadata = _metadata_with_validation(result.metadata, validation)
+    return CompileResult(result.expression, metadata, validation)
+
+
+def _metadata_with_validation(metadata: CompileMetadata, validation: CompileValidation) -> CompileMetadata:
+    if metadata.macro_diagnostics is None:
+        return metadata
+    return replace(
+        metadata,
+        macro_diagnostics={
+            **dict(metadata.macro_diagnostics),
+            "validation_status": validation.reason,
+            "validation_passed": validation.passed,
+        },
+    )
 
 
 def diagnose_compile_expression(
@@ -628,8 +822,9 @@ def diagnose_compile_expression(
     try:
         relaxed = compile_sympy_expression(expression, relaxed_config)
         validation = validate_compiled_expression(relaxed, inputs, tolerance=config.validation_tolerance)
+        relaxed_metadata = _metadata_with_validation(relaxed.metadata, validation)
         diagnostic["relaxed"] = {
-            "metadata": relaxed.metadata.as_dict(),
+            "metadata": relaxed_metadata.as_dict(),
             "validation": validation.as_dict(),
         }
     except UnsupportedExpression as relaxed_error:

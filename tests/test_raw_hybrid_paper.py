@@ -8,9 +8,11 @@ import pytest
 from eml_symbolic_regression.cli import build_parser, raw_hybrid_paper_command
 from eml_symbolic_regression.raw_hybrid_paper import (
     RAW_HYBRID_PAPER_PRESET_ID,
+    V111_RAW_HYBRID_PAPER_PRESET_ID,
     RawHybridPaperError,
     RawHybridSource,
     default_raw_hybrid_sources,
+    v111_raw_hybrid_sources,
     write_raw_hybrid_paper_package,
 )
 
@@ -50,6 +52,20 @@ def test_default_raw_hybrid_sources_cover_required_evidence():
     } <= source_ids
     assert all(source.required for source in sources)
     assert all(source.path.suffix in {".json", ".md"} for source in sources)
+    assert all(source.path.is_file() for source in sources)
+
+
+def test_v111_sources_replace_stale_logistic_and_planck_diagnostics():
+    sources = v111_raw_hybrid_sources()
+    source_ids = {source.source_id for source in sources}
+
+    assert {source.preset_id for source in sources} == {V111_RAW_HYBRID_PAPER_PRESET_ID}
+    assert "v1.10-logistic-aggregate" in source_ids
+    assert "v1.10-logistic-run" in source_ids
+    assert "v1.10-planck-aggregate" in source_ids
+    assert "v1.10-planck-run" in source_ids
+    assert "v1.6-logistic-diagnostic-run" not in source_ids
+    assert "v1.6-planck-diagnostic-run" not in source_ids
     assert all(source.path.is_file() for source in sources)
 
 
@@ -113,6 +129,31 @@ def test_raw_hybrid_manifest_records_package_contract(tmp_path):
     assert manifest["source_locks"] == str(paths.source_locks_json)
     assert manifest["outputs"]["manifest_json"] == str(paths.manifest_json)
     assert manifest["outputs"]["source_locks_json"] == str(paths.source_locks_json)
+    assert manifest["outputs"]["claim_ledger_json"] == str(paths.claim_ledger_json)
+
+
+def test_v111_manifest_and_claim_ledger_record_current_contract(tmp_path):
+    paths = write_raw_hybrid_paper_package(
+        output_dir=tmp_path / "paper",
+        preset=V111_RAW_HYBRID_PAPER_PRESET_ID,
+        require_existing=True,
+        reproduction_command=(
+            "PYTHONPATH=src python -m eml_symbolic_regression.cli raw-hybrid-paper "
+            "--preset v1.11-paper-evidence-package --output-dir out"
+        ),
+    )
+
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    ledger = json.loads(paths.claim_ledger_json.read_text(encoding="utf-8"))
+    locks = json.loads(paths.source_locks_json.read_text(encoding="utf-8"))
+
+    assert manifest["preset_id"] == V111_RAW_HYBRID_PAPER_PRESET_ID
+    assert manifest["claim_ledger_rows"] == len(ledger["rows"])
+    assert ledger["schema"] == "eml.raw_hybrid_claim_ledger.v1"
+    assert ledger["rules"]["loss_only_recovery"] == "forbidden"
+    source_ids = {row["source_id"] for row in locks["sources"]}
+    assert "v1.10-logistic-run" in source_ids
+    assert "v1.10-planck-run" in source_ids
 
 
 def test_raw_hybrid_report_keeps_required_regimes_separate(tmp_path):
@@ -218,6 +259,35 @@ def test_scientific_law_table_contains_required_columns_and_rows(tmp_path):
     assert by_law["Historical Michaelis diagnostic"]["evidence_regime"] == "historical_context"
 
 
+def test_v111_scientific_law_table_uses_current_logistic_and_planck_rows(tmp_path):
+    paths = write_raw_hybrid_paper_package(
+        output_dir=tmp_path / "paper",
+        preset=V111_RAW_HYBRID_PAPER_PRESET_ID,
+        require_existing=True,
+    )
+
+    rows = json.loads(paths.scientific_law_table_json.read_text(encoding="utf-8"))["rows"]
+    by_law = {row["law"]: row for row in rows}
+
+    logistic = by_law["Logistic diagnostic"]
+    planck = by_law["Planck diagnostic"]
+    assert logistic["compile_support"] == "unsupported"
+    assert logistic["compile_depth"] == 15
+    assert logistic["macro_hits"] == ["exponential_saturation_template"]
+    assert "v1.10-logistic-evidence" in logistic["artifact_path"]
+    assert "v1.6" not in logistic["artifact_path"]
+    assert planck["compile_support"] == "unsupported"
+    assert planck["compile_depth"] == 14
+    assert planck["macro_hits"] == [
+        "low_degree_power_template",
+        "scaled_exp_minus_one_template",
+        "direct_division_template",
+    ]
+    assert "v1.10-planck-diagnostics" in planck["artifact_path"]
+    assert "v1.6" not in planck["artifact_path"]
+    assert by_law["Michaelis-Menten"]["compile_depth"] == 12
+
+
 def test_centered_diagnostics_keep_same_family_witness_caveat(tmp_path):
     paths = write_raw_hybrid_paper_package(output_dir=tmp_path / "paper", require_existing=True)
 
@@ -234,6 +304,7 @@ def test_raw_hybrid_cli_parser_and_command_writes_package(tmp_path, capsys):
     args = build_parser().parse_args(["raw-hybrid-paper", "--output-dir", str(output_dir), "--require-existing"])
 
     assert args.func is raw_hybrid_paper_command
+    assert args.preset == RAW_HYBRID_PAPER_PRESET_ID
     assert args.output_dir == str(output_dir)
     assert args.require_existing is True
 
@@ -249,8 +320,36 @@ def test_raw_hybrid_cli_parser_and_command_writes_package(tmp_path, capsys):
     assert (output_dir / "manifest.json").exists()
     assert (output_dir / "raw-hybrid-report.md").exists()
     assert (output_dir / "scientific-law-table.json").exists()
+    assert (output_dir / "claim-ledger.json").exists()
     assert (output_dir / "claim-boundaries.md").exists()
     assert (output_dir / "source-locks.json").exists()
+
+
+def test_v111_cli_parser_and_command_writes_current_package(tmp_path):
+    output_dir = tmp_path / "paper"
+    args = build_parser().parse_args(
+        [
+            "raw-hybrid-paper",
+            "--preset",
+            V111_RAW_HYBRID_PAPER_PRESET_ID,
+            "--output-dir",
+            str(output_dir),
+            "--require-existing",
+        ]
+    )
+
+    assert args.func is raw_hybrid_paper_command
+    assert args.preset == V111_RAW_HYBRID_PAPER_PRESET_ID
+    assert args.func(args) == 0
+
+    manifest = json.loads((output_dir / "manifest.json").read_text(encoding="utf-8"))
+    rows = json.loads((output_dir / "scientific-law-table.json").read_text(encoding="utf-8"))["rows"]
+    by_law = {row["law"]: row for row in rows}
+
+    assert manifest["preset_id"] == V111_RAW_HYBRID_PAPER_PRESET_ID
+    assert "--preset v1.11-paper-evidence-package" in manifest["reproducibility"]["command"]
+    assert by_law["Logistic diagnostic"]["compile_depth"] == 15
+    assert by_law["Planck diagnostic"]["compile_depth"] == 14
 
 
 def test_raw_hybrid_cli_refuses_silent_overwrite(tmp_path):

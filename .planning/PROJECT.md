@@ -10,33 +10,34 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.9 Shipped
+## Current State: v1.12 Shipped
 
-The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, and paper-package foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, and the v1.9 raw-hybrid paper package are all in place and archived through v1.9.
+The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, and figure-asset foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, v1.10 focused motif evidence, and the v1.11 paper evidence package are all in place and archived through v1.11.
 
 The current evidence says raw EML is representationally viable but blind basin finding degrades sharply with depth. Perturbed true-tree recovery remains strong, scaffolded/warm-start regimes are useful when clearly labeled, centered-family evidence is negative under the supplied v1.8 setup, and v1.9 has a verified raw-hybrid paper package that keeps those regimes separate.
 
-v1.9 completed the raw-EML hybrid paper path: Phase 49 fixed the centered scaffold correctness confound with an explicit raw-only scaffold witness registry, Phase 50 added normalized Arrhenius exact compiler warm-start evidence, Phase 51 shortened Michaelis-Menten through reusable reciprocal/saturation motifs, Phase 52 expanded verifier-gated cleanup evidence, and Phase 53 generated the regime-separated raw-hybrid paper suite at `artifacts/paper/v1.9/raw-hybrid/`.
+v1.10 expanded the compiler from a small set of useful macros into a search-backed reusable motif library. Logistic now has structural exponential-saturation compile support at relaxed depth 15, down from 27, but remains above the strict depth-13 gate. Planck now has validation-backed low-degree power compression and relaxed depth 14, down from 20, but also remains above the strict gate. Focused campaign artifacts record both outcomes as unsupported diagnostics with no warm-start promotion.
 
-## Last Completed Milestone: v1.9 Raw-EML Hybrid Recovery and Paper Suite
+v1.11 adds the paper-strength evidence layer: real current-code training artifacts, low-hanging ablation and prediction-only baseline diagnostics, deterministic SVG/source-table assets, and a final source-locked package at `artifacts/paper/v1.11/` with a passing claim audit. The paper is now defensible as a verifier-gated hybrid EML symbolic-regression methods/evidence paper with explicit boundaries, not as broad blind symbolic-regression superiority.
 
-**Goal:** Produce a stronger raw-EML hybrid paper package by fixing centered scaffold correctness, adding Arrhenius exact recovery, materially improving Michaelis-Menten support, expanding exact cleanup, and generating a regime-separated paper-facing campaign.
+v1.12 turns the evidence package into a paper-shaped argument. The repo now has `artifacts/paper/v1.11/draft/` with section skeletons, claim taxonomy, captions, motif evolution, negative-result tables, and a pipeline figure; `artifacts/campaigns/v1.12-evidence-refresh/` with current-code shallow/depth refreshes; and `artifacts/paper/v1.11/v1.12-supplement/` with 49 source locks and a passing claim audit. Conventional symbolic-regression comparison remains unavailable locally, and logistic remains unsupported at the strict gate, both recorded explicitly.
+
+## Last Completed Milestone: v1.12 Paper draft skeleton and refreshed shallow evidence
+
+**Goal:** Turn the v1.11 evidence package into a paper-shaped draft while refreshing the most reviewer-visible shallow/depth evidence and making claim boundaries explicit.
 
 **Shipped features:**
-- Raw-only scaffold witness registry and centered-family scaffold exclusions with explicit reason codes.
-- Normalized Arrhenius strict compile and exact same-AST warm-start evidence.
-- Reusable reciprocal-shift and saturation-ratio compiler motifs with Michaelis-Menten same-AST warm-start evidence.
-- Opt-in expanded verifier-gated cleanup over selected, fallback, and retained exact roots, with focused no-improvement repair evidence.
-- Synthesis-only raw-hybrid paper package with source locks, regime-separated reports, scientific-law tables, claim boundaries, centered caveats, README/docs, and regression tests.
 
-## Next Milestone
+- Draft skeleton under `artifacts/paper/v1.11/draft/` with abstract, methods, results, limitations, claim taxonomy, figure captions, and table captions.
+- Current-code v1.12 shallow refresh with 10/10 verifier-recovered shallow rows across separate pure-blind and scaffolded regimes.
+- Current-code depth refresh over depths 2-5, with 4/8 verifier-recovered rows and clear depth-limit evidence.
+- Paper-facing motif evolution, logistic/Planck negative-results, and EML pipeline figure artifacts.
+- Bounded probe outputs showing conventional SR baseline unavailable locally and logistic strict support still unsupported at gate 13.
+- Source-locked v1.12 supplement with 49 source locks, reproduction commands, and a passing claim audit.
 
-No active milestone is defined. Run `$gsd-new-milestone` to choose the next direction.
+## Current Milestone: None
 
-Likely candidates:
-- Matched-budget external symbolic-regression baselines for the paper package.
-- Constructive centered-family same-family witnesses or compiler seeds.
-- Further blind-search improvements for deeper raw EML targets.
+Start the next milestone with `$gsd-new-milestone`. The natural next paper milestone is manuscript prose expansion and bibliography/venue packaging, not more evidence organization.
 
 ## Requirements
 
@@ -90,10 +91,27 @@ Likely candidates:
 - ✓ Reusable `reciprocal_shift_template` and `saturation_ratio_template` compiler motifs, Michaelis-Menten strict support, same-AST warm-start return, and focused `v1.9-michaelis-evidence` artifacts — v1.9 Phase 51
 - ✓ Opt-in expanded candidate-pool cleanup over selected/fallback/retained exact roots, verifier-gated AST dedup, repair metrics, and focused `v1.9-repair-evidence` no-improvement evidence — v1.9 Phase 52
 - ✓ Regime-separated raw-hybrid paper package with source locks, scientific-law tables, claim boundaries, docs, and regression locks — v1.9 Phase 53
+- ✓ Archived compiler baselines for logistic, Planck, Michaelis-Menten, Arrhenius, and Shockley before motif-library changes — v1.10 Phase 54
+- ✓ Generalized reciprocal and saturation motifs over validated compilable subexpressions with validation-visible diagnostics and fail-closed behavior — v1.10 Phase 55
+- ✓ Structural exponential-saturation motif for logistic-like laws, lowering logistic relaxed depth from 27 to 15 while preserving strict unsupported status — v1.10 Phase 56
+- ✓ Bounded motif-search evidence and validation-backed low-degree power compression, lowering Planck relaxed depth from 20 to 14 while preserving unsupported/stretch honesty — v1.10 Phase 57
+- ✓ Focused logistic and Planck benchmark suites, CLI artifact paths, campaign evidence, and tests recording unsupported diagnostics with no warm-start promotion — v1.10 Phase 58
+- ✓ Versioned v1.11 raw-hybrid paper package contract with source locks, claim ledger, and current v1.10 logistic/Planck scientific-law rows — v1.11 Phase 59
+- ✓ Current-code v1.11 training campaigns covering pure blind, scaffolded, same-AST warm-start, perturbed-basin, and logistic/Planck probe regimes — v1.11 Phase 60
+- ✓ v1.11 motif-depth, regime-comparison, repair/refit, and prediction-only baseline diagnostic tables with source locks — v1.11 Phase 61
+- ✓ Deterministic v1.11 paper asset pipeline with source tables, SVG figures, per-figure metadata, and source locks — v1.11 Phase 62
+- ✓ Final v1.11 paper package with root manifest, 67 source-lock rows, reproduction commands, paper-readiness summary, and passing claim audit — v1.11 Phase 63
+- ✓ v1.12 paper draft skeleton with section files, claim taxonomy, figure captions, and table captions — v1.12 Phase 64/66
+- ✓ Current-code shallow and depth evidence refresh with regime-separated source tables — v1.12 Phase 65
+- ✓ Paper-facing motif evolution, pipeline figure, and logistic/Planck negative-result tables — v1.12 Phase 66
+- ✓ Bounded conventional SR baseline status and logistic strict-support probe with no unsupported promotion — v1.12 Phase 67
+- ✓ v1.12 supplement with 49 source locks, reproduction commands, and passing claim audit — v1.12 Phase 68
 
 ### Active
 
-(None. Start the next milestone to define active requirements.)
+- [ ] Expand the draft skeleton into manuscript prose with related work, bibliography, and venue-specific structure.
+- [ ] Run a matched-budget external symbolic-regression baseline once dependencies and scope are deliberately selected.
+- [ ] Improve logistic strict support only through reusable structural compiler work; keep unsupported status until strict support and verifier evidence both pass.
 
 ### Out of Scope
 
@@ -134,6 +152,7 @@ v1.8 found no positive centered-family recovery signal under the scoped local se
 - **Witness honesty**: Raw EML witness/scaffold helpers are raw-only unless a same-family centered witness is explicitly constructed and tested.
 - **Reusable motifs**: Compiler improvements should target reusable structures such as reciprocal shifts and saturation ratios, not one-off formula recognizers.
 - **Paper claims**: Warm-start, same-AST return, scaffolded recovery, repair, refit, and pure-blind discovery must remain separately labeled in all v1.9 outputs.
+- **Motif honesty**: Logistic and Planck improvements must come from reusable structural motifs or search-backed validated templates, not formula-name branches, exact-constant recognizers, or silent gate relaxation.
 
 ## Key Decisions
 
@@ -176,6 +195,9 @@ v1.8 found no positive centered-family recovery signal under the scoped local se
 | Michaelis-Menten support is same-AST compiler warm-start evidence, not blind discovery | Phase 51 records `same_ast_return`, verifier `recovered`, and evidence class `same_ast` for `michaelis-warm`. | ✓ Good |
 | Raw scaffold helpers are registry-gated by operator family | Phase 49 proved current `exp`, `log`, and `scaled_exp` scaffold witnesses are raw EML only; centered runs now record missing same-family witness exclusions instead of reusing raw helpers. | ✓ Good |
 | Expanded exact cleanup is repair-only evidence | Phase 52 can opt into selected/fallback/retained candidate roots and records no-improvement focused evidence; repaired candidates remain `repaired_candidate`, not blind, compile-only, same-AST, or perturbed true-tree recovery. | ✓ Good |
+| v1.10 prioritizes reusable compiler motifs over reporting work or gate changes | Logistic and Planck are high-visibility unsupported laws, and prior Shockley/Arrhenius/Michaelis wins came from reusable motif compression rather than looser recovery claims. | ✓ Good |
+| v1.12 prioritizes paper-shaped argument over broad new algorithm work | v1.11 already organized the evidence; the highest-leverage next step is to turn it into a draft skeleton while refreshing small, credibility-critical evidence gaps. | ✓ Good |
+| v1.12 treats conventional SR and logistic strict support as bounded probes | Both could help the paper, but dependency availability and compiler success are uncertain, so the milestone should record attempt/deferred/failure outcomes without blocking draft assembly. | ✓ Good |
 
 ## Evolution
 
@@ -195,4 +217,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-17 after completing v1.9 milestone*
+*Last updated: 2026-04-19 after v1.12 milestone*

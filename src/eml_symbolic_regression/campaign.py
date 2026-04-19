@@ -192,6 +192,20 @@ _PRESETS = {
         description="v1.8 showcase-style raw-vs-centered operator-family comparison campaign.",
         budget_guardrail="Showcase-style comparison cloned across expanded v1.8 operator variants; run only after earlier positive signal.",
     ),
+    "paper-training": CampaignPreset(
+        name="paper-training",
+        suite="v1.11-paper-training",
+        tier="v1.11-paper",
+        description="Compact v1.11 current-code training refresh for paper figures and claim-safe regime rows.",
+        budget_guardrail="8 runs; pure blind, scaffolded, same-AST warm-start, and perturbed-basin regimes kept separate.",
+    ),
+    "paper-probes": CampaignPreset(
+        name="paper-probes",
+        suite="v1.11-logistic-planck-probes",
+        tier="v1.11-paper",
+        description="Focused v1.11 logistic and Planck compile diagnostics plus low-budget real blind probes.",
+        budget_guardrail="4 runs; compile diagnostics and unsupported/stretch blind probes only, with no promotion from loss.",
+    ),
 }
 
 

@@ -15,9 +15,12 @@ from eml_symbolic_regression.compiler import (
     compile_and_validate,
     compile_sympy_expression,
     diagnose_compile_expression,
+    multiply_expr,
 )
 from eml_symbolic_regression.datasets import get_demo
+from eml_symbolic_regression.expression import Const, Var, exp_of, log_of
 from eml_symbolic_regression.master_tree import EmbeddingConfig, EmbeddingError, SoftEMLTree
+from eml_symbolic_regression.motif_search import validate_motif_candidate
 from eml_symbolic_regression.optimize import TrainingConfig
 from eml_symbolic_regression.warm_start import PerturbationConfig, fit_warm_started_eml_tree
 from eml_symbolic_regression.warm_start import perturb_tree_logits
@@ -170,6 +173,70 @@ def test_explicit_unit_coefficient_saturation_ratio_uses_template():
     assert result.metadata.macro_diagnostics["hits"] == ["saturation_ratio_template"]
 
 
+def test_reciprocal_shift_accepts_compilable_subexpression():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        1 / (sp.exp(x) + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.macro_diagnostics is not None
+    macro = result.metadata.macro_diagnostics
+    assert macro["hits"] == ["reciprocal_shift_template"]
+    assert macro["validation_status"] == "validated"
+    assert macro["validation_passed"] is True
+
+
+def test_saturation_ratio_accepts_compilable_subexpression():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        sp.Float("2.0") * sp.exp(x) / (sp.exp(x) + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.macro_diagnostics is not None
+    macro = result.metadata.macro_diagnostics
+    assert macro["hits"] == ["saturation_ratio_template"]
+    assert macro["validation_status"] == "validated"
+    assert macro["validation_passed"] is True
+
+
+def test_generalized_shift_templates_fail_closed_on_non_unit_base_coefficient():
+    x = sp.Symbol("x")
+
+    for expr, forbidden in (
+        (1 / (sp.Float("2.0") * sp.exp(x) + sp.Float("0.5")), "reciprocal_shift_template"),
+        (
+            sp.Float("2.0") * sp.exp(x) / (sp.Float("2.0") * sp.exp(x) + sp.Float("0.5")),
+            "saturation_ratio_template",
+        ),
+    ):
+        relaxed = compile_sympy_expression(expr, CompilerConfig(variables=("x",), max_depth=64, max_nodes=512))
+        assert relaxed.metadata.macro_diagnostics is not None
+        assert forbidden not in relaxed.metadata.macro_diagnostics["hits"]
+
+
+def test_plain_compile_macro_diagnostics_mark_validation_not_run():
+    x = sp.Symbol("x")
+    result = compile_sympy_expression(
+        1 / (sp.exp(x) + sp.Float("0.5")),
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+    )
+
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["reciprocal_shift_template"]
+    assert result.metadata.macro_diagnostics["validation_status"] == "not_run"
+    assert result.metadata.macro_diagnostics["validation_passed"] is None
+
+
 def test_non_unit_coefficient_shift_does_not_use_unit_shift_templates():
     x = sp.Symbol("x")
 
@@ -223,8 +290,122 @@ def test_compiler_fail_closed_negative_cases():
         compile_sympy_expression(sp.exp(sp.Float("-0.8") * x), CompilerConfig(variables=("x",), max_depth=3))
     assert depth_error.value.reason == CompileReason.DEPTH_EXCEEDED
 
+    n = sp.Symbol("n", integer=True)
+    with pytest.raises(UnsupportedExpression) as symbolic_power_error:
+        compile_sympy_expression(x**n, CompilerConfig(variables=("x",)))
+    assert symbolic_power_error.value.reason == CompileReason.UNSUPPORTED_POWER
 
-def test_compiler_diagnostics_include_relaxed_depth_metadata():
+
+def test_compile_logistic_uses_exponential_saturation_template():
+    spec = get_demo("logistic")
+    splits = spec.make_splits(points=12, seed=0)
+    diagnostic = diagnose_compile_expression(
+        spec.candidate.to_sympy(),
+        CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+        {spec.variable: splits[0].inputs[spec.variable]},
+    )
+
+    assert diagnostic["status"] == "unsupported"
+    assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
+    relaxed = diagnostic["relaxed"]["metadata"]
+    assert relaxed["depth"] == 15
+    assert relaxed["node_count"] == 49
+    macro = relaxed["macro_diagnostics"]
+    assert macro["hits"] == ["exponential_saturation_template"]
+    assert macro["baseline_depth"] == 27
+    assert macro["baseline_node_count"] == 77
+    assert macro["depth_delta"] == 12
+    assert macro["node_delta"] == 28
+    assert macro["validation_status"] == "validated"
+    assert macro["validation_passed"] is True
+
+
+def test_exponential_saturation_template_supports_equivalent_ratio_shape():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        sp.exp(sp.Float("1.3") * x) / (sp.exp(sp.Float("1.3") * x) + sp.Float("2.0")),
+        CompilerConfig(variables=("x",), max_depth=15, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.depth == 15
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["exponential_saturation_template"]
+
+
+def test_exponential_saturation_template_normalizes_equal_scale_ratio_shape():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+    result = compile_and_validate(
+        sp.Float("2.0") * sp.exp(sp.Float("1.3") * x)
+        / (sp.Float("2.0") * sp.exp(sp.Float("1.3") * x) + sp.Float("3.0")),
+        CompilerConfig(variables=("x",), max_depth=15, max_nodes=256),
+        inputs,
+    )
+
+    assert result.validation is not None
+    assert result.validation.passed
+    assert result.metadata.depth == 15
+    assert result.metadata.macro_diagnostics is not None
+    assert result.metadata.macro_diagnostics["hits"] == ["exponential_saturation_template"]
+
+
+def test_low_degree_power_template_shortens_cube_but_not_square():
+    x = sp.Symbol("x")
+    inputs = {"x": np.linspace(0.25, 2.5, 12).astype(np.complex128)}
+
+    cube = compile_and_validate(
+        x**3,
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+    assert cube.validation is not None
+    assert cube.validation.passed
+    assert cube.metadata.depth == 9
+    assert cube.metadata.node_count == 25
+    assert cube.metadata.macro_diagnostics is not None
+    cube_macro = cube.metadata.macro_diagnostics
+    assert cube_macro["hits"] == ["low_degree_power_template"]
+    assert cube_macro["baseline_depth"] == 16
+    assert cube_macro["baseline_node_count"] == 33
+    assert cube_macro["depth_delta"] == 7
+    assert cube_macro["node_delta"] == 8
+    assert cube_macro["validation_status"] == "validated"
+    assert cube_macro["validation_passed"] is True
+
+    record = validate_motif_candidate(
+        motif_name="low_degree_power_template",
+        target_family="positive_integer_power",
+        target_expression=x**3,
+        candidate=exp_of(multiply_expr(Const(3.0), log_of(Var("x")))),
+        variables=("x",),
+        inputs=inputs,
+        candidate_construction="exp(3*log(g))",
+        baseline_depth=16,
+        baseline_node_count=33,
+    )
+    assert record.accepted
+    assert record.sample_count == inputs["x"].size
+    assert record.candidate_depth == 9
+    assert record.candidate_node_count == 25
+    assert record.as_dict()["target_family"] == "positive_integer_power"
+
+    square = compile_and_validate(
+        x**2,
+        CompilerConfig(variables=("x",), max_depth=13, max_nodes=256),
+        inputs,
+    )
+    assert square.validation is not None
+    assert square.validation.passed
+    assert square.metadata.depth == 8
+    assert square.metadata.macro_diagnostics is not None
+    assert "low_degree_power_template" not in square.metadata.macro_diagnostics["hits"]
+
+
+def test_planck_compile_depth_drops_below_archived_relaxed_diagnostic():
     spec = get_demo("planck")
     splits = spec.make_splits(points=12, seed=0)
     diagnostic = diagnose_compile_expression(
@@ -235,12 +416,47 @@ def test_compiler_diagnostics_include_relaxed_depth_metadata():
 
     assert diagnostic["status"] == "unsupported"
     assert diagnostic["strict"]["reason"] == CompileReason.DEPTH_EXCEEDED
-    assert diagnostic["relaxed"]["metadata"]["depth"] > 13
-    assert diagnostic["relaxed"]["metadata"]["trace"]
-    macro = diagnostic["relaxed"]["metadata"]["macro_diagnostics"]
-    assert set(macro["hits"]) == {"scaled_exp_minus_one_template", "direct_division_template"}
+    metadata = diagnostic["relaxed"]["metadata"]
+    assert metadata["depth"] == 14
+    assert metadata["depth"] < 20
+    assert metadata["node_count"] == 59
+    macro = metadata["macro_diagnostics"]
+    assert set(macro["hits"]) == {
+        "low_degree_power_template",
+        "scaled_exp_minus_one_template",
+        "direct_division_template",
+    }
     assert macro["depth_delta"] > 0
     assert macro["node_delta"] > 0
+
+
+def test_existing_macro_supported_demos_do_not_regress():
+    assert CompilerConfig().max_depth == 13
+    assert CompilerConfig().max_nodes == 256
+
+    cases = (
+        ("shockley", "scaled_exp_minus_one_template", None, None),
+        ("arrhenius", "direct_division_template", 7, None),
+        ("michaelis_menten", "saturation_ratio_template", 12, 41),
+    )
+    for demo_name, expected_macro, expected_depth, expected_nodes in cases:
+        spec = get_demo(demo_name)
+        splits = spec.make_splits(points=24, seed=0)
+        result = compile_and_validate(
+            spec.candidate.to_sympy(),
+            CompilerConfig(variables=(spec.variable,), max_depth=13, max_nodes=256),
+            {spec.variable: splits[0].inputs[spec.variable]},
+        )
+
+        assert result.validation is not None
+        assert result.validation.passed
+        assert result.metadata.unsupported_reason is None
+        assert result.metadata.macro_diagnostics is not None
+        assert result.metadata.macro_diagnostics["hits"] == [expected_macro]
+        if expected_depth is not None:
+            assert result.metadata.depth == expected_depth
+        if expected_nodes is not None:
+            assert result.metadata.node_count == expected_nodes
 
 
 def test_damped_oscillator_diagnostic_defers_unsupported_cos():
@@ -576,5 +792,9 @@ def test_cli_reports_planck_as_stretch_without_promotion(tmp_path):
     assert payload["stretch"]["guaranteed_trained_recovery"] is False
     assert payload["warm_start_eml"]["status"] == "unsupported"
     relaxed_macro = payload["compiled_eml"]["diagnostic"]["relaxed"]["metadata"]["macro_diagnostics"]
-    assert set(relaxed_macro["hits"]) == {"scaled_exp_minus_one_template", "direct_division_template"}
+    assert set(relaxed_macro["hits"]) == {
+        "low_degree_power_template",
+        "scaled_exp_minus_one_template",
+        "direct_division_template",
+    }
     assert relaxed_macro["depth_delta"] > 0

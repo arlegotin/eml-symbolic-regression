@@ -1,403 +1,332 @@
-# Architecture Patterns: v1.1 EML Compiler and Warm Starts
+# Architecture Patterns: v1.11 Paper-Strength Evidence and Figure Package
 
-**Domain:** Hybrid EML symbolic-regression engine  
+**Domain:** Verifier-gated EML symbolic-regression evidence pipeline  
 **Project:** EML Symbolic Regression  
-**Researched:** 2026-04-15  
-**Overall confidence:** HIGH for integration with the current v1 code; MEDIUM for exact arithmetic-compiler coverage beyond direct `exp`/`log` and literal-constant demos.
+**Researched:** 2026-04-19  
+**Overall confidence:** HIGH for integration points and data flow; MEDIUM for exact external-baseline scope because baseline dependencies are intentionally not established.
 
 ## Executive Summary
 
-v1.1 should extend the existing one-way pipeline instead of creating a parallel recovery path. The current architecture already has the right trust boundary: `optimize.py` generates snapped exact candidates, while `verify.py` is the only component allowed to label a formula as `recovered`. Compiler output, warm-start embedding, perturbation training, and promoted demos should all feed that same `Expr -> verify_candidate()` contract.
+v1.11 should extend the existing benchmark -> aggregate -> campaign -> paper-package pipeline. The repo already has the right trust boundary: `benchmark.py` owns run execution and verifier-owned evidence classification, `campaign.py` owns tables/reports/quick SVGs, and `raw_hybrid_paper.py` owns synthesis-only package generation from locked source artifacts. Do not create a parallel evidence system for the paper package.
 
-The new compiler should produce ordinary `expression.Expr` trees, not a separate formula type. Its primary job is to turn a constrained SymPy subset into exact EML ASTs with rule traces and honest unsupported reasons. The compiler should fail closed: if a rule is not verified over safe domains, do not emit a partial AST that looks authoritative.
+The main architectural change is versioning the paper package layer and adding a dedicated paper-asset derivation layer. v1.9's `raw_hybrid_paper.py` is hard-coded to v1.9 paths and stale v1.6 Planck/logistic diagnostic runs; v1.11 needs source specs that include the v1.10 focused logistic and Planck artifacts plus the new v1.11 real-training, ablation, and baseline outputs. The package writer should still not run training or campaigns.
 
-Warm starts should be implemented as an initializer for `SoftEMLTree`, not as a second optimizer. A compiled `Expr` should be embedded by biasing existing slot logits toward the AST structure, then optional perturbation noise should test return-to-solution behavior. This directly follows the paper/NORTH_STAR observation that blind deep recovery degrades quickly while perturbed correct trees are much easier to recover.
+The safest data contract is: run artifacts are the source of truth, aggregate JSON is the portable summary, campaign CSVs are derived inspection tables, paper assets are deterministic derivations from locked aggregate/run files, and the final package locks every evidence input file it depends on. Figures should never recompute claim status or infer recovery from loss; they should visualize fields already classified by `benchmark.aggregate_evidence()`.
 
-Beer-Lambert and Michaelis-Menten should be promoted by adding compiler/warm-start recovery modes to the demo harness while preserving their catalog reference candidates. Normalized Planck should remain a stretch report until compiled/warm-start verification passes under fixed budgets and the report states seed sensitivity honestly.
+Baseline diagnostics should stay separate from EML benchmark denominators. Add scoped local/conventional baseline artifacts as their own schema and source-lock them into the package, but do not add a baseline `start_mode` to `BenchmarkRun` unless it can satisfy the same dataset/provenance/verification contract without confusing EML recovery rates.
 
-## Existing Boundaries to Preserve
-
-| Existing Module | Current Responsibility | v1.1 Rule |
-|-----------------|------------------------|-----------|
-| `expression.py` | Exact `Const`, `Var`, `Eml` ASTs, JSON documents, SymPy/catalog candidates | Compiler output must be an `Expr`; do not introduce a competing AST. |
-| `master_tree.py` | Complete soft EML tree, slot catalog, logits, snapping, forced paper identities | Add general AST embedding and optional terminal constants here or adjacent to it. Keep default behavior unchanged. |
-| `optimize.py` | Candidate generator with random restarts, annealing, snap manifest | Add optional initialization/perturbation. It still must not return `recovered`. |
-| `verify.py` | Verifier-owned recovery status over train, held-out, extrapolation, and mpmath checks | Keep verifier API stable. Compiler and warm-start outputs must pass through it. |
-| `datasets.py` | Demo specs, split generation, catalog reference candidates | Add recovery plans/compile metadata without removing catalog candidates. |
-| `cli.py` | Demo/report orchestration and paper checks | Add explicit compile/warm-start modes; keep existing `demo` behavior compatible. |
-| `cleanup.py` | Targeted SymPy readability and verifier-gated cleanup reports | Reuse after verification; do not use cleanup as compiler proof. |
-
-## Recommended New Components
-
-| Component | New or Modified | Responsibility | Primary Integration Point |
-|-----------|-----------------|----------------|---------------------------|
-| `compiler.py` | New | Compile a defined SymPy subset into `Expr`; emit rule trace, constants policy, source expression, unsupported reasons | Consumes `SympyCandidate.to_sympy()` or demo source expressions; produces `Expr` |
-| `CompilerConfig` / `CompileResult` | New | Carry variables, constant policy, max depth, enabled rules, source metadata, warnings | Used by demos, CLI, tests, and run manifests |
-| Rule library | New | Implement verified identities for `exp`, `log`, constants, variables, and arithmetic rules as they become proven | Called only by `compiler.py` |
-| AST embedding helper | New or in `master_tree.py` | Bias a `SoftEMLTree` toward a compiled `Expr` using slot paths and logits | Uses `SoftEMLTree.set_slot()` semantics |
-| `EmbeddingConfig` / `EmbeddingResult` | New | Record strength, depth, constants, mapped slots, unused branches, failures | Stored in optimizer manifests |
-| Warm-start initializer | Modified `optimize.py` | Initialize model from compiled AST, optionally perturb logits, then train normally | Optional parameter to `fit_eml_tree()` or wrapper |
-| `PerturbationConfig` | New | Configure logit noise, seed, active/inactive slot perturbation, optional freeze schedule | Stored in run manifest |
-| Demo recovery plan | Modified `datasets.py` | Declare which demos have catalog-only, compiled, warm-start, or stretch modes | Used by CLI/report writer |
-
-## Compiler Architecture
-
-### Input and Output
-
-The compiler should accept:
+## Recommended Architecture
 
 ```text
-SymPy expression
-variables tuple
-CompilerConfig(
-  constant_policy,
-  enabled_rules,
-  max_depth,
-  fail_on_unsupported=True
+BenchmarkSuite / CampaignPreset
+  -> BenchmarkRun artifacts: eml.benchmark_run.v1
+  -> suite-result.json
+  -> aggregate.json / aggregate.md: eml.benchmark_aggregate.v1
+  -> campaign tables + quick campaign figures
+  -> paper asset derivation: tables/*.csv + figures/*.svg + asset-manifest.json
+  -> v1.11 paper package: source-locks.json + regime/scientific-law reports + figures/tables
+```
+
+The paper package is a terminal synthesis step. It may generate deterministic tables and SVGs from loaded source artifacts, but it must not call `run_benchmark_suite()`, `run_campaign()`, `fit_eml_tree()`, external baselines, or proof-campaign execution.
+
+## Component Boundaries
+
+| Component | v1.11 Action | Responsibility | Important Boundary |
+|-----------|--------------|----------------|--------------------|
+| `benchmark.py` | Modify | Add v1.11 suite IDs for claim-safe training, logistic/Planck probes, and ablation cases; keep run execution and evidence classification here. | It may classify evidence; it must not write paper narrative. |
+| `campaign.py` | Modify | Add v1.11 campaign presets and any general CSV exports needed by paper assets. Keep campaign-local reports and quick SVGs. | It should not know final paper-package source inventory. |
+| `raw_hybrid_paper.py` | Modify | Make the package writer version-aware and add a v1.11 preset/source inventory. Preserve v1.9 compatibility. | Synthesis-only; no training, no campaign execution. |
+| `cli.py` | Modify | Expose v1.11 suite/preset/package commands and possibly `paper-assets` / `baseline-diagnostics`. | CLI commands should route to modules, not implement evidence logic inline. |
+| `compiler.py` | Small modify | Expose compiler macro toggles through benchmark config for motif ablations. `CompilerConfig.enable_macros` already exists. | Do not add formula-name recognizers or silent gate relaxation. |
+| `datasets.py` | Usually unchanged | Existing demo specs should remain the dataset/provenance source. Add only if v1.11 needs explicit baseline sampling metadata. | Do not fork scientific-law definitions for paper-only code. |
+| `paper_assets.py` | New | Pure derivation of paper tables and publication SVGs from aggregates, run artifacts, scientific-law rows, and baseline summaries. | Reads locked inputs; never runs training. |
+| `baseline_diagnostics.py` | New, scoped | Local/conventional baseline diagnostics with separate schema and explicit limitations. | Baselines are comparison diagnostics, not EML recovery evidence. |
+| `tests/test_paper_assets.py` | New | Fixture-driven table/SVG determinism tests. | Use tiny fixture aggregates, not expensive real campaigns. |
+| `tests/test_baseline_diagnostics.py` | New if baseline module ships | Schema, failure-mode, and limitation wording tests. | External tools must fail soft or be marked unavailable. |
+
+## Existing Contracts to Preserve
+
+| Contract | Current Owner | v1.11 Rule |
+|----------|---------------|------------|
+| Verifier-owned recovery | `verify.py`, called by `benchmark.py` | Figures and paper tables must consume `claim_status`, `classification`, and `evidence_class`, not infer from loss. |
+| Regime separation | `benchmark.evidence_class_for_payload()`, `raw_hybrid_paper.build_regime_summary()` | Pure blind, scaffolded, warm-start, same-AST, repair, refit, compile-only, and perturbed-basin stay separate. |
+| Fail-closed compiler support | `compiler.py`, `_compile_demo()` | Logistic/Planck remain unsupported unless strict gates pass; relaxed depth diagnostics can be reported but not promoted. |
+| Stable artifact paths | `BenchmarkRun.run_id`, `BenchmarkSuite.expanded_runs()` | New suite IDs and case IDs should be deterministic and explicit. |
+| Non-destructive artifact output | `campaign.py`, `raw_hybrid_paper.py` | Stable labels must refuse overwrite unless explicitly requested; package overwrite must remain managed-file only. |
+| File-level source locks | `raw_hybrid_paper.py` | v1.11 should continue hashing files, not directories. |
+
+## Modified Modules
+
+### `benchmark.py`
+
+Add v1.11 suites as first-class built-ins rather than external JSON fixtures for the main milestone outputs:
+
+| Suite | Purpose | Notes |
+|-------|---------|-------|
+| `v1.11-paper-training` | Claim-safe real training runs across shallow pure-blind, scaffolded blind, warm-start/same-AST, and perturbed-basin regimes. | Reuse existing start modes and proof-style claim metadata where possible. |
+| `v1.11-logistic-planck-probes` | Low-budget focused training/compile probes for logistic and Planck. | Unsupported rows stay in denominator with clear `depth_exceeded` or training failure reasons. |
+| `v1.11-ablation-motifs` | Compiler macro on/off depth and support comparisons. | Add `enable_macros` to `OptimizerBudget` or a nested compiler config; default remains `True`. |
+| `v1.11-ablation-repair-refit` | Candidate-pool, cleanup, and refit behavior. | Reuse existing `BenchmarkRepairConfig` and refit metrics. |
+| `v1.11-paper-smoke` | CI-scale fixture for CLI/package tests. | Should finish quickly and avoid expensive real-training budgets. |
+
+Recommended schema additions:
+
+- Add `OptimizerBudget.enable_macros: bool = True` and pass it into `CompilerConfig(enable_macros=...)`.
+- Add runtime directly into aggregate run summaries, e.g. `timing_elapsed_seconds`, because current campaign figure/table helpers sometimes reread raw run files through `artifact_path`. A paper package should either lock those raw run files or use a self-contained aggregate. Prefer self-contained aggregates and keep file rereads as backward-compatible fallback.
+- Add aggregate groups for `claim_id`, `threshold_policy_id`, and possibly `tags` if paper assets need them. Avoid changing the meaning of existing counts.
+
+### `campaign.py`
+
+Add campaign presets only for workflows that should produce reportable folders:
+
+| Preset | Suite | Output Label |
+|--------|-------|--------------|
+| `paper-training` | `v1.11-paper-training` | `artifacts/campaigns/v1.11-paper-training/` |
+| `paper-ablations` | `v1.11-ablation-motifs` plus repair/refit suite if kept separate | `artifacts/campaigns/v1.11-paper-ablations/` |
+| `paper-probes` | `v1.11-logistic-planck-probes` | `artifacts/campaigns/v1.11-logistic-planck-probes/` |
+| `paper-smoke` | `v1.11-paper-smoke` | test-only or manually generated smoke label |
+
+Keep existing campaign plots for quick review, but do not rely on them as final paper figures. They are useful run diagnostics, while v1.11 needs paper-specific figure composition and an asset manifest.
+
+### `raw_hybrid_paper.py`
+
+Refactor toward versioned presets instead of a single v1.9 constant set:
+
+```text
+PaperPackagePreset(
+  preset_id,
+  output_dir,
+  expected_outputs,
+  sources,
+  title,
 )
 ```
 
-It should return:
+Keep `write_raw_hybrid_paper_package()` backward-compatible for v1.9 tests. Add a v1.11 writer or a `preset=` parameter:
 
 ```text
-CompileResult(
-  status="compiled" | "unsupported" | "failed",
-  expression: Expr | None,
-  source_sympy: str,
-  variables: tuple[str, ...],
-  rule_trace: list[RuleStep],
-  constants: tuple[complex, ...],
-  depth: int | None,
-  node_count: int | None,
-  warnings: list[str],
-  metadata: dict
-)
+write_raw_hybrid_paper_package(preset="v1.11", output_dir=artifacts/paper/v1.11/raw-hybrid)
 ```
 
-The emitted `Expr.to_document()` metadata should include `source="compiler"`, the source SymPy string, compiler version, enabled rules, constants policy, and rule trace hash. This keeps compiled ASTs auditable without changing the AST schema.
+v1.11 source inventory should include:
 
-### Rule Strategy
+- v1.6 proof aggregates that still define historical shallow/depth/perturbed boundaries.
+- v1.8 centered-family decision files for negative diagnostics and same-family witness caveat.
+- v1.9 Arrhenius, Michaelis, and repair evidence.
+- v1.10 logistic and Planck focused aggregate and run artifacts, replacing stale v1.6 logistic/Planck rows in the scientific-law table.
+- v1.11 real-training campaign aggregate, suite result, and raw run artifacts used by figures.
+- v1.11 ablation aggregate/table outputs.
+- v1.11 scoped baseline diagnostics, if generated.
 
-Implement compiler rules incrementally and prove each one with tests before enabling it by default.
+New package outputs should add:
 
-| Rule | Initial Recommendation | Confidence |
-|------|------------------------|------------|
-| `Symbol("x") -> Var("x")` | Build first | HIGH |
-| literal constants -> `Const(value)` | Build with explicit metadata | HIGH for implementation, MEDIUM for paper-purity semantics |
-| `exp(a) -> Eml(compile(a), Const(1))` | Build first; paper identity already tested for variables | HIGH |
-| `log(a)` | Build using the existing generalized paper identity `Eml(1, Eml(Eml(1, a), 1))` | HIGH on safe positive domains |
-| negation/subtraction/addition/multiplication/division | Add through a verified identity library, not ad hoc SymPy string rewrites | MEDIUM |
-| unsupported SymPy nodes | Return `unsupported` with reason and path | HIGH |
+| Output | Purpose |
+|--------|---------|
+| `figures/*.svg` | Publication-ready deterministic SVG figures. |
+| `tables/regime-recovery.csv` | Regime recovery source table for figures. |
+| `tables/scientific-law-support.csv` | Paper-facing law support rows, including v1.10 logistic/Planck depths. |
+| `tables/motif-depth-deltas.csv` | Macro/motif depth and node deltas. |
+| `tables/training-outcomes.csv` | Real-training outcome table by formula/regime/depth. |
+| `tables/failure-taxonomy.csv` | Unsupported/failure reason counts. |
+| `asset-manifest.json` | Derived asset inventory with source IDs for every table and figure. |
 
-The important architectural choice is not the exact first batch of arithmetic identities. It is that arithmetic rules live in a tested compiler-rule layer and never bypass verification.
+### `paper_assets.py` New
 
-### Constants Policy
-
-Beer-Lambert and Michaelis-Menten currently contain numeric literals (`0.8`, `2.0`, `0.5`). The existing `Const` node can represent arbitrary complex constants, but the AST document currently advertises `constant_basis=["1"]`. v1.1 should make this explicit:
-
-| Policy | Use | Report Wording |
-|--------|-----|----------------|
-| `basis_only` | Paper-pure checks and identities using only `1` | "exact EML basis expression" |
-| `literal_constants` | Demo formulas with fixed known constants from `DemoSpec` | "exact EML AST with literal constants" |
-
-Do not add learned coefficients in this milestone. Literal constants should come from source/demo expressions only, be serialized deterministically, and appear in report metadata. If `literal_constants` is used, the verifier can still validate the formula numerically, but public claims should not imply shortest paper-basis compilation.
-
-## Warm-Start Embedding
-
-### Required Soft Tree Change
-
-`SoftEMLTree` currently has terminal labels:
+This should be a pure reader/renderer:
 
 ```text
-["const:1", "var:x", "child"]
+load evidence inputs
+  -> normalize rows by regime/evidence class/formula
+  -> write CSV source tables
+  -> write SVG figures from those CSV rows
+  -> write asset-manifest.json
 ```
 
-To warm-start compiled Beer-Lambert and Michaelis-Menten, the master tree needs a finite constant catalog:
+Recommended public API:
 
 ```python
-SoftEMLTree(depth, variables=("x",), constants=(1.0, 0.8, 2.0, 0.5))
+write_paper_assets(
+    sources: Mapping[str, Any],
+    output_dir: Path,
+    package_preset_id: str,
+) -> PaperAssetPaths
 ```
 
-Default must remain `constants=(1.0,)` so existing tests and the paper parameter-count check continue to pass. `expected_univariate_parameter_count()` should either require the default constant catalog or document that the paper formula applies only when the terminal catalog is `{1, x, child}`.
+Recommended figures:
 
-### Embedding Algorithm
+| Figure | Input Table | Message |
+|--------|-------------|---------|
+| `regime-recovery.svg` | `regime-recovery.csv` | Recovery differs sharply by regime; do not merge denominators. |
+| `depth-degradation.svg` | depth rows from aggregate | Blind depth degradation versus perturbed return. |
+| `scientific-law-support.svg` | `scientific-law-support.csv` | Supported same-AST laws versus unsupported/stretch diagnostics. |
+| `motif-depth-deltas.svg` | `motif-depth-deltas.csv` | v1.10 motif work reduced logistic/Planck relaxed depth without promotion. |
+| `training-outcomes.svg` | `training-outcomes.csv` | Real training status by start mode and formula. |
+| `failure-taxonomy.svg` | `failure-taxonomy.csv` | Unsupported/depth/training/recovery failures by reason. |
 
-Embed a compiled `Expr` by walking it against the complete tree:
+Use deterministic hand-written SVG like `campaign.py` does. Avoid matplotlib as a new runtime dependency unless the repo later chooses a plotting dependency explicitly.
 
-1. Validate `expr.depth() <= model.depth`.
-2. Validate all variables exist in `model.variables`.
-3. Validate every `Const` value appears in `model.constants`.
-4. At each EML node, map side expressions to slot choices:
-   - `Const(c)` -> `const:<canonical c>`
-   - `Var(name)` -> `var:<name>`
-   - `Eml(...)` -> `child`, then recurse into that side child
-5. Bias each mapped slot with a configurable strength using current `set_slot()` behavior.
-6. Leave unused child branches randomized or low-confidence; they are inactive unless their parent slot later moves to `child`.
-7. Return an `EmbeddingResult` with every slot assignment and skipped subtree.
+### `baseline_diagnostics.py` New
 
-Embedding should not call the verifier. Its proof is mechanical: after embedding with high strength and no perturbation, `model.snap().expression` should evaluate the same as the source `Expr` on safe test points.
-
-### Perturbation
-
-Perturbation should operate on logits after embedding:
+Use a small, explicit schema:
 
 ```text
-reset small random logits
-embed compiled AST at strength S
-add deterministic logit noise from seed P
-optionally lower strength or perturb only active slots
-train with normal optimizer
-snap
-verify
+eml.baseline_diagnostics.v1
+  dataset_manifest
+  baseline_name
+  baseline_type: local_conventional | external_unavailable | external_result
+  fit_status
+  train_error
+  heldout_error
+  extrapolation_error
+  expression_or_model_summary
+  limitations
 ```
 
-`PerturbationConfig` should include:
+Recommended first scope:
 
-| Field | Purpose |
-|-------|---------|
-| `seed` | Deterministic perturbation reproducibility |
-| `noise_std` | How far from the compiled solution to start |
-| `active_slots_only` | Whether to perturb only mapped slots or all slots |
-| `inactive_noise_std` | Separate noise for unused branches |
-| `warm_start_strength` | Initial logit separation before noise |
-| `freeze_mapped_steps` | Optional early phase where mapped slots are frozen or lightly trained |
+- Local conventional diagnostics that can run with existing dependencies.
+- Optional external adapters only when installed; otherwise write an `external_unavailable` row with the attempted command/import and reason.
+- No matched-budget competition claim in v1.11 unless the implementation really controls budget and search space.
 
-For v1.1, prefer no freezing unless a demo needs it. Freezing complicates optimizer state and can hide whether the model actually returns to the solution.
+Do not fold baseline rows into `benchmark.aggregate_evidence()` recovery rates. The paper package can include a separate baseline table/figure with explicit diagnostic wording.
 
-## Optimization Integration
+## Artifact Flow
 
-Keep `fit_eml_tree()` backward-compatible. The least disruptive design is:
+| Stage | Command Shape | Primary Outputs | Consumed By |
+|-------|---------------|-----------------|-------------|
+| Focused benchmark | `python -m eml_symbolic_regression.cli benchmark v1.11-... --output-dir artifacts/campaigns/...` | run JSONs, `suite-result.json`, `aggregate.json`, `aggregate.md` | Campaigns, paper package, tests |
+| Campaign | `python -m eml_symbolic_regression.cli campaign paper-training --label v1.11-paper-training` | `campaign-manifest.json`, `tables/*.csv`, `figures/*.svg`, `report.md` | Human review, package source locks |
+| Baseline diagnostics | `python -m eml_symbolic_regression.cli baseline-diagnostics ...` | `baseline-diagnostics.json`, `.csv`, `.md` | Paper package |
+| Paper assets | called by package writer or `paper-assets` CLI | `tables/*.csv`, `figures/*.svg`, `asset-manifest.json` | Final package |
+| Paper package | `python -m eml_symbolic_regression.cli raw-hybrid-paper --preset v1.11 --output-dir artifacts/paper/v1.11/raw-hybrid --require-existing` | `manifest.json`, `source-locks.json`, reports, tables, figures | Regression tests, paper writing |
 
-```python
-fit_eml_tree(inputs, target, config, initialization: TreeInitialization | None = None)
-```
-
-or a wrapper:
-
-```python
-fit_warm_started_eml_tree(inputs, target, config, compiled_expr, embedding_config, perturbation_config)
-```
-
-The wrapper is safer for v1.1 because it avoids changing existing call sites and makes warm-start behavior explicit. Internally it can still share the same training loop.
-
-The manifest should add optional keys:
+Recommended final roots:
 
 ```text
-initialization_kind: "random" | "compiled_warm_start"
-compiler: CompileResult metadata
-embedding: EmbeddingResult metadata
-perturbation: PerturbationConfig
-initial_snap_loss
-initial_verifier_status_if_run
-post_training_snap_loss
+artifacts/campaigns/v1.11-paper-training/
+artifacts/campaigns/v1.11-paper-ablations/
+artifacts/campaigns/v1.11-logistic-planck-probes/
+artifacts/baselines/v1.11-scoped/
+artifacts/paper/v1.11/raw-hybrid/
 ```
 
-`FitResult.status` should remain a candidate-generator status such as `snapped_candidate`, `failed`, or `warm_started_candidate`. Do not add `recovered` to optimizer statuses.
+## Data Flow Details
 
-## Demo Integration
+### Run to Aggregate
 
-### Dataset Model
+`BenchmarkSuite.expanded_runs()` should remain the only mechanism that assigns run IDs and artifact paths. `execute_benchmark_run()` writes one `eml.benchmark_run.v1` JSON per run and assigns `evidence_class` by calling `evidence_class_for_payload()`. `aggregate_evidence()` converts those artifacts into a compact run list with counts, groups, depth-curve rows, and threshold summaries.
 
-Keep `DemoSpec.candidate` as the reference candidate used for target generation and catalog verification. Add a separate recovery plan:
+For v1.11, add only backward-compatible fields to aggregate run summaries. Paper assets should be able to derive figures from aggregate JSON plus explicitly locked run artifacts; they should not need hidden filesystem state.
 
-```text
-DemoRecoveryPlan(
-  mode="catalog" | "compiled" | "warm_start" | "stretch",
-  source_expression,
-  compiler_config,
-  depth,
-  constants,
-  training_config,
-  perturbation_config,
-  expected_claim
-)
-```
+### Aggregate to Tables
 
-This preserves the current catalog showcase behavior while making promotion explicit.
+Campaign tables are useful, but paper tables need more stable semantics. Implement paper tables in `paper_assets.py` from aggregate/source payloads:
 
-### Report Flow
+- `regime-recovery.csv`: one row per evidence regime with total, verifier recovered, same-AST, repaired, unsupported, failed, recovery rate, source IDs.
+- `scientific-law-support.csv`: one row per law with formula, compile support, strict depth, relaxed depth if unsupported, macro hits, warm-start status, verifier status, evidence regime, artifact path.
+- `motif-depth-deltas.csv`: one row per compiler diagnostic with baseline depth/node count, relaxed depth/node count, macro hits, depth delta, node delta, validation status.
+- `training-outcomes.csv`: one row per formula/start mode/training mode/depth/seed group.
+- `failure-taxonomy.csv`: one row per reason/classification/evidence class.
 
-For promoted demos, the CLI report should contain separate sections:
+### Tables to Figures
 
-```text
-reference_verification        # existing catalog or exact EML candidate
-compiled_eml_ast              # compiler output, if requested
-compiled_verification         # verifier result for compiled Expr
-warm_start_training_manifest  # optimizer result from perturbation training
-warm_start_verification       # verifier result for snapped trained Expr
-claim_status                  # derived from verifier result and mode
-```
+Figures should read the paper CSV rows they cite, not raw JSON directly. This makes every figure auditable by opening the adjacent source table. Each SVG should include a title, axis labels, and short caption metadata in `asset-manifest.json`.
 
-This avoids a common ambiguity: a demo can have a verified catalog formula, a verified compiled formula, and a failed perturbed training run. Only the warm-start verifier result should promote the demo to trained EML recovery.
+### Figures to Package
 
-### CLI Modes
+The final package manifest should list all derived tables and figures. `source-locks.json` should hash the input evidence artifacts; `asset-manifest.json` should map each output table/figure to the source IDs used to derive it. Do not hash generated outputs as if they were independent evidence inputs.
 
-Keep existing `demo NAME` behavior compatible. Add explicit options instead of overloading `--train-eml`:
+## Suggested Phase Order
 
-| Mode | Suggested CLI | Meaning |
-|------|---------------|---------|
-| Catalog report | `demo NAME` | Current behavior |
-| Compile only | `demo NAME --compile-eml` | Compile source expression and verify compiled AST |
-| Warm start | `demo NAME --warm-start-eml` | Compile, embed, perturb/train, snap, verify |
-| Blind baseline | existing `--train-eml` | Current random-init training attempt |
+1. **Phase 59: v1.11 Evidence Contract and Package Preset**
+   - Add versioned paper-package preset support.
+   - Add v1.10 logistic/Planck sources to the v1.11 scientific-law inventory.
+   - Add fixture tests that generate a v1.11 package with small/local sources.
+   - Rationale: fixes stale package architecture before expensive runs.
 
-`--train-eml` should remain a blind baseline. That distinction matters because warm-start success is a different claim than blind recovery.
+2. **Phase 60: Claim-Safe Real Training Suites**
+   - Add `v1.11-paper-training` and `v1.11-logistic-planck-probes`.
+   - Run and commit/report real artifacts under stable labels.
+   - Rationale: evidence generation should use existing benchmark contracts and classification.
 
-### Promotion Targets
+3. **Phase 61: Ablation and Baseline Diagnostics**
+   - Add macro-on/off, warm-start/blind, repair/refit, and candidate-pool ablation outputs.
+   - Add scoped baseline diagnostics with separate schema and honest unavailable/deferred rows.
+   - Rationale: strengthens paper evidence without polluting EML recovery denominators.
 
-| Demo | v1 Status | v1.1 Target | Notes |
-|------|-----------|-------------|-------|
-| `exp` | exact EML recovered | Keep as paper smoke test | Also use as embedding/perturbation fixture |
-| `log` | exact EML recovered | Keep as compiler/log fixture | Depth >= 3 remains required |
-| `beer_lambert` | catalog showcase | Promote to compiled + warm-start recovery if literal constants are enabled | Good first promoted demo |
-| `michaelis_menten` | catalog showcase | Promote after Beer-Lambert | Exercises rational structure and division rules |
-| `logistic` / `shockley` | catalog showcase | Defer or use as stretch after arithmetic compiler proves stable | More moving parts |
-| `damped_oscillator` | catalog showcase | Defer | Trig/phase compiler support is not in v1.1 target subset |
-| `planck` | catalog showcase | Stretch only with honest failure/success report | High depth and denominator structure make it a roadmap flag |
+4. **Phase 62: Paper Tables and Figures**
+   - Add `paper_assets.py`.
+   - Generate deterministic source CSVs and SVG figures from locked artifacts.
+   - Rationale: figures should be a pure derivation layer after evidence exists.
 
-## End-to-End Data Flow
+5. **Phase 63: Final v1.11 Paper Package and Regression Locks**
+   - Generate `artifacts/paper/v1.11/raw-hybrid/`.
+   - Add file-backed regression tests for manifest, source locks, scientific-law rows, figures, tables, and forbidden claim wording.
+   - Rationale: final package should be validated after all source artifacts are stable.
 
-```text
-DemoSpec
-  -> make_splits()
-  -> reference candidate verification
-  -> source SymPy expression
-  -> compiler.py
-  -> CompileResult.expression: Expr
-  -> verify_candidate(compiled Expr)
-  -> SoftEMLTree(depth, variables, constants)
-  -> embed Expr into logits
-  -> perturb logits
-  -> train with optimize.py loop
-  -> snap to Expr
-  -> cleanup_candidate()
-  -> verify_candidate(snapped Expr)
-  -> CLI JSON report
-```
+## Test Strategy
 
-Allowed feedback loops:
+| Test Area | Files | Assertions |
+|-----------|-------|------------|
+| Benchmark suites | `tests/test_benchmark_runner.py` | v1.11 suites expand deterministically; start modes/training modes are claim-safe; logistic/Planck unsupported probes preserve strict gates. |
+| CLI smoke | `tests/test_verifier_demos_cli.py` | `benchmark v1.11-paper-smoke`, focused probe commands, and package commands write expected outputs. |
+| Paper assets | `tests/test_paper_assets.py` | Fixture aggregates produce deterministic CSV/SVG outputs; figures cite adjacent source tables; empty inputs produce explicit empty figures. |
+| Paper package unit | `tests/test_raw_hybrid_paper.py` | v1.11 source inventory includes v1.10 logistic/Planck sources; missing required sources fail closed; overwrite remains managed-file only. |
+| Paper package regression | new `tests/test_v111_paper_package_regression.py` | Committed package has expected files, source locks hash real files, scientific-law rows use v1.10 logistic depth 15 and Planck depth 14, claim boundaries contain "not blind discovery". |
+| Baseline diagnostics | `tests/test_baseline_diagnostics.py` | Baseline schema is stable; unavailable external baseline rows are explicit; baseline rows are not counted as EML recovery. |
+| Documentation locks | docs/README tests or `rg` checks | Docs mention v1.11 roots, package command, claim boundaries, and baseline scope. |
 
-```text
-unsupported compiler rule -> mark demo unsupported or reduce target subset
-embedding depth failure -> increase configured depth or simplify compiled AST
-warm-start verification failure -> rerun with stronger embedding / lower perturbation / more steps
-verified but bloated AST -> cleanup -> verifier
-```
-
-Do not add a feedback loop where verifier silently changes the formula or where cleanup rewrites are accepted without re-verification.
-
-## Build Order
-
-1. **Compiler result scaffolding and direct rules**
-   - Add `compiler.py`, `CompilerConfig`, `CompileResult`, rule traces, unsupported reasons.
-   - Implement variables, literal constants, `exp`, and generalized `log`.
-   - Tests: compile/evaluate against SymPy for `x`, `1`, `exp(x)`, `log(x)`, nested expressions on safe positive domains.
-
-2. **Constant catalogs and AST embedding**
-   - Modify `SoftEMLTree` terminal labels to support `constants=(...)` with default `(1.0,)`.
-   - Add general `embed_expr_into_tree()` using `set_slot()` semantics.
-   - Tests: existing parameter-count tests still pass; embedding `exp_expr` and `log_expr` snaps back to equivalent ASTs; missing constants/depth fail clearly.
-
-3. **Warm-start perturbation training**
-   - Add wrapper or optional initializer around `fit_eml_tree()`.
-   - Add perturbation metadata and initial/post-training snap loss to manifests.
-   - Tests: warm-start `exp` or compiled Beer-Lambert with small perturbation returns a verified snapped candidate under deterministic settings.
-
-4. **Arithmetic compiler subset**
-   - Add verified rules for negation/subtraction/addition/multiplication/division only as tests prove identities.
-   - Tests: each rule has NumPy/mpmath equivalence checks and fail-closed unsupported behavior.
-   - Michaelis-Menten depends on division and addition; do not promote it before this phase passes.
-
-5. **Demo promotion and CLI reports**
-   - Add `DemoRecoveryPlan` metadata to `beer_lambert` and `michaelis_menten`.
-   - Add `--compile-eml` and `--warm-start-eml`.
-   - Reports must distinguish catalog, compiled, warm-start, blind, and stretch statuses.
-
-6. **Planck stretch reporting**
-   - Add a report mode that runs compiler/warm-start if supported but labels failures honestly.
-   - Do not block v1.1 on Planck recovery.
-
-## Testing Strategy
-
-| Test Layer | What It Proves | Required Examples |
-|------------|----------------|-------------------|
-| Compiler unit tests | SymPy subset lowers to `Expr` or fails closed | constants, variables, `exp`, `log`, unsupported functions |
-| Compiler rule equivalence | Each enabled identity is numerically valid on safe domains | arithmetic rules before enabling Beer-Lambert/Michaelis-Menten promotion |
-| AST document tests | Compiler metadata survives JSON output | source expression, constant policy, rule trace, depth, node count |
-| Constant catalog tests | Existing paper tree behavior is unchanged by added constants | default parameter count; labels for `const:1`; explicit labels for `0.8`, `0.5`, `2.0` |
-| Embedding tests | Compiled AST maps to legal soft-tree slots | exact snap after high-strength embedding; clear failure for missing depth/constants |
-| Perturbation tests | Warm-start recovery is deterministic and not confused with blind recovery | initial snap, perturbed logits, final snap, manifest metadata |
-| Verifier integration tests | Compiler/warm-start candidates still use the existing recovery contract | `verify_candidate(compiled_expr)` and `verify_candidate(snapped_expr)` |
-| CLI report tests | Public claims are separated correctly | catalog report, compile-only report, warm-start report, failed stretch report |
-| Demo promotion tests | Beer-Lambert and Michaelis-Menten are only promoted when verifier passes | report `claim_status` derived from trained EML verification |
-
-Avoid CI tests that require lucky random blind recovery. Warm-start tests should use fixed seeds, small perturbations, and paper/simple demo targets.
+Use fixture aggregates for unit tests and one small smoke suite for CLI integration. Real v1.11 campaigns should be reproducible commands and committed artifacts, but pytest should not depend on long training runs.
 
 ## Anti-Patterns to Avoid
 
-### Parallel Candidate Types
+### Paper Package Runs Training
 
-Do not introduce a `CompiledExpr` that bypasses `expression.Expr`. It will split evaluator, cleanup, and verifier behavior.
+**What:** `raw_hybrid_paper.py` calls benchmark/campaign/training code when generating the package.  
+**Why bad:** Source locks become ambiguous, package generation becomes expensive and nondeterministic, and failures are harder to audit.  
+**Instead:** Generate evidence first, then synthesize from locked files.
 
-### Optimizer-Owned Recovery
+### Figure Code Reclassifies Evidence
 
-Warm-start training can report `snapped_candidate` or `warm_started_candidate`, but never `recovered`. Only `verify.py` owns recovery.
+**What:** A plotting helper decides recovery from loss thresholds or string matches in formulas.  
+**Why bad:** It bypasses verifier-owned recovery and can silently change claims.  
+**Instead:** Figures consume `claim_status`, `classification`, `evidence_class`, and compiler diagnostics already emitted by benchmark artifacts.
 
-### Hidden Literal Constants
+### Baselines Mixed Into EML Recovery Denominators
 
-If the compiler uses `Const(0.8)` or `Const(2.0)`, the report must say so. Do not present literal-constant recovery as pure `{1, eml}` basis recovery.
+**What:** External or conventional baselines become a `BenchmarkRun.start_mode`.  
+**Why bad:** Benchmark counts are currently about EML regimes; mixing baselines makes recovery rates ambiguous.  
+**Instead:** Separate `baseline_diagnostics` schema and separate package section.
 
-### CLI Flag Ambiguity
+### Stale Scientific-Law Rows
 
-Blind training and warm-start training should not share the same public claim. Keep `--train-eml` as random-init/blind and add a separate warm-start mode.
+**What:** v1.11 package continues reading v1.6 Planck/logistic diagnostic run paths.  
+**Why bad:** It misses the v1.10 motif-shortening evidence, which is an explicit v1.11 goal.  
+**Instead:** v1.11 source inventory must prefer v1.10 focused aggregate/run artifacts for Planck and logistic.
 
-### Compiler Overreach
+### Aggregate Depends on Unlocked Run Files
 
-Unsupported arithmetic or functions should be reported as unsupported. A failed compile is better than a silently wrong AST that later appears in a demo report.
+**What:** Paper figures load runtime or metrics by following `artifact_path` from an aggregate, but source locks only hash the aggregate.  
+**Why bad:** The package can change if raw run files change while the aggregate hash stays fixed.  
+**Instead:** Put required figure metrics into aggregate summaries or lock every run artifact used by paper assets.
 
-## Roadmap Implications
+## Scalability Considerations
 
-The phase plan should follow dependencies:
-
-1. **Compiler Core** before demos because promoted demos need auditable compiled ASTs.
-2. **Constant Catalog + Embedding** before perturbation because warm starts cannot represent demo constants otherwise.
-3. **Perturbation Training** before demo promotion because the milestone is about return-to-solution behavior, not just compiling references.
-4. **Arithmetic Rule Expansion** before Michaelis-Menten because rational structure depends on addition/division.
-5. **Demo Reporting** after the engine path is stable because claims must distinguish catalog, compiled, warm-start, and stretch outcomes.
-
-Likely deeper research flags:
-
-- Arithmetic EML identities for `+`, `-`, `*`, `/` under literal-constant and basis-only policies.
-- Minimum tree depths for Beer-Lambert and Michaelis-Menten compiled forms.
-- Perturbation budgets that are strong enough to demonstrate recovery but not so strong that CI becomes flaky.
-- Whether Planck can compile within practical depth after denominator and power rules are implemented.
-
-## Confidence Assessment
-
-| Area | Confidence | Notes |
-|------|------------|-------|
-| Existing boundary preservation | HIGH | Directly grounded in current `expression.py`, `master_tree.py`, `optimize.py`, `verify.py`, `datasets.py`, and `cli.py`. |
-| Compiler-as-`Expr` design | HIGH | Reuses exact AST, serializers, cleanup, and verifier without new candidate plumbing. |
-| Warm-start embedding design | HIGH | Current slot paths and `set_slot()` already support the needed traversal pattern for `{1, variables, child}` trees. |
-| Constant catalog requirement | HIGH | Existing `SoftEMLTree` cannot choose `Const(0.8)` or `Const(2.0)` without extending terminal labels. |
-| Arithmetic compiler feasibility | MEDIUM | Required by the milestone, but exact identities and depth blow-up need rule-by-rule validation. |
-| Demo promotion path | HIGH for Beer-Lambert, MEDIUM for Michaelis-Menten | Beer-Lambert is structurally simpler; Michaelis-Menten depends on reliable division/addition compilation. |
-| Planck stretch | LOW to MEDIUM | Source guidance and v1 research both flag Planck as high-value but likely depth-sensitive. |
+| Concern | Small v1.11 Runs | Larger Paper Runs | Future Broad Benchmarks |
+|---------|------------------|-------------------|-------------------------|
+| Runtime | Sequential benchmark execution is acceptable. | Use stable suite labels and run filters; do not add parallelism until artifacts are stable. | Add parallel runner only if run manifests remain deterministic. |
+| Artifact size | JSON/CSV/SVG are fine. | Source locks should list exact files, not directories. | Consider compressed archives plus manifest if run count grows substantially. |
+| Figure quality | Deterministic SVG helpers are sufficient. | Add paper-specific layout in `paper_assets.py`. | Add a plotting dependency only after deciding dependency policy. |
+| Baselines | Local conventional diagnostics only. | External adapters fail soft if unavailable. | Matched-budget comparisons need a separate milestone. |
 
 ## Sources
 
-- `.planning/PROJECT.md` - v1.1 milestone goal, active requirements, constraints, and out-of-scope boundaries.
-- `.planning/STATE.md` - current completed v1 phases and existing artifact status.
-- `.planning/research/SUMMARY.md` - v1 architecture and pitfall synthesis.
-- `src/eml_symbolic_regression/expression.py` - exact ASTs, candidate protocol, SymPy catalog candidates, JSON schema, paper identities.
-- `src/eml_symbolic_regression/master_tree.py` - soft tree slot structure, logits, `set_slot()`, snapping, paper identity forcing.
-- `src/eml_symbolic_regression/optimize.py` - training config, random restarts, annealing, snap manifest, candidate-generator boundary.
-- `src/eml_symbolic_regression/verify.py` - verifier-owned `recovered` status and split/high-precision checks.
-- `src/eml_symbolic_regression/datasets.py` - existing demo specs, catalog candidates, split generation.
-- `src/eml_symbolic_regression/cli.py` - current demo, blind training, and report flow.
-- `src/eml_symbolic_regression/semantics.py` - canonical/training EML semantics and anomaly stats.
-- `src/eml_symbolic_regression/cleanup.py` - targeted cleanup and verifier-gated reports.
-- `tests/test_master_tree.py`, `tests/test_optimizer_cleanup.py`, `tests/test_semantics_expression.py`, `tests/test_verifier_demos_cli.py` - existing regression expectations.
-- `docs/IMPLEMENTATION.md` and `README.md` - public recovery contract and demo status wording.
-- `sources/NORTH_STAR.md` - hybrid pipeline, warm-start rationale, numerical risks, and verification boundaries.
-- `sources/FOR_DEMO.md` - demo promotion sequence, high-probability demos, and Planck caution.
+- `.planning/PROJECT.md` - v1.11 goals, active requirements, claim boundaries, and artifact expectations.
+- `docs/IMPLEMENTATION.md` - current architecture, recovery contract, benchmark evidence contract, campaign contract, and v1.9 raw-hybrid package contract.
+- `src/eml_symbolic_regression/benchmark.py` - benchmark suite registry, run execution, metrics, aggregation, evidence classes, and v1.10 focused suites.
+- `src/eml_symbolic_regression/campaign.py` - campaign presets, guarded output folders, CSV exports, SVG generation, and report assembly.
+- `src/eml_symbolic_regression/raw_hybrid_paper.py` - synthesis-only paper package writer, source locks, regime summary, scientific-law table extraction, and claim-boundary docs.
+- `src/eml_symbolic_regression/cli.py` - CLI integration points for benchmark, campaign, paper-decision, diagnostics, proof-campaign, and raw-hybrid package generation.
+- `tests/test_benchmark_runner.py` - current benchmark, repair/refit, focused scientific-law, and v1.10 logistic/Planck contract tests.
+- `tests/test_verifier_demos_cli.py` - demo, benchmark CLI, v1.10 focused artifact, and paper-decision CLI coverage.
+- `tests/test_raw_hybrid_paper.py` and `tests/test_raw_hybrid_paper_regression.py` - existing paper-package source-lock and regression patterns that v1.11 should extend.

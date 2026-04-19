@@ -29,10 +29,27 @@ from .family_triage import (
     write_family_triage,
 )
 from .optimize import TrainingConfig, fit_eml_tree
+from .paper_assets import DEFAULT_PAPER_ASSETS_OUTPUT_DIR, write_paper_assets
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
+from .paper_diagnostics import DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR, write_paper_diagnostics
+from .paper_package import DEFAULT_V111_PAPER_PACKAGE_DIR, write_v111_paper_package
+from .paper_v112 import (
+    DEFAULT_V112_DRAFT_DIR,
+    DEFAULT_V112_REFRESH_DIR,
+    DEFAULT_V112_SUPPLEMENT_DIR,
+    DEFAULT_V112_TRAINING_DETAIL_DIR,
+    write_v112_draft,
+    write_v112_evidence_refresh,
+)
+from .paper_v112 import (
+    write_v112_bounded_probes,
+    write_v112_paper_facing_assets,
+    write_v112_supplement,
+    write_v112_training_detail_assets,
+)
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
-from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, write_raw_hybrid_paper_package
+from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
@@ -411,6 +428,104 @@ def diagnostics_basin_bound_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def diagnostics_paper_ablations_command(args: argparse.Namespace) -> int:
+    paths = write_paper_diagnostics(output_dir=Path(args.output_dir))
+    print(
+        f"paper diagnostics: manifest -> {paths.manifest_json}; "
+        f"motifs -> {paths.motif_depth_deltas_json}; "
+        f"baselines -> {paths.baseline_diagnostics_json}"
+    )
+    return 0
+
+
+def paper_assets_command(args: argparse.Namespace) -> int:
+    paths = write_paper_assets(output_dir=Path(args.output_dir))
+    print(
+        f"paper assets: manifest -> {paths.manifest_json}; "
+        f"figures -> {paths.output_dir / 'figures'}; "
+        f"tables -> {paths.output_dir / 'tables'}"
+    )
+    return 0
+
+
+def paper_package_command(args: argparse.Namespace) -> int:
+    paths = write_v111_paper_package(output_dir=Path(args.output_dir), overwrite=args.overwrite)
+    audit = json.loads(paths.claim_audit_json.read_text(encoding="utf-8"))
+    print(
+        f"paper package: manifest -> {paths.manifest_json}; "
+        f"source locks -> {paths.source_locks_json}; "
+        f"audit -> {paths.claim_audit_json} ({audit['status']})"
+    )
+    return 0 if audit["status"] == "passed" else 1
+
+
+def paper_draft_command(args: argparse.Namespace) -> int:
+    paths = write_v112_draft(output_dir=Path(args.output_dir))
+    print(
+        f"paper draft: manifest -> {paths.manifest_json}; "
+        f"sections -> {paths.output_dir}; "
+        f"taxonomy -> {paths.claim_taxonomy_json}"
+    )
+    return 0
+
+
+def paper_refresh_command(args: argparse.Namespace) -> int:
+    paths = write_v112_evidence_refresh(output_dir=Path(args.output_dir), overwrite=args.overwrite)
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    counts = manifest["counts"]
+    print(
+        f"paper refresh: manifest -> {paths.manifest_json}; "
+        f"shallow runs -> {counts['shallow_runs']}; "
+        f"depth runs -> {counts['depth_runs']}"
+    )
+    return 0
+
+
+def paper_figures_command(args: argparse.Namespace) -> int:
+    paths = write_v112_paper_facing_assets(output_dir=Path(args.output_dir))
+    print(
+        f"paper figures: manifest -> {paths.manifest_json}; "
+        f"pipeline -> {paths.pipeline_svg}; "
+        f"captions -> {paths.figure_captions_md}"
+    )
+    return 0
+
+
+def paper_probes_command(args: argparse.Namespace) -> int:
+    paths = write_v112_bounded_probes(output_dir=Path(args.output_dir))
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    statuses = manifest["statuses"]
+    print(
+        f"paper probes: manifest -> {paths.manifest_json}; "
+        f"baseline -> {statuses['baseline']}; "
+        f"logistic promotion -> {statuses['logistic_promotion']}"
+    )
+    return 0
+
+
+def paper_supplement_command(args: argparse.Namespace) -> int:
+    paths = write_v112_supplement(output_dir=Path(args.output_dir), overwrite=args.overwrite)
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"paper supplement: manifest -> {paths.manifest_json}; "
+        f"audit -> {manifest['audit_status']}; "
+        f"source locks -> {manifest['source_lock_count']}"
+    )
+    return 0
+
+
+def paper_training_detail_command(args: argparse.Namespace) -> int:
+    paths = write_v112_training_detail_assets(output_dir=Path(args.output_dir), refresh_dir=Path(args.refresh_dir))
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    counts = manifest["counts"]
+    print(
+        f"paper training detail: manifest -> {paths.manifest_json}; "
+        f"step rows -> {counts['step_trace_rows']}; "
+        f"candidate rows -> {counts['candidate_lifecycle_rows']}"
+    )
+    return 0
+
+
 def paper_decision_command(args: argparse.Namespace) -> int:
     paths = write_paper_decision_package(
         tuple(Path(path) for path in args.aggregate or ()),
@@ -423,6 +538,7 @@ def paper_decision_command(args: argparse.Namespace) -> int:
 def raw_hybrid_paper_command(args: argparse.Namespace) -> int:
     paths = write_raw_hybrid_paper_package(
         output_dir=Path(args.output_dir),
+        preset=args.preset,
         require_existing=args.require_existing,
         overwrite=args.overwrite,
         reproduction_command=_raw_hybrid_paper_reproduction_command(args),
@@ -447,6 +563,8 @@ def _raw_hybrid_paper_reproduction_command(args: argparse.Namespace) -> str:
         "--output-dir",
         str(args.output_dir),
     ]
+    if args.preset != "v1.9-raw-hybrid-paper":
+        parts[5:5] = ["--preset", str(args.preset)]
     if args.require_existing:
         parts.append("--require-existing")
     else:
@@ -516,7 +634,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     bench = sub.add_parser("benchmark", help="Run a benchmark suite or filtered subset.")
     bench.add_argument("suite", help="Built-in suite name or path to a suite JSON file.")
-    bench.add_argument("--output-dir", help="Override artifact root.")
+    bench.add_argument("--output-dir", help="Override artifact root; suite outputs are written under <root>/<suite-id>.")
     bench.add_argument("--formula", action="append", help="Only run this formula ID. Repeatable.")
     bench.add_argument("--start-mode", choices=START_MODES, action="append")
     bench.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")
@@ -559,7 +677,13 @@ def build_parser() -> argparse.ArgumentParser:
     paper_decision.add_argument("--output-dir", default=str(DEFAULT_PAPER_OUTPUT_ROOT), help="Directory for decision memo outputs.")
     paper_decision.set_defaults(func=paper_decision_command)
 
-    raw_hybrid_paper = sub.add_parser("raw-hybrid-paper", help="Write the v1.9 raw-hybrid paper package from locked sources.")
+    raw_hybrid_paper = sub.add_parser("raw-hybrid-paper", help="Write a raw-hybrid paper package from locked sources.")
+    raw_hybrid_paper.add_argument(
+        "--preset",
+        choices=raw_hybrid_paper_presets(),
+        default="v1.9-raw-hybrid-paper",
+        help="Paper package preset to generate.",
+    )
     raw_hybrid_paper.add_argument(
         "--output-dir",
         default=str(DEFAULT_RAW_HYBRID_OUTPUT_DIR),
@@ -581,6 +705,78 @@ def build_parser() -> argparse.ArgumentParser:
     )
     raw_hybrid_paper.add_argument("--overwrite", action="store_true", help="Allow replacing an existing non-empty package directory.")
     raw_hybrid_paper.set_defaults(func=raw_hybrid_paper_command)
+
+    paper_assets = sub.add_parser("paper-assets", help="Write deterministic v1.11 paper figure and source-table assets.")
+    paper_assets.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_PAPER_ASSETS_OUTPUT_DIR),
+        help="Directory for paper asset manifest, tables, figures, and metadata.",
+    )
+    paper_assets.set_defaults(func=paper_assets_command)
+
+    paper_package = sub.add_parser("paper-package", help="Assemble and audit the final v1.11 paper evidence package.")
+    paper_package.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V111_PAPER_PACKAGE_DIR),
+        help="Directory for final v1.11 manifest, source locks, claim audit, tables, and figures.",
+    )
+    paper_package.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing package manifest.")
+    paper_package.set_defaults(func=paper_package_command)
+
+    paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
+    paper_draft.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_DRAFT_DIR),
+        help="Directory for v1.12 draft skeleton artifacts.",
+    )
+    paper_draft.set_defaults(func=paper_draft_command)
+
+    paper_refresh = sub.add_parser("paper-refresh", help="Run the v1.12 shallow seed and depth-curve evidence refresh.")
+    paper_refresh.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_REFRESH_DIR),
+        help="Directory for v1.12 evidence-refresh artifacts.",
+    )
+    paper_refresh.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing output directory.")
+    paper_refresh.set_defaults(func=paper_refresh_command)
+
+    paper_figures = sub.add_parser("paper-figures", help="Write v1.12 paper-facing captions, motif table, negative table, and pipeline figure.")
+    paper_figures.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_DRAFT_DIR),
+        help="Directory for v1.12 draft and paper-facing artifacts.",
+    )
+    paper_figures.set_defaults(func=paper_figures_command)
+
+    paper_probes = sub.add_parser("paper-probes", help="Write v1.12 bounded baseline and logistic strict-support probe artifacts.")
+    paper_probes.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_DRAFT_DIR),
+        help="Directory for v1.12 draft and bounded-probe artifacts.",
+    )
+    paper_probes.set_defaults(func=paper_probes_command)
+
+    paper_supplement = sub.add_parser("paper-supplement", help="Assemble and audit the v1.12 supplement to the v1.11 paper package.")
+    paper_supplement.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_SUPPLEMENT_DIR),
+        help="Directory for v1.12 supplement manifest, source locks, audit, and reproduction commands.",
+    )
+    paper_supplement.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing supplement directory.")
+    paper_supplement.set_defaults(func=paper_supplement_command)
+
+    paper_training_detail = sub.add_parser("paper-training-detail", help="Write v1.12 per-step training traces, lifecycle tables, and loss-curve figures.")
+    paper_training_detail.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_TRAINING_DETAIL_DIR),
+        help="Directory for v1.12 training-detail paper artifacts.",
+    )
+    paper_training_detail.add_argument(
+        "--refresh-dir",
+        default=str(DEFAULT_V112_REFRESH_DIR),
+        help="v1.12 evidence-refresh directory containing traced run artifacts.",
+    )
+    paper_training_detail.set_defaults(func=paper_training_detail_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)
@@ -640,6 +836,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory for basin-bound.json and basin-bound.md.",
     )
     basin_bound.set_defaults(func=diagnostics_basin_bound_command)
+
+    paper_ablations = diagnostics_sub.add_parser(
+        "paper-ablations",
+        help="Write v1.11 paper ablation and baseline diagnostics from locked artifacts.",
+    )
+    paper_ablations.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR),
+        help="Directory for paper ablation/baseline diagnostic outputs.",
+    )
+    paper_ablations.set_defaults(func=diagnostics_paper_ablations_command)
     return parser
 
 

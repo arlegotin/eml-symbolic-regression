@@ -1,5 +1,49 @@
 # Milestones
 
+## v1.12 Paper draft skeleton and refreshed shallow evidence (Shipped: 2026-04-19)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added `artifacts/paper/v1.11/draft/` with abstract, methods, results, limitations, claim taxonomy, and paper-facing captions.
+- Ran a current-code evidence refresh: 10/10 shallow verifier-recovered rows across separate pure-blind/scaffolded regimes, plus a depth 2-5 refresh with 4/8 recovered.
+- Added motif-library evolution, logistic/Planck negative-results, and EML pipeline figure artifacts for the paper draft.
+- Recorded bounded probes: conventional symbolic-regression baseline unavailable locally, and logistic strict support still unsupported at strict gate 13 with relaxed depth 15.
+- Assembled `artifacts/paper/v1.11/v1.12-supplement/` with 49 source locks, reproduction commands, and a passing claim audit.
+
+**Known deferred items at close:** conventional external SR baseline remains future BASE-02 work; logistic strict-support improvement remains future compiler work.
+
+---
+
+## v1.11 Paper-strength evidence and figure package (Shipped: 2026-04-19)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added a versioned v1.11 raw-hybrid paper package that uses current v1.10 logistic and Planck diagnostics instead of stale scientific-law rows.
+- Ran real current-code paper training and probe campaigns: 8/8 verifier-recovered training rows across separated regimes, plus 0/4 recovered logistic/Planck probes with 2 unsupported and 2 failed rows kept visible.
+- Generated motif-depth, regime-comparison, repair/refit, and prediction-only baseline diagnostics under `artifacts/diagnostics/v1.11-paper-ablations/`.
+- Generated deterministic paper assets under `artifacts/paper/v1.11/assets/`: 7 SVG figures, 7 source tables, and per-figure metadata.
+- Assembled the final `artifacts/paper/v1.11/` package with root manifest, 67 source-lock rows, reproduction commands, paper-readiness summary, and a passing 7-check claim audit.
+
+---
+
+## v1.10 Search-backed motif library and compiler shortening for logistic and Planck (Shipped: 2026-04-18)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Locked archived compiler baselines for logistic, Planck, Michaelis-Menten, Arrhenius, and Shockley before changing motif behavior.
+- Generalized reciprocal and saturation motifs to validated compilable subexpressions with validation-visible macro diagnostics and fail-closed rejection.
+- Added a structural exponential-saturation motif that lowers logistic relaxed compile depth from 27 to 15 while keeping strict unsupported status honest.
+- Added bounded motif-search evidence plus validation-backed low-degree power compression, dropping Planck relaxed compile depth from 20 to 14 while preserving unsupported/stretch classification.
+- Added focused v1.10 benchmark suites and campaign artifacts for logistic and Planck diagnostics under `artifacts/campaigns/`, with no warm-start promotion claimed.
+
+---
+
 ## v1.9 milestone (Shipped: 2026-04-17)
 
 **Phases completed:** 5 phases, 14 plans, 33 tasks
