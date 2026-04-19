@@ -1,25 +1,25 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.11
-milestone_name: Paper-strength evidence and figure package
-current_phase: 63
-current_phase_name: Paper Package Assembly and Claim Audit
-status: milestone_complete
-stopped_at: v1.11 milestone complete
+milestone: v1.12
+milestone_name: Paper draft skeleton and refreshed shallow evidence
+current_phase: null
+current_phase_name: Not started
+status: defining_requirements
+stopped_at: milestone started
 last_updated: "2026-04-19T00:00:00.000Z"
-last_activity: 2026-04-19 -- Phase 63 completed with final paper package and passing claim audit
+last_activity: 2026-04-19 -- Milestone v1.12 started
 progress:
-  total_phases: 5
-  completed_phases: 5
+  total_phases: 0
+  completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 100
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 63 - Paper Package Assembly and Claim Audit
+**Current phase:** Not started
 **Mode:** YOLO
 
 ## Project Reference
@@ -27,66 +27,62 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.11 paper-strength evidence, real training runs, low-hanging ablations, and plot-ready artifacts.
+**Current focus:** v1.12 paper draft skeleton, refreshed shallow/depth evidence, and paper-facing claim-boundary artifacts.
 
 ## Current Position
 
-Phase: 63 - Paper Package Assembly and Claim Audit
-Plan: None
-Status: Milestone complete
-Last activity: 2026-04-19 -- Phase 63 completed with final paper package and passing claim audit
-Progress: [##########] 100% by completed phases
+Phase: Not started (defining requirements)
+Plan: -
+Status: Defining requirements
+Last activity: 2026-04-19 -- Milestone v1.12 started
+Progress: [----------] 0% by completed phases
 
 ## Current Milestone
 
-**v1.11: Paper-strength evidence and figure package**
+**v1.12: Paper draft skeleton and refreshed shallow evidence**
 
-Goal: Produce a stronger paper-ready evidence package by running real training where it is honest, adding low-hanging empirical comparisons and ablations, and generating plot-rich artifacts that clearly illustrate the EML hybrid pipeline.
+Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing the most reviewer-visible shallow/depth evidence and making claim boundaries explicit.
 
 ## Artifacts
 
 | Artifact | Path | Status |
 |----------|------|--------|
-| Project context | `.planning/PROJECT.md` | Updated for v1.11 |
-| Archived v1.10 requirements | `.planning/milestones/v1.10-REQUIREMENTS.md` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.11 |
-| Roadmap | `.planning/ROADMAP.md` | Active v1.11 phases 59-63 |
-| Research summary | `.planning/research/SUMMARY.md` | Complete |
+| Project context | `.planning/PROJECT.md` | Updated for v1.12 |
+| Archived v1.11 requirements | `.planning/milestones/v1.11-REQUIREMENTS.md` | Complete |
+| Requirements | `.planning/REQUIREMENTS.md` | Being defined for v1.12 |
+| Roadmap | `.planning/ROADMAP.md` | Pending v1.12 phases |
+| Research summary | `.planning/research/SUMMARY.md` | Reuse existing context; no new domain research selected |
 | Workflow config | `.planning/config.json` | Complete |
-| Milestone log | `.planning/MILESTONES.md` | Complete through v1.10 |
-| v1.9 raw-hybrid paper package | `artifacts/paper/v1.9/raw-hybrid/` | Baseline paper package |
-| v1.10 focused motif evidence | `artifacts/campaigns/v1.10-logistic-evidence/`, `artifacts/campaigns/v1.10-planck-diagnostics/` | Source evidence for v1.11 package |
-| v1.11 raw-hybrid source package | `artifacts/paper/v1.11/raw-hybrid/` | Initial source-locked package generated |
-| v1.11 paper training campaign | `artifacts/campaigns/v1.11-paper-training/` | Complete |
-| v1.11 logistic/Planck probes | `artifacts/campaigns/v1.11-logistic-planck-probes/` | Complete |
-| v1.11 paper ablations | `artifacts/diagnostics/v1.11-paper-ablations/` | Complete |
-| v1.11 paper assets | `artifacts/paper/v1.11/assets/` | Complete |
+| Milestone log | `.planning/MILESTONES.md` | Complete through v1.11 |
 | v1.11 final paper package | `artifacts/paper/v1.11/` | Complete, audit passed |
 
 ## Accumulated Context
 
 ### Decisions
 
-- v1.11 continues phase numbering from Phase 59 after v1.10 Phase 58.
-- The paper should be framed as a verifier-gated hybrid EML symbolic-regression methods/evidence paper, not as broad blind-SR superiority.
-- Real training should be run only in claim-safe regimes; warm-start/scaffolded/same-AST/repair/perturbed evidence must remain separately labeled.
-- Logistic and Planck remain unsupported unless the strict compiler and verifier contract actually passes.
-- Low-hanging paper-strengthening work includes v1.10 paper-package refresh, training reruns, ablation tables, plot generation, and scoped external/conventional baseline diagnostics.
-- v1.11 phases are: Phase 59 evidence contracts/source locks, Phase 60 claim-safe training, Phase 61 ablations/baselines, Phase 62 figures/tables, Phase 63 package/audit.
+- v1.12 continues phase numbering after v1.11 Phase 63.
+- The paper should remain framed as a verifier-gated hybrid EML symbolic-regression methods/evidence paper, not broad blind-SR superiority.
+- Pure blind, scaffolded, same-AST, warm-start, perturbed-basin, repair/refit, compile-only, unsupported, and failed evidence remain separate denominators.
+- Logistic and Planck remain unsupported unless strict support and verifier contracts actually pass.
+- Additional shallow/depth seeds are credibility refreshes, not a change in the claim standard.
+- Conventional symbolic-regression comparison is useful but must not become a time sink; unavailable dependencies should be reported as deferred.
+- A logistic strict-support push is bounded compiler work and may fail; no gate relaxation is allowed.
 
 ### Pending Todos
 
-v1.11 is complete. Next milestone TBD.
+- Define v1.12 requirements and roadmap from the supplied nine-item milestone brief.
+- Archive or clear leftover v1.11 phase directories before creating v1.12 phase plans.
 
 ### Blockers/Concerns
 
-External baseline dependencies may not be installed or may require network access. If unavailable, v1.11 should include explicit conventional/local baselines and mark external comparisons as deferred rather than blocking paper-package generation.
+- External SR baselines may require dependencies or network access. If unavailable locally, record that explicitly instead of blocking the milestone.
+- Extra training runs should stay shallow and cheap; broad new campaigns are out of scope.
 
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: v1.11 milestone complete
+Stopped at: v1.12 milestone requirements definition
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after Phase 63*
+*Last updated: 2026-04-19 after starting v1.12 milestone*

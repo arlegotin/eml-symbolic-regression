@@ -31,13 +31,17 @@ v1.11 adds the paper-strength evidence layer: real current-code training artifac
 - Deterministic paper asset pipeline with 7 SVG figures, 7 source tables, and per-figure metadata.
 - Final `artifacts/paper/v1.11/` package with 67 source-lock rows, reproduction commands, paper-readiness summary, and a passing 7-check claim audit.
 
-## Current Milestone: None active after v1.11 closeout
+## Current Milestone: v1.12 Paper draft skeleton and refreshed shallow evidence
 
-**Goal:** Next milestone not yet selected.
+**Goal:** Turn the v1.11 evidence package into a paper-shaped draft while refreshing the most reviewer-visible shallow/depth evidence and making claim boundaries explicit.
 
 **Target features:**
-- Use `artifacts/paper/v1.11/paper-readiness.md` and `artifacts/paper/v1.11/claim-audit.json` as the starting point for drafting.
-- Next technical work should improve true blind search depth or strict support for logistic/Planck rather than relaxing gates.
+- Generate `artifacts/paper/v1.11/draft/` with section skeletons, figure captions, table captions, negative-result framing, and claim taxonomy.
+- Run additional shallow pure-blind and scaffolded seeds, keeping regimes and denominators separate.
+- Refresh the depth-degradation curve with current-code depth 2-5 evidence.
+- Add paper-facing motif before/after examples, a visual EML tree or pipeline figure, a logistic/Planck negative-results table, and a claim taxonomy table.
+- Attempt one lightweight conventional symbolic-regression baseline only if locally feasible, and report deferred/unavailable status otherwise.
+- Attempt a bounded strict-support logistic compiler push without relaxing gates; report failure honestly if no reusable strict motif emerges.
 
 ## Requirements
 
@@ -104,7 +108,12 @@ v1.11 adds the paper-strength evidence layer: real current-code training artifac
 
 ### Active
 
-- No active v1.11 requirements. Next milestone TBD.
+- [ ] Build a paper draft skeleton rooted in the v1.11 package, with abstract, methods, results, limitations, figure captions, and table captions.
+- [ ] Strengthen shallow recovery evidence with additional current-code pure-blind and scaffolded seeds, reported in separate regimes.
+- [ ] Refresh the depth-degradation evidence with current-code depth 2-5 runs and source-locked figure/table inputs.
+- [ ] Convert motif, negative-result, pipeline, and claim-taxonomy evidence into paper-facing figures, captions, and tables.
+- [ ] Attempt lightweight conventional symbolic-regression and logistic strict-support probes without making either a success precondition.
+- [ ] Re-audit the paper package so draft claims, refreshed evidence, and boundary tables remain source-locked and regime-safe.
 
 ### Out of Scope
 
@@ -189,6 +198,8 @@ v1.8 found no positive centered-family recovery signal under the scoped local se
 | Raw scaffold helpers are registry-gated by operator family | Phase 49 proved current `exp`, `log`, and `scaled_exp` scaffold witnesses are raw EML only; centered runs now record missing same-family witness exclusions instead of reusing raw helpers. | ✓ Good |
 | Expanded exact cleanup is repair-only evidence | Phase 52 can opt into selected/fallback/retained candidate roots and records no-improvement focused evidence; repaired candidates remain `repaired_candidate`, not blind, compile-only, same-AST, or perturbed true-tree recovery. | ✓ Good |
 | v1.10 prioritizes reusable compiler motifs over reporting work or gate changes | Logistic and Planck are high-visibility unsupported laws, and prior Shockley/Arrhenius/Michaelis wins came from reusable motif compression rather than looser recovery claims. | ✓ Good |
+| v1.12 prioritizes paper-shaped argument over broad new algorithm work | v1.11 already organized the evidence; the highest-leverage next step is to turn it into a draft skeleton while refreshing small, credibility-critical evidence gaps. | - Pending |
+| v1.12 treats conventional SR and logistic strict support as bounded probes | Both could help the paper, but dependency availability and compiler success are uncertain, so the milestone should record attempt/deferred/failure outcomes without blocking draft assembly. | - Pending |
 
 ## Evolution
 
@@ -208,4 +219,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-19 after starting v1.11 milestone*
+*Last updated: 2026-04-19 after starting v1.12 milestone*
