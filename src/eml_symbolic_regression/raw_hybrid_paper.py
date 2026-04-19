@@ -12,7 +12,9 @@ from typing import Any, Mapping
 
 
 RAW_HYBRID_PAPER_PRESET_ID = "v1.9-raw-hybrid-paper"
+V111_RAW_HYBRID_PAPER_PRESET_ID = "v1.11-paper-evidence-package"
 DEFAULT_RAW_HYBRID_OUTPUT_DIR = Path("artifacts") / "paper" / "v1.9" / "raw-hybrid"
+DEFAULT_V111_RAW_HYBRID_OUTPUT_DIR = Path("artifacts") / "paper" / "v1.11" / "raw-hybrid"
 REGIME_KEYS = (
     "pure_blind",
     "scaffolded",
@@ -42,6 +44,7 @@ EXPECTED_RAW_HYBRID_OUTPUTS = {
     "scientific-law-table.json",
     "scientific-law-table.csv",
     "scientific-law-table.md",
+    "claim-ledger.json",
     "claim-boundaries.md",
     "centered-negative-diagnostics.md",
 }
@@ -79,6 +82,15 @@ class RawHybridSource:
         return payload
 
 
+@dataclass(frozen=True, kw_only=True)
+class RawHybridPaperPreset:
+    preset_id: str
+    output_dir: Path
+    title: str
+    description: str
+    sources: tuple[RawHybridSource, ...]
+
+
 @dataclass(frozen=True)
 class RawHybridPaperPaths:
     output_dir: Path
@@ -89,6 +101,7 @@ class RawHybridPaperPaths:
     scientific_law_table_json: Path
     scientific_law_table_csv: Path
     scientific_law_table_md: Path
+    claim_ledger_json: Path
     claim_boundaries_md: Path
     centered_negative_diagnostics_md: Path
 
@@ -102,6 +115,7 @@ class RawHybridPaperPaths:
             "scientific_law_table_json": str(self.scientific_law_table_json),
             "scientific_law_table_csv": str(self.scientific_law_table_csv),
             "scientific_law_table_md": str(self.scientific_law_table_md),
+            "claim_ledger_json": str(self.claim_ledger_json),
             "claim_boundaries_md": str(self.claim_boundaries_md),
             "centered_negative_diagnostics_md": str(self.centered_negative_diagnostics_md),
         }
@@ -266,45 +280,136 @@ def default_raw_hybrid_sources() -> tuple[RawHybridSource, ...]:
     )
 
 
+def v111_raw_hybrid_sources() -> tuple[RawHybridSource, ...]:
+    """Return locked evidence inputs for the v1.11 paper evidence package."""
+
+    v110_logistic = Path("artifacts") / "campaigns" / "v1.10-logistic-evidence"
+    v110_planck = Path("artifacts") / "campaigns" / "v1.10-planck-diagnostics"
+    carried = tuple(
+        _with_preset(source, V111_RAW_HYBRID_PAPER_PRESET_ID)
+        for source in default_raw_hybrid_sources()
+        if source.source_id
+        not in {
+            "v1.6-planck-diagnostic-run",
+            "v1.6-logistic-diagnostic-run",
+        }
+    )
+    return (
+        *carried,
+        RawHybridSource(
+            source_id="v1.10-logistic-aggregate",
+            role="scientific_law_aggregate",
+            path=v110_logistic / "aggregate.json",
+            preset_id=V111_RAW_HYBRID_PAPER_PRESET_ID,
+            description="v1.10 logistic focused aggregate after exponential-saturation motif work.",
+            law="logistic",
+            evidence_regime="compile_only",
+        ),
+        RawHybridSource(
+            source_id="v1.10-logistic-run",
+            role="scientific_law_run",
+            path=v110_logistic / "v1-10-logistic-evidence-logistic-compile-c2af27a35e81.json",
+            preset_id=V111_RAW_HYBRID_PAPER_PRESET_ID,
+            description="v1.10 logistic unsupported diagnostic with relaxed depth 15 and validated exponential-saturation motif.",
+            law="logistic",
+            evidence_regime="compile_only",
+        ),
+        RawHybridSource(
+            source_id="v1.10-planck-aggregate",
+            role="scientific_law_aggregate",
+            path=v110_planck / "aggregate.json",
+            preset_id=V111_RAW_HYBRID_PAPER_PRESET_ID,
+            description="v1.10 Planck focused aggregate after low-degree power compression.",
+            law="planck",
+            evidence_regime="compile_only",
+        ),
+        RawHybridSource(
+            source_id="v1.10-planck-run",
+            role="scientific_law_run",
+            path=v110_planck / "v1-10-planck-diagnostics-planck-compile-795067919a97.json",
+            preset_id=V111_RAW_HYBRID_PAPER_PRESET_ID,
+            description="v1.10 Planck unsupported diagnostic with relaxed depth 14 and validated low-degree power/direct-division motifs.",
+            law="planck",
+            evidence_regime="compile_only",
+        ),
+    )
+
+
+def paper_package_preset(preset: str = RAW_HYBRID_PAPER_PRESET_ID) -> RawHybridPaperPreset:
+    """Return a versioned raw-hybrid paper package preset."""
+
+    normalized = str(preset)
+    if normalized in {"v1.9", RAW_HYBRID_PAPER_PRESET_ID}:
+        return RawHybridPaperPreset(
+            preset_id=RAW_HYBRID_PAPER_PRESET_ID,
+            output_dir=DEFAULT_RAW_HYBRID_OUTPUT_DIR,
+            title="v1.9 Raw-Hybrid Paper Evidence Report",
+            description="v1.9 raw-hybrid package with archived source locks and regime-separated claims.",
+            sources=default_raw_hybrid_sources(),
+        )
+    if normalized in {"v1.11", V111_RAW_HYBRID_PAPER_PRESET_ID}:
+        return RawHybridPaperPreset(
+            preset_id=V111_RAW_HYBRID_PAPER_PRESET_ID,
+            output_dir=DEFAULT_V111_RAW_HYBRID_OUTPUT_DIR,
+            title="v1.11 Paper-Strength Evidence Package",
+            description=(
+                "v1.11 source-locked package using current v1.10 logistic/Planck diagnostics "
+                "and preserving regime-separated claim boundaries."
+            ),
+            sources=v111_raw_hybrid_sources(),
+        )
+    raise RawHybridPaperError(f"unknown raw-hybrid paper preset: {preset!r}")
+
+
+def raw_hybrid_paper_presets() -> tuple[str, ...]:
+    return (RAW_HYBRID_PAPER_PRESET_ID, V111_RAW_HYBRID_PAPER_PRESET_ID)
+
+
 def write_raw_hybrid_paper_package(
     *,
-    output_dir: Path = DEFAULT_RAW_HYBRID_OUTPUT_DIR,
+    output_dir: Path | None = None,
+    preset: str = RAW_HYBRID_PAPER_PRESET_ID,
     require_existing: bool = True,
     overwrite: bool = False,
     reproduction_command: str | None = None,
 ) -> RawHybridPaperPaths:
     """Write the raw-hybrid paper package from existing evidence artifacts."""
 
-    output_dir = Path(output_dir)
-    sources = default_raw_hybrid_sources()
+    package = paper_package_preset(preset)
+    output_dir = Path(output_dir) if output_dir is not None else package.output_dir
+    sources = package.sources
     source_payloads = _load_sources(sources, require_existing=require_existing)
     _prepare_output_dir(output_dir, overwrite=overwrite)
 
     paths = _package_paths(output_dir)
     regime_summary = build_regime_summary(sources, source_payloads)
     law_rows = build_scientific_law_rows(sources, source_payloads)
+    claim_ledger = build_claim_ledger(regime_summary, law_rows)
     centered_diagnostics = render_centered_negative_diagnostics(sources, source_payloads)
     locks = {
         "schema": "eml.raw_hybrid_source_locks.v1",
-        "preset_id": RAW_HYBRID_PAPER_PRESET_ID,
+        "preset_id": package.preset_id,
         "generated_at": _now_iso(),
         "sources": [_source_lock(source) for source in sources if source.path.exists()],
     }
     manifest = _manifest_payload(
         paths,
+        preset=package,
         sources=sources,
         source_payloads=source_payloads,
         regime_summary=regime_summary,
         law_rows=law_rows,
+        claim_ledger=claim_ledger,
         reproduction_command=reproduction_command
-        or f"PYTHONPATH=src python -m eml_symbolic_regression.cli raw-hybrid-paper --output-dir {output_dir}",
+        or f"PYTHONPATH=src python -m eml_symbolic_regression.cli raw-hybrid-paper --preset {package.preset_id} --output-dir {output_dir}",
     )
 
     _write_json(paths.regime_summary_json, regime_summary)
-    paths.raw_hybrid_report_md.write_text(render_raw_hybrid_report(regime_summary), encoding="utf-8")
+    paths.raw_hybrid_report_md.write_text(render_raw_hybrid_report(regime_summary, title=package.title), encoding="utf-8")
     _write_json(paths.scientific_law_table_json, {"columns": list(SCIENTIFIC_LAW_COLUMNS), "rows": law_rows})
     _write_scientific_law_csv(paths.scientific_law_table_csv, law_rows)
     paths.scientific_law_table_md.write_text(render_scientific_law_table_markdown(law_rows), encoding="utf-8")
+    _write_json(paths.claim_ledger_json, claim_ledger)
     paths.claim_boundaries_md.write_text(render_claim_boundaries(), encoding="utf-8")
     paths.centered_negative_diagnostics_md.write_text(centered_diagnostics, encoding="utf-8")
     _write_json(paths.source_locks_json, locks)
@@ -378,9 +483,72 @@ def build_scientific_law_rows(
     return sorted(rows, key=lambda row: _law_sort_key(row["law"]))
 
 
-def render_raw_hybrid_report(regime_summary: Mapping[str, Mapping[str, Any]]) -> str:
+def build_claim_ledger(
+    regime_summary: Mapping[str, Mapping[str, Any]],
+    law_rows: list[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Build a machine-readable paper claim ledger from classified evidence rows."""
+
+    rows: list[dict[str, Any]] = []
+    for regime in REGIME_KEYS:
+        bucket = regime_summary.get(regime, {})
+        counts = bucket.get("counts", {}) if isinstance(bucket.get("counts"), Mapping) else {}
+        rows.append(
+            {
+                "claim_id": f"v111-regime-{regime}",
+                "public_claim": _regime_description(regime),
+                "evidence_class": regime,
+                "eligible_denominator": regime,
+                "source_ids": list(bucket.get("sources", ())) if isinstance(bucket.get("sources"), list) else [],
+                "total": counts.get("total", 0),
+                "verifier_recovered": counts.get("verifier_recovered", 0),
+                "same_ast_return": counts.get("same_ast_return", 0),
+                "repaired_candidate": counts.get("repaired_candidate", 0),
+                "unsupported": counts.get("unsupported", 0),
+                "failed": counts.get("failed", 0),
+                "rate_source": "verifier_counts",
+            }
+        )
+
+    for law in law_rows:
+        law_name = str(law.get("law") or "unknown")
+        compile_support = str(law.get("compile_support") or "unknown")
+        verifier_status = str(law.get("verifier_status") or "unknown")
+        evidence_regime = str(law.get("evidence_regime") or "unknown")
+        public_claim = "supported diagnostic" if compile_support == "supported" else "unsupported diagnostic"
+        if evidence_regime == "same_ast_return":
+            public_claim = "same-AST warm-start evidence"
+        rows.append(
+            {
+                "claim_id": f"v111-law-{_slug(law_name)}",
+                "public_claim": public_claim,
+                "evidence_class": evidence_regime,
+                "eligible_denominator": evidence_regime,
+                "source_ids": [str(law.get("artifact_path"))],
+                "law": law_name,
+                "compile_support": compile_support,
+                "compile_depth": law.get("compile_depth"),
+                "macro_hits": law.get("macro_hits") or [],
+                "verifier_status": verifier_status,
+                "rate_source": "not_a_rate",
+            }
+        )
+
+    return {
+        "schema": "eml.raw_hybrid_claim_ledger.v1",
+        "generated_at": _now_iso(),
+        "rules": {
+            "recovery_rate_source": "verifier-owned counts only",
+            "loss_only_recovery": "forbidden",
+            "mixed_regime_blind_claims": "forbidden",
+        },
+        "rows": rows,
+    }
+
+
+def render_raw_hybrid_report(regime_summary: Mapping[str, Mapping[str, Any]], *, title: str = "v1.9 Raw-Hybrid Paper Evidence Report") -> str:
     lines = [
-        "# v1.9 Raw-Hybrid Paper Evidence Report",
+        f"# {title}",
         "",
         "This package synthesizes locked evidence artifacts without running training, campaigns, or proof suites.",
         "Each evidence path is reported in its own regime bucket so paper claims do not merge incompatible starts.",
@@ -491,6 +659,19 @@ def render_centered_negative_diagnostics(
         )
     lines.append("")
     return "\n".join(lines)
+
+
+def _with_preset(source: RawHybridSource, preset_id: str) -> RawHybridSource:
+    return RawHybridSource(
+        source_id=source.source_id,
+        role=source.role,
+        path=source.path,
+        required=source.required,
+        preset_id=preset_id,
+        description=source.description,
+        law=source.law,
+        evidence_regime=source.evidence_regime,
+    )
 
 
 def _source_runs(source: RawHybridSource, payload: Mapping[str, Any]) -> list[Mapping[str, Any]]:
@@ -750,6 +931,14 @@ def _format_rate(value: Any) -> str:
         return "n/a"
 
 
+def _slug(value: str) -> str:
+    chars = [ch.lower() if ch.isalnum() else "-" for ch in value]
+    slug = "".join(chars).strip("-")
+    while "--" in slug:
+        slug = slug.replace("--", "-")
+    return slug or "unknown"
+
+
 def _package_paths(output_dir: Path) -> RawHybridPaperPaths:
     return RawHybridPaperPaths(
         output_dir=output_dir,
@@ -760,6 +949,7 @@ def _package_paths(output_dir: Path) -> RawHybridPaperPaths:
         scientific_law_table_json=output_dir / "scientific-law-table.json",
         scientific_law_table_csv=output_dir / "scientific-law-table.csv",
         scientific_law_table_md=output_dir / "scientific-law-table.md",
+        claim_ledger_json=output_dir / "claim-ledger.json",
         claim_boundaries_md=output_dir / "claim-boundaries.md",
         centered_negative_diagnostics_md=output_dir / "centered-negative-diagnostics.md",
     )
@@ -797,7 +987,7 @@ def _is_raw_hybrid_package_dir(output_dir: Path) -> bool:
     return (
         isinstance(payload, Mapping)
         and payload.get("schema") == "eml.raw_hybrid_paper.v1"
-        and payload.get("preset_id") == RAW_HYBRID_PAPER_PRESET_ID
+        and payload.get("preset_id") in raw_hybrid_paper_presets()
     )
 
 
@@ -821,16 +1011,22 @@ def _load_sources(sources: tuple[RawHybridSource, ...], *, require_existing: boo
 def _manifest_payload(
     paths: RawHybridPaperPaths,
     *,
+    preset: RawHybridPaperPreset,
     sources: tuple[RawHybridSource, ...],
     source_payloads: Mapping[str, Any],
     regime_summary: Mapping[str, Mapping[str, Any]],
     law_rows: list[Mapping[str, Any]],
+    claim_ledger: Mapping[str, Any],
     reproduction_command: str,
 ) -> dict[str, Any]:
     return {
         "schema": "eml.raw_hybrid_paper.v1",
-        "preset_id": RAW_HYBRID_PAPER_PRESET_ID,
-        "preset": {"id": RAW_HYBRID_PAPER_PRESET_ID},
+        "preset_id": preset.preset_id,
+        "preset": {
+            "id": preset.preset_id,
+            "title": preset.title,
+            "description": preset.description,
+        },
         "generated_at": _now_iso(),
         "output_dir": str(paths.output_dir),
         "reproducibility": {"command": reproduction_command},
@@ -844,6 +1040,7 @@ def _manifest_payload(
             if isinstance(bucket, Mapping)
         },
         "scientific_law_rows": len(law_rows),
+        "claim_ledger_rows": len(claim_ledger.get("rows", ())) if isinstance(claim_ledger.get("rows"), list) else 0,
     }
 
 

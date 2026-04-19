@@ -32,7 +32,7 @@ from .optimize import TrainingConfig, fit_eml_tree
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
-from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, write_raw_hybrid_paper_package
+from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
@@ -423,6 +423,7 @@ def paper_decision_command(args: argparse.Namespace) -> int:
 def raw_hybrid_paper_command(args: argparse.Namespace) -> int:
     paths = write_raw_hybrid_paper_package(
         output_dir=Path(args.output_dir),
+        preset=args.preset,
         require_existing=args.require_existing,
         overwrite=args.overwrite,
         reproduction_command=_raw_hybrid_paper_reproduction_command(args),
@@ -447,6 +448,8 @@ def _raw_hybrid_paper_reproduction_command(args: argparse.Namespace) -> str:
         "--output-dir",
         str(args.output_dir),
     ]
+    if args.preset != "v1.9-raw-hybrid-paper":
+        parts[5:5] = ["--preset", str(args.preset)]
     if args.require_existing:
         parts.append("--require-existing")
     else:
@@ -559,7 +562,13 @@ def build_parser() -> argparse.ArgumentParser:
     paper_decision.add_argument("--output-dir", default=str(DEFAULT_PAPER_OUTPUT_ROOT), help="Directory for decision memo outputs.")
     paper_decision.set_defaults(func=paper_decision_command)
 
-    raw_hybrid_paper = sub.add_parser("raw-hybrid-paper", help="Write the v1.9 raw-hybrid paper package from locked sources.")
+    raw_hybrid_paper = sub.add_parser("raw-hybrid-paper", help="Write a raw-hybrid paper package from locked sources.")
+    raw_hybrid_paper.add_argument(
+        "--preset",
+        choices=raw_hybrid_paper_presets(),
+        default="v1.9-raw-hybrid-paper",
+        help="Paper package preset to generate.",
+    )
     raw_hybrid_paper.add_argument(
         "--output-dir",
         default=str(DEFAULT_RAW_HYBRID_OUTPUT_DIR),

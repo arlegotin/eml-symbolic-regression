@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.11
 milestone_name: Paper-strength evidence and figure package
-current_phase: 59
-current_phase_name: Evidence Contracts and Source Locks
+current_phase: 60
+current_phase_name: Claim-Safe Training Campaigns
 status: ready_to_execute
-stopped_at: v1.11 requirements and roadmap defined; Phase 59 ready
+stopped_at: Phase 59 complete; Phase 60 ready
 last_updated: "2026-04-19T00:00:00.000Z"
 last_activity: 2026-04-19 -- Milestone v1.11 started
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 0
   completed_plans: 0
-  percent: 0
+  percent: 20
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 59 - Evidence Contracts and Source Locks
+**Current phase:** 60 - Claim-Safe Training Campaigns
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 ## Current Position
 
-Phase: 59 - Evidence Contracts and Source Locks
+Phase: 60 - Claim-Safe Training Campaigns
 Plan: None
 Status: Ready to execute
-Last activity: 2026-04-19 -- v1.11 requirements and roadmap defined
-Progress: [----------] 0% by completed phases
+Last activity: 2026-04-19 -- Phase 59 completed with v1.11 source locks and claim ledger
+Progress: [##--------] 20% by completed phases
 
 ## Current Milestone
 
@@ -56,6 +56,7 @@ Goal: Produce a stronger paper-ready evidence package by running real training w
 | Milestone log | `.planning/MILESTONES.md` | Complete through v1.10 |
 | v1.9 raw-hybrid paper package | `artifacts/paper/v1.9/raw-hybrid/` | Baseline paper package |
 | v1.10 focused motif evidence | `artifacts/campaigns/v1.10-logistic-evidence/`, `artifacts/campaigns/v1.10-planck-diagnostics/` | Source evidence for v1.11 package |
+| v1.11 raw-hybrid source package | `artifacts/paper/v1.11/raw-hybrid/` | Initial source-locked package generated |
 
 ## Accumulated Context
 
@@ -70,7 +71,7 @@ Goal: Produce a stronger paper-ready evidence package by running real training w
 
 ### Pending Todos
 
-Begin Phase 59 execution.
+Begin Phase 60 execution.
 
 ### Blockers/Concerns
 
@@ -79,8 +80,8 @@ External baseline dependencies may not be installed or may require network acces
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: v1.11 requirements and roadmap defined; Phase 59 ready
+Stopped at: Phase 59 complete; Phase 60 ready
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after defining v1.11 roadmap*
+*Last updated: 2026-04-19 after Phase 59*

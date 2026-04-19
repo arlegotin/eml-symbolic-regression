@@ -99,10 +99,10 @@ v1.10 expanded the compiler from a small set of useful macros into a search-back
 - ✓ Structural exponential-saturation motif for logistic-like laws, lowering logistic relaxed depth from 27 to 15 while preserving strict unsupported status — v1.10 Phase 56
 - ✓ Bounded motif-search evidence and validation-backed low-degree power compression, lowering Planck relaxed depth from 20 to 14 while preserving unsupported/stretch honesty — v1.10 Phase 57
 - ✓ Focused logistic and Planck benchmark suites, CLI artifact paths, campaign evidence, and tests recording unsupported diagnostics with no warm-start promotion — v1.10 Phase 58
+- ✓ Versioned v1.11 raw-hybrid paper package contract with source locks, claim ledger, and current v1.10 logistic/Planck scientific-law rows — v1.11 Phase 59
 
 ### Active
 
-- [ ] Paper package includes current v1.10 logistic and Planck diagnostics rather than stale v1.6 depths.
 - [ ] Real training evidence is regenerated or newly produced for claim-safe regimes, with exact commands and artifacts.
 - [ ] Low-hanging ablations show which compiler/motif/training choices materially change evidence.
 - [ ] Plot-ready artifacts include publication-quality figures and machine-readable source tables.
