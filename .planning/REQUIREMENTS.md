@@ -20,9 +20,9 @@ Acceptance:
 
 ### Evidence Refresh
 
-- [ ] **EVID-01**: Additional shallow current-code runs strengthen the bounded shallow recovery claim with new pure-blind and scaffolded seeds.
-- [ ] **EVID-02**: A current-code depth-curve refresh measures depths 2 through 5 with at least two seeds per depth.
-- [ ] **EVID-03**: Refreshed shallow and depth evidence is summarized in source-locked tables that keep regimes, seeds, budgets, and verifier outcomes separate.
+- [x] **EVID-01**: Additional shallow current-code runs strengthen the bounded shallow recovery claim with new pure-blind and scaffolded seeds.
+- [x] **EVID-02**: A current-code depth-curve refresh measures depths 2 through 5 with at least two seeds per depth.
+- [x] **EVID-03**: Refreshed shallow and depth evidence is summarized in source-locked tables that keep regimes, seeds, budgets, and verifier outcomes separate.
 
 Acceptance:
 - New shallow-refresh artifacts include at least five additional pure-blind seeds and at least five additional scaffolded seeds unless runtime failure is explicitly recorded.
@@ -95,9 +95,9 @@ Acceptance:
 | DRAFT-01 | Phase 64 | Complete |
 | DRAFT-02 | Phase 66 | Pending |
 | DRAFT-03 | Phase 64 | Complete |
-| EVID-01 | Phase 65 | Pending |
-| EVID-02 | Phase 65 | Pending |
-| EVID-03 | Phase 65 | Pending |
+| EVID-01 | Phase 65 | Complete |
+| EVID-02 | Phase 65 | Complete |
+| EVID-03 | Phase 65 | Complete |
 | FIG-01 | Phase 66 | Pending |
 | FIG-02 | Phase 66 | Pending |
 | FIG-03 | Phase 66 | Pending |

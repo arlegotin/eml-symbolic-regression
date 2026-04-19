@@ -5,13 +5,26 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
+from .benchmark import (
+    BenchmarkCase,
+    BenchmarkSuite,
+    DatasetConfig,
+    OptimizerBudget,
+    aggregate_evidence,
+    load_suite,
+    run_benchmark_suite,
+    write_aggregate_reports,
+)
+
 
 DEFAULT_V112_DRAFT_DIR = Path("artifacts") / "paper" / "v1.11" / "draft"
+DEFAULT_V112_REFRESH_DIR = Path("artifacts") / "campaigns" / "v1.12-evidence-refresh"
 DEFAULT_V111_PAPER_ROOT = Path("artifacts") / "paper" / "v1.11"
 DEFAULT_V111_RAW_HYBRID_DIR = DEFAULT_V111_PAPER_ROOT / "raw-hybrid"
 
@@ -27,6 +40,32 @@ class PaperDraftPaths:
     claim_taxonomy_json: Path
     claim_taxonomy_csv: Path
     claim_taxonomy_md: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
+@dataclass(frozen=True)
+class PaperRefreshPaths:
+    output_dir: Path
+    manifest_json: Path
+    shallow_suite_json: Path
+    shallow_suite_result_json: Path
+    shallow_aggregate_json: Path
+    shallow_aggregate_md: Path
+    shallow_runs_json: Path
+    shallow_runs_csv: Path
+    shallow_runs_md: Path
+    depth_suite_json: Path
+    depth_suite_result_json: Path
+    depth_aggregate_json: Path
+    depth_aggregate_md: Path
+    depth_runs_json: Path
+    depth_runs_csv: Path
+    depth_runs_md: Path
+    depth_summary_json: Path
+    depth_summary_csv: Path
+    depth_summary_md: Path
 
     def as_dict(self) -> dict[str, str]:
         return {key: str(value) for key, value in self.__dict__.items()}
@@ -103,6 +142,204 @@ def write_v112_draft(
     }
     _write_json(paths.manifest_json, manifest)
     return paths
+
+
+def v112_shallow_refresh_suite(output_dir: Path = DEFAULT_V112_REFRESH_DIR) -> BenchmarkSuite:
+    """Build the v1.12 shallow refresh suite without executing it."""
+
+    artifact_root = Path(output_dir) / "runs"
+    dataset = DatasetConfig(points=24)
+    seeds = (2, 3, 4, 5, 6)
+    pure = BenchmarkCase(
+        id="exp-pure-blind-seed-refresh",
+        formula="exp",
+        start_mode="blind",
+        seeds=seeds,
+        dataset=dataset,
+        optimizer=OptimizerBudget(depth=1, steps=80, restarts=2, scaffold_initializers=()),
+        tags=("v1.12", "paper_refresh", "pure_blind", "shallow"),
+        expect_recovery=False,
+        training_mode="blind_training",
+    )
+    scaffolded = BenchmarkCase(
+        id="exp-scaffolded-seed-refresh",
+        formula="exp",
+        start_mode="blind",
+        seeds=seeds,
+        dataset=dataset,
+        optimizer=OptimizerBudget(depth=1, steps=40, restarts=1),
+        tags=("v1.12", "paper_refresh", "scaffolded", "shallow"),
+        expect_recovery=True,
+        training_mode="blind_training",
+    )
+    return BenchmarkSuite(
+        id="v1.12-shallow-refresh",
+        description="v1.12 current-code shallow exp seed refresh with separate pure-blind and scaffolded denominators.",
+        cases=(pure, scaffolded),
+        artifact_root=artifact_root,
+    )
+
+
+def v112_depth_refresh_suite(output_dir: Path = DEFAULT_V112_REFRESH_DIR) -> BenchmarkSuite:
+    """Build the current-code depth 2-5 refresh suite without executing it."""
+
+    base = load_suite("proof-depth-curve")
+    selected = {"depth-2-blind", "depth-3-blind", "depth-4-blind", "depth-5-blind"}
+    return BenchmarkSuite(
+        id=base.id,
+        description="v1.12 current-code subset of proof-depth-curve, blind depths 2 through 5 with two seeds each.",
+        cases=tuple(case for case in base.cases if case.id in selected),
+        artifact_root=Path(output_dir) / "runs",
+        schema=base.schema,
+    )
+
+
+def write_v112_evidence_refresh(
+    *,
+    output_dir: Path = DEFAULT_V112_REFRESH_DIR,
+    overwrite: bool = False,
+) -> PaperRefreshPaths:
+    """Run the v1.12 shallow/depth evidence refresh and write compact paper tables."""
+
+    output_dir = Path(output_dir)
+    if output_dir.exists() and overwrite:
+        shutil.rmtree(output_dir)
+    if (output_dir / "manifest.json").exists() and not overwrite:
+        raise FileExistsError(f"{output_dir / 'manifest.json'} already exists; pass overwrite=True to refresh")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    tables_dir = output_dir / "tables"
+    tables_dir.mkdir(parents=True, exist_ok=True)
+
+    paths = PaperRefreshPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "manifest.json",
+        shallow_suite_json=output_dir / "shallow-suite.json",
+        shallow_suite_result_json=output_dir / "shallow-suite-result.json",
+        shallow_aggregate_json=output_dir / "shallow-aggregate.json",
+        shallow_aggregate_md=output_dir / "shallow-aggregate.md",
+        shallow_runs_json=tables_dir / "shallow-refresh-runs.json",
+        shallow_runs_csv=tables_dir / "shallow-refresh-runs.csv",
+        shallow_runs_md=tables_dir / "shallow-refresh-runs.md",
+        depth_suite_json=output_dir / "depth-suite.json",
+        depth_suite_result_json=output_dir / "depth-suite-result.json",
+        depth_aggregate_json=output_dir / "depth-aggregate.json",
+        depth_aggregate_md=output_dir / "depth-aggregate.md",
+        depth_runs_json=tables_dir / "depth-refresh-runs.json",
+        depth_runs_csv=tables_dir / "depth-refresh-runs.csv",
+        depth_runs_md=tables_dir / "depth-refresh-runs.md",
+        depth_summary_json=tables_dir / "depth-refresh-summary.json",
+        depth_summary_csv=tables_dir / "depth-refresh-summary.csv",
+        depth_summary_md=tables_dir / "depth-refresh-summary.md",
+    )
+
+    shallow_suite = v112_shallow_refresh_suite(output_dir)
+    depth_suite = v112_depth_refresh_suite(output_dir)
+    _write_json(paths.shallow_suite_json, shallow_suite.as_dict())
+    _write_json(paths.depth_suite_json, depth_suite.as_dict())
+
+    shallow_result = run_benchmark_suite(shallow_suite)
+    _write_json(paths.shallow_suite_result_json, shallow_result.as_dict())
+    shallow_aggregate_paths = write_aggregate_reports(shallow_result, output_dir / "shallow")
+    shutil.copy2(shallow_aggregate_paths["json"], paths.shallow_aggregate_json)
+    shutil.copy2(shallow_aggregate_paths["markdown"], paths.shallow_aggregate_md)
+    shallow_aggregate = aggregate_evidence(shallow_result)
+
+    depth_result = run_benchmark_suite(depth_suite)
+    _write_json(paths.depth_suite_result_json, depth_result.as_dict())
+    depth_aggregate_paths = write_aggregate_reports(depth_result, output_dir / "depth")
+    shutil.copy2(depth_aggregate_paths["json"], paths.depth_aggregate_json)
+    shutil.copy2(depth_aggregate_paths["markdown"], paths.depth_aggregate_md)
+    depth_aggregate = aggregate_evidence(depth_result)
+
+    shallow_rows = refresh_run_rows(shallow_aggregate, source="v1.12-current-code-shallow-refresh")
+    depth_rows = refresh_run_rows(depth_aggregate, source="v1.12-current-code-depth-refresh")
+    depth_summary_rows = [
+        {
+            "source": "v1.12-current-code-depth-refresh",
+            "depth": row.get("depth"),
+            "start_mode": row.get("start_mode"),
+            "training_mode": row.get("training_mode"),
+            "seed_count": row.get("seed_count"),
+            "recovered": row.get("recovered"),
+            "total": row.get("total"),
+            "recovery_rate": row.get("recovery_rate"),
+            "best_loss_median": row.get("best_loss_median"),
+            "post_snap_loss_median": row.get("post_snap_loss_median"),
+            "runtime_seconds_median": row.get("runtime_seconds_median"),
+            "claim_boundary": "current-code v1.12 depth refresh; not archived v1.6 evidence",
+        }
+        for row in depth_aggregate.get("depth_curve", [])
+    ]
+    _write_table(paths.shallow_runs_json, paths.shallow_runs_csv, paths.shallow_runs_md, "Shallow Refresh Runs", shallow_rows)
+    _write_table(paths.depth_runs_json, paths.depth_runs_csv, paths.depth_runs_md, "Depth Refresh Runs", depth_rows)
+    _write_table(
+        paths.depth_summary_json,
+        paths.depth_summary_csv,
+        paths.depth_summary_md,
+        "Depth Refresh Summary",
+        depth_summary_rows,
+    )
+
+    manifest = {
+        "schema": "eml.v112_evidence_refresh.v1",
+        "generated_at": _now_iso(),
+        "output_dir": str(output_dir),
+        "outputs": paths.as_dict(),
+        "counts": {
+            "shallow_runs": len(shallow_rows),
+            "depth_runs": len(depth_rows),
+            "depth_summary_rows": len(depth_summary_rows),
+            "shallow_verifier_recovered": shallow_aggregate.get("counts", {}).get("verifier_recovered"),
+            "depth_verifier_recovered": depth_aggregate.get("counts", {}).get("verifier_recovered"),
+        },
+        "source_locks": [
+            _source_lock("shallow_suite", paths.shallow_suite_json),
+            _source_lock("shallow_aggregate", paths.shallow_aggregate_json),
+            _source_lock("depth_suite", paths.depth_suite_json),
+            _source_lock("depth_aggregate", paths.depth_aggregate_json),
+        ],
+        "claim_boundary": "current-code refresh rows preserve pure-blind, scaffolded, and depth denominators separately",
+        "reproduction": {
+            "command": f"PYTHONPATH=src python -m eml_symbolic_regression.cli paper-refresh --output-dir {output_dir} --overwrite",
+        },
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def refresh_run_rows(aggregate: Mapping[str, Any], *, source: str) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for run in aggregate.get("runs", []):
+        if not isinstance(run, Mapping):
+            continue
+        optimizer = run.get("optimizer") if isinstance(run.get("optimizer"), Mapping) else {}
+        metrics = run.get("metrics") if isinstance(run.get("metrics"), Mapping) else {}
+        rows.append(
+            {
+                "source": source,
+                "suite_id": run.get("suite_id"),
+                "case_id": run.get("case_id"),
+                "formula": run.get("formula"),
+                "start_mode": run.get("start_mode"),
+                "seed": run.get("seed"),
+                "depth": optimizer.get("depth"),
+                "steps": optimizer.get("steps"),
+                "restarts": optimizer.get("restarts"),
+                "scaffold_initializers": ";".join(str(item) for item in optimizer.get("scaffold_initializers", [])),
+                "evidence_class": run.get("evidence_class"),
+                "classification": run.get("classification"),
+                "status": run.get("status"),
+                "claim_status": run.get("claim_status"),
+                "verifier_status": metrics.get("verifier_status"),
+                "best_loss": metrics.get("best_loss"),
+                "post_snap_loss": metrics.get("post_snap_loss"),
+                "snap_min_margin": metrics.get("snap_min_margin"),
+                "reason": run.get("reason"),
+                "artifact_path": run.get("artifact_path"),
+                "claim_boundary": "row belongs only to its source suite/start-mode denominator",
+            }
+        )
+    return rows
 
 
 def claim_taxonomy_rows(claim_ledger: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -377,6 +614,13 @@ def _claim_taxonomy_markdown(rows: list[Mapping[str, Any]]) -> str:
     return "\n".join(["# Claim Taxonomy", "", *_markdown_table_lines(rows, columns)])
 
 
+def _write_table(json_path: Path, csv_path: Path, md_path: Path, title: str, rows: list[Mapping[str, Any]]) -> None:
+    columns = _columns(rows)
+    _write_json(json_path, {"schema": "eml.v112_source_table.v1", "columns": columns, "rows": rows})
+    _write_csv(csv_path, rows)
+    md_path.write_text("\n".join([f"# {title}", "", *_markdown_table_lines(rows, columns)]), encoding="utf-8")
+
+
 def _markdown_table_lines(rows: list[Mapping[str, Any]], columns: list[str]) -> list[str]:
     lines = ["| " + " | ".join(columns) + " |", "| " + " | ".join("---" for _ in columns) + " |"]
     for row in rows:
@@ -392,17 +636,22 @@ def _format_markdown(value: Any) -> str:
 
 
 def _write_csv(path: Path, rows: list[Mapping[str, Any]]) -> None:
-    columns: list[str] = []
-    for row in rows:
-        for key in row:
-            if key not in columns:
-                columns.append(str(key))
+    columns = _columns(rows)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=columns)
         writer.writeheader()
         for row in rows:
             writer.writerow({column: _csv_value(row.get(column)) for column in columns})
+
+
+def _columns(rows: list[Mapping[str, Any]]) -> list[str]:
+    columns: list[str] = []
+    for row in rows:
+        for key in row:
+            if key not in columns:
+                columns.append(str(key))
+    return columns
 
 
 def _csv_value(value: Any) -> Any:
