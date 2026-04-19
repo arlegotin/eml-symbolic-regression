@@ -1,46 +1,58 @@
-# Research Summary: v1.3 Benchmark Campaign and Evidence Report
+# v1.11 Research Summary
 
-**Project:** EML Symbolic Regression
-**Domain:** Benchmark campaign reporting, CSV export, and static visualization for EML recovery evidence
-**Recorded:** 2026-04-15
-**Research decision:** External research skipped. This milestone is a local evidence/reporting milestone based on the current benchmark harness, existing artifacts, `sources/paper.pdf`, `sources/NORTH_STAR.md`, and `sources/FOR_DEMO.md`.
+**Milestone:** v1.11 Paper-strength evidence and figure package  
+**Generated:** 2026-04-19  
+**Inputs:** `.planning/research/STACK.md`, `.planning/research/FEATURES.md`, `.planning/research/ARCHITECTURE.md`, `.planning/research/PITFALLS.md`
 
-## Executive Summary
+## Synthesis
 
-v1.3 should convert the v1.2 benchmark harness from "can measure" into "can showcase." The milestone should run a real campaign, export tidy data, generate static figures, and assemble a report that answers the user's real question: how do the original paper's EML ideas perform in practice?
+v1.11 should strengthen the paper by turning the existing evidence base into a current, source-locked, plot-ready package and by adding only claim-safe new evidence. The milestone should not chase a new algorithmic breakthrough before packaging the real state of the system.
 
-The report must preserve the existing honesty contract. A polished graph should never merge blind recovery with same-AST warm-start return, and unsupported/depth-gated formulas should remain visible rather than hidden.
+The strongest path is:
 
-## Stack Additions
+1. refresh the paper package with current v1.10 logistic and Planck diagnostics,
+2. run modest real training suites in separated regimes,
+3. add one-variable ablations and scoped baseline diagnostics,
+4. generate deterministic paper figures from machine-readable tables,
+5. audit the final package so unsupported and non-blind evidence cannot be overclaimed.
 
-- Keep JSON and Markdown as first-class report artifacts.
-- Add standard-library CSV export for tabular analysis.
-- Add a lightweight static plotting dependency during implementation, likely `matplotlib`, unless a no-dependency SVG approach proves sufficient during planning.
-- Avoid notebook-only workflows; the CLI should generate reproducible artifacts directly.
+## Key Decisions
 
-## Feature Table Stakes
-
-- Campaign presets for `smoke`, `standard`, and `showcase` budget levels.
-- Versioned output folders containing raw run artifacts, aggregate JSON, CSV exports, figures, and `report.md`.
-- CSV tables for run-level metrics, grouped recovery rates, loss summaries, perturbation sweeps, runtime/depth, and failure taxonomy.
-- Static plots for recovery rate by formula/mode, best loss versus post-snap loss, Beer-Lambert perturbation sensitivity, runtime/depth, and unsupported/failure breakdown.
-- A concise narrative report explaining what works, what is promising, what fails, and what should be improved next.
-
-## Watch Out For
-
-- Do not let graph polish obscure weak results.
-- Do not count same-AST warm-start returns as blind discovery.
-- Do not require a long campaign in ordinary tests; use smoke fixtures and synthetic mini data for CI.
-- Do not tune the optimizer inside this milestone; use the campaign to create the scoreboard first.
-- Keep output deterministic enough that future optimizer milestones can compare "before vs after" cleanly.
+- Keep the existing `benchmark.py -> campaign.py -> raw_hybrid_paper.py` evidence flow. Do not build a parallel paper evidence system.
+- Add only small, local helpers for paper assets and optional baseline diagnostics. Avoid PySR, notebooks, dashboards, broad external benchmark infrastructure, Rust, CUDA, pandas, and seaborn for this milestone.
+- Treat Matplotlib as optional paper tooling only if needed; deterministic hand-written SVGs remain acceptable and avoid runtime dependency churn.
+- Keep logistic and Planck as unsupported diagnostics unless a new strict-gate, verifier-owned artifact actually passes. Compiler shortening is evidence, not recovery.
+- Keep pure blind, scaffolded, warm-start, same-AST, repair, refit, compile-only, and perturbed-basin rows separated in every table and figure.
+- Run real training where it answers a bounded question, not as open-ended compute. All runs must record budgets, seeds, start mode, verifier status, and failure class.
 
 ## Recommended Phase Shape
 
-1. Campaign presets and run manifests.
-2. CSV export and derived metrics.
-3. Plot generation.
-4. Report assembly.
-5. Campaign smoke/full-run documentation and lockdown.
+| Phase | Name | Purpose |
+|-------|------|---------|
+| 59 | Evidence Contracts and Source Locks | Define v1.11 claim schema, source inventory, suite plan, output roots, and source-lock rules before running new evidence. |
+| 60 | Claim-Safe Training Campaigns | Run current-code training in shallow pure-blind, scaffolded, warm-start/same-AST, perturbed-basin, and focused logistic/Planck probe regimes. |
+| 61 | Ablation and Baseline Diagnostics | Generate motif-depth, warm-start-versus-blind, repair/refit, and lightweight conventional baseline diagnostics with explicit limitations. |
+| 62 | Paper Figure and Table Pipeline | Derive plot-ready CSV/JSON tables and deterministic SVG figures from locked evidence artifacts. |
+| 63 | Paper Package Assembly and Claim Audit | Assemble `artifacts/paper/v1.11/`, lock sources, regenerate scientific-law rows, and audit claims against the evidence ledger. |
 
----
-*Research decision recorded: 2026-04-15*
+## Paper-Useful Figures
+
+- Regime recovery by evidence class.
+- Blind versus perturbed depth degradation.
+- Scientific-law support matrix with unsupported logistic/Planck near-gate diagnostics visible.
+- Motif depth and node deltas for reusable compiler templates.
+- Training outcome/failure taxonomy.
+- Loss/snap/verifier lifecycle diagnostics.
+- Scoped baseline diagnostic comparison, clearly labeled as prediction-only or unavailable where applicable.
+
+## Main Risks
+
+- Mixing non-blind evidence into blind recovery rates.
+- Promoting logistic or Planck from relaxed compile depth alone.
+- Cherry-picking seeds or showing only best runs.
+- Letting figure polish hide unsupported rows and negative diagnostics.
+- Running broad, weak external baselines that create more credibility risk than value.
+
+## Execution Rule
+
+Every generated paper artifact must have a machine-readable source table, a source-lock entry, and a claim-class label. Recovery rates must come from verifier-owned evidence fields, never from loss thresholds.

@@ -1,190 +1,218 @@
-# Feature Landscape: v1.1 EML Compiler and Warm Starts
+# Feature Landscape: v1.11 Paper-Strength Evidence and Figure Package
 
-**Domain:** Compiler-driven warm starts for EML symbolic regression  
+**Domain:** Evidence package for a verifier-gated hybrid EML symbolic-regression paper  
 **Project:** EML Symbolic Regression  
-**Researched:** 2026-04-15  
-**Overall confidence:** HIGH for user-facing behavior; MEDIUM for exact compiler rule coverage until implementation proves the identities and depth costs.
+**Researched:** 2026-04-19  
+**Overall confidence:** HIGH for evidence-package scope and claim boundaries; MEDIUM for external baseline feasibility because dependencies may be absent locally.
 
-## Scope
+## Executive Take
 
-This research covers only new v1.1 behavior. v1 already provides exact EML ASTs, deterministic JSON, soft complete master trees, optimizer/snapping, verifier-owned recovery status, cleanup, CLI demo reports, and catalog demos. v1.1 should not re-solve those foundations; it should connect them into a compiler-driven warm-start workflow.
+v1.11 should make the paper stronger by packaging the evidence already earned, rerunning real training only where the claim class is honest, and adding cheap ablations that explain why the hybrid pipeline matters. It should not try to turn logistic or Planck into solved rows by moving gates, and it should not pivot into a broad symbolic-regression benchmark competition.
 
-The user-facing promise should be: given a supported ordinary formula, compile it into an exact EML AST, embed that AST into a compatible soft master tree, perturb the logits in a controlled way, train back toward the solution, snap, and let the verifier decide whether the result is a recovered EML formula. This is warm-started recovery from a known compiler scaffold, not blind discovery.
+The table-stakes product is a v1.11 paper package rooted under `artifacts/paper/v1.11/` that refreshes the v1.9 raw-hybrid package, adds the v1.10 logistic and Planck motif diagnostics, regenerates claim-safe training artifacts, and emits plot-ready JSON/CSV/SVG files. The best differentiators are provenance-rich claim ledgers, motif/depth ablations, candidate lifecycle plots, and explicit negative results that make the method credible rather than oversold.
 
-## Expected User Workflow
+Existing evidence to preserve:
 
-1. User selects a supported demo or provides a SymPy-compatible expression such as `exp(-0.8*x)` or `2*x/(0.5 + x)`.
-2. The compiler normalizes the expression, checks that every node is in the supported subset, and emits an exact EML AST plus a compilation trace.
-3. The compiler validates the EML AST against the source expression on safe sample points before it is used for training.
-4. The warm-start embedder builds or checks a compatible `SoftEMLTree` depth, variable set, and constant bank, then initializes logits near the compiled AST.
-5. The perturbation step applies seeded logit noise or bounded slot perturbations and records how far the initial snap moved from the compiled tree.
-6. Training runs from that perturbed warm start, then snaps to an exact AST.
-7. Existing cleanup and verification run. A demo is promoted to trained EML recovery only when the verifier emits `recovered`.
-8. The report clearly separates `compiled_reference`, `warm_start_attempt`, `snapped_candidate`, `recovered`, `verified_showcase`, and `failed` evidence.
+| Evidence | Current Signal | Interpretation |
+|----------|----------------|----------------|
+| v1.6 shallow pure-blind proof | 2/18 recovered in the explicit shallow pure-blind claim row | Honest measured boundary, not a failed milestone. |
+| v1.6 shallow scaffolded proof | 18/18 recovered | Strong scaffolded recovery, not pure blind discovery. |
+| v1.6 perturbed-basin proof | 9/9 recovered in the bounded proof claim; broader v1.9 package reports 23/23 perturbed-basin recovered | Strong same-basin return evidence. |
+| v1.6 depth curve | Blind 100% at depths 2 and 3, 0% at depths 4, 5, and 6; perturbed 100% at depths 2 through 6 | Paper-aligned depth degradation evidence. |
+| v1.9 raw-hybrid package | Regime-separated package with 20 source locks and 7 scientific-law rows | Right structure, stale for v1.10 logistic/Planck diagnostics. |
+| v1.10 logistic diagnostic | Unsupported under strict gate; relaxed compile depth 15, baseline depth 27, `exponential_saturation_template`, validation passed | Useful motif-shortening evidence, not support. |
+| v1.10 Planck diagnostic | Unsupported under strict gate; relaxed compile depth 14, prior paper row stale at 20, current macro baseline 24, low-degree power plus direct division motifs, validation passed | Useful near-gate diagnostic, not support. |
 
 ## Table Stakes
 
-Features users will expect for v1.1 to feel coherent. Missing any of these makes compiler-driven warm starts hard to trust.
+Features users, reviewers, and roadmap phases should expect. Missing these makes the paper package hard to trust.
 
-| Feature | Why Expected | Complexity | Depends On | Expected Behavior |
-|---------|--------------|------------|------------|-------------------|
-| Defined compiler subset | Users need to know exactly what ordinary formulas are accepted. | Medium | SymPy catalog candidates, exact EML ASTs | Support constants, variables, `exp`, `log`, unary negation, subtraction, addition, multiplication, and division where implemented by explicit compiler rules. Unsupported nodes fail with `unsupported_operator`, not a silent fallback. |
-| Numeric constant policy | Beer-Lambert and Michaelis-Menten require `0.8`, `2.0`, and `0.5`. | Medium | `Const`, AST JSON, master-tree terminal choices | v1.1 should treat numeric literals as fixed constants in the compiled AST and report `constant_policy: fixed_literal`. Do not claim those constants were synthesized from the paper's pure `1` basis. |
-| Compilation trace | A compiled EML tree can be much larger than the source formula. | Medium | Compiler rule registry, AST metadata | Reports list normalized source expression, rules applied, constants introduced, variables, node count, depth, source-to-EML validation error, and any assumptions. |
-| Round-trip validation before training | A bad compiler output would poison every warm-start result. | Medium | EML evaluators, SymPy candidate evaluation, verifier utilities | Compile-only output must be evaluated against the ordinary source expression on safe train/held-out-like points. Fail before warm-starting if max error exceeds tolerance. |
-| Compatible terminal bank for warm starts | Current soft trees expose `const:1` and variables; compiler demos need fixed numeric constants too. | High | `SoftEMLTree`, slot catalog, `Const` | The compiler returns the constants it used, and warm-start tree construction includes the same fixed constants as legal terminal choices. If a constant is not representable in the tree, fail with `incompatible_terminal_bank`. |
-| Required depth calculation | Users need actionable feedback when an AST cannot fit in a requested tree. | Medium | Exact AST depth, `SoftEMLTree.depth` | The compiler/embedder reports `compiled_depth` and `required_master_depth`. A too-shallow request fails with `depth_too_small` unless the CLI is explicitly allowed to raise depth. |
-| AST-to-logit embedding | This is the core bridge from compiler to trainable model. | High | Exact ASTs, soft tree paths, slot choices | Active compiled paths get high but finite logits for the matching `child`, `var:name`, or `const:value` choices. Inactive slots use a deterministic policy and are included in the manifest. |
-| Configurable warm-start strength | Users need to tune how close the model starts to the compiled tree. | Low | Logit embedding | Expose a strength parameter with a documented default. Stronger values should snap immediately to the compiled AST before perturbation; weaker values allow more exploration. |
-| Controlled perturbation | The paper-grounded value of warm starts is return-to-solution from nearby states. | Medium | Embedded logits, deterministic seeds, manifests | Support seeded Gaussian logit noise as the default perturbation. Report perturbation scale, seed, pre-perturb snap, post-perturb snap, changed slots, and snap margins. |
-| Warm-start training mode | Users should be able to run a normal training attempt from the embedded/perturbed state. | Medium | Optimizer, training config, anomaly stats | Existing optimizer settings still apply, but the manifest must identify the run as `initialization: compiled_warm_start` and include compiler and perturbation metadata. |
-| Verifier-owned promotion | A compiler-derived tree is not automatically a recovered trained formula. | Low | Existing verifier | Beer-Lambert and Michaelis-Menten become `recovered` demos only after the post-training snapped exact EML AST passes train, held-out, extrapolation, and mpmath checks. |
-| Demo status taxonomy | Users must not confuse catalog verification, compile-only success, and trained recovery. | Medium | CLI reports, verifier status | Reports distinguish `compiled_exact_reference`, `warm_start_recovered`, `verified_showcase`, `warm_start_failed`, and `unsupported`. Existing `recovered` remains verifier-owned. |
-| Beer-Lambert trained recovery demo | This is the lowest-risk scientific warm-start target. | Medium | Compiler constants, negation/multiplication/exp, embedding, verifier | `beer_lambert` should compile `exp(-0.8*x)`, perturb, train, snap, verify, and report a trained exact EML recovery when it passes. |
-| Michaelis-Menten trained recovery demo | This is the first serious non-exponential scientific target for v1.1. | High | Compiler Add/Mul/Div, constants, positive-domain sampling, embedding, verifier | `michaelis_menten` should compile `2*x/(0.5+x)`, run warm-start recovery on its safe positive domain, and promote only on verifier pass. |
-| Honest Planck stretch reporting | Normalized Planck is important but deeper and riskier. | Medium | Compiler exp/sub/div/power where feasible, report taxonomy | Planck may be compile-only or attempted warm-start in v1.1, but should remain stretch/unsupported unless the full trained snapped AST verifies. |
-| CLI-visible workflow | The feature should be usable without writing Python glue. | Medium | Current `demo` CLI and JSON reports | The CLI should expose compile-only and warm-start demo paths, either as new subcommands or flags on `demo`. Reports remain JSON and reproducible. |
-| Regression tests for behavior | Compiler/warm-start bugs can create false recovery claims. | High | pytest, deterministic seeds | Tests cover accepted subset, unsupported-node failures, constant-bank compatibility, embedding/snap equivalence, perturbation determinism, and demo promotion gates. |
+| Feature | Why Expected | Complexity | Required Output | Notes |
+|---------|--------------|------------|-----------------|-------|
+| v1.11 paper package refresh | v1.9 package is structurally right but stale for v1.10 logistic and Planck. | Medium | `manifest.json`, `source-locks.json`, `regime-summary.json`, `scientific-law-table.json/.csv/.md`, `claim-boundaries.md`, `raw-hybrid-report.md` under `artifacts/paper/v1.11/`. | Keep it synthesis-first. It may consume new v1.11 training artifacts, but package generation itself should not silently run training. |
+| v1.10 scientific-law row updates | The paper-facing table still lists logistic depth 27 and Planck depth 20 from older diagnostics. | Low | Updated rows for logistic and Planck with strict status `unsupported`, relaxed depth, node count, macro hits, depth deltas, validation status, and artifact path. | Logistic: 27 -> 15 relaxed depth. Planck: paper-row 20 -> 14 relaxed depth; also record current no-macro baseline 24 to avoid baseline ambiguity. |
+| Source locks and reproduction commands | A paper package needs stable provenance for every number and plot. | Medium | Hash locks for each source artifact plus exact CLI commands, code version, Python/platform, output root, and generation timestamp. | Follow v1.9 source-lock style, but add v1.10 focused evidence and v1.11-generated suites. |
+| Claim-safe training suite matrix | The milestone asks for real training where honest. | High | Separate suite outputs for pure-blind, scaffolded, warm-start/same-AST, perturbed-tree, repair/refit, and logistic/Planck probes. | Reuse existing benchmark/campaign contracts instead of ad hoc notebooks. |
+| Shallow pure-blind rerun | Reviewers need fresh current-code evidence for blind performance rather than only archived v1.6. | Medium | Aggregate JSON/Markdown, run JSON, CSV, and plots with scaffold initializers disabled. | Report as measured boundary. Do not promise improvement. |
+| Scaffolded shallow rerun | The paper needs the strongest positive training evidence with honest label. | Medium | Same output format as pure-blind, grouped separately. | Existing evidence is 18/18; v1.11 should preserve the claim class, not merge it into blind. |
+| Perturbed-basin rerun | The main positive training story is basin return from known nearby trees. | Medium | Bounded proof suite plus probe rows, with perturbation noise, return kind, repaired candidates, and verifier status visible. | Count bounded proof and high-noise probes separately. |
+| Depth degradation suite | The paper needs the negative/limitation curve as much as the wins. | Medium | Depth 2 through 6 blind-vs-perturbed source table and figure. | Keep depth targets deterministic and exact EML, as in v1.6. |
+| Warm-start/same-AST scientific-law suite | Beer-Lambert, Shockley, Arrhenius, and Michaelis-Menten are key public examples. | Medium | Per-law run artifacts, scientific-law support table, and regime summary. | Same-AST return is valuable but must remain non-blind. |
+| Logistic/Planck low-budget probes | They are high-visibility laws and v1.10 has new compiler diagnostics. | Low-Medium | Compile-only and, if cheap, low-budget training/probe artifacts labeled unsupported unless strict verifier contract passes. | Do not promote rows merely because relaxed depth is close to the gate. |
+| Motif/depth ablation table | v1.10 improvements came from reusable compiler motifs; the paper needs evidence that these motifs matter. | Medium | `motif-depth-deltas.csv/.json/.md` with law, motif hits/misses, baseline depth/nodes, motif depth/nodes, deltas, validation max error, and strict-gate status. | Prefer compiler metadata already present in run JSON. Add true motif-disabled reruns only if cheap and deterministic. |
+| Warm-start versus blind ablation | The central story is not "gradient descent solves everything"; it is regime-dependent hybrid recovery. | Medium | Side-by-side table/plot by formula and start mode: blind, scaffolded, warm-start, perturbed-tree. | Make denominator and eligibility rules explicit. |
+| Candidate-pool/repair/refit diagnostics | v1.6-v1.9 added candidate pools, repair, and refit; the paper should show whether they help and when they do not. | Medium | Default vs expanded cleanup table, repair/refit status counts, no-regression checks, selected/fallback preservation evidence. | No-improvement evidence is still useful if it proves fallback preservation and taxonomy honesty. |
+| Plot-ready source tables | Figures should be reproducible from checked-in machine-readable data. | Medium | Tables for regime recovery, depth curve, scientific-law support, motif deltas, training outcomes, failure taxonomy, runtime/budget, loss/snap metrics, and baseline diagnostics. | Do not make SVGs the only source of truth. |
+| Publication-quality figures | The current campaign layer already emits deterministic SVGs; v1.11 needs paper-focused composition. | Medium | Figure package with deterministic SVG and source CSV/JSON for each figure. | Good first set: regime recovery bars, blind-vs-perturbed depth curve, scientific-law support heatmap, motif depth delta bars, loss before/after snap, failure taxonomy, runtime/depth budget scatter. |
+| Claim-boundary checks | The package must prevent accidental overclaiming. | Medium | Machine-readable claim ledger plus Markdown boundaries and tests that assert forbidden merges do not appear. | Guard phrases: warm-start, same-AST, scaffolded, repaired, refit, compile-only, and perturbed-basin evidence is not blind discovery. |
+| Non-destructive archived anchors | v1.4/v1.5/v1.6/v1.9 artifacts remain comparison anchors. | Low | New output roots only; no overwriting archived paper/proof/campaign packages except with explicit v1.11 roots. | Use v1.6 and v1.9 as locked sources, not mutable work directories. |
+| Low-risk baseline diagnostics | The paper needs context, but broad competition is deferred. | Medium | Local diagnostics that are easy to run and clearly scoped: catalog verifier, compile-only depth gate, pure-blind random-start baseline, and simple prediction-only conventional fits if implemented locally. | External PySR/SRBench-style comparisons should be optional and non-blocking. |
 
-## Differentiators
+## Claim-Safe Training Suites
 
-Features that make v1.1 more than a catalog-demo relabeling exercise.
+These are the training-facing features v1.11 should expose or regenerate.
 
-| Feature | Value Proposition | Complexity | Notes |
-|---------|-------------------|------------|-------|
-| Compiler-to-trainer bridge | Turns known ordinary formulas into trainable EML initializations, directly exploiting the warm-start behavior emphasized in `sources/NORTH_STAR.md`. | High | This should be the centerpiece of v1.1. |
-| Evidence-rich warm-start report | Lets users audit whether the model actually returned to the compiled solution after perturbation. | Medium | Include slot changes, snap margins, losses, anomalies, tree edit distance if available, and verifier results. |
-| Fixed-literal constant bank | Makes real demo formulas practical without pretending constant synthesis is solved. | Medium | This is pragmatic and honest; later milestones can explore pure-`1` constant generation or learned coefficients. |
-| Compile-time validation gate | Prevents bad compiler rules from being mistaken for optimizer or verifier failures. | Medium | A compile artifact should be trustworthy before training begins. |
-| Demo promotion by evidence | Moves Beer-Lambert and Michaelis-Menten from `verified_showcase` to trained EML recovery only when the pipeline earns it. | Medium | Keeps the project's existing honesty about recovery claims. |
-| Perturb-and-recover UX | Shows the actual scientific result from the paper: nearby correct basins are recoverable even when blind deep recovery is not reliable. | Medium | This is stronger and more honest than presenting warm starts as blind discovery. |
+| Suite | Table-Stakes Cases | Claim Class | What To Plot | Promotion Rule |
+|-------|--------------------|-------------|--------------|----------------|
+| `v1.11-shallow-pure-blind` | `exp`, `log`, shallow scaled exponentials, Beer-Lambert/radioactive-decay shallow cases with scaffold initializers disabled | measured pure-blind recovery | Recovery by formula, failure taxonomy, post-snap loss, runtime | Promote only verifier-owned exact EML recovery. |
+| `v1.11-shallow-scaffolded` | Same shallow formulas with declared scaffold initializers | scaffolded blind training | Scaffolded vs pure-blind recovery bars | Never count as pure blind. |
+| `v1.11-perturbed-basin` | Depth 1-3 basin targets and Beer-Lambert bounded perturbation | perturbed true-tree recovery | Recovery vs perturbation noise, same-AST vs repaired split | Count only declared nonzero `perturbed_tree` rows under this claim. |
+| `v1.11-depth-curve` | Deterministic depth 2-6 exact EML targets with blind and perturbed starts | measured depth degradation | Blind vs perturbed depth curve | Report degradation as limitation evidence. |
+| `v1.11-scientific-warm` | Beer-Lambert, Shockley, Arrhenius, Michaelis-Menten | same-AST or verified-equivalent warm-start | Law support table and start-mode comparison | Same-AST return is recovery from seed/basin, not blind discovery. |
+| `v1.11-logistic-planck-probes` | Logistic and Planck compile diagnostics, optionally very low-budget warm-start probes | unsupported/stretch diagnostics unless strict contract passes | Motif depth deltas and strict-gate near-miss chart | No promotion unless strict compile/warm-start and verifier gates pass without gate relaxation. |
+| `v1.11-repair-refit-ablation` | Focused near misses from existing repair/refit examples plus any new v1.11 near misses | repair/refit diagnostics | Selected-only vs expanded pool, refit accepted/rejected, no-regression counts | Repair/refit is never blind discovery. |
+| `v1.11-smoke` | One blind, one warm-start, one unsupported compile row | CI sanity only | Not paper figure unless needed for reproducibility section | Must remain quick and deterministic. |
 
-## Anti-Features
+## Plot and Table Artifacts
 
-Features to explicitly not build or not claim in v1.1.
+The figure package should be generated from explicit source tables. Recommended artifact names:
 
-| Anti-Feature | Why Avoid | What to Do Instead |
+| Artifact | Purpose | Required Columns or Fields |
+|----------|---------|----------------------------|
+| `tables/regime-summary.csv` | Main regime recovery table | regime, runs, verifier_recovered, same_ast_return, repaired_candidate, unsupported, failed, recovery_rate, source_ids |
+| `tables/training-runs.csv` | Plot source for all real training runs | run_id, formula, suite, start_mode, seed, depth, steps, perturbation_noise, claim_status, evidence_class, return_kind, raw_status, repair_status, best_loss, post_snap_loss, high_precision_max_error, artifact_path |
+| `tables/depth-curve.csv` | Blind-vs-perturbed depth figure | depth, start_mode, seeds, recovered, recovery_rate |
+| `tables/scientific-law-support.csv` | Paper-facing law table | law, formula, strict_support, relaxed_depth, strict_gate, macro_hits, warm_start_status, verifier_status, evidence_regime, artifact_path |
+| `tables/motif-depth-deltas.csv` | Compiler motif ablation figure | law, source_expression, baseline_depth, motif_depth, depth_delta, baseline_nodes, motif_nodes, node_delta, macro_hits, validation_status, max_abs_error |
+| `tables/repair-refit-ablation.csv` | Candidate-pool and refit diagnostic | formula, mode, selected_only_status, expanded_pool_status, repair_variant_count, repaired, refit_status, refit_accepted, final_regressed |
+| `tables/baseline-diagnostics.csv` | Low-risk conventional/local baselines | baseline_name, formula, split, metric, value, status, notes |
+| `figures/regime-recovery.svg` | Shows what succeeds by regime | Must visually separate blind, scaffolded, warm-start, same-AST, perturbed, repair/refit, unsupported. |
+| `figures/depth-degradation.svg` | Core limitation figure | Blind and perturbed curves on same axes. |
+| `figures/scientific-law-support.svg` | Law support matrix | Rows are laws; columns are compile support, depth gate, training regime, verifier status. |
+| `figures/motif-depth-deltas.svg` | v1.10/v1.11 compiler contribution | Bars for logistic and Planck, plus existing supported laws where metadata exists. |
+| `figures/loss-snap-verifier.svg` | Training pipeline behavior | Best soft loss vs post-snap loss vs verifier result; useful for showing why loss alone is not recovery. |
+| `figures/failure-taxonomy.svg` | Honest failure modes | Unsupported depth, snapped-but-failed, soft-fit-only, execution error, repaired, refit rejected. |
+
+## Low-Hanging Differentiators
+
+These are not strictly required to produce a package, but they are high-value and low-risk for a stronger paper.
+
+| Feature | Value Proposition | Complexity | Why It Is Low-Hanging |
+|---------|-------------------|------------|-----------------------|
+| Claim ledger with one row per paper claim | Lets the paper map every sentence to source artifacts and eligible denominators. | Medium | Claim IDs, thresholds, and source locks already exist in proof and paper artifacts. |
+| Stale-diagnostic correction table | Shows v1.11 improved the package honestly: logistic and Planck got shorter, but not solved. | Low | v1.9 and v1.10 artifacts already contain the needed fields. |
+| Motif contribution narrative | Makes compiler work look scientific instead of like hidden formula hacks. | Medium | Current compiler metadata records macro hits, misses, baseline depth/node count, deltas, and validation. |
+| Near-gate unsupported figure | Planck depth 14 and logistic depth 15 are close to the strict depth 13 gate; plotting this is more honest than hiding them. | Low | The v1.10 focused artifacts already expose strict and relaxed diagnostics. |
+| Candidate lifecycle diagram from real artifacts | Shows soft optimization -> snap -> candidate pool -> cleanup/repair/refit -> verifier. | Medium | Existing run JSON exposes best loss, post-snap loss, selected/fallback candidates, repair/refit status, and high-precision errors. |
+| No-regression repair/refit checks | Even when repair does not improve recovery, proving it preserves fallback behavior strengthens the engineering story. | Low | v1.9 repair evidence already measured no improvements and no final-status regressions. |
+| Prediction-only conventional baseline | Helps reviewers separate "fits the curve" from "recovers a verified formula." | Medium | Can be implemented locally with NumPy/SymPy feature libraries and train/held-out/extrapolation errors. Must be labeled prediction-only. |
+| External baseline smoke if already installed | Provides a sanity comparison without turning v1.11 into a benchmark race. | Low-Medium | Only run if dependency is already available or trivial to install; otherwise record as deferred. |
+| Paper figure inventory with readiness status | Makes roadmap creation straightforward and prevents late missing-figure surprises. | Low | v1.7/v1.8 already used figure inventory artifacts. |
+| Artifact completeness verifier | A single command can assert expected files exist, hashes are recorded, claim boundaries are present, and every plot has source data. | Medium | Mostly file/schema validation over generated outputs. |
+
+## Low-Risk Baseline Diagnostics
+
+Use these as diagnostics, not headline superiority claims.
+
+| Baseline | Include? | What It Answers | Guardrail |
+|----------|----------|-----------------|-----------|
+| Catalog verifier baseline | Yes | Are datasets, domains, and verifier checks sane for the target formulas? | This is not EML discovery. |
+| Compile-only EML baseline | Yes | Is the formula representable within strict or relaxed compiler gates? | Compile success is not training recovery. |
+| Pure-blind random-start EML baseline | Yes | What does the current optimizer recover without scaffold help? | Keep scaffold initializers disabled and report failures. |
+| Scaffolded/warm-start EML baseline | Yes | How much does structural prior/witness proximity matter? | Never merge with pure-blind denominators. |
+| Simple prediction-only conventional fit | Optional but recommended | Can a simple local model fit the data without recovering a symbolic EML formula? | Label as prediction-only and avoid broad SR claims. |
+| External SR package smoke | Optional, non-blocking | Does an off-the-shelf symbolic-regression tool solve one or two easy demos locally? | Run only if dependency is available; do not make paper package depend on it. |
+| Matched-budget SRBench/PySR competition | No for v1.11 | Broad external competitiveness. | Defer until the hybrid search engine is stronger and benchmark protocol is planned. |
+
+## Anti-Features and Out of Scope
+
+Features to explicitly avoid in v1.11.
+
+| Anti-Feature | Why Avoid | What To Do Instead |
 |--------------|-----------|-------------------|
-| Full SymPy-to-EML compiler | Too broad; SymPy expressions include functions and assumptions outside the v1.1 target. | Define and test a narrow subset, then fail loudly on unsupported nodes. |
-| Pure-`1` synthesis of arbitrary numeric constants | The paper basis is important, but generating compact constants like `0.8` and `0.5` from `1` is a separate hard problem. | Use fixed literal constants with explicit metadata and defer constant synthesis. |
-| Trainable coefficient fitting | It changes the problem from discrete EML recovery to semi-parametric fitting. | Keep v1.1 constants fixed from the source expression; defer coefficient learning to a scaling milestone. |
-| Calling compile-only success "recovered" | Compilation proves representability, not trained recovery from data. | Use `compiled_exact_reference`; reserve `recovered` for verifier-passed snapped training outputs. |
-| Calling warm-start recovery "blind discovery" | Warm starts encode the target structure. Mislabeling would undermine credibility. | Report initialization provenance and perturbation strength in every artifact. |
-| Auto-promoting demos on training loss | The project already established that training loss is not recovery. | Promotion requires the existing verifier's post-snap checks. |
-| Guaranteeing Planck recovery in v1.1 | Normalized Planck is deeper and structurally harder than Beer-Lambert or Michaelis-Menten. | Keep Planck as stretch with compile/attempt/failure evidence. |
-| Adding trig compiler support for oscillator demos | Damped oscillator is valuable but not required for the v1.1 target. | Defer trig identities and oscillator trained recovery until compiler basics are stable. |
-| General multivariate compiler | v1.1 targets univariate demos. | Keep multivariate support limited to existing tree capability; defer formula compiler UX for multiple variables. |
-| Shortest EML superoptimization | Compiled EML trees may be bloated, and shortest form is a separate search problem. | Report depth/node count and use existing cleanup; defer shortest-form search. |
-| Silent fallback to catalog formula | Users must know whether an EML AST was compiled and trained. | If compilation or embedding fails, mark the demo `verified_showcase` or `unsupported` with reason codes. |
+| Promoting logistic or Planck by relaxing the strict gate | This would violate the current paper contract and make the near-miss evidence look dishonest. | Report them as unsupported diagnostics with relaxed depth, macro hits, and validation. |
+| Formula-name recognizers or exact-constant hacks | v1.10 constraints require reusable structural motifs, not law-specific branches. | Use motif metadata, validation gates, and source-expression-independent rules. |
+| Calling warm-start, same-AST, scaffolded, repaired, refit, compile-only, or perturbed-basin evidence "blind discovery" | This is the main credibility failure to avoid. | Keep regime labels visible in every table, plot, report, and claim ledger. |
+| Hiding unsupported or failed rows from denominators | Unsupported rows are part of the evidence and explain limits. | Keep failed/unsupported rows in aggregate tables with reason codes. |
+| Using training loss as recovery | The repo's recovery contract is verifier-owned; loss-only claims would regress the science. | Plot loss as diagnostic only, with verifier result beside it. |
+| Replacing archived v1.6/v1.9 artifacts | Historical anchors need to remain inspectable and comparable. | Generate v1.11 roots and lock old artifacts as sources. |
+| Broad matched-budget external benchmark competition | Too much scope for this milestone and easy to do badly. | Include low-risk diagnostics and defer serious external baselines. |
+| Full blind recovery of arbitrary deep formulas | Both the paper and local depth curves show degradation. | Present depth degradation as a core boundary result. |
+| Centered-family rescue work | v1.8 evidence is negative under missing same-family witnesses. | Keep centered-family material as negative diagnostic/background only. |
+| Full SymPy compiler or new special-function support | The paper package needs evidence, not a broad compiler expansion. | Use existing supported subset and motif diagnostics. |
+| Custom CUDA/Rust acceleration | Not needed for paper-package correctness and would distract from evidence. | Use current Python/PyTorch artifacts unless profiling shows a blocker. |
+| Web dashboard | Static reproducible artifacts are enough and better for paper review. | Generate Markdown, JSON, CSV, and SVG. |
+| Formal theorem-prover equivalence | Out of scope for the repo and milestone. | Use current symbolic cleanup plus high-precision verifier checks. |
 
 ## Feature Dependencies
 
 ```text
-Existing SymPy catalog candidate
-  -> compiler normalization
-  -> supported-subset check
-  -> exact EML AST + compilation trace
-  -> compile-time numeric validation
-  -> constant/variable terminal bank
-  -> compatible SoftEMLTree construction
-  -> AST-to-logit embedding
-  -> seeded perturbation
-  -> warm-start training
-  -> snapping
-  -> cleanup
-  -> verifier-owned recovery status
-  -> demo promotion report
+v1.11 paper package refresh
+  -> source lock expansion
+  -> v1.10 logistic/Planck source ingestion
+  -> v1.11 training suite ingestion
+  -> regime summary rebuild
+  -> scientific-law table refresh
+  -> claim-boundary checks
+  -> plot/table source export
 ```
 
 ```text
-Beer-Lambert promotion
-  -> fixed numeric constants
-  -> negation / multiplication / exp compiler rules
-  -> warm-start embedding
-  -> perturb-and-recover run
-  -> verifier pass
+claim-safe training evidence
+  -> benchmark suites with explicit start_mode
+  -> deterministic dataset manifests
+  -> run JSON artifacts
+  -> aggregate JSON/Markdown
+  -> verifier-owned recovery counts
+  -> regime-separated paper package ingestion
 ```
 
 ```text
-Michaelis-Menten promotion
-  -> fixed numeric constants
-  -> addition / multiplication / division compiler rules
-  -> positive-domain sampling that avoids singularities
-  -> warm-start embedding
-  -> perturb-and-recover run
-  -> verifier pass
+motif ablations
+  -> compiler diagnostics with baseline depth/nodes
+  -> macro hit/miss metadata
+  -> validation status and max error
+  -> strict gate status
+  -> motif-depth-delta tables and figures
 ```
 
 ```text
-Planck stretch
-  -> exp / subtraction / division rules
-  -> power support for small positive integer powers
-  -> larger depth budget
-  -> honest unsupported-or-failed status if verification does not pass
+baseline diagnostics
+  -> local baseline runner or existing verifier/compile artifacts
+  -> prediction-only status labels
+  -> train/held-out/extrapolation metrics
+  -> no merge into EML recovery denominators
 ```
-
-## Complexity Notes
-
-| Area | Complexity | Why |
-|------|------------|-----|
-| Compiler subset | Medium-High | The hard part is not parsing SymPy; it is making every rule produce semantically faithful EML ASTs with branch-aware validation. |
-| Literal constants | Medium | AST support exists, but soft master-tree terminal catalogs currently need to grow beyond `const:1`. |
-| Embedding | High | The embedder must map exact AST structure to the master tree's child/terminal slot grammar deterministically and validate snap equivalence. |
-| Perturbation | Medium | Logit noise is straightforward, but reports must prove the perturbation meaningfully moved the initialization without destroying compatibility. |
-| Beer-Lambert | Medium | The formula is simple, but constants and negated products must work. |
-| Michaelis-Menten | High | Rational structure, division, constants, and singularity-safe domains all need to be correct. |
-| Planck | High | Deeper expression with power, exp, subtraction, and division; good stretch, poor guarantee. |
 
 ## MVP Recommendation
 
 Prioritize:
 
-1. Compile-only artifacts for supported formulas, with rule traces and numeric validation.
-2. Fixed-literal constants in both exact EML ASTs and warm-start-compatible soft tree terminal banks.
-3. AST-to-logit embedding that snaps back to the compiled AST before perturbation.
-4. Seeded perturbation plus warm-start training reports.
-5. Beer-Lambert and Michaelis-Menten promotion only after verifier-passed trained snapped EML outputs.
+1. Refresh the raw-hybrid paper package into a v1.11 output root, with v1.10 logistic and Planck diagnostics included.
+2. Regenerate claim-safe training suites for shallow pure-blind, scaffolded, perturbed-basin, and depth-curve evidence under current code.
+3. Add paper-focused source tables and SVG figures for regime recovery, depth degradation, scientific-law support, motif depth deltas, failure taxonomy, and loss/snap/verifier behavior.
+4. Add low-hanging ablation tables for motifs, warm-start versus blind, and candidate-pool/repair/refit behavior.
+5. Include low-risk baseline diagnostics only where they are local, deterministic, and explicitly scoped as diagnostics.
 
 Defer:
 
-- Pure-`1` constant synthesis.
-- Learned coefficients or parameter fitting.
-- Full SymPy coverage, trig identities, and oscillator trained recovery.
-- Guaranteed normalized Planck recovery.
-- Multivariate compiler UX.
-- Shortest EML search or Rust/CUDA acceleration for compiler outputs.
-
-## Requirements Implications
-
-Downstream requirements should be phrased as observable behavior:
-
-- Given `exp(-0.8*x)`, the CLI can compile the expression to exact EML, validate it numerically, embed it into a compatible soft tree, perturb logits with a seed, train, snap, verify, and write a report that states whether Beer-Lambert was recovered.
-- Given `2*x/(0.5+x)`, the CLI can perform the same workflow on the Michaelis-Menten safe domain and promote the demo only if the verifier passes.
-- Given an unsupported expression, the compiler fails with a machine-readable reason and does not silently run the catalog candidate as if it were EML recovery.
-- Given a too-shallow tree or missing constant terminal, warm-start embedding fails before training with required depth or terminal-bank diagnostics.
-- Every warm-start report includes source expression, compiler trace, compiled AST metadata, terminal bank, warm-start strength, perturbation config, optimizer config, snap decisions, cleanup output, and verifier result.
+- Matched-budget external SR benchmarking.
+- Any attempt to support logistic/Planck by changing gates or adding formula-specific recognition.
+- New operator-family research.
+- Major optimizer redesign.
+- UI, acceleration, or formal proof work.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Warm-start workflow shape | HIGH | Directly follows project v1.1 goals and `sources/NORTH_STAR.md` guidance that perturbed correct initializations are reliable compared with blind deep recovery. |
-| Need for fixed literal constants | HIGH | Current demos and code use constants beyond `1`, while current soft tree slot labels expose only `const:1`; v1.1 needs an explicit policy. |
-| Beer-Lambert as first promotion target | HIGH | `sources/FOR_DEMO.md` identifies it as easy and useful for exact recovery early. |
-| Michaelis-Menten as serious v1.1 target | HIGH | It is already a catalog demo and one of the recommended public examples, but compiler/division coverage makes it higher complexity. |
-| Exact compiler identities for full subset | MEDIUM | The subset is required by project goals, but each arithmetic rule must be proven in implementation and validated numerically. |
-| Planck recovery in v1.1 | LOW-MEDIUM | Good stretch target, but too risky to promise as trained recovery. |
+| Paper package refresh requirements | HIGH | v1.9 package contract is implemented and v1.10 artifacts clearly identify stale rows to refresh. |
+| Training suite split | HIGH | v1.6 proof report, v1.9 claim boundaries, README, and benchmark contracts all enforce regime separation. |
+| Plot/table needs | HIGH | Existing campaign artifacts already emit CSVs and SVGs; v1.11 needs paper-specific composition. |
+| Motif ablations | HIGH | v1.10 logistic and Planck run JSON contains baseline depth/node counts, motif depth/node counts, macro hits, and validation. |
+| Repair/refit diagnostics | HIGH | Existing artifacts expose repair/refit status and v1.9 repair no-improvement evidence. |
+| Low-risk local baselines | MEDIUM | Catalog, compile-only, and pure-blind baselines are available; prediction-only conventional baselines may need a small runner. |
+| External baseline smoke | LOW-MEDIUM | Feasibility depends on installed dependencies/network access and should not block v1.11. |
 
 ## Sources
 
-- `.planning/PROJECT.md` - v1.1 goal, active requirements, out-of-scope limits, and demo promotion target.
-- `.planning/STATE.md` - current milestone status and completed v1 capabilities.
-- `README.md` - implemented recovery contract, CLI shape, demo status meanings, and current limits.
-- `docs/IMPLEMENTATION.md` - module boundaries and current demo ladder.
-- `src/eml_symbolic_regression/expression.py` - exact ASTs, arbitrary `Const`, SymPy catalog candidate behavior, paper identities.
-- `src/eml_symbolic_regression/master_tree.py` - current soft slot catalog, hand-set gates, snapping behavior, and `const:1` limitation.
-- `src/eml_symbolic_regression/optimize.py` - current training config, restarts, annealing, entropy/size penalties, and manifests.
-- `src/eml_symbolic_regression/verify.py` - verifier-owned `recovered` versus `verified_showcase` status contract.
-- `src/eml_symbolic_regression/datasets.py` - current Beer-Lambert, Michaelis-Menten, and Planck demo specs and safe domains.
-- `sources/NORTH_STAR.md` - hybrid pipeline, warm-start rationale, verification discipline, and anti-overselling guidance.
-- `sources/FOR_DEMO.md` - demo ranking, Beer-Lambert as easy early recovery, Michaelis-Menten as strong public demo, and Planck as flagship/stretch.
+- `.planning/PROJECT.md` - v1.11 milestone goals, target features, constraints, out-of-scope items, and paper-claim decisions.
+- `.planning/STATE.md` - current v1.11 position and baseline-diagnostic concern.
+- `artifacts/paper/v1.9/raw-hybrid/raw-hybrid-report.md` - current regime-separated paper package.
+- `artifacts/paper/v1.9/raw-hybrid/scientific-law-table.md` - stale paper-facing scientific-law rows.
+- `artifacts/paper/v1.9/raw-hybrid/claim-boundaries.md` - explicit non-blind claim boundaries.
+- `artifacts/proof/v1.6/proof-report.md` - proof bundle, shallow pure-blind/scaffolded claims, perturbed-basin proof, depth curve, and archived anchors.
+- `artifacts/campaigns/v1.10-logistic-evidence/aggregate.md` and `v1-10-logistic-evidence-logistic-compile-c2af27a35e81.json` - logistic unsupported diagnostic with relaxed depth 15 and validated exponential-saturation motif.
+- `artifacts/campaigns/v1.10-planck-diagnostics/aggregate.md` and `v1-10-planck-diagnostics-planck-compile-795067919a97.json` - Planck unsupported diagnostic with relaxed depth 14 and validated low-degree power/direct-division motifs.
+- `README.md` and `docs/IMPLEMENTATION.md` - current CLI, benchmark, campaign, raw-hybrid package, repair/refit, and artifact contracts.
+- `src/eml_symbolic_regression/raw_hybrid_paper.py`, `benchmark.py`, `campaign.py`, and `proof_campaign.py` - implemented package/suite/report structure used to scope v1.11 features.

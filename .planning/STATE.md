@@ -2,13 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.11
 milestone_name: Paper-strength evidence and figure package
-current_phase: null
-status: defining_requirements
-stopped_at: v1.11 milestone started; defining requirements
+current_phase: 59
+current_phase_name: Evidence Contracts and Source Locks
+status: ready_to_execute
+stopped_at: v1.11 requirements and roadmap defined; Phase 59 ready
 last_updated: "2026-04-19T00:00:00.000Z"
 last_activity: 2026-04-19 -- Milestone v1.11 started
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -18,7 +19,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Not started
+**Current phase:** 59 - Evidence Contracts and Source Locks
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,10 +31,10 @@ See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 ## Current Position
 
-Phase: Not started
+Phase: 59 - Evidence Contracts and Source Locks
 Plan: None
-Status: Defining requirements
-Last activity: 2026-04-19 -- Milestone v1.11 started
+Status: Ready to execute
+Last activity: 2026-04-19 -- v1.11 requirements and roadmap defined
 Progress: [----------] 0% by completed phases
 
 ## Current Milestone
@@ -48,7 +49,9 @@ Goal: Produce a stronger paper-ready evidence package by running real training w
 |----------|------|--------|
 | Project context | `.planning/PROJECT.md` | Updated for v1.11 |
 | Archived v1.10 requirements | `.planning/milestones/v1.10-REQUIREMENTS.md` | Complete |
-| Roadmap | `.planning/ROADMAP.md` | Awaiting v1.11 roadmap |
+| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.11 |
+| Roadmap | `.planning/ROADMAP.md` | Active v1.11 phases 59-63 |
+| Research summary | `.planning/research/SUMMARY.md` | Complete |
 | Workflow config | `.planning/config.json` | Complete |
 | Milestone log | `.planning/MILESTONES.md` | Complete through v1.10 |
 | v1.9 raw-hybrid paper package | `artifacts/paper/v1.9/raw-hybrid/` | Baseline paper package |
@@ -63,10 +66,11 @@ Goal: Produce a stronger paper-ready evidence package by running real training w
 - Real training should be run only in claim-safe regimes; warm-start/scaffolded/same-AST/repair/perturbed evidence must remain separately labeled.
 - Logistic and Planck remain unsupported unless the strict compiler and verifier contract actually passes.
 - Low-hanging paper-strengthening work includes v1.10 paper-package refresh, training reruns, ablation tables, plot generation, and scoped external/conventional baseline diagnostics.
+- v1.11 phases are: Phase 59 evidence contracts/source locks, Phase 60 claim-safe training, Phase 61 ablations/baselines, Phase 62 figures/tables, Phase 63 package/audit.
 
 ### Pending Todos
 
-None recorded.
+Begin Phase 59 execution.
 
 ### Blockers/Concerns
 
@@ -75,8 +79,8 @@ External baseline dependencies may not be installed or may require network acces
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: v1.11 milestone started; defining requirements
+Stopped at: v1.11 requirements and roadmap defined; Phase 59 ready
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after starting v1.11*
+*Last updated: 2026-04-19 after defining v1.11 roadmap*
