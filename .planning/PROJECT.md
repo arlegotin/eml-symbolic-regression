@@ -10,37 +10,34 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.10 Shipped
+## Current State: v1.11 Shipped
 
-The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, and paper-package foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, the v1.9 raw-hybrid paper package, and v1.10 focused motif evidence are all in place and archived through v1.10.
+The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, and figure-asset foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, v1.10 focused motif evidence, and the v1.11 paper evidence package are all in place and archived through v1.11.
 
 The current evidence says raw EML is representationally viable but blind basin finding degrades sharply with depth. Perturbed true-tree recovery remains strong, scaffolded/warm-start regimes are useful when clearly labeled, centered-family evidence is negative under the supplied v1.8 setup, and v1.9 has a verified raw-hybrid paper package that keeps those regimes separate.
 
 v1.10 expanded the compiler from a small set of useful macros into a search-backed reusable motif library. Logistic now has structural exponential-saturation compile support at relaxed depth 15, down from 27, but remains above the strict depth-13 gate. Planck now has validation-backed low-degree power compression and relaxed depth 14, down from 20, but also remains above the strict gate. Focused campaign artifacts record both outcomes as unsupported diagnostics with no warm-start promotion.
 
-## Last Completed Milestone: v1.10 Search-backed motif library and compiler shortening for logistic and Planck
+v1.11 adds the paper-strength evidence layer: real current-code training artifacts, low-hanging ablation and prediction-only baseline diagnostics, deterministic SVG/source-table assets, and a final source-locked package at `artifacts/paper/v1.11/` with a passing claim audit. The paper is now defensible as a verifier-gated hybrid EML symbolic-regression methods/evidence paper with explicit boundaries, not as broad blind symbolic-regression superiority.
 
-**Goal:** Build a reusable, validation-gated motif library that makes logistic strict compile support and warm-start recovery realistic while materially reducing Planck compile depth under the existing honest recovery contract.
-
-**Shipped features:**
-- Locked archived compiler baselines before motif changes, preserving Shockley, Arrhenius, and Michaelis-Menten wins.
-- Generalized reciprocal and saturation motif matching to compilable subexpressions with validation-visible diagnostics.
-- Added a structural exponential-saturation motif for logistic-like laws without formula-name or exact-constant recognition.
-- Added a bounded motif-search helper plus validation-backed low-degree power compression for `g(x)**2` and `g(x)**3`.
-- Dropped Planck relaxed compile depth from 20 to 14 while keeping strict unsupported/stretch status honest.
-- Added focused `v1.10-logistic-evidence` and `v1.10-planck-diagnostics` benchmark suites and campaign artifacts.
-
-## Current Milestone: v1.11 Paper-strength evidence and figure package
+## Last Completed Milestone: v1.11 Paper-strength evidence and figure package
 
 **Goal:** Produce a stronger paper-ready evidence package by running real training where it is honest, adding low-hanging empirical comparisons and ablations, and generating plot-rich artifacts that clearly illustrate the EML hybrid pipeline.
 
+**Shipped features:**
+- Versioned v1.11 raw-hybrid paper package with current v1.10 logistic/Planck scientific-law rows, source locks, and claim ledger.
+- Real current-code v1.11 training campaigns with separated pure-blind, scaffolded, same-AST warm-start, perturbed-basin, and logistic/Planck probe regimes.
+- Paper diagnostics for motif-depth deltas, regime comparison, repair/refit evidence, and prediction-only local baselines.
+- Deterministic paper asset pipeline with 7 SVG figures, 7 source tables, and per-figure metadata.
+- Final `artifacts/paper/v1.11/` package with 67 source-lock rows, reproduction commands, paper-readiness summary, and a passing 7-check claim audit.
+
+## Current Milestone: None active after v1.11 closeout
+
+**Goal:** Next milestone not yet selected.
+
 **Target features:**
-- Regenerate a v1.11 paper package that folds v1.10 logistic and Planck compiler-shortening diagnostics into the paper-facing scientific-law table.
-- Run real training suites that are claim-safe: shallow pure-blind, scaffolded, warm-start/same-AST, perturbed-basin, and focused low-budget probes for logistic/Planck without promoting unsupported rows.
-- Add low-hanging ablation evidence for compiler motifs, macro depth reduction, warm-start versus blind regimes, and candidate-pool/repair/refit behavior.
-- Add lightweight external or conventional baseline diagnostics where feasible without turning the milestone into a broad benchmark competition.
-- Generate publication-ready plots and tables for regime recovery, depth degradation, scientific-law support, motif depth deltas, training outcomes, and failure taxonomy.
-- Preserve all existing claim boundaries: no formula-name recognizers, no silent gate relaxation, no claiming blind discovery from warm-start/scaffolded/same-AST/repair evidence, and no Planck/logistic promotion without the full contract.
+- Use `artifacts/paper/v1.11/paper-readiness.md` and `artifacts/paper/v1.11/claim-audit.json` as the starting point for drafting.
+- Next technical work should improve true blind search depth or strict support for logistic/Planck rather than relaxing gates.
 
 ## Requirements
 
@@ -103,10 +100,11 @@ v1.10 expanded the compiler from a small set of useful macros into a search-back
 - ✓ Current-code v1.11 training campaigns covering pure blind, scaffolded, same-AST warm-start, perturbed-basin, and logistic/Planck probe regimes — v1.11 Phase 60
 - ✓ v1.11 motif-depth, regime-comparison, repair/refit, and prediction-only baseline diagnostic tables with source locks — v1.11 Phase 61
 - ✓ Deterministic v1.11 paper asset pipeline with source tables, SVG figures, per-figure metadata, and source locks — v1.11 Phase 62
+- ✓ Final v1.11 paper package with root manifest, 67 source-lock rows, reproduction commands, paper-readiness summary, and passing claim audit — v1.11 Phase 63
 
 ### Active
 
-- [ ] Paper claims remain regime-separated and do not oversell unsupported logistic/Planck rows.
+- No active v1.11 requirements. Next milestone TBD.
 
 ### Out of Scope
 

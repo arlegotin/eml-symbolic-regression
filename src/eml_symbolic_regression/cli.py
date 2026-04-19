@@ -32,6 +32,7 @@ from .optimize import TrainingConfig, fit_eml_tree
 from .paper_assets import DEFAULT_PAPER_ASSETS_OUTPUT_DIR, write_paper_assets
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
 from .paper_diagnostics import DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR, write_paper_diagnostics
+from .paper_package import DEFAULT_V111_PAPER_PACKAGE_DIR, write_v111_paper_package
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
@@ -433,6 +434,17 @@ def paper_assets_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def paper_package_command(args: argparse.Namespace) -> int:
+    paths = write_v111_paper_package(output_dir=Path(args.output_dir), overwrite=args.overwrite)
+    audit = json.loads(paths.claim_audit_json.read_text(encoding="utf-8"))
+    print(
+        f"paper package: manifest -> {paths.manifest_json}; "
+        f"source locks -> {paths.source_locks_json}; "
+        f"audit -> {paths.claim_audit_json} ({audit['status']})"
+    )
+    return 0 if audit["status"] == "passed" else 1
+
+
 def paper_decision_command(args: argparse.Namespace) -> int:
     paths = write_paper_decision_package(
         tuple(Path(path) for path in args.aggregate or ()),
@@ -620,6 +632,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory for paper asset manifest, tables, figures, and metadata.",
     )
     paper_assets.set_defaults(func=paper_assets_command)
+
+    paper_package = sub.add_parser("paper-package", help="Assemble and audit the final v1.11 paper evidence package.")
+    paper_package.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V111_PAPER_PACKAGE_DIR),
+        help="Directory for final v1.11 manifest, source locks, claim audit, tables, and figures.",
+    )
+    paper_package.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing package manifest.")
+    paper_package.set_defaults(func=paper_package_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)

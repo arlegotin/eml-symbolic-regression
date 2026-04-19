@@ -1,5 +1,19 @@
 # Milestones
 
+## v1.11 Paper-strength evidence and figure package (Shipped: 2026-04-19)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added a versioned v1.11 raw-hybrid paper package that uses current v1.10 logistic and Planck diagnostics instead of stale scientific-law rows.
+- Ran real current-code paper training and probe campaigns: 8/8 verifier-recovered training rows across separated regimes, plus 0/4 recovered logistic/Planck probes with 2 unsupported and 2 failed rows kept visible.
+- Generated motif-depth, regime-comparison, repair/refit, and prediction-only baseline diagnostics under `artifacts/diagnostics/v1.11-paper-ablations/`.
+- Generated deterministic paper assets under `artifacts/paper/v1.11/assets/`: 7 SVG figures, 7 source tables, and per-figure metadata.
+- Assembled the final `artifacts/paper/v1.11/` package with root manifest, 67 source-lock rows, reproduction commands, paper-readiness summary, and a passing 7-check claim audit.
+
+---
+
 ## v1.10 Search-backed motif library and compiler shortening for logistic and Planck (Shipped: 2026-04-18)
 
 **Phases completed:** 5 phases, 5 plans, 0 tasks
