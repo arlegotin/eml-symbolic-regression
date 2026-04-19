@@ -15,3 +15,7 @@
 ## Table 4. Shallow and depth refresh
 
 `artifacts/campaigns/v1.12-evidence-refresh/tables/shallow-refresh-runs.md` and `artifacts/campaigns/v1.12-evidence-refresh/tables/depth-refresh-summary.md` provide current-code refresh rows for Phase 65.
+
+## Table 5. Training dynamics and candidate lifecycle
+
+`artifacts/paper/v1.11/draft/training-detail/tables/training-step-traces.md`, `training-run-summaries.md`, and `candidate-lifecycle.md` expose per-step losses, objective components, anomaly counters, snap metrics, and verifier-owned candidate selection for the v1.12 refresh runs.

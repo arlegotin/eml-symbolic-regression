@@ -6,7 +6,7 @@ current_phase: 68
 current_phase_name: Package Assembly, Source Locks, and Claim Audit
 status: milestone_complete
 stopped_at: v1.12 archived
-last_updated: "2026-04-19T15:02:00.000Z"
+last_updated: "2026-04-19T18:02:24.000Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 5
@@ -60,6 +60,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 | v1.12 paper-facing draft assets | `artifacts/paper/v1.11/draft/` | Phase 66 complete |
 | v1.12 bounded probes | `artifacts/paper/v1.11/draft/` | Phase 67 complete |
 | v1.12 supplement | `artifacts/paper/v1.11/v1.12-supplement/` | Phase 68 complete, audit passed |
+| v1.12 training-detail assets | `artifacts/paper/v1.11/draft/training-detail/` | Quick task complete: 4,472 step rows, 232 candidate rows |
 
 ## Accumulated Context
 
@@ -77,6 +78,12 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 
 - Start the next milestone with `$gsd-new-milestone`.
 
+### Completed Quick Tasks
+
+| Date | Task | Status | Artifacts |
+|------|------|--------|-----------|
+| 2026-04-19 | Paper-ready training detail artifacts | Complete | `artifacts/paper/v1.11/draft/training-detail/` |
+
 ### Blockers/Concerns
 
 - External SR baselines may require dependencies or network access. If unavailable locally, record that explicitly instead of blocking the milestone.
@@ -89,4 +96,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after v1.12 archive*
+*Last updated: 2026-04-19 after training-detail artifact refresh*

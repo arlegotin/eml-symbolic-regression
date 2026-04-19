@@ -16,11 +16,11 @@
   },
   "depth_curve": [],
   "environment": {
-    "code_version": "97d64e1",
+    "code_version": "45b7420",
     "platform": "macOS-15.6.1-arm64-arm-64bit",
     "python": "3.11.5"
   },
-  "generated_at": "2026-04-19T14:38:58.790822+00:00",
+  "generated_at": "2026-04-19T18:03:43.867109+00:00",
   "groups": {
     "depth": [
       {

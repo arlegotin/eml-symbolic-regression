@@ -6,6 +6,7 @@ import csv
 import hashlib
 import importlib.util
 import json
+import math
 import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -33,6 +34,7 @@ DEFAULT_V112_DRAFT_DIR = Path("artifacts") / "paper" / "v1.11" / "draft"
 DEFAULT_V112_REFRESH_DIR = Path("artifacts") / "campaigns" / "v1.12-evidence-refresh"
 DEFAULT_V111_PAPER_ROOT = Path("artifacts") / "paper" / "v1.11"
 DEFAULT_V112_SUPPLEMENT_DIR = DEFAULT_V111_PAPER_ROOT / "v1.12-supplement"
+DEFAULT_V112_TRAINING_DETAIL_DIR = DEFAULT_V112_DRAFT_DIR / "training-detail"
 DEFAULT_V111_RAW_HYBRID_DIR = DEFAULT_V111_PAPER_ROOT / "raw-hybrid"
 DEFAULT_V111_MOTIF_DIAGNOSTICS = Path("artifacts") / "diagnostics" / "v1.11-paper-ablations" / "motif-depth-deltas.json"
 DEFAULT_V111_PROBE_AGGREGATE = Path("artifacts") / "campaigns" / "v1.11-logistic-planck-probes" / "aggregate.json"
@@ -123,6 +125,27 @@ class PaperSupplementPaths:
     claim_audit_json: Path
     claim_audit_md: Path
     reproduction_md: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
+@dataclass(frozen=True)
+class PaperTrainingDetailPaths:
+    output_dir: Path
+    manifest_json: Path
+    readme_md: Path
+    step_trace_json: Path
+    step_trace_csv: Path
+    step_trace_md: Path
+    run_summary_json: Path
+    run_summary_csv: Path
+    run_summary_md: Path
+    candidate_lifecycle_json: Path
+    candidate_lifecycle_csv: Path
+    candidate_lifecycle_md: Path
+    shallow_loss_svg: Path
+    depth_loss_svg: Path
 
     def as_dict(self) -> dict[str, str]:
         return {key: str(value) for key, value in self.__dict__.items()}
@@ -370,6 +393,21 @@ def audit_v112_supplement(*, draft_dir: Path, refresh_dir: Path, source_locks: l
         {"baseline": baseline, "logistic_probe": logistic_probe},
     )
 
+    training_detail_manifest = draft_dir / "training-detail" / "manifest.json"
+    training_detail = _read_json(training_detail_manifest) if training_detail_manifest.is_file() else {}
+    training_counts = training_detail.get("counts") if isinstance(training_detail.get("counts"), Mapping) else {}
+    _audit_check(
+        checks,
+        "training_detail_artifacts_present",
+        training_counts.get("step_trace_rows", 0) > 0
+        and training_counts.get("run_summary_rows", 0) > 0
+        and training_counts.get("candidate_lifecycle_rows", 0) > 0
+        and (draft_dir / "training-detail" / "figures" / "shallow-loss-curves.svg").is_file()
+        and (draft_dir / "training-detail" / "figures" / "depth-loss-curves.svg").is_file(),
+        "Training-detail artifacts expose per-step losses, run summaries, candidate lifecycle rows, and loss-curve figures.",
+        {"counts": training_counts},
+    )
+
     roles = {str(row.get("role")) for row in source_locks if isinstance(row, Mapping)}
     required_roles = {"v112_draft", "v112_paper_facing", "v112_evidence_refresh", "v112_bounded_probe"}
     _audit_check(
@@ -391,6 +429,366 @@ def audit_v112_supplement(*, draft_dir: Path, refresh_dir: Path, source_locks: l
             "failed": sum(1 for check in checks if check["status"] != "passed"),
         },
     }
+
+
+def write_v112_training_detail_assets(
+    *,
+    output_dir: Path = DEFAULT_V112_TRAINING_DETAIL_DIR,
+    refresh_dir: Path = DEFAULT_V112_REFRESH_DIR,
+) -> PaperTrainingDetailPaths:
+    """Write paper-facing per-step training traces, lifecycle tables, and loss-curve figures."""
+
+    output_dir = Path(output_dir)
+    refresh_dir = Path(refresh_dir)
+    tables_dir = output_dir / "tables"
+    figures_dir = output_dir / "figures"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    tables_dir.mkdir(parents=True, exist_ok=True)
+    figures_dir.mkdir(parents=True, exist_ok=True)
+    paths = PaperTrainingDetailPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "manifest.json",
+        readme_md=output_dir / "README.md",
+        step_trace_json=tables_dir / "training-step-traces.json",
+        step_trace_csv=tables_dir / "training-step-traces.csv",
+        step_trace_md=tables_dir / "training-step-traces.md",
+        run_summary_json=tables_dir / "training-run-summaries.json",
+        run_summary_csv=tables_dir / "training-run-summaries.csv",
+        run_summary_md=tables_dir / "training-run-summaries.md",
+        candidate_lifecycle_json=tables_dir / "candidate-lifecycle.json",
+        candidate_lifecycle_csv=tables_dir / "candidate-lifecycle.csv",
+        candidate_lifecycle_md=tables_dir / "candidate-lifecycle.md",
+        shallow_loss_svg=figures_dir / "shallow-loss-curves.svg",
+        depth_loss_svg=figures_dir / "depth-loss-curves.svg",
+    )
+
+    run_payloads = _v112_refresh_run_payloads(refresh_dir)
+    step_rows: list[dict[str, Any]] = []
+    summary_rows: list[dict[str, Any]] = []
+    candidate_rows: list[dict[str, Any]] = []
+    for source, artifact_path, payload in run_payloads:
+        rows, summaries, candidates = training_detail_rows_from_payload(payload, source=source, artifact_path=artifact_path)
+        step_rows.extend(rows)
+        summary_rows.extend(summaries)
+        candidate_rows.extend(candidates)
+
+    _write_table(paths.step_trace_json, paths.step_trace_csv, paths.step_trace_md, "Training Step Traces", step_rows)
+    _write_table(paths.run_summary_json, paths.run_summary_csv, paths.run_summary_md, "Training Run Summaries", summary_rows)
+    _write_table(paths.candidate_lifecycle_json, paths.candidate_lifecycle_csv, paths.candidate_lifecycle_md, "Candidate Lifecycle", candidate_rows)
+    paths.shallow_loss_svg.write_text(
+        _training_loss_svg([row for row in step_rows if row.get("source") == "shallow"], "v1.12 shallow refresh loss traces"),
+        encoding="utf-8",
+    )
+    paths.depth_loss_svg.write_text(
+        _training_loss_svg([row for row in step_rows if row.get("source") == "depth"], "v1.12 depth refresh loss traces"),
+        encoding="utf-8",
+    )
+    paths.readme_md.write_text(_training_detail_readme(paths, len(run_payloads), step_rows, summary_rows, candidate_rows), encoding="utf-8")
+
+    source_paths = [Path(path) for _, path, _ in run_payloads]
+    for name in ("manifest.json", "shallow-aggregate.json", "depth-aggregate.json"):
+        path = refresh_dir / name
+        if path.is_file():
+            source_paths.append(path)
+    manifest = {
+        "schema": "eml.v112_training_detail_assets.v1",
+        "generated_at": _now_iso(),
+        "output_dir": str(output_dir),
+        "outputs": paths.as_dict(),
+        "counts": {
+            "run_payloads": len(run_payloads),
+            "step_trace_rows": len(step_rows),
+            "run_summary_rows": len(summary_rows),
+            "candidate_lifecycle_rows": len(candidate_rows),
+            "traced_runs": len({row.get("run_id") for row in step_rows}),
+        },
+        "sources": [_source_lock(f"run_{index:03d}", path) for index, path in enumerate(dict.fromkeys(source_paths))],
+        "claim_boundary": "training-detail figures show optimizer dynamics and candidate lifecycle; verifier status still owns recovery claims",
+        "reproduction": {
+            "command": (
+                "PYTHONPATH=src python -m eml_symbolic_regression.cli paper-training-detail "
+                f"--output-dir {output_dir} --refresh-dir {refresh_dir}"
+            ),
+        },
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def training_detail_rows_from_payload(
+    payload: Mapping[str, Any],
+    *,
+    source: str,
+    artifact_path: Path,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+    run = payload.get("run") if isinstance(payload.get("run"), Mapping) else {}
+    budget = payload.get("budget") if isinstance(payload.get("budget"), Mapping) else {}
+    metrics = payload.get("metrics") if isinstance(payload.get("metrics"), Mapping) else {}
+    manifest = _training_manifest_from_payload(payload)
+    if not manifest:
+        return [], [], []
+
+    run_context = {
+        "source": source,
+        "run_id": run.get("run_id"),
+        "suite_id": run.get("suite_id"),
+        "case_id": run.get("case_id"),
+        "formula": run.get("formula"),
+        "start_mode": run.get("start_mode"),
+        "seed": run.get("seed"),
+        "depth": budget.get("depth"),
+        "steps": budget.get("steps"),
+        "hardening_steps": budget.get("hardening_steps"),
+        "training_mode": payload.get("training_mode"),
+        "status": payload.get("status"),
+        "claim_status": payload.get("claim_status"),
+        "evidence_class": payload.get("evidence_class"),
+        "verifier_status": metrics.get("verifier_status"),
+        "artifact_path": str(artifact_path),
+    }
+
+    best_restart = manifest.get("best_restart") if isinstance(manifest.get("best_restart"), Mapping) else {}
+    best_attempt_index = best_restart.get("restart")
+    step_rows: list[dict[str, Any]] = []
+    summary_rows: list[dict[str, Any]] = []
+    for restart in manifest.get("restarts", []):
+        if not isinstance(restart, Mapping):
+            continue
+        attempt_index = restart.get("restart")
+        is_best = attempt_index == best_attempt_index
+        summary = restart.get("loss_summary") if isinstance(restart.get("loss_summary"), Mapping) else {}
+        summary_rows.append(
+            {
+                **run_context,
+                "attempt_index": attempt_index,
+                "attempt_kind": restart.get("attempt_kind"),
+                "random_restart": restart.get("random_restart"),
+                "attempt_seed": restart.get("seed"),
+                "is_best_restart": is_best,
+                "steps_recorded": summary.get("steps_recorded"),
+                "fit_steps_recorded": summary.get("fit_steps_recorded"),
+                "hardening_steps_recorded": summary.get("hardening_steps_recorded"),
+                "first_fit_loss": summary.get("first_fit_loss"),
+                "last_fit_loss": summary.get("last_fit_loss"),
+                "best_fit_loss": summary.get("best_fit_loss"),
+                "best_global_step": summary.get("best_global_step"),
+                "loss_reduction": summary.get("loss_reduction"),
+                "loss_reduction_ratio": summary.get("loss_reduction_ratio"),
+                "final_nan_count": _nested_mapping(restart, ("final_anomalies", "nan_count")),
+                "final_inf_count": _nested_mapping(restart, ("final_anomalies", "inf_count")),
+                "final_clamp_count": _nested_mapping(restart, ("final_anomalies", "clamp_count")),
+                "candidate_ids": restart.get("candidate_ids"),
+            }
+        )
+        for trace in restart.get("trace", []):
+            if not isinstance(trace, Mapping):
+                continue
+            step_rows.append(
+                {
+                    **run_context,
+                    "attempt_index": attempt_index,
+                    "attempt_kind": restart.get("attempt_kind"),
+                    "random_restart": restart.get("random_restart"),
+                    "attempt_seed": restart.get("seed"),
+                    "is_best_restart": is_best,
+                    "phase": trace.get("phase"),
+                    "step": trace.get("step"),
+                    "global_step": trace.get("global_step"),
+                    "temperature": trace.get("temperature"),
+                    "operator_family": trace.get("operator_family"),
+                    "fit_loss": trace.get("fit_loss"),
+                    "objective_loss": trace.get("objective_loss"),
+                    "entropy": trace.get("entropy"),
+                    "entropy_loss": trace.get("entropy_loss"),
+                    "expected_child_use": trace.get("expected_child_use"),
+                    "size_loss": trace.get("size_loss"),
+                    "anomaly_penalty": trace.get("anomaly_penalty"),
+                    "nan_count": trace.get("nan_count"),
+                    "inf_count": trace.get("inf_count"),
+                    "clamp_count": trace.get("clamp_count"),
+                    "max_abs": trace.get("max_abs"),
+                    "max_exp_real": trace.get("max_exp_real"),
+                    "exp_overflow_count": trace.get("exp_overflow_count"),
+                    "log_branch_cut_count": trace.get("log_branch_cut_count"),
+                    "log_non_finite_input_count": trace.get("log_non_finite_input_count"),
+                    "by_node": trace.get("by_node"),
+                }
+            )
+
+    selection = manifest.get("selection") if isinstance(manifest.get("selection"), Mapping) else {}
+    candidates: list[dict[str, Any]] = []
+    for candidate in manifest.get("candidates", []):
+        if not isinstance(candidate, Mapping):
+            continue
+        candidate_metrics = candidate.get("selection_metrics") if isinstance(candidate.get("selection_metrics"), Mapping) else {}
+        candidates.append(
+            {
+                **run_context,
+                "candidate_id": candidate.get("candidate_id"),
+                "candidate_source": candidate.get("source"),
+                "attempt_index": candidate.get("attempt_index"),
+                "checkpoint_index": candidate.get("checkpoint_index"),
+                "hardening_step": candidate.get("hardening_step"),
+                "global_step": candidate.get("global_step"),
+                "temperature": candidate.get("temperature"),
+                "best_fit_loss": candidate.get("best_fit_loss"),
+                "post_snap_loss": candidate.get("post_snap_loss"),
+                "active_slot_count": candidate.get("active_slot_count"),
+                "low_margin_slot_count": candidate.get("low_margin_slot_count"),
+                "snap_min_margin": _nested_mapping(candidate, ("snap", "min_margin")),
+                "snap_active_node_count": _nested_mapping(candidate, ("snap", "active_node_count")),
+                "verifier_status": candidate_metrics.get("verifier_status"),
+                "heldout_max_abs_error": candidate_metrics.get("heldout_max_abs_error"),
+                "extrapolation_max_abs_error": candidate_metrics.get("extrapolation_max_abs_error"),
+                "high_precision_max_error": candidate_metrics.get("high_precision_max_error"),
+                "is_selected": candidate.get("candidate_id") == selection.get("selected_candidate_id"),
+                "is_fallback": candidate.get("candidate_id") == selection.get("fallback_candidate_id"),
+            }
+        )
+    return step_rows, summary_rows, candidates
+
+
+def _training_manifest_from_payload(payload: Mapping[str, Any]) -> Mapping[str, Any]:
+    trained = payload.get("trained_eml_candidate")
+    if isinstance(trained, Mapping):
+        return trained
+    warm = payload.get("warm_start_eml")
+    if isinstance(warm, Mapping) and isinstance(warm.get("optimizer"), Mapping):
+        return warm["optimizer"]
+    perturbed = payload.get("perturbed_true_tree")
+    if isinstance(perturbed, Mapping) and isinstance(perturbed.get("optimizer"), Mapping):
+        return perturbed["optimizer"]
+    return {}
+
+
+def _v112_refresh_run_payloads(refresh_dir: Path) -> list[tuple[str, Path, Mapping[str, Any]]]:
+    payloads: list[tuple[str, Path, Mapping[str, Any]]] = []
+    seen: set[Path] = set()
+    for source, aggregate_name in (("shallow", "shallow-aggregate.json"), ("depth", "depth-aggregate.json")):
+        aggregate_path = refresh_dir / aggregate_name
+        if not aggregate_path.is_file():
+            continue
+        aggregate = _read_json(aggregate_path)
+        for run in aggregate.get("runs", []):
+            if not isinstance(run, Mapping) or not run.get("artifact_path"):
+                continue
+            artifact_path = Path(str(run["artifact_path"]))
+            if artifact_path in seen or not artifact_path.is_file():
+                continue
+            seen.add(artifact_path)
+            payloads.append((source, artifact_path, _read_json(artifact_path)))
+    return payloads
+
+
+def _training_detail_readme(
+    paths: PaperTrainingDetailPaths,
+    run_count: int,
+    step_rows: list[Mapping[str, Any]],
+    summary_rows: list[Mapping[str, Any]],
+    candidate_rows: list[Mapping[str, Any]],
+) -> str:
+    return "\n".join(
+        [
+            "# v1.12 Training Detail Artifacts",
+            "",
+            f"Runs inspected: {run_count}.",
+            f"Step-trace rows: {len(step_rows)}.",
+            f"Run-summary rows: {len(summary_rows)}.",
+            f"Candidate-lifecycle rows: {len(candidate_rows)}.",
+            "",
+            "## Tables",
+            "",
+            f"- `{paths.step_trace_csv}`: per-step fit loss, objective loss, entropy, size penalty, temperature, operator family, and anomaly counters.",
+            f"- `{paths.run_summary_csv}`: per-restart loss summaries and final anomaly totals.",
+            f"- `{paths.candidate_lifecycle_csv}`: exact candidate pool lifecycle, snap margins, post-snap loss, verifier status, and selected/fallback flags.",
+            "",
+            "## Figures",
+            "",
+            f"- `{paths.shallow_loss_svg}`: shallow refresh loss curves.",
+            f"- `{paths.depth_loss_svg}`: depth-refresh loss curves.",
+            "",
+            "## Claim Boundary",
+            "",
+            "These artifacts illustrate optimizer dynamics and candidate selection. Recovery claims still come only from verifier status, not from loss curves alone.",
+            "",
+        ]
+    )
+
+
+def _training_loss_svg(rows: list[Mapping[str, Any]], title: str) -> str:
+    plot_rows = [
+        row
+        for row in rows
+        if row.get("is_best_restart") is True and row.get("phase") == "fit" and _number_or_none(row.get("fit_loss")) is not None
+    ]
+    width, height = 1080, 520
+    left, top, right, bottom = 70, 70, 30, 70
+    plot_w = width - left - right
+    plot_h = height - top - bottom
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
+        "<style>.title{font:700 22px Arial,sans-serif;fill:#17202a}.axis{font:12px Arial,sans-serif;fill:#34495e}.label{font:11px Arial,sans-serif;fill:#34495e}.grid{stroke:#d8dee4;stroke-width:1}.curve{fill:none;stroke-width:2;opacity:.88}.note{font:12px Arial,sans-serif;fill:#5d6d7e}</style>",
+        f'<rect x="0" y="0" width="{width}" height="{height}" fill="#ffffff"/>',
+        f'<text x="{left}" y="36" class="title">{_svg_text(title)}</text>',
+        f'<text x="{left}" y="56" class="note">Best restart per run; y-axis is log10(fit loss). Loss curves illustrate optimizer dynamics only.</text>',
+    ]
+    if not plot_rows:
+        parts.append(f'<text x="{left}" y="{top + 40}" class="axis">No traced fit steps available.</text></svg>')
+        return "\n".join(parts)
+
+    max_step = max(int(row.get("global_step") or 0) for row in plot_rows) or 1
+    losses = [_number_or_none(row.get("fit_loss")) for row in plot_rows]
+    log_losses = [math.log10(max(float(value), 1e-300)) for value in losses if value is not None and np.isfinite(float(value))]
+    min_y = min(log_losses)
+    max_y = max(log_losses)
+    if min_y == max_y:
+        min_y -= 1.0
+        max_y += 1.0
+
+    for index in range(6):
+        y = top + plot_h * index / 5
+        x = left + plot_w * index / 5
+        parts.append(f'<line x1="{left}" y1="{y:.2f}" x2="{left + plot_w}" y2="{y:.2f}" class="grid"/>')
+        parts.append(f'<line x1="{x:.2f}" y1="{top}" x2="{x:.2f}" y2="{top + plot_h}" class="grid"/>')
+    parts.append(f'<line x1="{left}" y1="{top + plot_h}" x2="{left + plot_w}" y2="{top + plot_h}" stroke="#34495e" stroke-width="1.5"/>')
+    parts.append(f'<line x1="{left}" y1="{top}" x2="{left}" y2="{top + plot_h}" stroke="#34495e" stroke-width="1.5"/>')
+    parts.append(f'<text x="{left + plot_w / 2 - 25:.2f}" y="{height - 24}" class="axis">step</text>')
+    parts.append(f'<text x="16" y="{top + plot_h / 2:.2f}" transform="rotate(-90 16 {top + plot_h / 2:.2f})" class="axis">log10 loss</text>')
+
+    colors = ["#1f77b4", "#d62728", "#2ca02c", "#9467bd", "#8c564b", "#17becf", "#bcbd22", "#ff7f0e", "#7f7f7f", "#e377c2"]
+    grouped: dict[str, list[Mapping[str, Any]]] = {}
+    for row in plot_rows:
+        grouped.setdefault(str(row.get("run_id")), []).append(row)
+    for index, (run_id, items) in enumerate(sorted(grouped.items())):
+        points = []
+        for row in sorted(items, key=lambda item: int(item.get("global_step") or 0)):
+            loss = _number_or_none(row.get("fit_loss"))
+            if loss is None:
+                continue
+            x = left + (int(row.get("global_step") or 0) / max_step) * plot_w
+            log_loss = math.log10(max(float(loss), 1e-300))
+            y = top + ((max_y - log_loss) / (max_y - min_y)) * plot_h
+            points.append(f"{x:.2f},{y:.2f}")
+        if len(points) >= 2:
+            color = colors[index % len(colors)]
+            parts.append(f'<polyline points="{" ".join(points)}" class="curve" stroke="{color}"/>')
+    parts.append(f'<text x="{left}" y="{height - 45}" class="note">Traced runs: {len(grouped)}. Full data: training-step-traces.csv/json.</text>')
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
+def _number_or_none(value: Any) -> float | None:
+    try:
+        if value is None or value == "":
+            return None
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if np.isfinite(number) else None
+
+
+def _svg_text(value: Any) -> str:
+    return str(value).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def write_v112_bounded_probes(
@@ -1040,6 +1438,10 @@ def _table_captions_markdown(paths: PaperFacingPaths) -> str:
             "",
             "`artifacts/campaigns/v1.12-evidence-refresh/tables/shallow-refresh-runs.md` and `artifacts/campaigns/v1.12-evidence-refresh/tables/depth-refresh-summary.md` provide current-code refresh rows for Phase 65.",
             "",
+            "## Table 5. Training dynamics and candidate lifecycle",
+            "",
+            "`artifacts/paper/v1.11/draft/training-detail/tables/training-step-traces.md`, `training-run-summaries.md`, and `candidate-lifecycle.md` expose per-step losses, objective components, anomaly counters, snap metrics, and verifier-owned candidate selection for the v1.12 refresh runs.",
+            "",
         ]
     )
 
@@ -1449,7 +1851,7 @@ def _write_csv(path: Path, rows: list[Mapping[str, Any]]) -> None:
     columns = _columns(rows)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=columns)
+        writer = csv.DictWriter(handle, fieldnames=columns, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow({column: _csv_value(row.get(column)) for column in columns})

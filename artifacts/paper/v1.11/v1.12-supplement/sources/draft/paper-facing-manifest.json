@@ -6,7 +6,7 @@
     "motif_rows": 5,
     "negative_result_rows": 2
   },
-  "generated_at": "2026-04-19T14:43:41.262521+00:00",
+  "generated_at": "2026-04-19T18:04:21.036263+00:00",
   "output_dir": "artifacts/paper/v1.11/draft",
   "outputs": {
     "figure_captions_md": "artifacts/paper/v1.11/draft/figure-captions.md",
@@ -44,7 +44,7 @@
     },
     {
       "path": "artifacts/campaigns/v1.12-evidence-refresh/manifest.json",
-      "sha256": "7a0686634639626b573f2a15df3466ec7e1539cff418f161eef61f11ff409ebe",
+      "sha256": "978c50285b73c235cd233c8d2f9b2c134f4a3e883ed5e8f850861fb4d89e9b7e",
       "source_id": "manifest"
     }
   ]

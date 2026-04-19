@@ -7,7 +7,10 @@ from eml_symbolic_regression.cli import (
     paper_probes_command,
     paper_refresh_command,
     paper_supplement_command,
+    paper_training_detail_command,
 )
+from eml_symbolic_regression.datasets import get_demo
+from eml_symbolic_regression.optimize import TrainingConfig, fit_eml_tree
 from eml_symbolic_regression.paper_v112 import (
     audit_v112_supplement,
     claim_taxonomy_rows,
@@ -16,12 +19,14 @@ from eml_symbolic_regression.paper_v112 import (
     logistic_planck_negative_result_rows,
     motif_library_evolution_rows,
     refresh_run_rows,
+    training_detail_rows_from_payload,
     v112_depth_refresh_suite,
     v112_shallow_refresh_suite,
     write_v112_bounded_probes,
     write_v112_draft,
     write_v112_paper_facing_assets,
     write_v112_supplement,
+    write_v112_training_detail_assets,
 )
 
 
@@ -288,6 +293,82 @@ def test_paper_probes_cli_writes_manifest(tmp_path, capsys):
     assert (output_dir / "tables" / "logistic-strict-support-probe.md").exists()
 
 
+def test_optimizer_manifest_records_step_trace_for_training_dynamics():
+    spec = get_demo("exp")
+    splits = spec.make_splits(points=8, seed=0)
+    fit = fit_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(depth=1, steps=3, hardening_steps=2, restarts=1, scaffold_initializers=(), seed=0),
+        verification_splits=splits,
+    )
+
+    restart = fit.manifest["restarts"][0]
+    trace = restart["trace"]
+
+    assert restart["trace_schema"] == "eml.training_step_trace.v1"
+    assert len(trace) == 5
+    assert trace[0]["phase"] == "fit"
+    assert trace[-1]["phase"] == "hardening"
+    assert {"fit_loss", "objective_loss", "entropy", "expected_child_use", "clamp_count"} <= set(trace[0])
+    assert fit.manifest["trace_summary"]["total_steps_recorded"] == 5
+
+
+def test_training_detail_rows_extract_step_and_candidate_lifecycle(tmp_path):
+    spec = get_demo("exp")
+    splits = spec.make_splits(points=8, seed=1)
+    fit = fit_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(depth=1, steps=2, hardening_steps=1, restarts=1, scaffold_initializers=(), seed=1),
+        verification_splits=splits,
+    )
+    payload = {
+        "run": {"run_id": "unit-run", "suite_id": "unit", "case_id": "exp", "formula": "exp", "start_mode": "blind", "seed": 1},
+        "budget": {"depth": 1, "steps": 2, "hardening_steps": 1},
+        "metrics": {"verifier_status": fit.verification.status if fit.verification else None},
+        "trained_eml_candidate": fit.manifest,
+        "status": fit.status,
+        "claim_status": fit.verification.status if fit.verification else fit.status,
+        "training_mode": "unit",
+        "evidence_class": "unit",
+    }
+
+    step_rows, summary_rows, candidate_rows = training_detail_rows_from_payload(payload, source="unit", artifact_path=tmp_path / "run.json")
+
+    assert len(step_rows) == 3
+    assert summary_rows[0]["steps_recorded"] == 3
+    assert any(row["is_selected"] for row in candidate_rows)
+
+
+def test_write_v112_training_detail_assets_outputs_tables_and_figures(tmp_path):
+    paths = write_v112_training_detail_assets(output_dir=tmp_path / "training-detail")
+
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    trace_table = json.loads(paths.step_trace_json.read_text(encoding="utf-8"))
+    lifecycle = json.loads(paths.candidate_lifecycle_json.read_text(encoding="utf-8"))
+
+    assert manifest["schema"] == "eml.v112_training_detail_assets.v1"
+    assert manifest["counts"]["step_trace_rows"] > 0
+    assert manifest["counts"]["candidate_lifecycle_rows"] > 0
+    assert any("objective_loss" in row for row in trace_table["rows"])
+    assert any(row["is_selected"] is True for row in lifecycle["rows"])
+    assert "<svg" in paths.shallow_loss_svg.read_text(encoding="utf-8")
+
+
+def test_paper_training_detail_cli_writes_manifest(tmp_path, capsys):
+    output_dir = tmp_path / "training-detail"
+    args = build_parser().parse_args(["paper-training-detail", "--output-dir", str(output_dir)])
+
+    assert args.func is paper_training_detail_command
+    assert args.func(args) == 0
+
+    captured = capsys.readouterr().out
+    assert "paper training detail: manifest ->" in captured
+    assert (output_dir / "tables" / "training-step-traces.csv").exists()
+    assert (output_dir / "figures" / "depth-loss-curves.svg").exists()
+
+
 def test_write_v112_supplement_source_locks_and_audit_pass(tmp_path):
     paths = write_v112_supplement(output_dir=tmp_path / "supplement")
 
@@ -321,6 +402,7 @@ def test_v112_supplement_audit_checks_expected_claim_boundaries():
     assert audit["status"] == "passed"
     assert checks["logistic_planck_negative_rows_not_promoted"]["status"] == "passed"
     assert checks["depth_refresh_counts"]["status"] == "passed"
+    assert checks["training_detail_artifacts_present"]["status"] == "passed"
 
 
 def test_paper_supplement_cli_writes_manifest(tmp_path, capsys):

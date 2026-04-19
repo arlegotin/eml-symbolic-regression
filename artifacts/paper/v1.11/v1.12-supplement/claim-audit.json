@@ -180,19 +180,33 @@
     },
     {
       "details": {
+        "counts": {
+          "candidate_lifecycle_rows": 232,
+          "run_payloads": 18,
+          "run_summary_rows": 58,
+          "step_trace_rows": 4472,
+          "traced_runs": 18
+        }
+      },
+      "id": "training_detail_artifacts_present",
+      "message": "Training-detail artifacts expose per-step losses, run summaries, candidate lifecycle rows, and loss-curve figures.",
+      "status": "passed"
+    },
+    {
+      "details": {
         "missing_roles": [],
-        "source_lock_count": 49
+        "source_lock_count": 62
       },
       "id": "source_locks_cover_v112_artifact_families",
       "message": "Source locks cover draft, paper-facing, evidence-refresh, and bounded-probe artifact families.",
       "status": "passed"
     }
   ],
-  "generated_at": "2026-04-19T14:56:29.127807+00:00",
+  "generated_at": "2026-04-19T18:04:25.280619+00:00",
   "schema": "eml.v112_claim_audit.v1",
   "status": "passed",
   "summary": {
     "failed": 0,
-    "passed": 8
+    "passed": 9
   }
 }

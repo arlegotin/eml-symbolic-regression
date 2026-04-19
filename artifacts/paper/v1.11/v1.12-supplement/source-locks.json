@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-19T14:56:29.128351+00:00",
+  "generated_at": "2026-04-19T18:04:25.281623+00:00",
   "output_dir": "artifacts/paper/v1.11/v1.12-supplement",
   "schema": "eml.v112_supplement_source_locks.v1",
-  "source_count": 49,
+  "source_count": 62,
   "sources": [
     {
       "bytes": 1937,
@@ -95,7 +95,7 @@
     {
       "bytes": 2430,
       "role": "v112_paper_facing",
-      "sha256": "5ff6a75628929006ab1b049ea062c962ec1597dd432ffe96430ea3e208c0da74",
+      "sha256": "995436b884fd10311545bdb5866bdc02f371ba6005965794495c175198b4a7b0",
       "source_id": "v112-draft-paper-facing-manifest-json",
       "source_path": "artifacts/paper/v1.11/draft/paper-facing-manifest.json",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/paper-facing-manifest.json"
@@ -109,9 +109,9 @@
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/results.md"
     },
     {
-      "bytes": 1012,
+      "bytes": 1349,
       "role": "v112_paper_facing",
-      "sha256": "5c9807926964c93321f343a9058b5f53d1f24be8aaeb8d7f628450edc4dac4af",
+      "sha256": "6a8abed822c809e9ed1ab1dcaeb93ec5d9bf6c8d583684d49a065fa87a1b8258",
       "source_id": "v112-draft-table-captions-md",
       "source_path": "artifacts/paper/v1.11/draft/table-captions.md",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/table-captions.md"
@@ -141,9 +141,9 @@
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/tables/conventional-symbolic-baseline-probe.md"
     },
     {
-      "bytes": 1399,
+      "bytes": 1396,
       "role": "v112_paper_facing",
-      "sha256": "ba0a95fb32bc6bf3d9d29be1fada9d33c79d6b73d7a25b23fdd0544f7d36673d",
+      "sha256": "7c96236a27455988f53121c9d0ca143aa3d7467ab2a4c0bf8002a47c1c11c0ca",
       "source_id": "v112-draft-tables-logistic-planck-negative-results-csv",
       "source_path": "artifacts/paper/v1.11/draft/tables/logistic-planck-negative-results.csv",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/tables/logistic-planck-negative-results.csv"
@@ -197,9 +197,9 @@
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/tables/logistic-strict-support-probe.md"
     },
     {
-      "bytes": 2066,
+      "bytes": 2060,
       "role": "v112_paper_facing",
-      "sha256": "a0aca6f07aba2b596e2d7a76f9c33891020ce227d1b8441eb9e3d7c832115147",
+      "sha256": "0ce6101d0ab834b594ad2d3a0b5dcf2aadf3093c03388492de278a3192e3a9aa",
       "source_id": "v112-draft-tables-motif-library-evolution-csv",
       "source_path": "artifacts/paper/v1.11/draft/tables/motif-library-evolution.csv",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/tables/motif-library-evolution.csv"
@@ -221,41 +221,145 @@
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/tables/motif-library-evolution.md"
     },
     {
-      "bytes": 85239,
+      "bytes": 1060,
+      "role": "v112_paper_facing",
+      "sha256": "e477e3081d4846f52caf7cf8b53fab4eaa530d9df9dd469466f787e16a04b7d4",
+      "source_id": "v112-draft-training-detail-README-md",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/README.md",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/README.md"
+    },
+    {
+      "bytes": 11183,
+      "role": "v112_paper_facing",
+      "sha256": "f801cd1144ab23a306c5c58ea10eb5b0695765908f40024f1578dbcac5164ccf",
+      "source_id": "v112-draft-training-detail-figures-depth-loss-curves-svg",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/figures/depth-loss-curves.svg",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/figures/depth-loss-curves.svg"
+    },
+    {
+      "bytes": 10314,
+      "role": "v112_paper_facing",
+      "sha256": "67e8d01b7ea0f243f169e5f72bb780f9cab75221d24c378e79311a44d9d61d34",
+      "source_id": "v112-draft-training-detail-figures-shallow-loss-curves-svg",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/figures/shallow-loss-curves.svg",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/figures/shallow-loss-curves.svg"
+    },
+    {
+      "bytes": 7600,
+      "role": "v112_draft",
+      "sha256": "f501cb0b6ddb555942bfec22b9394f63ab23c9a35857d5639b0246ca0a9a5390",
+      "source_id": "v112-draft-training-detail-manifest-json",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/manifest.json",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/manifest.json"
+    },
+    {
+      "bytes": 109249,
+      "role": "v112_paper_facing",
+      "sha256": "7b626489bbb8296cde7dfed657df0f046913eb1e3f5a99bffe19be825bc87c8f",
+      "source_id": "v112-draft-training-detail-tables-candidate-lifecycle-csv",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/tables/candidate-lifecycle.csv",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/tables/candidate-lifecycle.csv"
+    },
+    {
+      "bytes": 307687,
+      "role": "v112_paper_facing",
+      "sha256": "1bbc5e80647c64ad5c70ac9801b0c094f882b955bd3b2c5c5297801aedea3ce9",
+      "source_id": "v112-draft-training-detail-tables-candidate-lifecycle-json",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/tables/candidate-lifecycle.json",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/tables/candidate-lifecycle.json"
+    },
+    {
+      "bytes": 125788,
+      "role": "v112_paper_facing",
+      "sha256": "5ec74422e6b60e1c6b7681e4e746e34bfe63429370da0769aa14579bd1322cb7",
+      "source_id": "v112-draft-training-detail-tables-candidate-lifecycle-md",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/tables/candidate-lifecycle.md",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/tables/candidate-lifecycle.md"
+    },
+    {
+      "bytes": 33206,
+      "role": "v112_paper_facing",
+      "sha256": "f1e82d6cdcddd07dcae2a6c285fc505020be8d509393e63ea912111defaf9afc",
+      "source_id": "v112-draft-training-detail-tables-training-run-summaries-csv",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/tables/training-run-summaries.csv",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/tables/training-run-summaries.csv"
+    },
+    {
+      "bytes": 83478,
+      "role": "v112_paper_facing",
+      "sha256": "e493130bdb921f5018711ae14544ed5761a50ab7b830e346a71141235c108333",
+      "source_id": "v112-draft-training-detail-tables-training-run-summaries-json",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/tables/training-run-summaries.json",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/tables/training-run-summaries.json"
+    },
+    {
+      "bytes": 36988,
+      "role": "v112_paper_facing",
+      "sha256": "09336c74ef68756a820a5a06b4675ce87a4d38595a40a0e756b4827b6f756c17",
+      "source_id": "v112-draft-training-detail-tables-training-run-summaries-md",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/tables/training-run-summaries.md",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/tables/training-run-summaries.md"
+    },
+    {
+      "bytes": 25138535,
+      "role": "v112_paper_facing",
+      "sha256": "a3c71f8b4f866254c669087f53bce832c3e4edca3147f827754e839aa30ea35a",
+      "source_id": "v112-draft-training-detail-tables-training-step-traces-csv",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/tables/training-step-traces.csv",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/tables/training-step-traces.csv"
+    },
+    {
+      "bytes": 35985307,
+      "role": "v112_paper_facing",
+      "sha256": "d4b9f676fe0f0ae7b27f556baa1273809b769c32d5b744ecf06a761d83fadb12",
+      "source_id": "v112-draft-training-detail-tables-training-step-traces-json",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/tables/training-step-traces.json",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/tables/training-step-traces.json"
+    },
+    {
+      "bytes": 23984435,
+      "role": "v112_paper_facing",
+      "sha256": "94f2b7ccb7c9ecfd9be578728b2f7663daebc887a8dc6d84369d9a0e142e12c1",
+      "source_id": "v112-draft-training-detail-tables-training-step-traces-md",
+      "source_path": "artifacts/paper/v1.11/draft/training-detail/tables/training-step-traces.md",
+      "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/draft/training-detail/tables/training-step-traces.md"
+    },
+    {
+      "bytes": 85240,
       "role": "v112_evidence_refresh",
-      "sha256": "d29e36083dba1c1813d740d69d8cff93694a292e9997b1d4e3719be3a9d863b5",
+      "sha256": "395985a154c1549af237166c98d56ffa37488c27b1a02e3a2dda594fe18cd657",
       "source_id": "v112-refresh-depth-aggregate-json",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/depth/aggregate.json",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/depth/aggregate.json"
     },
     {
-      "bytes": 4977,
+      "bytes": 4976,
       "role": "v112_evidence_refresh",
-      "sha256": "1fc6f7d85eb0333aeba6d7760d03549e2966e1576da318defb6df825231ef28a",
+      "sha256": "82dc3c427a8717e717ed85449121ce60a9691ec580468e3bae084a2fa4a0e172",
       "source_id": "v112-refresh-depth-aggregate-md",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/depth/aggregate.md",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/depth/aggregate.md"
     },
     {
-      "bytes": 85239,
+      "bytes": 85240,
       "role": "v112_evidence_refresh",
-      "sha256": "d29e36083dba1c1813d740d69d8cff93694a292e9997b1d4e3719be3a9d863b5",
+      "sha256": "395985a154c1549af237166c98d56ffa37488c27b1a02e3a2dda594fe18cd657",
       "source_id": "v112-refresh-depth-aggregate-json",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/depth-aggregate.json",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/depth-aggregate.json"
     },
     {
-      "bytes": 4977,
+      "bytes": 4976,
       "role": "v112_evidence_refresh",
-      "sha256": "1fc6f7d85eb0333aeba6d7760d03549e2966e1576da318defb6df825231ef28a",
+      "sha256": "82dc3c427a8717e717ed85449121ce60a9691ec580468e3bae084a2fa4a0e172",
       "source_id": "v112-refresh-depth-aggregate-md",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/depth-aggregate.md",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/depth-aggregate.md"
     },
     {
-      "bytes": 2890669,
+      "bytes": 53393340,
       "role": "v112_evidence_refresh",
-      "sha256": "61f7e8080086515108ac1070c3b3bcd08d07c1a5dfad1b0bc79b3e09eaae6874",
+      "sha256": "59fb2031aedfdba869d03b232b836dc453edadfbbae9031f91fd0cd2a085ffbd",
       "source_id": "v112-refresh-depth-suite-result-json",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/depth-suite-result.json",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/depth-suite-result.json"
@@ -271,7 +375,7 @@
     {
       "bytes": 3337,
       "role": "v112_evidence_refresh",
-      "sha256": "7a0686634639626b573f2a15df3466ec7e1539cff418f161eef61f11ff409ebe",
+      "sha256": "978c50285b73c235cd233c8d2f9b2c134f4a3e883ed5e8f850861fb4d89e9b7e",
       "source_id": "v112-refresh-manifest-json",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/manifest.json",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/manifest.json"
@@ -279,7 +383,7 @@
     {
       "bytes": 78006,
       "role": "v112_evidence_refresh",
-      "sha256": "1b85e573b3e97cfeb2f6fae72b130ad8f8d45fbd19e9bd9ad9092b78138c154d",
+      "sha256": "6f70e3b543c258fa9c25c3d76a5a4915cca70f47f8940b1c13db9252d16ee2f2",
       "source_id": "v112-refresh-shallow-aggregate-json",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/shallow/aggregate.json",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/shallow/aggregate.json"
@@ -295,7 +399,7 @@
     {
       "bytes": 78006,
       "role": "v112_evidence_refresh",
-      "sha256": "1b85e573b3e97cfeb2f6fae72b130ad8f8d45fbd19e9bd9ad9092b78138c154d",
+      "sha256": "6f70e3b543c258fa9c25c3d76a5a4915cca70f47f8940b1c13db9252d16ee2f2",
       "source_id": "v112-refresh-shallow-aggregate-json",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/shallow-aggregate.json",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/shallow-aggregate.json"
@@ -309,9 +413,9 @@
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/shallow-aggregate.md"
     },
     {
-      "bytes": 783962,
+      "bytes": 4842048,
       "role": "v112_evidence_refresh",
-      "sha256": "351c757d39be4173c7c9f0fefb8f5ac48d558261d1d436f7aa605a9b9c6d942b",
+      "sha256": "fc2b8ad265faa1056bddb7cc1a325aecdbc33cbae039a5445f461c88a82af060",
       "source_id": "v112-refresh-shallow-suite-result-json",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/shallow-suite-result.json",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/shallow-suite-result.json"
@@ -325,9 +429,9 @@
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/shallow-suite.json"
     },
     {
-      "bytes": 3591,
+      "bytes": 3582,
       "role": "v112_evidence_refresh",
-      "sha256": "c0affd4f3ad42d817fa7b562cce7316d0df6ef8a29dde24defab3c13dcbca6b5",
+      "sha256": "93309ea959da30dcab70d2b3d23e6f3190abe6dec497f11ad13047bee30b0414",
       "source_id": "v112-refresh-tables-depth-refresh-runs-csv",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/tables/depth-refresh-runs.csv",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/tables/depth-refresh-runs.csv"
@@ -349,33 +453,33 @@
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/tables/depth-refresh-runs.md"
     },
     {
-      "bytes": 855,
+      "bytes": 847,
       "role": "v112_evidence_refresh",
-      "sha256": "48621a9c2b318a9d2041fa3c960d2e895dbfdb53deb56c846c826166b74196a1",
+      "sha256": "5a8bdb4f66668ed07abcf42141ddca4c1ef4f66cecf47993711e2d53530f7deb",
       "source_id": "v112-refresh-tables-depth-refresh-summary-csv",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/tables/depth-refresh-summary.csv",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/tables/depth-refresh-summary.csv"
     },
     {
-      "bytes": 2196,
+      "bytes": 2193,
       "role": "v112_evidence_refresh",
-      "sha256": "2ceb6c95801daba8c4b11522acb108f70b0900d53282feba5c1adcca8b2f9bfe",
+      "sha256": "4a82d44c26fb796a43852382baf962650abb0c24ca03b52aed44d015fb4ae9e2",
       "source_id": "v112-refresh-tables-depth-refresh-summary-json",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/tables/depth-refresh-summary.json",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/tables/depth-refresh-summary.json"
     },
     {
-      "bytes": 1079,
+      "bytes": 1076,
       "role": "v112_evidence_refresh",
-      "sha256": "7a4d034b49848dab166a230ef23029abfd6570829d7cf3f75a689a4252217b7c",
+      "sha256": "83368ebb313d7237495c5c078980567bce4769ef4eac889a27c725ad3d38e02a",
       "source_id": "v112-refresh-tables-depth-refresh-summary-md",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/tables/depth-refresh-summary.md",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/tables/depth-refresh-summary.md"
     },
     {
-      "bytes": 4551,
+      "bytes": 4540,
       "role": "v112_evidence_refresh",
-      "sha256": "f0c512787d2a592b8fce361a0b2d7c6a4d31bb6a0a069cf81c4e755f97ee75c7",
+      "sha256": "84184d1a312751a559017a5fb5d713f4d4efe7b061d2a7d0134c3cb21f09d735",
       "source_id": "v112-refresh-tables-shallow-refresh-runs-csv",
       "source_path": "artifacts/campaigns/v1.12-evidence-refresh/tables/shallow-refresh-runs.csv",
       "supplement_path": "artifacts/paper/v1.11/v1.12-supplement/sources/evidence-refresh/tables/shallow-refresh-runs.csv"

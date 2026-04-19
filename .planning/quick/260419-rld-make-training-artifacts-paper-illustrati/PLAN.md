@@ -1,7 +1,7 @@
 ---
 quick_id: 260419-rld
 slug: make-training-artifacts-paper-illustrati
-status: in_progress
+status: complete
 created: 2026-04-19
 ---
 

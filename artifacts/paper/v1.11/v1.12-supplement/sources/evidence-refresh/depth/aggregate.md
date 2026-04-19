@@ -62,10 +62,10 @@ v1.12 current-code subset of proof-depth-curve, blind depths 2 through 5 with tw
 
 | Depth | Mode | Seeds | Recovered | Total | Rate | Median Best Loss | Median Post-Snap Loss | Median Runtime | Median Snap Margin |
 |-------|------|-------|-----------|-------|------|------------------|-----------------------|----------------|--------------------|
-| 2 | blind | 2 | 2 | 2 | 1.000 | 8.4e-07 | 0 | 1.225 | 0.7704 |
-| 3 | blind | 2 | 2 | 2 | 1.000 | 0 | 0 | 1.778 | 1 |
-| 4 | blind | 2 | 0 | 2 | 0.000 | 0.2319 | 0.636 | 2.664 | 0.5003 |
-| 5 | blind | 2 | 0 | 2 | 0.000 | 2.007 | 2.014 | 4.537 | 1 |
+| 2 | blind | 2 | 2 | 2 | 1.000 | 8.4e-07 | 0 | 1.272 | 0.7704 |
+| 3 | blind | 2 | 2 | 2 | 1.000 | 0 | 0 | 1.796 | 1 |
+| 4 | blind | 2 | 0 | 2 | 0.000 | 0.2319 | 0.636 | 2.72 | 0.5003 |
+| 5 | blind | 2 | 0 | 2 | 0.000 | 2.007 | 2.014 | 4.591 | 1 |
 
 ## Thresholds
 

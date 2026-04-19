@@ -37,12 +37,12 @@
       ],
       "recovered": 2,
       "recovery_rate": 1.0,
-      "runtime_seconds_max": 1.2430575409671292,
-      "runtime_seconds_median": 1.2250431869761087,
-      "runtime_seconds_min": 1.2070288329850882,
+      "runtime_seconds_max": 1.3163876249454916,
+      "runtime_seconds_median": 1.272411978978198,
+      "runtime_seconds_min": 1.2284363330109045,
       "runtime_seconds_values": [
-        1.2070288329850882,
-        1.2430575409671292
+        1.3163876249454916,
+        1.2284363330109045
       ],
       "seed_count": 2,
       "snap_min_margin_max": 0.8488985615917987,
@@ -77,12 +77,12 @@
       ],
       "recovered": 2,
       "recovery_rate": 1.0,
-      "runtime_seconds_max": 1.8646851669764146,
-      "runtime_seconds_median": 1.7783302294556051,
-      "runtime_seconds_min": 1.6919752919347957,
+      "runtime_seconds_max": 1.8066479170229286,
+      "runtime_seconds_median": 1.795871396025177,
+      "runtime_seconds_min": 1.7850948750274256,
       "runtime_seconds_values": [
-        1.8646851669764146,
-        1.6919752919347957
+        1.7850948750274256,
+        1.8066479170229286
       ],
       "seed_count": 2,
       "snap_min_margin_max": 1.0,
@@ -117,12 +117,12 @@
       ],
       "recovered": 0,
       "recovery_rate": 0.0,
-      "runtime_seconds_max": 2.6730040829861537,
-      "runtime_seconds_median": 2.6643058540066704,
-      "runtime_seconds_min": 2.655607625027187,
+      "runtime_seconds_max": 2.7423452079528943,
+      "runtime_seconds_median": 2.719772041484248,
+      "runtime_seconds_min": 2.6971988750156015,
       "runtime_seconds_values": [
-        2.655607625027187,
-        2.6730040829861537
+        2.6971988750156015,
+        2.7423452079528943
       ],
       "seed_count": 2,
       "snap_min_margin_max": 1.0,
@@ -157,12 +157,12 @@
       ],
       "recovered": 0,
       "recovery_rate": 0.0,
-      "runtime_seconds_max": 4.556116666994058,
-      "runtime_seconds_median": 4.537132917030249,
-      "runtime_seconds_min": 4.51814916706644,
+      "runtime_seconds_max": 4.592692916048691,
+      "runtime_seconds_median": 4.590765978966374,
+      "runtime_seconds_min": 4.588839041884057,
       "runtime_seconds_values": [
-        4.556116666994058,
-        4.51814916706644
+        4.588839041884057,
+        4.592692916048691
       ],
       "seed_count": 2,
       "snap_min_margin_max": 1.0,
@@ -178,11 +178,11 @@
     }
   ],
   "environment": {
-    "code_version": "97d64e1",
+    "code_version": "45b7420",
     "platform": "macOS-15.6.1-arm64-arm-64bit",
     "python": "3.11.5"
   },
-  "generated_at": "2026-04-19T14:39:19.339641+00:00",
+  "generated_at": "2026-04-19T18:04:06.555351+00:00",
   "groups": {
     "depth": [
       {

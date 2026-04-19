@@ -161,7 +161,7 @@ def _train_step(
     temperature: float,
     config: TrainingConfig,
     operator_family: EmlOperator,
-) -> tuple[float | None, AnomalyStats]:
+) -> tuple[dict[str, float] | None, AnomalyStats]:
     optimizer.zero_grad()
     model.set_operator(operator_family)
     stats = AnomalyStats()
@@ -175,12 +175,117 @@ def _train_step(
     fit_loss = torch.mean(torch.abs(pred - target_tensor) ** 2)
     entropy = model.gate_entropy(temperature)
     size = model.expected_child_use(temperature)
-    loss = fit_loss + config.entropy_weight * entropy + config.size_weight * size + stats.training_penalty(device=fit_loss.device)
+    anomaly_penalty = stats.training_penalty(device=fit_loss.device)
+    entropy_loss = config.entropy_weight * entropy
+    size_loss = config.size_weight * size
+    loss = fit_loss + entropy_loss + size_loss + anomaly_penalty
     if not torch.isfinite(loss):
         return None, stats
     loss.backward()
     optimizer.step()
-    return float(fit_loss.detach().item()), stats
+    return {
+        "fit_loss": float(fit_loss.detach().item()),
+        "objective_loss": float(loss.detach().item()),
+        "entropy": float(entropy.detach().item()),
+        "entropy_loss": float(entropy_loss.detach().item()),
+        "expected_child_use": float(size.detach().item()),
+        "size_loss": float(size_loss.detach().item()),
+        "anomaly_penalty": float(anomaly_penalty.detach().item()),
+    }, stats
+
+
+def _trace_entry(
+    *,
+    phase: str,
+    step: int,
+    global_step: int,
+    temperature: float,
+    metrics: Mapping[str, float],
+    stats: AnomalyStats,
+    operator_family: EmlOperator,
+) -> dict[str, Any]:
+    anomaly = stats.as_dict()
+    return {
+        "phase": phase,
+        "step": step,
+        "global_step": global_step,
+        "temperature": temperature,
+        "operator_family": operator_family.label,
+        "fit_loss": metrics["fit_loss"],
+        "objective_loss": metrics["objective_loss"],
+        "entropy": metrics["entropy"],
+        "entropy_loss": metrics["entropy_loss"],
+        "expected_child_use": metrics["expected_child_use"],
+        "size_loss": metrics["size_loss"],
+        "anomaly_penalty": metrics["anomaly_penalty"],
+        "nan_count": anomaly["nan_count"],
+        "inf_count": anomaly["inf_count"],
+        "clamp_count": anomaly["clamp_count"],
+        "max_abs": anomaly["max_abs"],
+        "max_exp_real": anomaly["max_exp_real"],
+        "exp_overflow_count": anomaly["exp_overflow_count"],
+        "log_small_magnitude_count": anomaly["log_small_magnitude_count"],
+        "log_non_positive_real_count": anomaly["log_non_positive_real_count"],
+        "log_branch_cut_count": anomaly["log_branch_cut_count"],
+        "log_non_finite_input_count": anomaly["log_non_finite_input_count"],
+        "expm1_overflow_count": anomaly["expm1_overflow_count"],
+        "log1p_branch_cut_count": anomaly["log1p_branch_cut_count"],
+        "shifted_singularity_near_count": anomaly["shifted_singularity_near_count"],
+        "shifted_singularity_min_distance": anomaly["shifted_singularity_min_distance"],
+        "log_safety_penalty": anomaly["log_safety_penalty"],
+        "by_node": anomaly["by_node"],
+    }
+
+
+def _loss_summary(trace: list[Mapping[str, Any]]) -> dict[str, Any]:
+    if not trace:
+        return {
+            "steps_recorded": 0,
+            "fit_steps_recorded": 0,
+            "hardening_steps_recorded": 0,
+            "first_fit_loss": None,
+            "last_fit_loss": None,
+            "best_fit_loss": None,
+            "best_global_step": None,
+            "loss_reduction": None,
+            "loss_reduction_ratio": None,
+        }
+    fit_values = [float(row["fit_loss"]) for row in trace if row.get("phase") == "fit" and np.isfinite(float(row["fit_loss"]))]
+    all_values = [float(row["fit_loss"]) for row in trace if np.isfinite(float(row["fit_loss"]))]
+    first = fit_values[0] if fit_values else (all_values[0] if all_values else None)
+    last = all_values[-1] if all_values else None
+    best_row = min(
+        (row for row in trace if np.isfinite(float(row.get("fit_loss", float("inf"))))),
+        key=lambda row: float(row["fit_loss"]),
+        default=None,
+    )
+    best = float(best_row["fit_loss"]) if best_row is not None else None
+    reduction = (first - last) if first is not None and last is not None else None
+    ratio = (last / first) if first not in {None, 0.0} and last is not None else None
+    return {
+        "steps_recorded": len(trace),
+        "fit_steps_recorded": sum(1 for row in trace if row.get("phase") == "fit"),
+        "hardening_steps_recorded": sum(1 for row in trace if row.get("phase") == "hardening"),
+        "first_fit_loss": first,
+        "last_fit_loss": last,
+        "best_fit_loss": best,
+        "best_global_step": best_row.get("global_step") if best_row is not None else None,
+        "loss_reduction": reduction,
+        "loss_reduction_ratio": ratio,
+    }
+
+
+def _manifest_trace_summary(restart_logs: list[Mapping[str, Any]]) -> dict[str, Any]:
+    summaries = [log.get("loss_summary") for log in restart_logs if isinstance(log.get("loss_summary"), Mapping)]
+    total_steps = sum(int(summary.get("steps_recorded") or 0) for summary in summaries)
+    best_values = [float(summary["best_fit_loss"]) for summary in summaries if summary.get("best_fit_loss") is not None]
+    return {
+        "restart_count": len(restart_logs),
+        "total_steps_recorded": total_steps,
+        "best_fit_loss_min": min(best_values) if best_values else None,
+        "best_fit_loss_max": max(best_values) if best_values else None,
+        "trace_available": total_steps > 0,
+    }
 
 
 def _emit_candidate(
@@ -339,12 +444,13 @@ def fit_eml_tree(
             initialization_log = None
         optimizer = torch.optim.Adam(model.parameters(), lr=effective_config.lr)
         losses: list[float] = []
+        trace: list[dict[str, Any]] = []
         final_stats = AnomalyStats()
 
         for step in range(effective_config.steps):
             temp = _temperature(effective_config, step)
             operator_family = _operator_for_step(effective_config, step, max(effective_config.steps, 1))
-            fit_loss, stats = _train_step(
+            step_metrics, stats = _train_step(
                 model,
                 optimizer,
                 tensor_inputs,
@@ -353,9 +459,21 @@ def fit_eml_tree(
                 config=effective_config,
                 operator_family=operator_family,
             )
-            if fit_loss is None:
+            if step_metrics is None:
                 break
+            fit_loss = step_metrics["fit_loss"]
             losses.append(fit_loss)
+            trace.append(
+                _trace_entry(
+                    phase="fit",
+                    step=step,
+                    global_step=step,
+                    temperature=temp,
+                    metrics=step_metrics,
+                    stats=stats,
+                    operator_family=operator_family,
+                )
+            )
             final_stats = stats
 
         attempt_best_loss = min(losses) if losses else float("inf")
@@ -367,6 +485,9 @@ def fit_eml_tree(
             "steps_completed": len(losses),
             "hardening_steps_completed": 0,
             "best_fit_loss": attempt_best_loss,
+            "trace_schema": "eml.training_step_trace.v1",
+            "trace": trace,
+            "loss_summary": _loss_summary(trace),
             "final_anomalies": final_stats.as_dict(),
             "initialization": initialization_log,
             "candidate_ids": [],
@@ -396,7 +517,7 @@ def fit_eml_tree(
         model.set_operator(_final_operator(effective_config))
         for hardening_step in range(effective_config.hardening_steps):
             temp = _hardening_temperature(effective_config, hardening_step)
-            fit_loss, stats = _train_step(
+            step_metrics, stats = _train_step(
                 model,
                 optimizer,
                 tensor_inputs,
@@ -405,9 +526,20 @@ def fit_eml_tree(
                 config=effective_config,
                 operator_family=_final_operator(effective_config),
             )
-            if fit_loss is None:
+            if step_metrics is None:
                 break
             hardening_completed = hardening_step + 1
+            trace.append(
+                _trace_entry(
+                    phase="hardening",
+                    step=hardening_step,
+                    global_step=effective_config.steps + hardening_step,
+                    temperature=temp,
+                    metrics=step_metrics,
+                    stats=stats,
+                    operator_family=_final_operator(effective_config),
+                )
+            )
             final_stats = stats
             if _should_emit_hardening_candidate(effective_config, hardening_step):
                 candidate = _emit_candidate(
@@ -431,6 +563,7 @@ def fit_eml_tree(
                 checkpoint_index += 1
 
         log["hardening_steps_completed"] = hardening_completed
+        log["loss_summary"] = _loss_summary(trace)
         log["final_anomalies"] = final_stats.as_dict()
         log["legacy_candidate_id"] = legacy_candidate.candidate_id
         restart_logs.append(log)
@@ -456,12 +589,14 @@ def fit_eml_tree(
     status = "snapped_candidate" if np.isfinite(selected_candidate.post_snap_loss) else "failed"
     manifest = {
         "schema": "eml.run_manifest.v1",
+        "training_trace_schema": "eml.training_step_trace.v1",
         "config": _training_config_payload(effective_config),
         "operator_trace": _operator_trace(effective_config),
         "scaffold_exclusions": list(scaffold_plan.exclusions),
         "scaffold_witness_operator": initial_operator.as_dict(),
         "best_restart": best_log,
         "restarts": restart_logs,
+        "trace_summary": _manifest_trace_summary(restart_logs),
         "candidates": [candidate.as_dict() for candidate in ranked_candidates],
         "selection": {
             "mode": selection_mode,
