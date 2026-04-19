@@ -30,9 +30,17 @@ v1.10 expanded the compiler from a small set of useful macros into a search-back
 - Dropped Planck relaxed compile depth from 20 to 14 while keeping strict unsupported/stretch status honest.
 - Added focused `v1.10-logistic-evidence` and `v1.10-planck-diagnostics` benchmark suites and campaign artifacts.
 
-## Current Milestone
+## Current Milestone: v1.11 Paper-strength evidence and figure package
 
-No active milestone. Start the next milestone with `$gsd-new-milestone`.
+**Goal:** Produce a stronger paper-ready evidence package by running real training where it is honest, adding low-hanging empirical comparisons and ablations, and generating plot-rich artifacts that clearly illustrate the EML hybrid pipeline.
+
+**Target features:**
+- Regenerate a v1.11 paper package that folds v1.10 logistic and Planck compiler-shortening diagnostics into the paper-facing scientific-law table.
+- Run real training suites that are claim-safe: shallow pure-blind, scaffolded, warm-start/same-AST, perturbed-basin, and focused low-budget probes for logistic/Planck without promoting unsupported rows.
+- Add low-hanging ablation evidence for compiler motifs, macro depth reduction, warm-start versus blind regimes, and candidate-pool/repair/refit behavior.
+- Add lightweight external or conventional baseline diagnostics where feasible without turning the milestone into a broad benchmark competition.
+- Generate publication-ready plots and tables for regime recovery, depth degradation, scientific-law support, motif depth deltas, training outcomes, and failure taxonomy.
+- Preserve all existing claim boundaries: no formula-name recognizers, no silent gate relaxation, no claiming blind discovery from warm-start/scaffolded/same-AST/repair evidence, and no Planck/logistic promotion without the full contract.
 
 ## Requirements
 
@@ -94,7 +102,12 @@ No active milestone. Start the next milestone with `$gsd-new-milestone`.
 
 ### Active
 
-No active milestone requirements. Start the next milestone with `$gsd-new-milestone`.
+- [ ] Paper package includes current v1.10 logistic and Planck diagnostics rather than stale v1.6 depths.
+- [ ] Real training evidence is regenerated or newly produced for claim-safe regimes, with exact commands and artifacts.
+- [ ] Low-hanging ablations show which compiler/motif/training choices materially change evidence.
+- [ ] Plot-ready artifacts include publication-quality figures and machine-readable source tables.
+- [ ] External or conventional baseline diagnostics are included if feasible and clearly scoped.
+- [ ] Paper claims remain regime-separated and do not oversell unsupported logistic/Planck rows.
 
 ### Out of Scope
 
@@ -198,4 +211,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-18 after completing v1.10 milestone*
+*Last updated: 2026-04-19 after starting v1.11 milestone*
