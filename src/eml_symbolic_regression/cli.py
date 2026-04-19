@@ -33,8 +33,8 @@ from .paper_assets import DEFAULT_PAPER_ASSETS_OUTPUT_DIR, write_paper_assets
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
 from .paper_diagnostics import DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR, write_paper_diagnostics
 from .paper_package import DEFAULT_V111_PAPER_PACKAGE_DIR, write_v111_paper_package
-from .paper_v112 import DEFAULT_V112_DRAFT_DIR, DEFAULT_V112_REFRESH_DIR, write_v112_draft, write_v112_evidence_refresh
-from .paper_v112 import write_v112_bounded_probes, write_v112_paper_facing_assets
+from .paper_v112 import DEFAULT_V112_DRAFT_DIR, DEFAULT_V112_REFRESH_DIR, DEFAULT_V112_SUPPLEMENT_DIR, write_v112_draft, write_v112_evidence_refresh
+from .paper_v112 import write_v112_bounded_probes, write_v112_paper_facing_assets, write_v112_supplement
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
@@ -491,6 +491,17 @@ def paper_probes_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def paper_supplement_command(args: argparse.Namespace) -> int:
+    paths = write_v112_supplement(output_dir=Path(args.output_dir), overwrite=args.overwrite)
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"paper supplement: manifest -> {paths.manifest_json}; "
+        f"audit -> {manifest['audit_status']}; "
+        f"source locks -> {manifest['source_lock_count']}"
+    )
+    return 0
+
+
 def paper_decision_command(args: argparse.Namespace) -> int:
     paths = write_paper_decision_package(
         tuple(Path(path) for path in args.aggregate or ()),
@@ -720,6 +731,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory for v1.12 draft and bounded-probe artifacts.",
     )
     paper_probes.set_defaults(func=paper_probes_command)
+
+    paper_supplement = sub.add_parser("paper-supplement", help="Assemble and audit the v1.12 supplement to the v1.11 paper package.")
+    paper_supplement.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_SUPPLEMENT_DIR),
+        help="Directory for v1.12 supplement manifest, source locks, audit, and reproduction commands.",
+    )
+    paper_supplement.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing supplement directory.")
+    paper_supplement.set_defaults(func=paper_supplement_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)

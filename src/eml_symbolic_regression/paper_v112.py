@@ -32,6 +32,7 @@ from .verify import verify_candidate
 DEFAULT_V112_DRAFT_DIR = Path("artifacts") / "paper" / "v1.11" / "draft"
 DEFAULT_V112_REFRESH_DIR = Path("artifacts") / "campaigns" / "v1.12-evidence-refresh"
 DEFAULT_V111_PAPER_ROOT = Path("artifacts") / "paper" / "v1.11"
+DEFAULT_V112_SUPPLEMENT_DIR = DEFAULT_V111_PAPER_ROOT / "v1.12-supplement"
 DEFAULT_V111_RAW_HYBRID_DIR = DEFAULT_V111_PAPER_ROOT / "raw-hybrid"
 DEFAULT_V111_MOTIF_DIAGNOSTICS = Path("artifacts") / "diagnostics" / "v1.11-paper-ablations" / "motif-depth-deltas.json"
 DEFAULT_V111_PROBE_AGGREGATE = Path("artifacts") / "campaigns" / "v1.11-logistic-planck-probes" / "aggregate.json"
@@ -114,6 +115,19 @@ class PaperProbePaths:
         return {key: str(value) for key, value in self.__dict__.items()}
 
 
+@dataclass(frozen=True)
+class PaperSupplementPaths:
+    output_dir: Path
+    manifest_json: Path
+    source_locks_json: Path
+    claim_audit_json: Path
+    claim_audit_md: Path
+    reproduction_md: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
 def write_v112_draft(
     *,
     output_dir: Path = DEFAULT_V112_DRAFT_DIR,
@@ -185,6 +199,198 @@ def write_v112_draft(
     }
     _write_json(paths.manifest_json, manifest)
     return paths
+
+
+def write_v112_supplement(
+    *,
+    output_dir: Path = DEFAULT_V112_SUPPLEMENT_DIR,
+    draft_dir: Path = DEFAULT_V112_DRAFT_DIR,
+    refresh_dir: Path = DEFAULT_V112_REFRESH_DIR,
+    overwrite: bool = False,
+) -> PaperSupplementPaths:
+    """Assemble a source-locked v1.12 supplement for the v1.11 paper package."""
+
+    output_dir = Path(output_dir)
+    draft_dir = Path(draft_dir)
+    refresh_dir = Path(refresh_dir)
+    paths = PaperSupplementPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "manifest.json",
+        source_locks_json=output_dir / "source-locks.json",
+        claim_audit_json=output_dir / "claim-audit.json",
+        claim_audit_md=output_dir / "claim-audit.md",
+        reproduction_md=output_dir / "reproduction.md",
+    )
+    if output_dir.exists() and overwrite:
+        shutil.rmtree(output_dir)
+    if paths.manifest_json.exists() and not overwrite:
+        raise FileExistsError(f"{paths.manifest_json} already exists; pass overwrite=True to refresh")
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    locks = _v112_source_locks(draft_dir=draft_dir, refresh_dir=refresh_dir, output_dir=output_dir)
+    audit = audit_v112_supplement(draft_dir=draft_dir, refresh_dir=refresh_dir, source_locks=locks)
+    _write_json(paths.claim_audit_json, audit)
+    paths.claim_audit_md.write_text(_v112_claim_audit_markdown(audit), encoding="utf-8")
+    paths.reproduction_md.write_text(_v112_reproduction_markdown(output_dir), encoding="utf-8")
+
+    source_lock_payload = {
+        "schema": "eml.v112_supplement_source_locks.v1",
+        "generated_at": _now_iso(),
+        "output_dir": str(output_dir),
+        "sources": locks,
+        "source_count": len(locks),
+    }
+    _write_json(paths.source_locks_json, source_lock_payload)
+    manifest = {
+        "schema": "eml.v112_supplement.v1",
+        "generated_at": _now_iso(),
+        "output_dir": str(output_dir),
+        "outputs": paths.as_dict(),
+        "source_locks": str(paths.source_locks_json),
+        "source_lock_count": len(locks),
+        "audit_status": audit["status"],
+        "claim_audit": str(paths.claim_audit_json),
+        "parent_package": str(DEFAULT_V111_PAPER_ROOT),
+        "draft_dir": str(draft_dir),
+        "refresh_dir": str(refresh_dir),
+        "claim_boundary": "v1.12 supplement source-locks paper additions without changing v1.11 claim denominators",
+        "reproduction": {
+            "commands_markdown": str(paths.reproduction_md),
+            "supplement_command": f"PYTHONPATH=src python -m eml_symbolic_regression.cli paper-supplement --output-dir {output_dir} --overwrite",
+        },
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def audit_v112_supplement(*, draft_dir: Path, refresh_dir: Path, source_locks: list[Mapping[str, Any]]) -> dict[str, Any]:
+    draft_dir = Path(draft_dir)
+    refresh_dir = Path(refresh_dir)
+    checks: list[dict[str, Any]] = []
+
+    draft_sections = [draft_dir / name for name in ("abstract.md", "methods.md", "results.md", "limitations.md")]
+    _audit_check(
+        checks,
+        "draft_sections_present",
+        all(path.is_file() for path in draft_sections),
+        "Draft section skeletons are present.",
+        {"paths": [str(path) for path in draft_sections]},
+    )
+
+    taxonomy = _read_json(draft_dir / "claim-taxonomy.json")
+    taxonomy_classes = {str(row.get("evidence_class")) for row in taxonomy.get("rows", []) if isinstance(row, Mapping)}
+    required_classes = {
+        "pure_blind",
+        "scaffolded",
+        "warm_start",
+        "same_ast",
+        "perturbed_basin",
+        "repair_refit",
+        "compile_only",
+        "unsupported",
+        "failed",
+    }
+    _audit_check(
+        checks,
+        "claim_taxonomy_complete",
+        required_classes <= taxonomy_classes,
+        "Claim taxonomy covers all evidence regimes.",
+        {"missing": sorted(required_classes - taxonomy_classes), "classes": sorted(taxonomy_classes)},
+    )
+
+    facing_manifest = _read_json(draft_dir / "paper-facing-manifest.json")
+    facing_counts = facing_manifest.get("counts") if isinstance(facing_manifest.get("counts"), Mapping) else {}
+    _audit_check(
+        checks,
+        "paper_facing_assets_present",
+        facing_counts.get("motif_rows", 0) >= 5
+        and facing_counts.get("negative_result_rows") == 2
+        and (draft_dir / "figures" / "pipeline.svg").is_file()
+        and (draft_dir / "figure-captions.md").is_file()
+        and (draft_dir / "table-captions.md").is_file(),
+        "Paper-facing motif, negative-result, pipeline, and caption artifacts are present.",
+        {"counts": facing_counts},
+    )
+
+    shallow_rows = _read_json(refresh_dir / "tables" / "shallow-refresh-runs.json").get("rows", [])
+    shallow_case_counts: dict[str, int] = {}
+    for row in shallow_rows:
+        if isinstance(row, Mapping):
+            shallow_case_counts[str(row.get("case_id"))] = shallow_case_counts.get(str(row.get("case_id")), 0) + 1
+    _audit_check(
+        checks,
+        "shallow_refresh_counts",
+        len(shallow_rows) == 10
+        and shallow_case_counts.get("exp-pure-blind-seed-refresh") == 5
+        and shallow_case_counts.get("exp-scaffolded-seed-refresh") == 5,
+        "Shallow refresh keeps pure-blind and scaffolded seed denominators separate.",
+        {"row_count": len(shallow_rows), "case_counts": shallow_case_counts},
+    )
+
+    depth_rows = _read_json(refresh_dir / "tables" / "depth-refresh-runs.json").get("rows", [])
+    depth_summary_rows = _read_json(refresh_dir / "tables" / "depth-refresh-summary.json").get("rows", [])
+    depth_counts: dict[int, int] = {}
+    for row in depth_rows:
+        if isinstance(row, Mapping) and isinstance(row.get("depth"), int):
+            depth_counts[int(row["depth"])] = depth_counts.get(int(row["depth"]), 0) + 1
+    _audit_check(
+        checks,
+        "depth_refresh_counts",
+        set(depth_counts) == {2, 3, 4, 5} and all(count >= 2 for count in depth_counts.values()) and len(depth_summary_rows) == 4,
+        "Depth refresh covers depths 2 through 5 with at least two rows each.",
+        {"depth_counts": depth_counts, "summary_rows": len(depth_summary_rows)},
+    )
+
+    negative_rows = _read_json(draft_dir / "tables" / "logistic-planck-negative-results.json").get("rows", [])
+    negative_by_formula = {str(row.get("formula_id")): row for row in negative_rows if isinstance(row, Mapping)}
+    _audit_check(
+        checks,
+        "logistic_planck_negative_rows_not_promoted",
+        all(
+            negative_by_formula.get(formula, {}).get("promotion") == "no"
+            and negative_by_formula.get(formula, {}).get("compile_support") == "unsupported"
+            for formula in ("logistic", "planck")
+        ),
+        "Logistic and Planck negative rows remain unsupported and unpromoted.",
+        {"rows": negative_by_formula},
+    )
+
+    baseline_rows = _read_json(draft_dir / "tables" / "conventional-symbolic-baseline-probe.json").get("rows", [])
+    logistic_probe_rows = _read_json(draft_dir / "tables" / "logistic-strict-support-probe.json").get("rows", [])
+    baseline = baseline_rows[0] if baseline_rows and isinstance(baseline_rows[0], Mapping) else {}
+    logistic_probe = logistic_probe_rows[0] if logistic_probe_rows and isinstance(logistic_probe_rows[0], Mapping) else {}
+    _audit_check(
+        checks,
+        "bounded_probe_status_visible",
+        baseline.get("status") in {"completed", "deferred", "unavailable"}
+        and baseline.get("diagnostic_only") is True
+        and logistic_probe.get("strict_gate") == 13
+        and logistic_probe.get("promotion") == "no",
+        "Bounded baseline and logistic strict-support probe outcomes are visible and non-promotional.",
+        {"baseline": baseline, "logistic_probe": logistic_probe},
+    )
+
+    roles = {str(row.get("role")) for row in source_locks if isinstance(row, Mapping)}
+    required_roles = {"v112_draft", "v112_paper_facing", "v112_evidence_refresh", "v112_bounded_probe"}
+    _audit_check(
+        checks,
+        "source_locks_cover_v112_artifact_families",
+        required_roles <= roles and all(row.get("sha256") and row.get("source_path") for row in source_locks),
+        "Source locks cover draft, paper-facing, evidence-refresh, and bounded-probe artifact families.",
+        {"missing_roles": sorted(required_roles - roles), "source_lock_count": len(source_locks)},
+    )
+
+    status = "passed" if all(check["status"] == "passed" for check in checks) else "failed"
+    return {
+        "schema": "eml.v112_claim_audit.v1",
+        "generated_at": _now_iso(),
+        "status": status,
+        "checks": checks,
+        "summary": {
+            "passed": sum(1 for check in checks if check["status"] == "passed"),
+            "failed": sum(1 for check in checks if check["status"] != "passed"),
+        },
+    }
 
 
 def write_v112_bounded_probes(
@@ -836,6 +1042,114 @@ def _table_captions_markdown(paths: PaperFacingPaths) -> str:
             "",
         ]
     )
+
+
+def _v112_source_locks(*, draft_dir: Path, refresh_dir: Path, output_dir: Path) -> list[dict[str, Any]]:
+    locks: list[dict[str, Any]] = []
+    for src in sorted(Path(draft_dir).rglob("*")):
+        if not src.is_file():
+            continue
+        role = _v112_draft_role(src)
+        rel = src.relative_to(draft_dir)
+        locks.append(_copy_and_lock_v112(f"v112-draft-{_path_id(rel)}", role, src, output_dir / "sources" / "draft" / rel))
+
+    for src in sorted(Path(refresh_dir).rglob("*")):
+        if not src.is_file() or "runs" in src.relative_to(refresh_dir).parts:
+            continue
+        rel = src.relative_to(refresh_dir)
+        locks.append(
+            _copy_and_lock_v112(
+                f"v112-refresh-{_path_id(rel)}",
+                "v112_evidence_refresh",
+                src,
+                output_dir / "sources" / "evidence-refresh" / rel,
+            )
+        )
+    return locks
+
+
+def _v112_draft_role(path: Path) -> str:
+    name = path.name
+    if name in {"abstract.md", "methods.md", "results.md", "limitations.md", "manifest.json"} or name.startswith("claim-taxonomy"):
+        return "v112_draft"
+    if name.startswith("conventional-symbolic-baseline-probe") or name.startswith("logistic-strict-support"):
+        return "v112_bounded_probe"
+    return "v112_paper_facing"
+
+
+def _copy_and_lock_v112(source_id: str, role: str, src: Path, dst: Path) -> dict[str, Any]:
+    if not src.is_file():
+        raise FileNotFoundError(f"required source missing: {src}")
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    if src.resolve() != dst.resolve():
+        shutil.copy2(src, dst)
+    return {
+        "source_id": source_id,
+        "role": role,
+        "source_path": str(src),
+        "supplement_path": str(dst),
+        "sha256": _sha256(src),
+        "bytes": src.stat().st_size,
+    }
+
+
+def _v112_claim_audit_markdown(audit: Mapping[str, Any]) -> str:
+    lines = [
+        "# v1.12 Claim Audit",
+        "",
+        f"Status: **{audit.get('status')}**",
+        "",
+        "| Check | Status | Detail |",
+        "|-------|--------|--------|",
+    ]
+    for check in audit.get("checks", []):
+        if isinstance(check, Mapping):
+            lines.append(f"| {check.get('id')} | {check.get('status')} | {check.get('message')} |")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _v112_reproduction_markdown(output_dir: Path) -> str:
+    output_text = str(output_dir)
+    return "\n".join(
+        [
+            "# v1.12 Supplement Reproduction Commands",
+            "",
+            "Run from the repository root.",
+            "",
+            "```bash",
+            "PYTHONPATH=src python -m eml_symbolic_regression.cli paper-draft --output-dir artifacts/paper/v1.11/draft",
+            "PYTHONPATH=src python -m eml_symbolic_regression.cli paper-refresh --output-dir artifacts/campaigns/v1.12-evidence-refresh --overwrite",
+            "PYTHONPATH=src python -m eml_symbolic_regression.cli paper-figures --output-dir artifacts/paper/v1.11/draft",
+            "PYTHONPATH=src python -m eml_symbolic_regression.cli paper-probes --output-dir artifacts/paper/v1.11/draft",
+            f"PYTHONPATH=src python -m eml_symbolic_regression.cli paper-supplement --output-dir {output_text} --overwrite",
+            "```",
+            "",
+            "The baseline probe is optional and fail-closed: if no conventional symbolic-regression package is importable locally, the supplement records `unavailable` rather than installing dependencies.",
+            "",
+        ]
+    )
+
+
+def _audit_check(
+    checks: list[dict[str, Any]],
+    check_id: str,
+    condition: bool,
+    message: str,
+    details: Mapping[str, Any],
+) -> None:
+    checks.append(
+        {
+            "id": check_id,
+            "status": "passed" if condition else "failed",
+            "message": message,
+            "details": details,
+        }
+    )
+
+
+def _path_id(path: Path) -> str:
+    return "-".join(path.parts).replace(".", "-").replace("_", "-")
 
 
 def claim_taxonomy_rows(claim_ledger: Mapping[str, Any]) -> list[dict[str, Any]]:

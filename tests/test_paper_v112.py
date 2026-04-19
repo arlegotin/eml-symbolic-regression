@@ -1,7 +1,15 @@
 import json
 
-from eml_symbolic_regression.cli import build_parser, paper_draft_command, paper_figures_command, paper_probes_command, paper_refresh_command
+from eml_symbolic_regression.cli import (
+    build_parser,
+    paper_draft_command,
+    paper_figures_command,
+    paper_probes_command,
+    paper_refresh_command,
+    paper_supplement_command,
+)
 from eml_symbolic_regression.paper_v112 import (
+    audit_v112_supplement,
     claim_taxonomy_rows,
     conventional_symbolic_baseline_probe_rows,
     logistic_strict_support_probe_rows,
@@ -13,6 +21,7 @@ from eml_symbolic_regression.paper_v112 import (
     write_v112_bounded_probes,
     write_v112_draft,
     write_v112_paper_facing_assets,
+    write_v112_supplement,
 )
 
 
@@ -277,3 +286,51 @@ def test_paper_probes_cli_writes_manifest(tmp_path, capsys):
     assert "paper probes: manifest ->" in captured
     assert (output_dir / "bounded-probes-manifest.json").exists()
     assert (output_dir / "tables" / "logistic-strict-support-probe.md").exists()
+
+
+def test_write_v112_supplement_source_locks_and_audit_pass(tmp_path):
+    paths = write_v112_supplement(output_dir=tmp_path / "supplement")
+
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    source_locks = json.loads(paths.source_locks_json.read_text(encoding="utf-8"))
+    audit = json.loads(paths.claim_audit_json.read_text(encoding="utf-8"))
+    roles = {row["role"] for row in source_locks["sources"]}
+
+    assert manifest["schema"] == "eml.v112_supplement.v1"
+    assert manifest["audit_status"] == "passed"
+    assert manifest["source_lock_count"] == source_locks["source_count"]
+    assert {"v112_draft", "v112_paper_facing", "v112_evidence_refresh", "v112_bounded_probe"} <= roles
+    assert audit["status"] == "passed"
+    assert any(check["id"] == "bounded_probe_status_visible" for check in audit["checks"])
+    assert paths.reproduction_md.exists()
+
+
+def test_v112_supplement_audit_checks_expected_claim_boundaries():
+    audit = audit_v112_supplement(
+        draft_dir="artifacts/paper/v1.11/draft",
+        refresh_dir="artifacts/campaigns/v1.12-evidence-refresh",
+        source_locks=[
+            {"role": "v112_draft", "source_path": "draft", "sha256": "x"},
+            {"role": "v112_paper_facing", "source_path": "facing", "sha256": "x"},
+            {"role": "v112_evidence_refresh", "source_path": "refresh", "sha256": "x"},
+            {"role": "v112_bounded_probe", "source_path": "probe", "sha256": "x"},
+        ],
+    )
+
+    checks = {check["id"]: check for check in audit["checks"]}
+    assert audit["status"] == "passed"
+    assert checks["logistic_planck_negative_rows_not_promoted"]["status"] == "passed"
+    assert checks["depth_refresh_counts"]["status"] == "passed"
+
+
+def test_paper_supplement_cli_writes_manifest(tmp_path, capsys):
+    output_dir = tmp_path / "supplement"
+    args = build_parser().parse_args(["paper-supplement", "--output-dir", str(output_dir)])
+
+    assert args.func is paper_supplement_command
+    assert args.func(args) == 0
+
+    captured = capsys.readouterr().out
+    assert "paper supplement: manifest ->" in captured
+    assert (output_dir / "manifest.json").exists()
+    assert (output_dir / "claim-audit.json").exists()

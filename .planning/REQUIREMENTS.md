@@ -56,9 +56,9 @@ Acceptance:
 
 ### Package Audit
 
-- [ ] **AUDIT-01**: The v1.12 package update source-locks all new draft, table, figure, and evidence-refresh artifacts.
-- [ ] **AUDIT-02**: The final audit verifies draft claims, refreshed evidence, negative-result rows, and taxonomy denominators against source artifacts.
-- [ ] **AUDIT-03**: Reproduction commands explain how to regenerate or inspect the draft skeleton, refreshed evidence, and added paper-facing assets.
+- [x] **AUDIT-01**: The v1.12 package update source-locks all new draft, table, figure, and evidence-refresh artifacts.
+- [x] **AUDIT-02**: The final audit verifies draft claims, refreshed evidence, negative-result rows, and taxonomy denominators against source artifacts.
+- [x] **AUDIT-03**: Reproduction commands explain how to regenerate or inspect the draft skeleton, refreshed evidence, and added paper-facing assets.
 
 Acceptance:
 - `artifacts/paper/v1.11/manifest.json`, `source-locks.json`, or a v1.12 supplement manifest references all new paper-facing artifacts.
@@ -104,9 +104,9 @@ Acceptance:
 | FIG-04 | Phase 64 | Complete |
 | BASE-01 | Phase 67 | Complete |
 | COMP-01 | Phase 67 | Complete |
-| AUDIT-01 | Phase 68 | Pending |
-| AUDIT-02 | Phase 68 | Pending |
-| AUDIT-03 | Phase 68 | Pending |
+| AUDIT-01 | Phase 68 | Complete |
+| AUDIT-02 | Phase 68 | Complete |
+| AUDIT-03 | Phase 68 | Complete |
 
 **Coverage:**
 - v1.12 requirements: 15 total
