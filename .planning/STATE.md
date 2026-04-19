@@ -4,9 +4,9 @@ milestone: v1.12
 milestone_name: Paper draft skeleton and refreshed shallow evidence
 current_phase: 68
 current_phase_name: Package Assembly, Source Locks, and Claim Audit
-status: ready_for_milestone_audit
-stopped_at: Phase 68 complete
-last_updated: "2026-04-19T14:58:00.000Z"
+status: milestone_complete
+stopped_at: v1.12 archived
+last_updated: "2026-04-19T15:02:00.000Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 5
@@ -27,13 +27,13 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.12 complete; ready for milestone audit and closeout.
+**Current focus:** v1.12 archived; no active milestone.
 
 ## Current Position
 
 Phase: 68 - Package Assembly, Source Locks, and Claim Audit
 Plan: Complete
-Status: Complete
+Status: Milestone archived
 Last activity: 2026-04-19
 Progress: [##########] 100% by completed phases
 
@@ -75,7 +75,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 
 ### Pending Todos
 
-- Run milestone audit, complete v1.12, and clean up planning phase directories.
+- Start the next milestone with `$gsd-new-milestone`.
 
 ### Blockers/Concerns
 
@@ -85,8 +85,8 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: Phase 68 complete
+Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after Phase 68*
+*Last updated: 2026-04-19 after v1.12 archive*

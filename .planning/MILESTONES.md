@@ -1,5 +1,21 @@
 # Milestones
 
+## v1.12 Paper draft skeleton and refreshed shallow evidence (Shipped: 2026-04-19)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added `artifacts/paper/v1.11/draft/` with abstract, methods, results, limitations, claim taxonomy, and paper-facing captions.
+- Ran a current-code evidence refresh: 10/10 shallow verifier-recovered rows across separate pure-blind/scaffolded regimes, plus a depth 2-5 refresh with 4/8 recovered.
+- Added motif-library evolution, logistic/Planck negative-results, and EML pipeline figure artifacts for the paper draft.
+- Recorded bounded probes: conventional symbolic-regression baseline unavailable locally, and logistic strict support still unsupported at strict gate 13 with relaxed depth 15.
+- Assembled `artifacts/paper/v1.11/v1.12-supplement/` with 49 source locks, reproduction commands, and a passing claim audit.
+
+**Known deferred items at close:** conventional external SR baseline remains future BASE-02 work; logistic strict-support improvement remains future compiler work.
+
+---
+
 ## v1.11 Paper-strength evidence and figure package (Shipped: 2026-04-19)
 
 **Phases completed:** 5 phases, 5 plans, 0 tasks
