@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.12
 milestone_name: Paper draft skeleton and refreshed shallow evidence
-current_phase: 65
-current_phase_name: Shallow Seed and Depth-Curve Refresh
+current_phase: 66
+current_phase_name: Paper-Facing Figures, Captions, and Negative Results
 status: ready_to_plan
-stopped_at: Phase 64 complete
-last_updated: "2026-04-19T14:34:50.455Z"
+stopped_at: Phase 65 complete
+last_updated: "2026-04-19T14:40:13.203Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 5
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
-  percent: 20
+  completed_phases: 2
+  total_plans: 2
+  completed_plans: 2
+  percent: 40
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 65 - Shallow Seed and Depth-Curve Refresh
+**Current phase:** 66 - Paper-Facing Figures, Captions, and Negative Results
 **Mode:** YOLO
 
 ## Project Reference
@@ -27,15 +27,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 65 current-code shallow seed and depth-curve refresh evidence.
+**Current focus:** Phase 66 paper-facing captions, motif evolution, pipeline, and negative-result artifacts.
 
 ## Current Position
 
-Phase: 65 - Shallow Seed and Depth-Curve Refresh
+Phase: 66 - Paper-Facing Figures, Captions, and Negative Results
 Plan: Not started
 Status: Ready to plan
 Last activity: 2026-04-19
-Progress: [##--------] 20% by completed phases
+Progress: [####------] 40% by completed phases
 
 ## Current Milestone
 
@@ -56,6 +56,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 | Milestone log | `.planning/MILESTONES.md` | Complete through v1.11 |
 | v1.11 final paper package | `artifacts/paper/v1.11/` | Complete, audit passed |
 | v1.12 draft skeleton | `artifacts/paper/v1.11/draft/` | Phase 64 complete |
+| v1.12 evidence refresh | `artifacts/campaigns/v1.12-evidence-refresh/` | Phase 65 complete |
 
 ## Accumulated Context
 
@@ -71,7 +72,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 
 ### Pending Todos
 
-- Start Phase 65 with `$gsd-discuss-phase 65` or `$gsd-plan-phase 65`.
+- Start Phase 66 with `$gsd-discuss-phase 66` or `$gsd-plan-phase 66`.
 
 ### Blockers/Concerns
 
@@ -81,8 +82,8 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: Phase 64 complete
+Stopped at: Phase 65 complete
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after Phase 64*
+*Last updated: 2026-04-19 after Phase 65*
