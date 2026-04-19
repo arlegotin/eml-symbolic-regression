@@ -10,7 +10,7 @@
 ### Draft Package
 
 - [x] **DRAFT-01**: The repository provides `artifacts/paper/v1.11/draft/` with paper-section skeletons for abstract, methods, results, and limitations.
-- [ ] **DRAFT-02**: The draft package includes figure-caption and table-caption files that reference the relevant v1.11 or v1.12 source artifacts.
+- [x] **DRAFT-02**: The draft package includes figure-caption and table-caption files that reference the relevant v1.11 or v1.12 source artifacts.
 - [x] **DRAFT-03**: The draft skeleton converts the v1.11 evidence package into a paper-shaped argument without promoting unsupported logistic or Planck claims.
 
 Acceptance:
@@ -32,9 +32,9 @@ Acceptance:
 
 ### Paper-Facing Figures and Tables
 
-- [ ] **FIG-01**: The paper package includes a motif library evolution figure or table with before/after examples for logistic, Planck, Shockley, Arrhenius, and Michaelis-Menten where source evidence exists.
-- [ ] **FIG-02**: The paper package includes one visual EML tree or pipeline figure showing data -> soft complete EML tree -> snap -> candidate pool/repair/refit -> verifier.
-- [ ] **FIG-03**: The paper package includes an explicit logistic/Planck negative-results table covering compile support, relaxed-depth improvement, blind probe outcome, and promotion status.
+- [x] **FIG-01**: The paper package includes a motif library evolution figure or table with before/after examples for logistic, Planck, Shockley, Arrhenius, and Michaelis-Menten where source evidence exists.
+- [x] **FIG-02**: The paper package includes one visual EML tree or pipeline figure showing data -> soft complete EML tree -> snap -> candidate pool/repair/refit -> verifier.
+- [x] **FIG-03**: The paper package includes an explicit logistic/Planck negative-results table covering compile support, relaxed-depth improvement, blind probe outcome, and promotion status.
 - [x] **FIG-04**: The paper package includes a claim taxonomy table that separates pure blind, scaffolded, warm-start, same-AST, perturbed-basin, repair/refit, compile-only, unsupported, and failed evidence.
 
 Acceptance:
@@ -93,14 +93,14 @@ Acceptance:
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | DRAFT-01 | Phase 64 | Complete |
-| DRAFT-02 | Phase 66 | Pending |
+| DRAFT-02 | Phase 66 | Complete |
 | DRAFT-03 | Phase 64 | Complete |
 | EVID-01 | Phase 65 | Complete |
 | EVID-02 | Phase 65 | Complete |
 | EVID-03 | Phase 65 | Complete |
-| FIG-01 | Phase 66 | Pending |
-| FIG-02 | Phase 66 | Pending |
-| FIG-03 | Phase 66 | Pending |
+| FIG-01 | Phase 66 | Complete |
+| FIG-02 | Phase 66 | Complete |
+| FIG-03 | Phase 66 | Complete |
 | FIG-04 | Phase 64 | Complete |
 | BASE-01 | Phase 67 | Pending |
 | COMP-01 | Phase 67 | Pending |

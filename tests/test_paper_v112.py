@@ -1,12 +1,15 @@
 import json
 
-from eml_symbolic_regression.cli import build_parser, paper_draft_command, paper_refresh_command
+from eml_symbolic_regression.cli import build_parser, paper_draft_command, paper_figures_command, paper_refresh_command
 from eml_symbolic_regression.paper_v112 import (
     claim_taxonomy_rows,
+    logistic_planck_negative_result_rows,
+    motif_library_evolution_rows,
     refresh_run_rows,
     v112_depth_refresh_suite,
     v112_shallow_refresh_suite,
     write_v112_draft,
+    write_v112_paper_facing_assets,
 )
 
 
@@ -153,3 +156,65 @@ def test_paper_refresh_cli_is_registered():
     assert args.func is paper_refresh_command
     assert args.output_dir == "artifacts/tmp-refresh"
     assert args.overwrite is True
+
+
+def test_motif_library_evolution_rows_include_required_laws_and_planck_note():
+    payload = _json("artifacts/diagnostics/v1.11-paper-ablations/motif-depth-deltas.json")
+
+    rows = motif_library_evolution_rows(payload)
+    by_law = {row["law"]: row for row in rows}
+
+    assert {"Logistic diagnostic", "Planck diagnostic", "Shockley", "Arrhenius", "Michaelis-Menten"} <= set(by_law)
+    assert by_law["Logistic diagnostic"]["baseline_depth"] == 27
+    assert by_law["Logistic diagnostic"]["motif_depth"] == 15
+    assert by_law["Planck diagnostic"]["motif_depth"] == 14
+    assert "24 -> 14" in by_law["Planck diagnostic"]["depth_convention_note"]
+    assert by_law["Shockley"]["strict_support"] is True
+
+
+def test_negative_result_rows_keep_logistic_and_planck_unpromoted():
+    scientific = _json("artifacts/paper/v1.11/raw-hybrid/scientific-law-table.json")
+    motif = _json("artifacts/diagnostics/v1.11-paper-ablations/motif-depth-deltas.json")
+    probes = _json("artifacts/campaigns/v1.11-logistic-planck-probes/aggregate.json")
+
+    rows = logistic_planck_negative_result_rows(scientific, motif, probes)
+    by_formula = {row["formula_id"]: row for row in rows}
+
+    assert by_formula["logistic"]["promotion"] == "no"
+    assert by_formula["logistic"]["compile_support"] == "unsupported"
+    assert by_formula["logistic"]["relaxed_motif_depth"] == 15
+    assert by_formula["planck"]["promotion"] == "no"
+    assert by_formula["planck"]["compile_support"] == "unsupported"
+    assert by_formula["planck"]["relaxed_motif_depth"] == 14
+
+
+def test_write_v112_paper_facing_assets_outputs_captions_tables_and_pipeline(tmp_path):
+    draft = write_v112_draft(output_dir=tmp_path / "draft")
+    paths = write_v112_paper_facing_assets(output_dir=draft.output_dir, refresh_manifest=tmp_path / "missing-refresh.json")
+
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    motif = json.loads(paths.motif_evolution_json.read_text(encoding="utf-8"))
+    negative = json.loads(paths.negative_results_json.read_text(encoding="utf-8"))
+    pipeline = paths.pipeline_svg.read_text(encoding="utf-8")
+    captions = paths.figure_captions_md.read_text(encoding="utf-8")
+
+    assert manifest["schema"] == "eml.v112_paper_facing_assets.v1"
+    assert manifest["counts"]["motif_rows"] >= 5
+    assert any(row["law"] == "Planck diagnostic" for row in motif["rows"])
+    assert all(row["promotion"] == "no" for row in negative["rows"])
+    assert "<svg" in pipeline
+    assert "data preparation" in captions
+
+
+def test_paper_figures_cli_writes_manifest(tmp_path, capsys):
+    output_dir = tmp_path / "draft"
+    write_v112_draft(output_dir=output_dir)
+    args = build_parser().parse_args(["paper-figures", "--output-dir", str(output_dir)])
+
+    assert args.func is paper_figures_command
+    assert args.func(args) == 0
+
+    captured = capsys.readouterr().out
+    assert "paper figures: manifest ->" in captured
+    assert (output_dir / "figure-captions.md").exists()
+    assert (output_dir / "figures" / "pipeline.svg").exists()

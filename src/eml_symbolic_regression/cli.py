@@ -34,6 +34,7 @@ from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_pack
 from .paper_diagnostics import DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR, write_paper_diagnostics
 from .paper_package import DEFAULT_V111_PAPER_PACKAGE_DIR, write_v111_paper_package
 from .paper_v112 import DEFAULT_V112_DRAFT_DIR, DEFAULT_V112_REFRESH_DIR, write_v112_draft, write_v112_evidence_refresh
+from .paper_v112 import write_v112_paper_facing_assets
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
@@ -468,6 +469,16 @@ def paper_refresh_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def paper_figures_command(args: argparse.Namespace) -> int:
+    paths = write_v112_paper_facing_assets(output_dir=Path(args.output_dir))
+    print(
+        f"paper figures: manifest -> {paths.manifest_json}; "
+        f"pipeline -> {paths.pipeline_svg}; "
+        f"captions -> {paths.figure_captions_md}"
+    )
+    return 0
+
+
 def paper_decision_command(args: argparse.Namespace) -> int:
     paths = write_paper_decision_package(
         tuple(Path(path) for path in args.aggregate or ()),
@@ -681,6 +692,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     paper_refresh.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing output directory.")
     paper_refresh.set_defaults(func=paper_refresh_command)
+
+    paper_figures = sub.add_parser("paper-figures", help="Write v1.12 paper-facing captions, motif table, negative table, and pipeline figure.")
+    paper_figures.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_DRAFT_DIR),
+        help="Directory for v1.12 draft and paper-facing artifacts.",
+    )
+    paper_figures.set_defaults(func=paper_figures_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)

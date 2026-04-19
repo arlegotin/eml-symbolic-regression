@@ -27,6 +27,8 @@ DEFAULT_V112_DRAFT_DIR = Path("artifacts") / "paper" / "v1.11" / "draft"
 DEFAULT_V112_REFRESH_DIR = Path("artifacts") / "campaigns" / "v1.12-evidence-refresh"
 DEFAULT_V111_PAPER_ROOT = Path("artifacts") / "paper" / "v1.11"
 DEFAULT_V111_RAW_HYBRID_DIR = DEFAULT_V111_PAPER_ROOT / "raw-hybrid"
+DEFAULT_V111_MOTIF_DIAGNOSTICS = Path("artifacts") / "diagnostics" / "v1.11-paper-ablations" / "motif-depth-deltas.json"
+DEFAULT_V111_PROBE_AGGREGATE = Path("artifacts") / "campaigns" / "v1.11-logistic-planck-probes" / "aggregate.json"
 
 
 @dataclass(frozen=True)
@@ -66,6 +68,25 @@ class PaperRefreshPaths:
     depth_summary_json: Path
     depth_summary_csv: Path
     depth_summary_md: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
+@dataclass(frozen=True)
+class PaperFacingPaths:
+    output_dir: Path
+    manifest_json: Path
+    figure_captions_md: Path
+    table_captions_md: Path
+    motif_evolution_json: Path
+    motif_evolution_csv: Path
+    motif_evolution_md: Path
+    negative_results_json: Path
+    negative_results_csv: Path
+    negative_results_md: Path
+    pipeline_svg: Path
+    pipeline_metadata_json: Path
 
     def as_dict(self) -> dict[str, str]:
         return {key: str(value) for key, value in self.__dict__.items()}
@@ -142,6 +163,169 @@ def write_v112_draft(
     }
     _write_json(paths.manifest_json, manifest)
     return paths
+
+
+def write_v112_paper_facing_assets(
+    *,
+    output_dir: Path = DEFAULT_V112_DRAFT_DIR,
+    motif_diagnostics: Path = DEFAULT_V111_MOTIF_DIAGNOSTICS,
+    scientific_law_table: Path = DEFAULT_V111_RAW_HYBRID_DIR / "scientific-law-table.json",
+    probe_aggregate: Path = DEFAULT_V111_PROBE_AGGREGATE,
+    refresh_manifest: Path = DEFAULT_V112_REFRESH_DIR / "manifest.json",
+) -> PaperFacingPaths:
+    """Write v1.12 paper-facing captions, tables, and pipeline figure."""
+
+    output_dir = Path(output_dir)
+    tables_dir = output_dir / "tables"
+    figures_dir = output_dir / "figures"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    tables_dir.mkdir(parents=True, exist_ok=True)
+    figures_dir.mkdir(parents=True, exist_ok=True)
+    paths = PaperFacingPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "paper-facing-manifest.json",
+        figure_captions_md=output_dir / "figure-captions.md",
+        table_captions_md=output_dir / "table-captions.md",
+        motif_evolution_json=tables_dir / "motif-library-evolution.json",
+        motif_evolution_csv=tables_dir / "motif-library-evolution.csv",
+        motif_evolution_md=tables_dir / "motif-library-evolution.md",
+        negative_results_json=tables_dir / "logistic-planck-negative-results.json",
+        negative_results_csv=tables_dir / "logistic-planck-negative-results.csv",
+        negative_results_md=tables_dir / "logistic-planck-negative-results.md",
+        pipeline_svg=figures_dir / "pipeline.svg",
+        pipeline_metadata_json=figures_dir / "pipeline.metadata.json",
+    )
+
+    motif_payload = _read_json(Path(motif_diagnostics))
+    scientific_payload = _read_json(Path(scientific_law_table))
+    probe_payload = _read_json(Path(probe_aggregate))
+
+    motif_rows = motif_library_evolution_rows(motif_payload)
+    negative_rows = logistic_planck_negative_result_rows(scientific_payload, motif_payload, probe_payload)
+    _write_table(paths.motif_evolution_json, paths.motif_evolution_csv, paths.motif_evolution_md, "Motif Library Evolution", motif_rows)
+    _write_table(
+        paths.negative_results_json,
+        paths.negative_results_csv,
+        paths.negative_results_md,
+        "Logistic and Planck Negative Results",
+        negative_rows,
+    )
+
+    paths.pipeline_svg.write_text(_pipeline_svg(), encoding="utf-8")
+    _write_json(
+        paths.pipeline_metadata_json,
+        {
+            "schema": "eml.v112_pipeline_figure_metadata.v1",
+            "figure_id": "pipeline",
+            "title": "Verifier-Gated Hybrid EML Pipeline",
+            "source_tables": {
+                "claim_taxonomy": str(output_dir / "claim-taxonomy.json"),
+                "shallow_refresh": str(DEFAULT_V112_REFRESH_DIR / "tables" / "shallow-refresh-runs.json"),
+                "depth_refresh": str(DEFAULT_V112_REFRESH_DIR / "tables" / "depth-refresh-summary.json"),
+            },
+            "claim_boundary": "pipeline diagram shows stages, not a single pure-blind recovery denominator",
+        },
+    )
+    paths.figure_captions_md.write_text(_figure_captions_markdown(paths), encoding="utf-8")
+    paths.table_captions_md.write_text(_table_captions_markdown(paths), encoding="utf-8")
+
+    source_paths = [Path(motif_diagnostics), Path(scientific_law_table), Path(probe_aggregate)]
+    if Path(refresh_manifest).is_file():
+        source_paths.append(Path(refresh_manifest))
+    manifest = {
+        "schema": "eml.v112_paper_facing_assets.v1",
+        "generated_at": _now_iso(),
+        "output_dir": str(output_dir),
+        "outputs": paths.as_dict(),
+        "counts": {
+            "motif_rows": len(motif_rows),
+            "negative_result_rows": len(negative_rows),
+            "figures": 1,
+            "caption_files": 2,
+        },
+        "sources": [_source_lock(path.stem.replace("-", "_"), path) for path in source_paths],
+        "claim_boundary": "paper-facing assets preserve unsupported diagnostic rows and regime separation",
+        "reproduction": {
+            "command": f"PYTHONPATH=src python -m eml_symbolic_regression.cli paper-figures --output-dir {output_dir}",
+        },
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def motif_library_evolution_rows(motif_payload: Mapping[str, Any]) -> list[dict[str, Any]]:
+    wanted = {"Logistic diagnostic", "Planck diagnostic", "Shockley", "Arrhenius", "Michaelis-Menten"}
+    rows: list[dict[str, Any]] = []
+    for row in motif_payload.get("rows", []):
+        if not isinstance(row, Mapping) or row.get("law") not in wanted:
+            continue
+        law = str(row.get("law"))
+        depth_note = ""
+        if law == "Planck diagnostic":
+            depth_note = "v1.11 diagnostic framing reports 24 -> 14; older relaxed package text also referenced improvement below relaxed depth 20."
+        rows.append(
+            {
+                "law": law,
+                "source_expression": row.get("source_expression"),
+                "baseline_depth": row.get("baseline_depth"),
+                "motif_depth": row.get("motif_depth"),
+                "depth_delta": row.get("depth_delta"),
+                "baseline_nodes": row.get("baseline_nodes"),
+                "motif_nodes": row.get("motif_nodes"),
+                "node_delta": row.get("node_delta"),
+                "macro_hits": row.get("macro_hits"),
+                "strict_support": row.get("strict_support"),
+                "compile_support": row.get("compile_support"),
+                "validation_status": row.get("validation_status"),
+                "validation_passed": row.get("validation_passed"),
+                "artifact_path": row.get("artifact_path"),
+                "depth_convention_note": depth_note,
+                "paper_claim": _motif_paper_claim(row),
+            }
+        )
+    return sorted(rows, key=lambda item: str(item["law"]))
+
+
+def logistic_planck_negative_result_rows(
+    scientific_payload: Mapping[str, Any],
+    motif_payload: Mapping[str, Any],
+    probe_payload: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    motif_by_law = {str(row.get("law")): row for row in motif_payload.get("rows", []) if isinstance(row, Mapping)}
+    scientific_by_law = {str(row.get("law")): row for row in scientific_payload.get("rows", []) if isinstance(row, Mapping)}
+    runs_by_formula_mode: dict[tuple[str, str], Mapping[str, Any]] = {}
+    for run in probe_payload.get("runs", []):
+        if isinstance(run, Mapping):
+            runs_by_formula_mode[(str(run.get("formula")), str(run.get("start_mode")))] = run
+
+    rows: list[dict[str, Any]] = []
+    for formula, law in (("logistic", "Logistic diagnostic"), ("planck", "Planck diagnostic")):
+        scientific = scientific_by_law.get(law, {})
+        motif = motif_by_law.get(law, {})
+        compile_run = runs_by_formula_mode.get((formula, "compile"), {})
+        blind_run = runs_by_formula_mode.get((formula, "blind"), {})
+        rows.append(
+            {
+                "law": law,
+                "formula_id": formula,
+                "compile_support": scientific.get("compile_support"),
+                "strict_gate": 13,
+                "baseline_depth": motif.get("baseline_depth"),
+                "relaxed_motif_depth": motif.get("motif_depth") or scientific.get("compile_depth"),
+                "relaxed_depth_improved": bool(motif.get("depth_delta")),
+                "macro_hits": scientific.get("macro_hits"),
+                "compile_probe_status": compile_run.get("classification") or compile_run.get("status"),
+                "blind_probe_status": blind_run.get("classification") or blind_run.get("status"),
+                "blind_probe_verifier_status": _nested_mapping(blind_run, ("metrics", "verifier_status")),
+                "promotion": "no",
+                "promotion_reason": "strict support and verifier recovery did not both pass",
+                "evidence_regime": scientific.get("evidence_regime"),
+                "scientific_artifact_path": scientific.get("artifact_path"),
+                "blind_probe_artifact_path": blind_run.get("artifact_path"),
+                "claim_boundary": "negative result remains visible; relaxed depth improvement is not recovery",
+            }
+        )
+    return rows
 
 
 def v112_shallow_refresh_suite(output_dir: Path = DEFAULT_V112_REFRESH_DIR) -> BenchmarkSuite:
@@ -340,6 +524,102 @@ def refresh_run_rows(aggregate: Mapping[str, Any], *, source: str) -> list[dict[
             }
         )
     return rows
+
+
+def _motif_paper_claim(row: Mapping[str, Any]) -> str:
+    if row.get("strict_support") is True:
+        return "Reusable motif lowers compile depth while preserving strict support and verifier-backed same-AST evidence."
+    return "Reusable motif lowers relaxed compile depth, but strict support remains false and no recovery promotion is claimed."
+
+
+def _nested_mapping(payload: Mapping[str, Any], path: tuple[str, ...]) -> Any:
+    current: Any = payload
+    for key in path:
+        if not isinstance(current, Mapping):
+            return None
+        current = current.get(key)
+    return current
+
+
+def _pipeline_svg() -> str:
+    boxes = [
+        ("Data", "train / held-out / extrapolation", 40),
+        ("Soft complete EML tree", "complex128 logits and guards", 245),
+        ("Snap", "exact categorical EML AST", 500),
+        ("Candidate pool", "repair / refit with fallback", 675),
+        ("Verifier", "held-out + mpmath checks", 910),
+    ]
+    parts = [
+        '<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="320" viewBox="0 0 1140 320">',
+        "<style>",
+        ".title{font:700 24px Arial,sans-serif;fill:#17202a}.label{font:700 17px Arial,sans-serif;fill:#17202a}.small{font:13px Arial,sans-serif;fill:#34495e}.box{fill:#f7f9fb;stroke:#34495e;stroke-width:1.5}.arrow{stroke:#146c94;stroke-width:3;fill:none;marker-end:url(#arrow)}.band{fill:#e8f1f5}",
+        "</style>",
+        '<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#146c94"/></marker></defs>',
+        '<rect x="0" y="0" width="1140" height="320" fill="#ffffff"/>',
+        '<text x="40" y="42" class="title">Verifier-Gated Hybrid EML Pipeline</text>',
+        '<text x="40" y="68" class="small">Stages are regime-aware; verifier status, not soft loss alone, owns recovery claims.</text>',
+        '<rect x="40" y="236" width="1060" height="42" class="band"/>',
+        '<text x="58" y="262" class="small">Claim boundary: pure blind, scaffolded, warm-start, same-AST, repair/refit, compile-only, unsupported, and failed rows keep separate denominators.</text>',
+    ]
+    for title, subtitle, x in boxes:
+        width = 165 if title != "Soft complete EML tree" else 210
+        parts.append(f'<rect x="{x}" y="116" width="{width}" height="82" rx="6" class="box"/>')
+        parts.append(f'<text x="{x + 14}" y="148" class="label">{title}</text>')
+        parts.append(f'<text x="{x + 14}" y="174" class="small">{subtitle}</text>')
+        end_x = x + width
+        if title != "Verifier":
+            next_x = boxes[boxes.index((title, subtitle, x)) + 1][2]
+            parts.append(f'<path d="M{end_x + 10} 157 L{next_x - 15} 157" class="arrow"/>')
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
+def _figure_captions_markdown(paths: PaperFacingPaths) -> str:
+    return "\n".join(
+        [
+            "# Figure Captions",
+            "",
+            "## Figure 1. Verifier-gated hybrid EML pipeline",
+            "",
+            f"Source: `{paths.pipeline_svg}` and `{paths.pipeline_metadata_json}`. The diagram summarizes data preparation, soft complete-tree search, exact snapping, candidate-pool repair/refit, and verifier-owned recovery checks. It is a workflow figure, not a recovery-rate denominator.",
+            "",
+            "## Existing v1.11 figures",
+            "",
+            "- `artifacts/paper/v1.11/figures/regime_recovery.svg`: recovery by evidence regime with separated denominators.",
+            "- `artifacts/paper/v1.11/figures/depth_degradation.svg`: archived v1.6 depth-boundary evidence; supplement with Phase 65 current-code depth rows.",
+            "- `artifacts/paper/v1.11/figures/scientific_law_support.svg`: supported and unsupported scientific-law rows.",
+            "- `artifacts/paper/v1.11/figures/motif_depth_deltas.svg`: reusable motif depth reductions, not recovery promotion for unsupported rows.",
+            "- `artifacts/paper/v1.11/figures/training_lifecycle.svg`: soft loss and snap-loss diagnostics before verifier selection.",
+            "- `artifacts/paper/v1.11/figures/failure_taxonomy.svg`: visible unsupported and failed cases.",
+            "- `artifacts/paper/v1.11/figures/baseline_diagnostics.svg`: prediction-only baseline diagnostics, outside EML symbolic recovery denominators.",
+            "",
+        ]
+    )
+
+
+def _table_captions_markdown(paths: PaperFacingPaths) -> str:
+    return "\n".join(
+        [
+            "# Table Captions",
+            "",
+            "## Table 1. Claim taxonomy",
+            "",
+            "`artifacts/paper/v1.11/draft/claim-taxonomy.md` defines evidence classes and denominator eligibility. This table is the guardrail for all reported recovery rates.",
+            "",
+            "## Table 2. Motif library evolution",
+            "",
+            f"`{paths.motif_evolution_md}` records before/after depth and node counts for reusable compiler motifs. Planck uses the v1.11 diagnostic convention 24 -> 14; older relaxed-depth references are noted separately.",
+            "",
+            "## Table 3. Logistic and Planck negative results",
+            "",
+            f"`{paths.negative_results_md}` makes the unsupported status visible: compile support is unsupported, relaxed depth improved, blind probes did not recover, and promotion remains `no`.",
+            "",
+            "## Table 4. Shallow and depth refresh",
+            "",
+            "`artifacts/campaigns/v1.12-evidence-refresh/tables/shallow-refresh-runs.md` and `artifacts/campaigns/v1.12-evidence-refresh/tables/depth-refresh-summary.md` provide current-code refresh rows for Phase 65.",
+            "",
+        ]
+    )
 
 
 def claim_taxonomy_rows(claim_ledger: Mapping[str, Any]) -> list[dict[str, Any]]:
