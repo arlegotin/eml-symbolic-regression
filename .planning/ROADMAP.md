@@ -22,7 +22,15 @@
 
 ## Current Status
 
-v1.12 is active. The milestone turns `artifacts/paper/v1.11/` into a paper-shaped draft package, refreshes the small but reviewer-visible shallow/depth evidence, adds paper-facing motif/pipeline/negative-result/taxonomy artifacts, and keeps optional baseline and logistic strict-support probes bounded.
+v1.12 is active. Phase 64 is complete: the draft skeleton and claim taxonomy now exist under `artifacts/paper/v1.11/draft/`. The remaining work refreshes shallow/depth evidence, adds paper-facing figures/tables, attempts bounded probes, and audits the package supplement.
+
+## Phase Status
+
+- [x] Phase 64: Draft Skeleton and Claim Taxonomy (completed 2026-04-19)
+- [ ] Phase 65: Shallow Seed and Depth-Curve Refresh
+- [ ] Phase 66: Paper-Facing Figures, Captions, and Negative Results
+- [ ] Phase 67: Bounded Baseline and Logistic Strict-Support Probes
+- [ ] Phase 68: Package Assembly, Source Locks, and Claim Audit
 
 ## Active v1.12 Phases
 

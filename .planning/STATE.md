@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.12
 milestone_name: Paper draft skeleton and refreshed shallow evidence
-current_phase: 64
-current_phase_name: Draft Skeleton and Claim Taxonomy
-status: roadmap_ready
-stopped_at: v1.12 roadmap ready
-last_updated: "2026-04-19T00:00:00.000Z"
-last_activity: 2026-04-19 -- v1.12 roadmap created with phases 64-68
+current_phase: 65
+current_phase_name: Shallow Seed and Depth-Curve Refresh
+status: ready_to_plan
+stopped_at: Phase 64 complete
+last_updated: "2026-04-19T14:34:50.455Z"
+last_activity: 2026-04-19
 progress:
   total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 20
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 64 - Draft Skeleton and Claim Taxonomy
+**Current phase:** 65 - Shallow Seed and Depth-Curve Refresh
 **Mode:** YOLO
 
 ## Project Reference
@@ -27,15 +27,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 64 draft skeleton and claim taxonomy for the v1.12 paper package.
+**Current focus:** Phase 65 current-code shallow seed and depth-curve refresh evidence.
 
 ## Current Position
 
-Phase: 64 - Draft Skeleton and Claim Taxonomy
-Plan: -
-Status: Roadmap ready
-Last activity: 2026-04-19 -- v1.12 roadmap created with phases 64-68
-Progress: [----------] 0% by completed phases
+Phase: 65 - Shallow Seed and Depth-Curve Refresh
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-04-19
+Progress: [##--------] 20% by completed phases
 
 ## Current Milestone
 
@@ -55,6 +55,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 | Workflow config | `.planning/config.json` | Complete |
 | Milestone log | `.planning/MILESTONES.md` | Complete through v1.11 |
 | v1.11 final paper package | `artifacts/paper/v1.11/` | Complete, audit passed |
+| v1.12 draft skeleton | `artifacts/paper/v1.11/draft/` | Phase 64 complete |
 
 ## Accumulated Context
 
@@ -70,7 +71,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 
 ### Pending Todos
 
-- Start Phase 64 with `$gsd-discuss-phase 64` or `$gsd-plan-phase 64`.
+- Start Phase 65 with `$gsd-discuss-phase 65` or `$gsd-plan-phase 65`.
 
 ### Blockers/Concerns
 
@@ -80,8 +81,8 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: v1.12 roadmap ready
+Stopped at: Phase 64 complete
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after creating v1.12 roadmap*
+*Last updated: 2026-04-19 after Phase 64*
