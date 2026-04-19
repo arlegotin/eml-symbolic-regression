@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.12
 milestone_name: Paper draft skeleton and refreshed shallow evidence
-current_phase: 66
-current_phase_name: Paper-Facing Figures, Captions, and Negative Results
+current_phase: 67
+current_phase_name: Bounded Baseline and Logistic Strict-Support Probes
 status: ready_to_plan
-stopped_at: Phase 65 complete
-last_updated: "2026-04-19T14:40:13.203Z"
+stopped_at: Phase 66 complete
+last_updated: "2026-04-19T14:46:30.000Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 40
+  completed_phases: 3
+  total_plans: 3
+  completed_plans: 3
+  percent: 60
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 66 - Paper-Facing Figures, Captions, and Negative Results
+**Current phase:** 67 - Bounded Baseline and Logistic Strict-Support Probes
 **Mode:** YOLO
 
 ## Project Reference
@@ -27,15 +27,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 66 paper-facing captions, motif evolution, pipeline, and negative-result artifacts.
+**Current focus:** Phase 67 bounded symbolic baseline status and logistic strict-support probes.
 
 ## Current Position
 
-Phase: 66 - Paper-Facing Figures, Captions, and Negative Results
+Phase: 67 - Bounded Baseline and Logistic Strict-Support Probes
 Plan: Not started
 Status: Ready to plan
 Last activity: 2026-04-19
-Progress: [####------] 40% by completed phases
+Progress: [######----] 60% by completed phases
 
 ## Current Milestone
 
@@ -57,6 +57,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 | v1.11 final paper package | `artifacts/paper/v1.11/` | Complete, audit passed |
 | v1.12 draft skeleton | `artifacts/paper/v1.11/draft/` | Phase 64 complete |
 | v1.12 evidence refresh | `artifacts/campaigns/v1.12-evidence-refresh/` | Phase 65 complete |
+| v1.12 paper-facing draft assets | `artifacts/paper/v1.11/draft/` | Phase 66 complete |
 
 ## Accumulated Context
 
@@ -72,7 +73,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 
 ### Pending Todos
 
-- Start Phase 66 with `$gsd-discuss-phase 66` or `$gsd-plan-phase 66`.
+- Start Phase 67 with `$gsd-discuss-phase 67` or `$gsd-plan-phase 67`.
 
 ### Blockers/Concerns
 
@@ -82,8 +83,8 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: Phase 65 complete
+Stopped at: Phase 66 complete
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after Phase 65*
+*Last updated: 2026-04-19 after Phase 66*
