@@ -1,169 +1,170 @@
 # EML Symbolic Regression
 
-This package is a research-grade implementation of a symbolic-regression idea from the paper "All elementary functions from a single binary operator": search inside one complete depth-bounded family of EML trees, optimize the soft choices with PyTorch, snap the result into an exact tree, clean it up symbolically, and let an independent verifier decide whether a formula was actually recovered.
-
-The goal is not to claim that arbitrary scientific laws are solved from scratch. The goal is narrower and more useful: recover compact, human-readable elementary formulas from controlled datasets while keeping blind recovery, warm starts, repairs, compiler evidence, and unsupported diagnostics separate.
-
-## What Is EML?
-
-The single operator is:
+One binary operator can express a surprising amount of mathematics:
 
 ```text
 eml(x, y) = exp(x) - log(y)
 ```
 
-Together with the constant `1`, the paper shows that this operator can generate the usual scientific-calculator elementary-function basis. Instead of searching over a mixed grammar of `+`, `*`, `/`, `exp`, `log`, trigonometric functions, and other operators, EML expressions use one uniform binary tree grammar:
+This project turns that idea into a symbolic-regression engine. Instead of asking a search algorithm to juggle a menu of operators like `+`, `*`, `/`, `exp`, `log`, and `sin`, it searches inside one regular family of EML trees. The system trains a soft tree, snaps it into an exact symbolic expression, cleans up the result, and then makes the verifier decide whether the formula was actually recovered.
+
+The short version: it is a PyTorch-first, verifier-gated equation discovery package for compact elementary formulas.
+
+## The Trick
+
+EML expressions are built from one repeated binary node:
 
 ```text
 S -> 1 | eml(S, S)
 ```
 
-For regression tasks, variables such as `x` are added as terminals. A complete depth-bounded EML tree is then a single container for every EML expression up to that depth. That regularity is the reason this repository uses EML: the operator vocabulary is fixed, and the main knobs become depth, initialization, optimization, snapping, cleanup, and verification.
+For regression, variables such as `x` are added as terminals. A complete depth-bounded EML tree can then represent every EML expression up to that depth. That gives the optimizer one uniform search space instead of a mixed forest of operator-specific ASTs.
 
-## What This Package Does
+That does not make symbolic regression easy. It makes the search space regular enough to attack with a hybrid pipeline.
 
-The implemented pipeline is:
+## How It Works
 
 ```text
-dataset
-  -> soft complete EML tree
+data
+  -> complete soft EML tree
   -> PyTorch complex128 optimization
   -> hardening and snapping
   -> exact EML AST
-  -> SymPy cleanup and report helpers
-  -> verifier-owned recovery report
+  -> symbolic cleanup
+  -> verifier report
 ```
 
-The package includes:
+The engine has a few important moving parts:
 
-- canonical and training-mode EML semantics;
-- immutable exact EML AST nodes with deterministic JSON serialization;
-- paper identity checks for `exp(x)` and `log(x)`;
-- complete depth-bounded soft EML trees with categorical gates;
-- Adam-based optimization with restarts, annealing, hardening, snapping, and optimizer manifests;
-- compiler support for a guarded SymPy subset, including literal-constant provenance and macro traces;
-- compiler warm starts that embed an exact AST into a compatible soft tree, perturb, train, snap, and verify;
-- verifier checks across train, held-out, extrapolation, and high-precision `mpmath` points;
-- benchmark suites, campaign reports, aggregate evidence files, CSV tables, and SVG figures;
-- demo targets from `sources/FOR_DEMO.md`.
+- `complex128` training, because EML uses exponentials and principal-branch logarithms.
+- Categorical gates over complete depth-bounded trees.
+- Adam optimization with restarts, annealing, hardening, and snap manifests.
+- Exact immutable EML expression trees with deterministic JSON serialization.
+- A guarded compiler for a supported SymPy subset, useful for warm starts and diagnostics.
+- Warm-start runs that embed an exact tree, perturb it, train it, snap it, and verify the result.
+- SymPy cleanup for readable formulas.
+- High-precision `mpmath` checks after training.
 
-Training mode may use stability guards such as clamps. Verification mode is the claim boundary: snapped candidates are evaluated again under the verifier contract rather than promoted from training loss.
+Training mode can use numerical safety guards. Verification mode is stricter: snapped formulas are evaluated again under the recovery contract.
 
-## What Counts As Recovered?
+## What Counts As Recovery
 
-A candidate is `recovered` only when the verifier says so. Training loss alone is not recovery.
+Training loss alone is not recovery.
 
-The verifier-owned contract requires an exact candidate to pass:
+A formula is `recovered` only when an exact candidate passes the verifier across:
 
-- the training split;
-- a held-out split;
-- an extrapolation split;
-- high-precision `mpmath` checks.
+- training data;
+- held-out data;
+- extrapolation data;
+- high-precision checks.
 
-Compiler output alone is not trained recovery. A compiled formula can be useful seed or provenance evidence, but public recovery promotion requires the warm-start or training path to produce a snapped exact candidate that passes the verifier.
+Compiler output alone is not trained recovery. A compiler seed can prove that a formula is representable and can initialize a run, but it is not a discovery claim by itself.
 
-Repaired candidates are repair evidence only. A `repaired_candidate` status means verifier-gated cleanup found a better candidate after the originally selected exact tree failed; it is not blind discovery, compile-only evidence, same-AST warm-start evidence, or perturbed true-tree recovery.
+Warm starts, same-AST returns, scaffolded runs, refits, repaired candidates, compile-only checks, and unsupported cases are all separate evidence regimes. That separation is deliberate. It keeps a successful scaffolded or repaired result from being mistaken for blind discovery.
 
-## Install And Quick Start
+## Install
 
-Python support is declared as `>=3.11,<3.13`.
-
-Install the package in editable mode with the development extra:
+Python `>=3.11,<3.13` is supported.
 
 ```bash
 python -m pip install -e ".[dev]"
 ```
 
-After installation, use the console script declared in `pyproject.toml`:
+The package installs a CLI:
+
+```bash
+eml-sr --help
+```
+
+## Quick Start
+
+Verify the paper-grounded EML identities for `exp` and `log`:
 
 ```bash
 eml-sr verify-paper
+```
+
+List built-in demos:
+
+```bash
 eml-sr list-demos
-eml-sr demo beer_lambert --compile-eml --output artifacts/beer-compile-report.json
-eml-sr demo beer_lambert --warm-start-eml --output artifacts/beer-warm-report.json
+```
+
+Compile a supported scientific-law demo into exact EML:
+
+```bash
+eml-sr demo beer_lambert --compile-eml --output beer-compile-report.json
+```
+
+Run a compiler warm-start path:
+
+```bash
+eml-sr demo beer_lambert --warm-start-eml --output beer-warm-report.json
+```
+
+Try a shallow blind EML training baseline:
+
+```bash
+eml-sr demo exp --train-eml --depth 1 --steps 80 --restarts 2 --output exp-trained.json
+```
+
+List benchmark suites:
+
+```bash
 eml-sr list-benchmarks
-eml-sr benchmark smoke --output-dir artifacts/benchmarks
-eml-sr campaign smoke --output-root artifacts/campaigns
-python -m pytest
 ```
 
-When running directly from a source checkout without installation, use the module entry point:
+Run the small smoke benchmark:
 
 ```bash
-PYTHONPATH=src python -m eml_symbolic_regression.cli verify-paper
-PYTHONPATH=src python -m eml_symbolic_regression.cli list-demos
-PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --compile-eml --output artifacts/beer-compile-report.json
-PYTHONPATH=src python -m eml_symbolic_regression.cli demo beer_lambert --warm-start-eml --output artifacts/beer-warm-report.json
-PYTHONPATH=src python -m eml_symbolic_regression.cli list-benchmarks
-PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark smoke --output-dir artifacts/benchmarks
-PYTHONPATH=src python -m eml_symbolic_regression.cli campaign smoke --output-root artifacts/campaigns
+eml-sr benchmark smoke
+```
+
+Run tests:
+
+```bash
 python -m pytest
 ```
 
-Use `eml-sr --help`, `eml-sr demo --help`, `eml-sr benchmark --help`, and `eml-sr campaign --help` for the full command surface.
+## Demo Ladder
 
-## Demos And Evidence
+The demos favor normalized, dimensionless formulas with a useful mix of recognizability and feasibility:
 
-The demo ladder is drawn from `sources/FOR_DEMO.md`: normalized, dimensionless, visually distinctive laws are preferred because the paper reports rapid degradation for blind random-initialized recovery at higher depths.
+- `exp` and `log`: identity checks for the core EML semantics.
+- `beer_lambert`: exponential decay and a high-probability warm-start path.
+- `radioactive_decay`: a simple scientific baseline.
+- `shockley`: an electronics law close to EML's exponential-minus-constant bias.
+- `arrhenius`: normalized reciprocal-temperature behavior, `exp(-0.8/x)`.
+- `michaelis_menten`: saturation behavior, `2*x/(x+0.5)`.
+- `logistic`: nonlinear growth, currently treated carefully as a harder diagnostic.
+- `planck`: iconic normalized spectrum, currently a stretch diagnostic rather than a solved blind recovery.
+- `damped_oscillator`: visually strong, but harder because it mixes decay and oscillation.
 
-Common demo IDs include:
+Arrhenius and Michaelis-Menten currently count as exact compiler warm-start / same-AST evidence, not blind discovery. Planck and logistic stay in the stretch/unsupported bucket unless the strict compiler, warm-start, and verifier contracts pass.
 
-- `exp` and `log`: paper-grounded EML identity smoke tests;
-- `beer_lambert` and `radioactive_decay`: exponential-decay baselines;
-- `shockley`: electronics demo close to EML's exponential-minus-constant bias;
-- `arrhenius`: normalized reciprocal-temperature law, `exp(-0.8/x)`;
-- `michaelis_menten`: normalized saturation law, `2*x/(x+0.5)`;
-- `logistic` and `planck`: useful stretch diagnostics under the current gates;
-- `damped_oscillator`: visually strong but harder because it mixes decay and oscillation.
+## Evidence Labels
 
-Evidence regimes are deliberately separate:
-
-| Regime | Meaning |
+| Label | Meaning |
 | --- | --- |
-| `blind_recovery` | Random/scaffold-free training produced a snapped exact EML candidate that passed the verifier. |
-| `trained_exact_recovery` | A post-training snapped exact EML AST passed the verifier. |
-| `same_ast_warm_start_return` / `same_ast` | A compiler warm start returned to the same exact AST and verified. This is basin evidence, not blind discovery. |
-| `verified_equivalent_warm_start_recovery` | A warm-started run snapped to a different exact AST that still verified. |
-| `compiled_seed` / `compile_only` | The source expression compiled to exact EML and validated as a seed. This is not trained recovery by itself. |
-| `repaired_candidate` | Verifier-gated cleanup repaired a failed exact candidate. This is repair evidence only. |
-| `refit` | A frozen structure with literal constants was numerically refit and rechecked. It is a separate evidence regime. |
-| `perturbed_basin` | A true or compiled tree was perturbed and recovered inside a declared basin. It is not blind discovery. |
-| `verified_showcase` | A non-EML catalog formula passed verifier checks for demo/report coverage. It is not EML discovery. |
-| `unsupported` | A compile, warm-start, depth, node, operator, or verifier gate failed closed. Unsupported cases stay visible. |
+| `recovered` | An exact EML candidate passed verifier checks. |
+| `blind_recovery` | Random or scaffold-free training snapped to an exact EML candidate that verified. |
+| `trained_exact_recovery` | A post-training snapped exact EML AST verified. |
+| `same_ast_warm_start_return` | A warm start returned to the same exact AST and verified. Useful basin evidence, not blind discovery. |
+| `verified_equivalent_warm_start_recovery` | A warm start snapped to a different exact AST that still verified. |
+| `compiled_seed` | The source formula compiled into exact EML and validated as a seed. |
+| `verified_showcase` | A non-EML catalog formula verified for demo coverage; it is not EML discovery. |
+| `repaired_candidate` | Cleanup repaired a failed exact candidate; this is repair evidence only. |
+| `unsupported` | A depth, node, operator, compiler, warm-start, or verifier gate failed closed. |
 
-Arrhenius and Michaelis-Menten currently have exact compiler warm-start / same-AST evidence. They should not be described as blind discoveries. Beer-Lambert and Shockley are supported warm-start paths. Planck and logistic remain unsupported or stretch diagnostics unless the strict compiler, warm-start, and verifier contracts pass. Repaired candidates remain repair-only evidence.
+## Boundaries
 
-Benchmark suites and campaigns write machine-readable run artifacts plus aggregate reports. The smoke path is the fastest end-to-end check:
+This is not a claim that arbitrary deep formulas can be discovered blindly. The reported behavior is much more specific:
 
-```bash
-eml-sr benchmark smoke --output-dir artifacts/benchmarks
-eml-sr campaign smoke --output-root artifacts/campaigns
-```
+- shallow blind recovery is plausible and testable;
+- deeper random-initialized recovery gets hard quickly;
+- warm starts can show that useful basins exist;
+- compiler paths can prove representability and provide seeds;
+- repairs can rescue some failed exact candidates, but they are still repair evidence;
+- every recovery claim belongs to the verifier, not the optimizer.
 
-## Limits And Claim Boundaries
-
-The paper reports that blind recovery from random initialization works well for shallow targets, degrades sharply by moderate depth, and was not observed at depth 6 in the reported attempts. This repository keeps that limitation visible.
-
-Do not read the artifacts as a broad superiority claim over conventional symbolic regression or as blind discovery of arbitrary deep formulas. The strongest current story is a verifier-gated hybrid EML system with shallow recovery, exact compiler paths, warm-start basin evidence, repair diagnostics, and honest unsupported cases.
-
-In particular:
-
-- training loss alone is not recovery;
-- compiler output alone is not trained recovery;
-- warm-start, same-AST, scaffolded, repaired, refit, compile-only, verified_showcase, perturbed-basin, and unsupported results are separate evidence regimes;
-- Arrhenius and Michaelis-Menten are exact compiler warm-start / same-AST evidence, not blind discovery;
-- Planck and logistic remain unsupported/stretch diagnostics unless strict support and verifier contracts pass;
-- repaired candidates are repair evidence only.
-
-## Repository Map
-
-- `sources/paper.pdf`: source paper.
-- `sources/NORTH_STAR.md`: implementation blueprint and paper-grounded constraints.
-- `sources/FOR_DEMO.md`: demo ranking and feasibility guidance.
-- `docs/IMPLEMENTATION.md`: recovery, compiler, warm-start, benchmark, campaign, and claim-boundary contracts.
-- `pyproject.toml`: package metadata, Python requirement, dependencies, dev extra, and `eml-sr` console script.
-- `src/eml_symbolic_regression/`: package source.
-- `tests/`: pytest coverage for semantics, tree construction, snapping, verification, compiler paths, benchmarks, and paper artifacts.
-- `artifacts/`: generated and committed evidence packages, campaigns, reports, tables, and figures.
-
-For a new reader, start with this README, then read `docs/IMPLEMENTATION.md` for the current contract and `sources/NORTH_STAR.md` for the broader rationale.
+That is the point of the package: make symbolic-regression experiments over EML trees concrete, reproducible, and hard to overstate.
