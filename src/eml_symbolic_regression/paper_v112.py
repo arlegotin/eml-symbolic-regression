@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import importlib.util
 import json
 import shutil
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
+
+import numpy as np
 
 from .benchmark import (
     BenchmarkCase,
@@ -21,6 +24,9 @@ from .benchmark import (
     run_benchmark_suite,
     write_aggregate_reports,
 )
+from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
+from .datasets import get_demo
+from .verify import verify_candidate
 
 
 DEFAULT_V112_DRAFT_DIR = Path("artifacts") / "paper" / "v1.11" / "draft"
@@ -87,6 +93,22 @@ class PaperFacingPaths:
     negative_results_md: Path
     pipeline_svg: Path
     pipeline_metadata_json: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
+@dataclass(frozen=True)
+class PaperProbePaths:
+    output_dir: Path
+    manifest_json: Path
+    baseline_probe_json: Path
+    baseline_probe_csv: Path
+    baseline_probe_md: Path
+    logistic_probe_json: Path
+    logistic_probe_csv: Path
+    logistic_probe_md: Path
+    logistic_diagnostic_json: Path
 
     def as_dict(self) -> dict[str, str]:
         return {key: str(value) for key, value in self.__dict__.items()}
@@ -163,6 +185,200 @@ def write_v112_draft(
     }
     _write_json(paths.manifest_json, manifest)
     return paths
+
+
+def write_v112_bounded_probes(
+    *,
+    output_dir: Path = DEFAULT_V112_DRAFT_DIR,
+    baseline_modules: tuple[str, ...] = ("pysr", "gplearn", "pyoperon", "karoo_gp"),
+    logistic_points: int = 24,
+    logistic_seed: int = 0,
+) -> PaperProbePaths:
+    """Write bounded baseline status and logistic strict-support probe artifacts."""
+
+    output_dir = Path(output_dir)
+    tables_dir = output_dir / "tables"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    tables_dir.mkdir(parents=True, exist_ok=True)
+    paths = PaperProbePaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "bounded-probes-manifest.json",
+        baseline_probe_json=tables_dir / "conventional-symbolic-baseline-probe.json",
+        baseline_probe_csv=tables_dir / "conventional-symbolic-baseline-probe.csv",
+        baseline_probe_md=tables_dir / "conventional-symbolic-baseline-probe.md",
+        logistic_probe_json=tables_dir / "logistic-strict-support-probe.json",
+        logistic_probe_csv=tables_dir / "logistic-strict-support-probe.csv",
+        logistic_probe_md=tables_dir / "logistic-strict-support-probe.md",
+        logistic_diagnostic_json=tables_dir / "logistic-strict-support-diagnostic.json",
+    )
+
+    baseline_rows = conventional_symbolic_baseline_probe_rows(baseline_modules)
+    logistic_rows, logistic_diagnostic = logistic_strict_support_probe_rows(points=logistic_points, seed=logistic_seed)
+    _write_table(
+        paths.baseline_probe_json,
+        paths.baseline_probe_csv,
+        paths.baseline_probe_md,
+        "Conventional Symbolic Baseline Probe",
+        baseline_rows,
+    )
+    _write_table(
+        paths.logistic_probe_json,
+        paths.logistic_probe_csv,
+        paths.logistic_probe_md,
+        "Logistic Strict-Support Probe",
+        logistic_rows,
+    )
+    _write_json(paths.logistic_diagnostic_json, logistic_diagnostic)
+
+    manifest = {
+        "schema": "eml.v112_bounded_probes.v1",
+        "generated_at": _now_iso(),
+        "output_dir": str(output_dir),
+        "outputs": paths.as_dict(),
+        "counts": {
+            "baseline_rows": len(baseline_rows),
+            "logistic_probe_rows": len(logistic_rows),
+        },
+        "statuses": {
+            "baseline": baseline_rows[0].get("status") if baseline_rows else "missing",
+            "logistic_promotion": logistic_rows[0].get("promotion") if logistic_rows else "missing",
+            "logistic_strict_status": logistic_rows[0].get("strict_status") if logistic_rows else "missing",
+        },
+        "source_locks": [
+            _source_lock("baseline_probe", paths.baseline_probe_json),
+            _source_lock("logistic_probe", paths.logistic_probe_json),
+            _source_lock("logistic_diagnostic", paths.logistic_diagnostic_json),
+        ],
+        "claim_boundary": "bounded probes are diagnostic-only unless strict support and verifier recovery both pass",
+        "reproduction": {
+            "command": f"PYTHONPATH=src python -m eml_symbolic_regression.cli paper-probes --output-dir {output_dir}",
+        },
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def conventional_symbolic_baseline_probe_rows(baseline_modules: tuple[str, ...] = ("pysr", "gplearn", "pyoperon", "karoo_gp")) -> list[dict[str, Any]]:
+    detected = [module for module in baseline_modules if importlib.util.find_spec(module) is not None]
+    if not detected:
+        return [
+            {
+                "baseline_id": "conventional_symbolic_regression",
+                "checked_modules": list(baseline_modules),
+                "detected_modules": [],
+                "status": "unavailable",
+                "formula": "not_run",
+                "reason": "no_local_symbolic_regression_package",
+                "limitation": "PySR, gplearn, PyOperon, and karoo-gp were not importable locally; no dependency installation was attempted in this bounded phase.",
+                "diagnostic_only": True,
+                "denominator_policy": "excluded from EML recovery denominators",
+                "claim_boundary": "absence of a conventional SR comparator is reported as a limitation, not hidden",
+            }
+        ]
+
+    return [
+        {
+            "baseline_id": "conventional_symbolic_regression",
+            "checked_modules": list(baseline_modules),
+            "detected_modules": detected,
+            "status": "deferred",
+            "formula": "not_run",
+            "reason": "local_package_detected_but_bounded_phase_did_not_launch_external_sr_runtime",
+            "limitation": "A symbolic-regression package is importable, but this phase avoids unbounded tuning or Julia/runtime setup; run a separate matched-budget baseline phase before making comparator claims.",
+            "diagnostic_only": True,
+            "denominator_policy": "excluded from EML recovery denominators",
+            "claim_boundary": "available baseline tooling does not enter EML recovery counts without a source-locked matched-budget run",
+        }
+    ]
+
+
+def logistic_strict_support_probe_rows(
+    *,
+    points: int = 24,
+    seed: int = 0,
+    strict_gate: int = 13,
+    max_nodes: int = 256,
+    tolerance: float = 1e-8,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    spec = get_demo("logistic")
+    splits = spec.make_splits(points=points, seed=seed)
+    validation_inputs = {spec.variable: np.concatenate([split.inputs[spec.variable] for split in splits]).astype(np.complex128)}
+    expression = spec.candidate.to_sympy()
+    config = CompilerConfig(variables=(spec.variable,), max_depth=strict_gate, max_nodes=max_nodes, validation_tolerance=tolerance)
+    diagnostic = diagnose_compile_expression(expression, config, validation_inputs)
+
+    verifier_status = "not_run_strict_compile_failed"
+    verifier_reason = "strict compile did not produce an exact EML candidate"
+    promotion = "no"
+    promotion_reason = "strict support and verifier recovery did not both pass"
+    strict_metadata: Mapping[str, Any] = {}
+    strict_validation: Mapping[str, Any] = {}
+    if diagnostic.get("status") == "compiled":
+        strict_payload = diagnostic.get("strict") if isinstance(diagnostic.get("strict"), Mapping) else {}
+        strict_metadata = strict_payload.get("metadata") if isinstance(strict_payload.get("metadata"), Mapping) else {}
+        strict_validation = strict_payload.get("validation") if isinstance(strict_payload.get("validation"), Mapping) else {}
+        try:
+            compiled = compile_and_validate(expression, config, validation_inputs)
+            report = verify_candidate(compiled.expression, splits, tolerance=tolerance)
+            verifier_status = report.status
+            verifier_reason = report.reason
+            if verifier_status == "recovered":
+                promotion = "yes"
+                promotion_reason = "strict compile and verifier recovery both passed"
+        except UnsupportedExpression as exc:
+            verifier_status = "not_run_strict_compile_failed"
+            verifier_reason = f"{exc.reason}: {exc.detail}"
+
+    strict_failure = diagnostic.get("strict") if isinstance(diagnostic.get("strict"), Mapping) else {}
+    relaxed = diagnostic.get("relaxed") if isinstance(diagnostic.get("relaxed"), Mapping) else {}
+    relaxed_metadata = relaxed.get("metadata") if isinstance(relaxed.get("metadata"), Mapping) else {}
+    relaxed_validation = relaxed.get("validation") if isinstance(relaxed.get("validation"), Mapping) else {}
+    macro = relaxed_metadata.get("macro_diagnostics") if isinstance(relaxed_metadata.get("macro_diagnostics"), Mapping) else {}
+    relaxed_depth = relaxed_metadata.get("depth")
+    depth_gap = relaxed_depth - strict_gate if isinstance(relaxed_depth, int) else None
+    row = {
+        "source": "v1.12-logistic-strict-support-probe",
+        "formula_id": spec.name,
+        "symbolic_expression": str(expression),
+        "strict_gate": strict_gate,
+        "max_nodes": max_nodes,
+        "points": points,
+        "seed": seed,
+        "strict_status": diagnostic.get("status"),
+        "strict_reason": strict_failure.get("reason") if strict_failure else "compiled",
+        "strict_detail": strict_failure.get("detail") if strict_failure else "",
+        "strict_depth": strict_metadata.get("depth"),
+        "strict_node_count": strict_metadata.get("node_count"),
+        "strict_validation_status": strict_validation.get("reason"),
+        "relaxed_depth": relaxed_depth,
+        "relaxed_node_count": relaxed_metadata.get("node_count"),
+        "relaxed_macro_hits": macro.get("hits", []),
+        "relaxed_baseline_depth": macro.get("baseline_depth"),
+        "relaxed_depth_delta": macro.get("depth_delta"),
+        "depth_gap_to_strict_gate": depth_gap,
+        "relaxed_validation_status": relaxed_validation.get("reason"),
+        "relaxed_validation_passed": relaxed_validation.get("passed"),
+        "verifier_status": verifier_status,
+        "verifier_reason": verifier_reason,
+        "promotion": promotion,
+        "promotion_reason": promotion_reason,
+        "claim_boundary": "strict gate remains 13; relaxed depth improvement is diagnostic and not recovery promotion",
+    }
+    diagnostic_payload = {
+        "schema": "eml.v112_logistic_strict_support_diagnostic.v1",
+        "generated_at": _now_iso(),
+        "config": {
+            "strict_gate": strict_gate,
+            "max_nodes": max_nodes,
+            "points": points,
+            "seed": seed,
+            "tolerance": tolerance,
+        },
+        "formula": spec.formula_provenance(),
+        "diagnostic": diagnostic,
+        "row": row,
+    }
+    return [row], diagnostic_payload
 
 
 def write_v112_paper_facing_assets(

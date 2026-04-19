@@ -34,7 +34,7 @@ from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_pack
 from .paper_diagnostics import DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR, write_paper_diagnostics
 from .paper_package import DEFAULT_V111_PAPER_PACKAGE_DIR, write_v111_paper_package
 from .paper_v112 import DEFAULT_V112_DRAFT_DIR, DEFAULT_V112_REFRESH_DIR, write_v112_draft, write_v112_evidence_refresh
-from .paper_v112 import write_v112_paper_facing_assets
+from .paper_v112 import write_v112_bounded_probes, write_v112_paper_facing_assets
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
@@ -479,6 +479,18 @@ def paper_figures_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def paper_probes_command(args: argparse.Namespace) -> int:
+    paths = write_v112_bounded_probes(output_dir=Path(args.output_dir))
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    statuses = manifest["statuses"]
+    print(
+        f"paper probes: manifest -> {paths.manifest_json}; "
+        f"baseline -> {statuses['baseline']}; "
+        f"logistic promotion -> {statuses['logistic_promotion']}"
+    )
+    return 0
+
+
 def paper_decision_command(args: argparse.Namespace) -> int:
     paths = write_paper_decision_package(
         tuple(Path(path) for path in args.aggregate or ()),
@@ -700,6 +712,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory for v1.12 draft and paper-facing artifacts.",
     )
     paper_figures.set_defaults(func=paper_figures_command)
+
+    paper_probes = sub.add_parser("paper-probes", help="Write v1.12 bounded baseline and logistic strict-support probe artifacts.")
+    paper_probes.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_DRAFT_DIR),
+        help="Directory for v1.12 draft and bounded-probe artifacts.",
+    )
+    paper_probes.set_defaults(func=paper_probes_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)

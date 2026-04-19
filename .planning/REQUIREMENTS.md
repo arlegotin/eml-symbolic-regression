@@ -45,8 +45,8 @@ Acceptance:
 
 ### Bounded Probes
 
-- [ ] **BASE-01**: The milestone attempts one lightweight conventional symbolic-regression baseline if it is already locally available or cheap to install, and otherwise records a deferred/unavailable diagnostic row.
-- [ ] **COMP-01**: The milestone attempts one bounded strict-support logistic compiler push using reusable structural motifs only, and records the result without relaxing gates.
+- [x] **BASE-01**: The milestone attempts one lightweight conventional symbolic-regression baseline if it is already locally available or cheap to install, and otherwise records a deferred/unavailable diagnostic row.
+- [x] **COMP-01**: The milestone attempts one bounded strict-support logistic compiler push using reusable structural motifs only, and records the result without relaxing gates.
 
 Acceptance:
 - Conventional baseline output is labeled diagnostic-only and never enters EML recovery denominators.
@@ -102,8 +102,8 @@ Acceptance:
 | FIG-02 | Phase 66 | Complete |
 | FIG-03 | Phase 66 | Complete |
 | FIG-04 | Phase 64 | Complete |
-| BASE-01 | Phase 67 | Pending |
-| COMP-01 | Phase 67 | Pending |
+| BASE-01 | Phase 67 | Complete |
+| COMP-01 | Phase 67 | Complete |
 | AUDIT-01 | Phase 68 | Pending |
 | AUDIT-02 | Phase 68 | Pending |
 | AUDIT-03 | Phase 68 | Pending |

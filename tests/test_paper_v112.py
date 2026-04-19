@@ -1,13 +1,16 @@
 import json
 
-from eml_symbolic_regression.cli import build_parser, paper_draft_command, paper_figures_command, paper_refresh_command
+from eml_symbolic_regression.cli import build_parser, paper_draft_command, paper_figures_command, paper_probes_command, paper_refresh_command
 from eml_symbolic_regression.paper_v112 import (
     claim_taxonomy_rows,
+    conventional_symbolic_baseline_probe_rows,
+    logistic_strict_support_probe_rows,
     logistic_planck_negative_result_rows,
     motif_library_evolution_rows,
     refresh_run_rows,
     v112_depth_refresh_suite,
     v112_shallow_refresh_suite,
+    write_v112_bounded_probes,
     write_v112_draft,
     write_v112_paper_facing_assets,
 )
@@ -218,3 +221,59 @@ def test_paper_figures_cli_writes_manifest(tmp_path, capsys):
     assert "paper figures: manifest ->" in captured
     assert (output_dir / "figure-captions.md").exists()
     assert (output_dir / "figures" / "pipeline.svg").exists()
+
+
+def test_conventional_symbolic_baseline_probe_reports_unavailable_without_local_module():
+    rows = conventional_symbolic_baseline_probe_rows(("definitely_missing_sr_package_for_test",))
+
+    assert rows[0]["status"] == "unavailable"
+    assert rows[0]["diagnostic_only"] is True
+    assert rows[0]["denominator_policy"] == "excluded from EML recovery denominators"
+
+
+def test_logistic_strict_support_probe_keeps_strict_gate_and_no_promotion():
+    rows, diagnostic = logistic_strict_support_probe_rows(points=12, seed=0)
+    row = rows[0]
+
+    assert diagnostic["schema"] == "eml.v112_logistic_strict_support_diagnostic.v1"
+    assert row["strict_gate"] == 13
+    assert row["strict_status"] == "unsupported"
+    assert row["strict_reason"] == "depth_exceeded"
+    assert row["relaxed_depth"] == 15
+    assert row["depth_gap_to_strict_gate"] == 2
+    assert row["relaxed_macro_hits"] == ["exponential_saturation_template"]
+    assert row["relaxed_validation_passed"] is True
+    assert row["promotion"] == "no"
+
+
+def test_write_v112_bounded_probes_outputs_baseline_and_logistic_tables(tmp_path):
+    output_dir = tmp_path / "draft"
+    paths = write_v112_bounded_probes(
+        output_dir=output_dir,
+        baseline_modules=("definitely_missing_sr_package_for_test",),
+        logistic_points=12,
+    )
+
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    baseline = json.loads(paths.baseline_probe_json.read_text(encoding="utf-8"))
+    logistic = json.loads(paths.logistic_probe_json.read_text(encoding="utf-8"))
+
+    assert manifest["schema"] == "eml.v112_bounded_probes.v1"
+    assert manifest["statuses"]["baseline"] == "unavailable"
+    assert manifest["statuses"]["logistic_promotion"] == "no"
+    assert baseline["rows"][0]["status"] == "unavailable"
+    assert logistic["rows"][0]["strict_gate"] == 13
+    assert paths.logistic_diagnostic_json.exists()
+
+
+def test_paper_probes_cli_writes_manifest(tmp_path, capsys):
+    output_dir = tmp_path / "draft"
+    args = build_parser().parse_args(["paper-probes", "--output-dir", str(output_dir)])
+
+    assert args.func is paper_probes_command
+    assert args.func(args) == 0
+
+    captured = capsys.readouterr().out
+    assert "paper probes: manifest ->" in captured
+    assert (output_dir / "bounded-probes-manifest.json").exists()
+    assert (output_dir / "tables" / "logistic-strict-support-probe.md").exists()
