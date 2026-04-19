@@ -22,7 +22,7 @@
 
 ## Current Status
 
-v1.12 is active. Phases 64-67 are complete: the draft skeleton, claim taxonomy, evidence refresh, paper-facing captions/figures/tables, bounded baseline status, and logistic strict-support probe are in place. The remaining work audits and source-locks the package supplement.
+v1.12 is complete. Phases 64-68 produced the draft skeleton, claim taxonomy, evidence refresh, paper-facing captions/figures/tables, bounded baseline status, logistic strict-support probe, and source-locked supplement with a passing claim audit.
 
 ## Phase Status
 
@@ -30,7 +30,7 @@ v1.12 is active. Phases 64-67 are complete: the draft skeleton, claim taxonomy, 
 - [x] Phase 65: Shallow Seed and Depth-Curve Refresh (completed 2026-04-19)
 - [x] Phase 66: Paper-Facing Figures, Captions, and Negative Results (completed 2026-04-19)
 - [x] Phase 67: Bounded Baseline and Logistic Strict-Support Probes (completed 2026-04-19)
-- [ ] Phase 68: Package Assembly, Source Locks, and Claim Audit
+- [x] Phase 68: Package Assembly, Source Locks, and Claim Audit (completed 2026-04-19)
 
 ## Active v1.12 Phases
 

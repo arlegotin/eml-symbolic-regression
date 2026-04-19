@@ -4,16 +4,16 @@ milestone: v1.12
 milestone_name: Paper draft skeleton and refreshed shallow evidence
 current_phase: 68
 current_phase_name: Package Assembly, Source Locks, and Claim Audit
-status: ready_to_plan
-stopped_at: Phase 67 complete
-last_updated: "2026-04-19T14:52:30.000Z"
+status: ready_for_milestone_audit
+stopped_at: Phase 68 complete
+last_updated: "2026-04-19T14:58:00.000Z"
 last_activity: 2026-04-19
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 4
-  completed_plans: 4
-  percent: 80
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
@@ -27,15 +27,15 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Phase 68 v1.12 supplement assembly, source locks, and claim audit.
+**Current focus:** v1.12 complete; ready for milestone audit and closeout.
 
 ## Current Position
 
 Phase: 68 - Package Assembly, Source Locks, and Claim Audit
-Plan: Not started
-Status: Ready to plan
+Plan: Complete
+Status: Complete
 Last activity: 2026-04-19
-Progress: [########--] 80% by completed phases
+Progress: [##########] 100% by completed phases
 
 ## Current Milestone
 
@@ -59,6 +59,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 | v1.12 evidence refresh | `artifacts/campaigns/v1.12-evidence-refresh/` | Phase 65 complete |
 | v1.12 paper-facing draft assets | `artifacts/paper/v1.11/draft/` | Phase 66 complete |
 | v1.12 bounded probes | `artifacts/paper/v1.11/draft/` | Phase 67 complete |
+| v1.12 supplement | `artifacts/paper/v1.11/v1.12-supplement/` | Phase 68 complete, audit passed |
 
 ## Accumulated Context
 
@@ -74,7 +75,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 
 ### Pending Todos
 
-- Start Phase 68 with `$gsd-discuss-phase 68` or `$gsd-plan-phase 68`.
+- Run milestone audit, complete v1.12, and clean up planning phase directories.
 
 ### Blockers/Concerns
 
@@ -84,8 +85,8 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: Phase 67 complete
+Stopped at: Phase 68 complete
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after Phase 67*
+*Last updated: 2026-04-19 after Phase 68*
