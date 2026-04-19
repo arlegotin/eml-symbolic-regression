@@ -100,10 +100,10 @@ v1.10 expanded the compiler from a small set of useful macros into a search-back
 - ✓ Bounded motif-search evidence and validation-backed low-degree power compression, lowering Planck relaxed depth from 20 to 14 while preserving unsupported/stretch honesty — v1.10 Phase 57
 - ✓ Focused logistic and Planck benchmark suites, CLI artifact paths, campaign evidence, and tests recording unsupported diagnostics with no warm-start promotion — v1.10 Phase 58
 - ✓ Versioned v1.11 raw-hybrid paper package contract with source locks, claim ledger, and current v1.10 logistic/Planck scientific-law rows — v1.11 Phase 59
+- ✓ Current-code v1.11 training campaigns covering pure blind, scaffolded, same-AST warm-start, perturbed-basin, and logistic/Planck probe regimes — v1.11 Phase 60
 
 ### Active
 
-- [ ] Real training evidence is regenerated or newly produced for claim-safe regimes, with exact commands and artifacts.
 - [ ] Low-hanging ablations show which compiler/motif/training choices materially change evidence.
 - [ ] Plot-ready artifacts include publication-quality figures and machine-readable source tables.
 - [ ] External or conventional baseline diagnostics are included if feasible and clearly scoped.

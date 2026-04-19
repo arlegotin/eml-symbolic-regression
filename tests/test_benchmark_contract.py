@@ -120,6 +120,8 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "v1.9-repair-evidence",
         "v1.10-logistic-evidence",
         "v1.10-planck-diagnostics",
+        "v1.11-paper-training",
+        "v1.11-logistic-planck-probes",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -251,6 +253,60 @@ def test_planck_v110_diagnostics_suite_contains_compile_diagnostic_only():
     assert run.tags == ("v1.10", "planck", "compile", "diagnostic", "stretch", "unsupported")
     assert "campaigns" in run.artifact_path.parts
     assert str(run.artifact_path).endswith(f"v1.10-planck-diagnostics/{run.run_id}.json")
+
+
+def test_v111_paper_training_suite_separates_claim_safe_regimes():
+    suite = builtin_suite("v1.11-paper-training")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.11-paper-training"
+    assert len(runs) == 8
+    assert {run.start_mode for run in runs} == {"blind", "warm_start", "perturbed_tree"}
+    assert {run.case_id for run in runs} == {
+        "exp-pure-blind",
+        "exp-scaffolded",
+        "shockley-warm",
+        "arrhenius-warm",
+        "michaelis-warm",
+        "basin-depth2-perturbed",
+    }
+    pure_blind = [run for run in runs if run.case_id == "exp-pure-blind"]
+    scaffolded = [run for run in runs if run.case_id == "exp-scaffolded"]
+    warm = [run for run in runs if run.start_mode == "warm_start"]
+    perturbed = [run for run in runs if run.start_mode == "perturbed_tree"]
+
+    assert len(pure_blind) == 2
+    assert all(run.optimizer.scaffold_initializers == () for run in pure_blind)
+    assert all(run.training_mode == "blind_training" for run in pure_blind)
+    assert len(scaffolded) == 2
+    assert all(run.optimizer.scaffold_initializers for run in scaffolded)
+    assert all(run.training_mode == "blind_training" for run in scaffolded)
+    assert {run.formula for run in warm} == {"shockley", "arrhenius", "michaelis_menten"}
+    assert all(run.training_mode == "compiler_warm_start_training" for run in warm)
+    assert len(perturbed) == 1
+    assert perturbed[0].formula == "basin_depth2_exp_exp"
+    assert perturbed[0].perturbation_noise == 0.05
+    assert perturbed[0].training_mode == "perturbed_true_tree_training"
+
+
+def test_v111_logistic_planck_probe_suite_has_compile_and_training_rows():
+    suite = builtin_suite("v1.11-logistic-planck-probes")
+    runs = suite.expanded_runs()
+
+    assert suite.id == "v1.11-logistic-planck-probes"
+    assert len(runs) == 4
+    by_case = {run.case_id: run for run in runs}
+    assert by_case["logistic-compile"].start_mode == "compile"
+    assert by_case["planck-compile"].start_mode == "compile"
+    assert by_case["logistic-blind-probe"].start_mode == "blind"
+    assert by_case["planck-blind-probe"].start_mode == "blind"
+    assert by_case["logistic-blind-probe"].optimizer.scaffold_initializers == ()
+    assert by_case["planck-blind-probe"].optimizer.scaffold_initializers == ()
+    assert by_case["logistic-blind-probe"].optimizer.constants == (1.0, 2.0, -1.3)
+    assert by_case["planck-blind-probe"].optimizer.constants[:2] == (1.0, 3.0)
+    assert by_case["planck-blind-probe"].optimizer.constants[2] == pytest.approx(2.718281828459045)
+    assert all(run.expect_recovery is False for run in runs)
+    assert {"compile", "blind"} == {run.start_mode for run in runs}
 
 
 def test_benchmark_case_and_run_serialize_optional_repair_config():

@@ -1,0 +1,1321 @@
+{
+  "counts": {
+    "evidence_classes": {
+      "failed": 1,
+      "snapped_but_failed": 1,
+      "unsupported": 2
+    },
+    "execution_error": 0,
+    "failed": 2,
+    "repaired_candidate": 0,
+    "same_ast_return": 0,
+    "total": 4,
+    "unsupported": 2,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 0,
+    "verifier_recovery_rate": 0.0
+  },
+  "depth_curve": [],
+  "environment": {
+    "code_version": "833f4d5",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-19T13:28:36.934443+00:00",
+  "groups": {
+    "depth": [
+      {
+        "evidence_classes": {
+          "unsupported": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "2",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 2,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "failed": 1,
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "3",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "evidence_class": [
+      {
+        "evidence_classes": {
+          "failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "failed",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "snapped_but_failed",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 1,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "unsupported": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "unsupported",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 2,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "formula": [
+      {
+        "evidence_classes": {
+          "snapped_but_failed": 1,
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "logistic",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "failed": 1,
+          "unsupported": 1
+        },
+        "execution_error": 0,
+        "failed": 1,
+        "key": "planck",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 1,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "evidence_classes": {
+          "failed": 1,
+          "snapped_but_failed": 1,
+          "unsupported": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "0.0",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 2,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "raw_status": [
+      {
+        "evidence_classes": {
+          "failed": 1,
+          "snapped_but_failed": 1,
+          "unsupported": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 2,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "repair_status": [
+      {
+        "evidence_classes": {
+          "unsupported": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 2,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "failed": 1,
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "not_repaired",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "return_kind": [
+      {
+        "evidence_classes": {
+          "failed": 1,
+          "snapped_but_failed": 1,
+          "unsupported": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "none",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 2,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "seed_group": [
+      {
+        "evidence_classes": {
+          "failed": 1,
+          "snapped_but_failed": 1,
+          "unsupported": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "all",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 4,
+        "unsupported": 2,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "start_mode": [
+      {
+        "evidence_classes": {
+          "failed": 1,
+          "snapped_but_failed": 1
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "blind",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "evidence_classes": {
+          "unsupported": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "compile",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "unsupported": 2,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/campaigns/v1.11-logistic-planck-probes/runs/v1.11-logistic-planck-probes/v1-11-logistic-planck-probes-logistic-compile-d9b410fc6d87.json",
+      "case_id": "logistic-compile",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "unsupported",
+      "classification": "unsupported",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "logistic",
+        "manifest_sha256": "e132c7fd8662bb7ee2597b3ab81998f0e55c26a772240a1eddd39e0dc502ac67",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "logistic_catalog",
+          "description": "Nonlinear growth progression demo.",
+          "formula_id": "logistic",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Logistic growth first serious demo after simpler warm-ups",
+          "symbolic_expression": "1/(1 + 2*exp(-1.3*x))",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.0,
+              5.0
+            ],
+            "input_sha256": "726741698c5c67ea7d0ea8612e37d71e14f5956426786fccf0d10c8213f26ecf",
+            "name": "train",
+            "target_sha256": "d4823bfa040adc4ff700f1514690bfbaa117c9f75f13b0da58d2d24b1c87d382"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.1,
+              4.8
+            ],
+            "input_sha256": "f5e07028c0f121c8efc3c01254b3574e3767fd366354d394db4e34d2f6bc8ca7",
+            "name": "heldout",
+            "target_sha256": "fc3e58f9ade5738644163536e5da52c3b2f956a8803f626b6ad4fb0e41fee409"
+          },
+          {
+            "count": 16,
+            "domain": [
+              5.1,
+              7.0
+            ],
+            "input_sha256": "6f2b8667d4324df2ac70ffcdaae55566294d02b2a8c31d22f9343a5c5f1abe50",
+            "name": "extrapolation",
+            "target_sha256": "9c99832c2e025b856b15c958f5e7d63730fbefbe9d1331d2bb2787af661a9b4c"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "unsupported",
+      "formula": "logistic",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": null,
+        "anomaly_exp_overflow_count": null,
+        "anomaly_expm1_overflow_count": null,
+        "anomaly_log1p_branch_cut_count": null,
+        "anomaly_log_branch_cut_count": null,
+        "anomaly_log_non_finite_input_count": null,
+        "anomaly_log_non_positive_real_count": null,
+        "anomaly_log_safety_penalty": null,
+        "anomaly_log_small_magnitude_count": null,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": null,
+        "best_loss": null,
+        "candidate_complexity": null,
+        "candidate_pool_size": null,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": null,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": null,
+        "fallback_candidate_source": null,
+        "fallback_post_snap_loss": null,
+        "high_precision_max_error": null,
+        "legacy_best_loss": null,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": null,
+        "refit_accepted": null,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": null,
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": null,
+        "repair_candidate_root_summary_count": 0,
+        "repair_deduped_variant_count": null,
+        "repair_move_count": 0,
+        "repair_status": null,
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": null,
+        "selected_candidate_checkpoint_index": null,
+        "selected_candidate_id": null,
+        "selected_candidate_source": null,
+        "selection_mode": null,
+        "snap_active_node_count": null,
+        "snap_min_margin": null,
+        "unsupported_reason": "depth_exceeded",
+        "verifier_status": null,
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "logistic_catalog",
+        "description": "Nonlinear growth progression demo.",
+        "formula_id": "logistic",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Logistic growth first serious demo after simpler warm-ups",
+        "symbolic_expression": "1/(1 + 2*exp(-1.3*x))",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "depth_exceeded",
+      "repair_status": null,
+      "return_kind": null,
+      "run_id": "v1-11-logistic-planck-probes-logistic-compile-d9b410fc6d87",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "unsupported"
+      },
+      "start_mode": "compile",
+      "status": "unsupported",
+      "suite_id": "v1.11-logistic-planck-probes",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "compile_only_verification"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.11-logistic-planck-probes/runs/v1.11-logistic-planck-probes/v1-11-logistic-planck-probes-planck-compile-9565da4ea47b.json",
+      "case_id": "planck-compile",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "unsupported",
+      "classification": "unsupported",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "planck",
+        "manifest_sha256": "021d09cad64656081182e9fb2b8993d4e224508b48e68e774004d9c2ede861de",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "planck_catalog",
+          "description": "Flagship normalized Planck spectrum from FOR_DEMO.md.",
+          "formula_id": "planck",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Normalized Planck spectrum flagship dimensionless physics demo",
+          "symbolic_expression": "x**3/(exp(x) - 1)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.2,
+              8.0
+            ],
+            "input_sha256": "56bca8cfb58a035251a67a1e1310ad92a9439c2293e4476f401d2e1e2ee96871",
+            "name": "train",
+            "target_sha256": "e81fbdec74860130c61a656f5038de4788afa89e291c07e9ae4febd26a63dcae"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.25,
+              7.5
+            ],
+            "input_sha256": "4af3af1dcadf90791243b013e6c70fb762313970467c199db894deeeefec8c2e",
+            "name": "heldout",
+            "target_sha256": "62d77fc799fd3c685b4d381c74845d8e926b548400193e615e284eebebc76649"
+          },
+          {
+            "count": 16,
+            "domain": [
+              8.1,
+              10.0
+            ],
+            "input_sha256": "0ac9e879219b864e72c03586b5ddd5f53ad9381c9937dacd957cfa4ed8020b7a",
+            "name": "extrapolation",
+            "target_sha256": "4bd8fe8996a6999e702b73d4ce9b5765f56fef3f4db3e2299dd38fa57c046299"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "unsupported",
+      "formula": "planck",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": null,
+        "anomaly_exp_overflow_count": null,
+        "anomaly_expm1_overflow_count": null,
+        "anomaly_log1p_branch_cut_count": null,
+        "anomaly_log_branch_cut_count": null,
+        "anomaly_log_non_finite_input_count": null,
+        "anomaly_log_non_positive_real_count": null,
+        "anomaly_log_safety_penalty": null,
+        "anomaly_log_small_magnitude_count": null,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": null,
+        "best_loss": null,
+        "candidate_complexity": null,
+        "candidate_pool_size": null,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": null,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": null,
+        "fallback_candidate_source": null,
+        "fallback_post_snap_loss": null,
+        "high_precision_max_error": null,
+        "legacy_best_loss": null,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": null,
+        "refit_accepted": null,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": null,
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": null,
+        "repair_candidate_root_summary_count": 0,
+        "repair_deduped_variant_count": null,
+        "repair_move_count": 0,
+        "repair_status": null,
+        "repair_variant_count": null,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": null,
+        "selected_candidate_checkpoint_index": null,
+        "selected_candidate_id": null,
+        "selected_candidate_source": null,
+        "selection_mode": null,
+        "snap_active_node_count": null,
+        "snap_min_margin": null,
+        "unsupported_reason": "depth_exceeded",
+        "verifier_status": null,
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [
+          "exp",
+          "log",
+          "scaled_exp"
+        ],
+        "steps": 8,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "planck_catalog",
+        "description": "Flagship normalized Planck spectrum from FOR_DEMO.md.",
+        "formula_id": "planck",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Normalized Planck spectrum flagship dimensionless physics demo",
+        "symbolic_expression": "x**3/(exp(x) - 1)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "depth_exceeded",
+      "repair_status": null,
+      "return_kind": null,
+      "run_id": "v1-11-logistic-planck-probes-planck-compile-9565da4ea47b",
+      "seed": 0,
+      "stage_statuses": {
+        "compiled_seed": "unsupported"
+      },
+      "start_mode": "compile",
+      "status": "unsupported",
+      "suite_id": "v1.11-logistic-planck-probes",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "compile_only_verification"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.11-logistic-planck-probes/runs/v1.11-logistic-planck-probes/v1-11-logistic-planck-probes-logistic-blind-probe-b35045193c4c.json",
+      "case_id": "logistic-blind-probe",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "logistic",
+        "manifest_sha256": "e132c7fd8662bb7ee2597b3ab81998f0e55c26a772240a1eddd39e0dc502ac67",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "logistic_catalog",
+          "description": "Nonlinear growth progression demo.",
+          "formula_id": "logistic",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Logistic growth first serious demo after simpler warm-ups",
+          "symbolic_expression": "1/(1 + 2*exp(-1.3*x))",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.0,
+              5.0
+            ],
+            "input_sha256": "726741698c5c67ea7d0ea8612e37d71e14f5956426786fccf0d10c8213f26ecf",
+            "name": "train",
+            "target_sha256": "d4823bfa040adc4ff700f1514690bfbaa117c9f75f13b0da58d2d24b1c87d382"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.1,
+              4.8
+            ],
+            "input_sha256": "f5e07028c0f121c8efc3c01254b3574e3767fd366354d394db4e34d2f6bc8ca7",
+            "name": "heldout",
+            "target_sha256": "fc3e58f9ade5738644163536e5da52c3b2f956a8803f626b6ad4fb0e41fee409"
+          },
+          {
+            "count": 16,
+            "domain": [
+              5.1,
+              7.0
+            ],
+            "input_sha256": "6f2b8667d4324df2ac70ffcdaae55566294d02b2a8c31d22f9343a5c5f1abe50",
+            "name": "extrapolation",
+            "target_sha256": "9c99832c2e025b856b15c958f5e7d63730fbefbe9d1331d2bb2787af661a9b4c"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "snapped_but_failed",
+      "formula": "logistic",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 0.03699066638548958,
+        "candidate_complexity": null,
+        "candidate_pool_size": 4,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 4.35528770272117,
+        "high_precision_max_error": 6.617622096058034,
+        "legacy_best_loss": 0.03699066638548958,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": 4.35528770272117,
+        "refit_accepted": true,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 3.431389814949235,
+        "refit_status": "accepted",
+        "refit_verifier_status": "failed",
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 8,
+        "repair_move_count": 12,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 8,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 3,
+        "snap_min_margin": 0.08686120672160885,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1",
+          "2",
+          "-1.3"
+        ],
+        "depth": 3,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "steps": 32,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "logistic_catalog",
+        "description": "Nonlinear growth progression demo.",
+        "formula_id": "logistic",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Logistic growth first serious demo after simpler warm-ups",
+        "symbolic_expression": "1/(1 + 2*exp(-1.3*x))",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "v1-11-logistic-planck-probes-logistic-blind-probe-b35045193c4c",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "accepted"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.11-logistic-planck-probes",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "blind_training"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.11-logistic-planck-probes/runs/v1.11-logistic-planck-probes/v1-11-logistic-planck-probes-planck-blind-probe-be823c997bf6.json",
+      "case_id": "planck-blind-probe",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "failed",
+      "classification": "failed",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "planck",
+        "manifest_sha256": "021d09cad64656081182e9fb2b8993d4e224508b48e68e774004d9c2ede861de",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "planck_catalog",
+          "description": "Flagship normalized Planck spectrum from FOR_DEMO.md.",
+          "formula_id": "planck",
+          "normalized_dimensionless": true,
+          "source_document": "sources/FOR_DEMO.md",
+          "source_linkage": "Normalized Planck spectrum flagship dimensionless physics demo",
+          "symbolic_expression": "x**3/(exp(x) - 1)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              0.2,
+              8.0
+            ],
+            "input_sha256": "56bca8cfb58a035251a67a1e1310ad92a9439c2293e4476f401d2e1e2ee96871",
+            "name": "train",
+            "target_sha256": "e81fbdec74860130c61a656f5038de4788afa89e291c07e9ae4febd26a63dcae"
+          },
+          {
+            "count": 16,
+            "domain": [
+              0.25,
+              7.5
+            ],
+            "input_sha256": "4af3af1dcadf90791243b013e6c70fb762313970467c199db894deeeefec8c2e",
+            "name": "heldout",
+            "target_sha256": "62d77fc799fd3c685b4d381c74845d8e926b548400193e615e284eebebc76649"
+          },
+          {
+            "count": 16,
+            "domain": [
+              8.1,
+              10.0
+            ],
+            "input_sha256": "0ac9e879219b864e72c03586b5ddd5f53ad9381c9937dacd957cfa4ed8020b7a",
+            "name": "extrapolation",
+            "target_sha256": "4bd8fe8996a6999e702b73d4ce9b5765f56fef3f4db3e2299dd38fa57c046299"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "evidence_class": "failed",
+      "formula": "planck",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_clamp_count": 13,
+        "anomaly_exp_overflow_count": 13,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 0,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 0,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "best_loss": 204.99767147509263,
+        "candidate_complexity": null,
+        "candidate_pool_size": 4,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": Infinity,
+        "high_precision_max_error": Infinity,
+        "legacy_best_loss": 204.99767147509263,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "post_snap_loss": Infinity,
+        "refit_accepted": true,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 862.0367957541862,
+        "refit_status": "accepted",
+        "refit_verifier_status": "failed",
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 24,
+        "repair_move_count": 40,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 24,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 0.02095521262910277,
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1",
+          "3",
+          "2.718281828459045"
+        ],
+        "depth": 3,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "steps": 32,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "planck_catalog",
+        "description": "Flagship normalized Planck spectrum from FOR_DEMO.md.",
+        "formula_id": "planck",
+        "normalized_dimensionless": true,
+        "source_document": "sources/FOR_DEMO.md",
+        "source_linkage": "Normalized Planck spectrum flagship dimensionless physics demo",
+        "symbolic_expression": "x**3/(exp(x) - 1)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "v1-11-logistic-planck-probes-planck-blind-probe-be823c997bf6",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "accepted"
+      },
+      "start_mode": "blind",
+      "status": "failed",
+      "suite_id": "v1.11-logistic-planck-probes",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "training_mode": "blind_training"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/campaigns/v1.11-logistic-planck-probes/runs",
+    "cases": [
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "logistic",
+        "id": "logistic-compile",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "compile",
+        "tags": [
+          "v1.11",
+          "logistic",
+          "compile",
+          "diagnostic",
+          "unsupported"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      },
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "planck",
+        "id": "planck-compile",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [
+            "exp",
+            "log",
+            "scaled_exp"
+          ],
+          "steps": 8,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "compile",
+        "tags": [
+          "v1.11",
+          "planck",
+          "compile",
+          "diagnostic",
+          "stretch",
+          "unsupported"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      },
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "logistic",
+        "id": "logistic-blind-probe",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1",
+            "2",
+            "-1.3"
+          ],
+          "depth": 3,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "steps": 32,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.11",
+          "logistic",
+          "blind_probe",
+          "literal_constants",
+          "unsupported"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      },
+      {
+        "claim_id": null,
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "planck",
+        "id": "planck-blind-probe",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1",
+            "3",
+            "2.718281828459045"
+          ],
+          "depth": 3,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "steps": 32,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.11",
+          "planck",
+          "blind_probe",
+          "literal_constants",
+          "stretch",
+          "unsupported"
+        ],
+        "threshold_policy_id": null,
+        "training_mode": null
+      }
+    ],
+    "description": "v1.11 focused logistic and Planck compile diagnostics plus low-budget real blind probes. Rows remain unsupported/stretch diagnostics unless the unchanged verifier contract passes.",
+    "id": "v1.11-logistic-planck-probes",
+    "schema": "eml.benchmark_suite.v1"
+  },
+  "thresholds": []
+}

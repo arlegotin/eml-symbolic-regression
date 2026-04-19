@@ -71,6 +71,8 @@ BUILTIN_SUITES = (
     "v1.9-repair-evidence",
     "v1.10-logistic-evidence",
     "v1.10-planck-diagnostics",
+    "v1.11-paper-training",
+    "v1.11-logistic-planck-probes",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 CAMPAIGN_ARTIFACT_ROOT = Path("artifacts") / "campaigns"
@@ -1647,6 +1649,139 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 ),
             ),
             artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
+    if name == "v1.11-paper-training":
+        return BenchmarkSuite(
+            id="v1.11-paper-training",
+            description=(
+                "Compact v1.11 current-code training refresh with pure blind, scaffolded, "
+                "same-AST warm-start, and perturbed-basin regimes kept separate."
+            ),
+            cases=(
+                _case(
+                    "exp-pure-blind",
+                    "exp",
+                    "blind",
+                    seeds=(0, 1),
+                    points=24,
+                    depth=1,
+                    steps=80,
+                    restarts=2,
+                    scaffold_initializers=(),
+                    tags=("v1.11", "paper_training", "pure_blind"),
+                    expect_recovery=False,
+                ),
+                _case(
+                    "exp-scaffolded",
+                    "exp",
+                    "blind",
+                    seeds=(0, 1),
+                    points=24,
+                    depth=1,
+                    steps=40,
+                    restarts=1,
+                    tags=("v1.11", "paper_training", "scaffolded"),
+                    expect_recovery=True,
+                ),
+                _case(
+                    "shockley-warm",
+                    "shockley",
+                    "warm_start",
+                    seeds=(0,),
+                    points=24,
+                    warm_steps=1,
+                    tags=("v1.11", "paper_training", "warm_start", "same_ast", "scientific_law"),
+                    expect_recovery=True,
+                ),
+                _case(
+                    "arrhenius-warm",
+                    "arrhenius",
+                    "warm_start",
+                    seeds=(0,),
+                    points=24,
+                    warm_steps=1,
+                    tags=("v1.11", "paper_training", "warm_start", "same_ast", "scientific_law"),
+                    expect_recovery=True,
+                ),
+                _case(
+                    "michaelis-warm",
+                    "michaelis_menten",
+                    "warm_start",
+                    seeds=(0,),
+                    points=24,
+                    warm_steps=1,
+                    tags=("v1.11", "paper_training", "warm_start", "same_ast", "scientific_law"),
+                    expect_recovery=True,
+                ),
+                _case(
+                    "basin-depth2-perturbed",
+                    "basin_depth2_exp_exp",
+                    "perturbed_tree",
+                    seeds=(0,),
+                    perturbation_noise=(0.05,),
+                    points=12,
+                    depth=2,
+                    warm_steps=16,
+                    tags=("v1.11", "paper_training", "perturbed_basin"),
+                    expect_recovery=True,
+                ),
+            ),
+        )
+    if name == "v1.11-logistic-planck-probes":
+        return BenchmarkSuite(
+            id="v1.11-logistic-planck-probes",
+            description=(
+                "v1.11 focused logistic and Planck compile diagnostics plus low-budget real blind probes. "
+                "Rows remain unsupported/stretch diagnostics unless the unchanged verifier contract passes."
+            ),
+            cases=(
+                _case(
+                    "logistic-compile",
+                    "logistic",
+                    "compile",
+                    seeds=(0,),
+                    points=24,
+                    tags=("v1.11", "logistic", "compile", "diagnostic", "unsupported"),
+                    expect_recovery=False,
+                ),
+                _case(
+                    "planck-compile",
+                    "planck",
+                    "compile",
+                    seeds=(0,),
+                    points=24,
+                    tags=("v1.11", "planck", "compile", "diagnostic", "stretch", "unsupported"),
+                    expect_recovery=False,
+                ),
+                _case(
+                    "logistic-blind-probe",
+                    "logistic",
+                    "blind",
+                    seeds=(0,),
+                    points=24,
+                    depth=3,
+                    steps=32,
+                    restarts=1,
+                    constants=(1.0, 2.0, -1.3),
+                    scaffold_initializers=(),
+                    tags=("v1.11", "logistic", "blind_probe", "literal_constants", "unsupported"),
+                    expect_recovery=False,
+                ),
+                _case(
+                    "planck-blind-probe",
+                    "planck",
+                    "blind",
+                    seeds=(0,),
+                    points=24,
+                    depth=3,
+                    steps=32,
+                    restarts=1,
+                    constants=(1.0, 3.0, np.e),
+                    scaffold_initializers=(),
+                    tags=("v1.11", "planck", "blind_probe", "literal_constants", "stretch", "unsupported"),
+                    expect_recovery=False,
+                ),
+            ),
         )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
 

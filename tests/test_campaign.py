@@ -91,6 +91,8 @@ def test_campaign_presets_map_to_budgeted_suites():
         "family-depth-curve",
         "family-standard",
         "family-showcase",
+        "paper-training",
+        "paper-probes",
     )
 
     standard = campaign_preset("standard")
@@ -140,6 +142,18 @@ def test_campaign_presets_map_to_budgeted_suites():
     family_standard = campaign_preset("family-standard")
     assert family_standard.suite == "v1.8-family-standard"
     assert family_standard.tier == "v1.8-family-matrix"
+
+    paper_training = campaign_preset("paper-training")
+    paper_training_runs = load_suite(paper_training.suite).expanded_runs()
+    assert paper_training.suite == "v1.11-paper-training"
+    assert paper_training.tier == "v1.11-paper"
+    assert {run.start_mode for run in paper_training_runs} == {"blind", "warm_start", "perturbed_tree"}
+
+    paper_probes = campaign_preset("paper-probes")
+    paper_probe_runs = load_suite(paper_probes.suite).expanded_runs()
+    assert paper_probes.suite == "v1.11-logistic-planck-probes"
+    assert {run.formula for run in paper_probe_runs} == {"logistic", "planck"}
+    assert {run.start_mode for run in paper_probe_runs} == {"compile", "blind"}
 
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
