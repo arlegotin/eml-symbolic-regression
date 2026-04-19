@@ -9,9 +9,9 @@
 
 ### Draft Package
 
-- [ ] **DRAFT-01**: The repository provides `artifacts/paper/v1.11/draft/` with paper-section skeletons for abstract, methods, results, and limitations.
+- [x] **DRAFT-01**: The repository provides `artifacts/paper/v1.11/draft/` with paper-section skeletons for abstract, methods, results, and limitations.
 - [ ] **DRAFT-02**: The draft package includes figure-caption and table-caption files that reference the relevant v1.11 or v1.12 source artifacts.
-- [ ] **DRAFT-03**: The draft skeleton converts the v1.11 evidence package into a paper-shaped argument without promoting unsupported logistic or Planck claims.
+- [x] **DRAFT-03**: The draft skeleton converts the v1.11 evidence package into a paper-shaped argument without promoting unsupported logistic or Planck claims.
 
 Acceptance:
 - `abstract.md`, `methods.md`, `results.md`, and `limitations.md` exist under `artifacts/paper/v1.11/draft/`.
@@ -35,7 +35,7 @@ Acceptance:
 - [ ] **FIG-01**: The paper package includes a motif library evolution figure or table with before/after examples for logistic, Planck, Shockley, Arrhenius, and Michaelis-Menten where source evidence exists.
 - [ ] **FIG-02**: The paper package includes one visual EML tree or pipeline figure showing data -> soft complete EML tree -> snap -> candidate pool/repair/refit -> verifier.
 - [ ] **FIG-03**: The paper package includes an explicit logistic/Planck negative-results table covering compile support, relaxed-depth improvement, blind probe outcome, and promotion status.
-- [ ] **FIG-04**: The paper package includes a claim taxonomy table that separates pure blind, scaffolded, warm-start, same-AST, perturbed-basin, repair/refit, compile-only, unsupported, and failed evidence.
+- [x] **FIG-04**: The paper package includes a claim taxonomy table that separates pure blind, scaffolded, warm-start, same-AST, perturbed-basin, repair/refit, compile-only, unsupported, and failed evidence.
 
 Acceptance:
 - Motif before/after values are pulled from source-locked evidence. If Planck depth conventions differ across v1.10/v1.11 tables, the caption explains the convention instead of silently choosing a favorable number.
@@ -92,16 +92,16 @@ Acceptance:
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DRAFT-01 | Phase 64 | Pending |
+| DRAFT-01 | Phase 64 | Complete |
 | DRAFT-02 | Phase 66 | Pending |
-| DRAFT-03 | Phase 64 | Pending |
+| DRAFT-03 | Phase 64 | Complete |
 | EVID-01 | Phase 65 | Pending |
 | EVID-02 | Phase 65 | Pending |
 | EVID-03 | Phase 65 | Pending |
 | FIG-01 | Phase 66 | Pending |
 | FIG-02 | Phase 66 | Pending |
 | FIG-03 | Phase 66 | Pending |
-| FIG-04 | Phase 64 | Pending |
+| FIG-04 | Phase 64 | Complete |
 | BASE-01 | Phase 67 | Pending |
 | COMP-01 | Phase 67 | Pending |
 | AUDIT-01 | Phase 68 | Pending |

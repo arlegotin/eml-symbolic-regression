@@ -33,6 +33,7 @@ from .paper_assets import DEFAULT_PAPER_ASSETS_OUTPUT_DIR, write_paper_assets
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
 from .paper_diagnostics import DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR, write_paper_diagnostics
 from .paper_package import DEFAULT_V111_PAPER_PACKAGE_DIR, write_v111_paper_package
+from .paper_v112 import DEFAULT_V112_DRAFT_DIR, write_v112_draft
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
@@ -445,6 +446,16 @@ def paper_package_command(args: argparse.Namespace) -> int:
     return 0 if audit["status"] == "passed" else 1
 
 
+def paper_draft_command(args: argparse.Namespace) -> int:
+    paths = write_v112_draft(output_dir=Path(args.output_dir))
+    print(
+        f"paper draft: manifest -> {paths.manifest_json}; "
+        f"sections -> {paths.output_dir}; "
+        f"taxonomy -> {paths.claim_taxonomy_json}"
+    )
+    return 0
+
+
 def paper_decision_command(args: argparse.Namespace) -> int:
     paths = write_paper_decision_package(
         tuple(Path(path) for path in args.aggregate or ()),
@@ -641,6 +652,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     paper_package.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing package manifest.")
     paper_package.set_defaults(func=paper_package_command)
+
+    paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
+    paper_draft.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V112_DRAFT_DIR),
+        help="Directory for v1.12 draft skeleton artifacts.",
+    )
+    paper_draft.set_defaults(func=paper_draft_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)
