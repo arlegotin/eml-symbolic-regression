@@ -102,10 +102,10 @@ v1.10 expanded the compiler from a small set of useful macros into a search-back
 - ✓ Versioned v1.11 raw-hybrid paper package contract with source locks, claim ledger, and current v1.10 logistic/Planck scientific-law rows — v1.11 Phase 59
 - ✓ Current-code v1.11 training campaigns covering pure blind, scaffolded, same-AST warm-start, perturbed-basin, and logistic/Planck probe regimes — v1.11 Phase 60
 - ✓ v1.11 motif-depth, regime-comparison, repair/refit, and prediction-only baseline diagnostic tables with source locks — v1.11 Phase 61
+- ✓ Deterministic v1.11 paper asset pipeline with source tables, SVG figures, per-figure metadata, and source locks — v1.11 Phase 62
 
 ### Active
 
-- [ ] Plot-ready artifacts include publication-quality figures and machine-readable source tables.
 - [ ] Paper claims remain regime-separated and do not oversell unsupported logistic/Planck rows.
 
 ### Out of Scope

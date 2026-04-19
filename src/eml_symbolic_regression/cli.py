@@ -29,6 +29,7 @@ from .family_triage import (
     write_family_triage,
 )
 from .optimize import TrainingConfig, fit_eml_tree
+from .paper_assets import DEFAULT_PAPER_ASSETS_OUTPUT_DIR, write_paper_assets
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
 from .paper_diagnostics import DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR, write_paper_diagnostics
 from .proof import list_claims
@@ -422,6 +423,16 @@ def diagnostics_paper_ablations_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def paper_assets_command(args: argparse.Namespace) -> int:
+    paths = write_paper_assets(output_dir=Path(args.output_dir))
+    print(
+        f"paper assets: manifest -> {paths.manifest_json}; "
+        f"figures -> {paths.output_dir / 'figures'}; "
+        f"tables -> {paths.output_dir / 'tables'}"
+    )
+    return 0
+
+
 def paper_decision_command(args: argparse.Namespace) -> int:
     paths = write_paper_decision_package(
         tuple(Path(path) for path in args.aggregate or ()),
@@ -601,6 +612,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     raw_hybrid_paper.add_argument("--overwrite", action="store_true", help="Allow replacing an existing non-empty package directory.")
     raw_hybrid_paper.set_defaults(func=raw_hybrid_paper_command)
+
+    paper_assets = sub.add_parser("paper-assets", help="Write deterministic v1.11 paper figure and source-table assets.")
+    paper_assets.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_PAPER_ASSETS_OUTPUT_DIR),
+        help="Directory for paper asset manifest, tables, figures, and metadata.",
+    )
+    paper_assets.set_defaults(func=paper_assets_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)

@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.11
 milestone_name: Paper-strength evidence and figure package
-current_phase: 62
-current_phase_name: Paper Figure and Table Data Pipeline
+current_phase: 63
+current_phase_name: Paper Package Assembly and Claim Audit
 status: ready_to_execute
-stopped_at: Phase 61 complete; Phase 62 ready
+stopped_at: Phase 62 complete; Phase 63 ready
 last_updated: "2026-04-19T00:00:00.000Z"
-last_activity: 2026-04-19 -- Milestone v1.11 started
+last_activity: 2026-04-19 -- Phase 62 completed with deterministic paper assets
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 0
   completed_plans: 0
-  percent: 60
+  percent: 80
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 62 - Paper Figure and Table Data Pipeline
+**Current phase:** 63 - Paper Package Assembly and Claim Audit
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 ## Current Position
 
-Phase: 62 - Paper Figure and Table Data Pipeline
+Phase: 63 - Paper Package Assembly and Claim Audit
 Plan: None
 Status: Ready to execute
-Last activity: 2026-04-19 -- Phase 61 completed with ablation and baseline diagnostics
-Progress: [######----] 60% by completed phases
+Last activity: 2026-04-19 -- Phase 62 completed with deterministic paper assets
+Progress: [########--] 80% by completed phases
 
 ## Current Milestone
 
@@ -60,6 +60,7 @@ Goal: Produce a stronger paper-ready evidence package by running real training w
 | v1.11 paper training campaign | `artifacts/campaigns/v1.11-paper-training/` | Complete |
 | v1.11 logistic/Planck probes | `artifacts/campaigns/v1.11-logistic-planck-probes/` | Complete |
 | v1.11 paper ablations | `artifacts/diagnostics/v1.11-paper-ablations/` | Complete |
+| v1.11 paper assets | `artifacts/paper/v1.11/assets/` | Complete |
 
 ## Accumulated Context
 
@@ -74,7 +75,7 @@ Goal: Produce a stronger paper-ready evidence package by running real training w
 
 ### Pending Todos
 
-Begin Phase 62 execution.
+Begin Phase 63 execution.
 
 ### Blockers/Concerns
 
@@ -83,8 +84,8 @@ External baseline dependencies may not be installed or may require network acces
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: Phase 61 complete; Phase 62 ready
+Stopped at: Phase 62 complete; Phase 63 ready
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after Phase 61*
+*Last updated: 2026-04-19 after Phase 62*
