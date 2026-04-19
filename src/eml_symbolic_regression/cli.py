@@ -30,6 +30,7 @@ from .family_triage import (
 )
 from .optimize import TrainingConfig, fit_eml_tree
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
+from .paper_diagnostics import DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR, write_paper_diagnostics
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
@@ -411,6 +412,16 @@ def diagnostics_basin_bound_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def diagnostics_paper_ablations_command(args: argparse.Namespace) -> int:
+    paths = write_paper_diagnostics(output_dir=Path(args.output_dir))
+    print(
+        f"paper diagnostics: manifest -> {paths.manifest_json}; "
+        f"motifs -> {paths.motif_depth_deltas_json}; "
+        f"baselines -> {paths.baseline_diagnostics_json}"
+    )
+    return 0
+
+
 def paper_decision_command(args: argparse.Namespace) -> int:
     paths = write_paper_decision_package(
         tuple(Path(path) for path in args.aggregate or ()),
@@ -649,6 +660,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory for basin-bound.json and basin-bound.md.",
     )
     basin_bound.set_defaults(func=diagnostics_basin_bound_command)
+
+    paper_ablations = diagnostics_sub.add_parser(
+        "paper-ablations",
+        help="Write v1.11 paper ablation and baseline diagnostics from locked artifacts.",
+    )
+    paper_ablations.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_PAPER_DIAGNOSTICS_OUTPUT_DIR),
+        help="Directory for paper ablation/baseline diagnostic outputs.",
+    )
+    paper_ablations.set_defaults(func=diagnostics_paper_ablations_command)
     return parser
 
 
