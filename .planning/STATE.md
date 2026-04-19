@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.12
 milestone_name: Paper draft skeleton and refreshed shallow evidence
-current_phase: null
-current_phase_name: Not started
-status: defining_requirements
-stopped_at: milestone started
+current_phase: 64
+current_phase_name: Draft Skeleton and Claim Taxonomy
+status: roadmap_ready
+stopped_at: v1.12 roadmap ready
 last_updated: "2026-04-19T00:00:00.000Z"
-last_activity: 2026-04-19 -- Milestone v1.12 started
+last_activity: 2026-04-19 -- v1.12 roadmap created with phases 64-68
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -19,7 +19,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Not started
+**Current phase:** 64 - Draft Skeleton and Claim Taxonomy
 **Mode:** YOLO
 
 ## Project Reference
@@ -27,14 +27,14 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-19)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.12 paper draft skeleton, refreshed shallow/depth evidence, and paper-facing claim-boundary artifacts.
+**Current focus:** Phase 64 draft skeleton and claim taxonomy for the v1.12 paper package.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 64 - Draft Skeleton and Claim Taxonomy
 Plan: -
-Status: Defining requirements
-Last activity: 2026-04-19 -- Milestone v1.12 started
+Status: Roadmap ready
+Last activity: 2026-04-19 -- v1.12 roadmap created with phases 64-68
 Progress: [----------] 0% by completed phases
 
 ## Current Milestone
@@ -49,8 +49,8 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 |----------|------|--------|
 | Project context | `.planning/PROJECT.md` | Updated for v1.12 |
 | Archived v1.11 requirements | `.planning/milestones/v1.11-REQUIREMENTS.md` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Being defined for v1.12 |
-| Roadmap | `.planning/ROADMAP.md` | Pending v1.12 phases |
+| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.12 |
+| Roadmap | `.planning/ROADMAP.md` | Active v1.12 phases 64-68 |
 | Research summary | `.planning/research/SUMMARY.md` | Reuse existing context; no new domain research selected |
 | Workflow config | `.planning/config.json` | Complete |
 | Milestone log | `.planning/MILESTONES.md` | Complete through v1.11 |
@@ -70,8 +70,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 
 ### Pending Todos
 
-- Define v1.12 requirements and roadmap from the supplied nine-item milestone brief.
-- Archive or clear leftover v1.11 phase directories before creating v1.12 phase plans.
+- Start Phase 64 with `$gsd-discuss-phase 64` or `$gsd-plan-phase 64`.
 
 ### Blockers/Concerns
 
@@ -81,8 +80,8 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 ## Session Continuity
 
 Last session: 2026-04-19
-Stopped at: v1.12 milestone requirements definition
+Stopped at: v1.12 roadmap ready
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after starting v1.12 milestone*
+*Last updated: 2026-04-19 after creating v1.12 roadmap*

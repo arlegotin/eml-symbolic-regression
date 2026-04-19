@@ -1,8 +1,8 @@
 # Roadmap: EML Symbolic Regression
 
 **Updated:** 2026-04-19  
-**Current milestone:** None active after v1.11 closeout  
-**Phase numbering:** Continuing from v1.10 Phase 58.
+**Current milestone:** v1.12 Paper draft skeleton and refreshed shallow evidence  
+**Phase numbering:** Continuing from v1.11 Phase 63.
 
 ## Milestones
 
@@ -18,107 +18,119 @@
 - **v1.9 Raw-EML Hybrid Recovery and Paper Suite** - Phases 49-53 complete (completed 2026-04-17; archive: `.planning/milestones/v1.9-ROADMAP.md`)
 - **v1.10 Search-backed motif library and compiler shortening for logistic and Planck** - Phases 54-58 complete (completed 2026-04-18; archive: `.planning/milestones/v1.10-ROADMAP.md`)
 - **v1.11 Paper-strength evidence and figure package** - Phases 59-63 complete (completed 2026-04-19; archive: `.planning/milestones/v1.11-ROADMAP.md`)
+- **v1.12 Paper draft skeleton and refreshed shallow evidence** - Phases 64-68 active
 
 ## Current Status
 
-v1.11 is complete. The milestone produced a paper-ready evidence package by refreshing stale scientific-law paper rows, running real claim-safe training, adding low-hanging ablations and baseline diagnostics, generating plot-ready assets, and auditing all claims against source artifacts.
+v1.12 is active. The milestone turns `artifacts/paper/v1.11/` into a paper-shaped draft package, refreshes the small but reviewer-visible shallow/depth evidence, adds paper-facing motif/pipeline/negative-result/taxonomy artifacts, and keeps optional baseline and logistic strict-support probes bounded.
 
-## Completed v1.11 Phases
+## Active v1.12 Phases
 
-### Phase 59: Evidence Contracts and Source Locks
+### Phase 64: Draft Skeleton and Claim Taxonomy
 
-**Goal:** Define the v1.11 evidence contract before running new campaigns.
-
-**Scope:**
-- Create package source inventory and output-root contract for `artifacts/paper/v1.11/`.
-- Define claim ledger fields, evidence classes, denominator rules, figure/table schemas, and source-lock requirements.
-- Add v1.11 smoke/package tests that prevent stale logistic/Planck table rows and mixed-regime recovery claims.
-
-**Requirements:** PAPER-01, PAPER-02, PAPER-03, CLAIM-01, CLAIM-03
-
-**Success criteria:**
-- v1.11 package inputs and outputs are specified in code or test fixtures.
-- Logistic and Planck source rows are required to come from v1.10 focused artifacts.
-- The paper package cannot compute recovery from loss-only fields.
-
-### Phase 60: Claim-Safe Training Campaigns
-
-**Goal:** Run real current-code training in bounded regimes that can be honestly reported.
+**Goal:** Convert the v1.11 package into the first paper-shaped draft scaffold with claim boundaries visible from the start.
 
 **Scope:**
-- Add or reuse v1.11 suites for shallow pure-blind, scaffolded, warm-start/same-AST, perturbed-basin, and logistic/Planck probes.
-- Execute the suites and commit focused artifacts under `artifacts/campaigns/v1.11-*`.
-- Record commands, budgets, seeds, start modes, verifier status, and failure classes.
+- Create `artifacts/paper/v1.11/draft/` and section skeletons for abstract, methods, results, and limitations.
+- Use `paper-readiness.md`, `claim-audit.json`, existing figures/tables, and source locks as the draft's evidence base.
+- Add a paper-facing claim taxonomy table separating pure blind, scaffolded, warm-start, same-AST, perturbed-basin, repair/refit, compile-only, unsupported, and failed evidence classes.
+- Ensure draft language does not promote logistic or Planck from relaxed-depth improvement alone.
 
-**Requirements:** TRAIN-01, TRAIN-02, TRAIN-03, CLAIM-01
+**Requirements:** DRAFT-01, DRAFT-03, FIG-04
 
 **Success criteria:**
-- New v1.11 campaign artifacts include real training runs, not only compile diagnostics.
-- Unsupported logistic and Planck probes are reported honestly unless full strict/verifier support passes.
-- Aggregates expose enough lifecycle fields for later figures.
+1. Draft section files exist under `artifacts/paper/v1.11/draft/`.
+2. The claim taxonomy table defines denominator eligibility and safe public claim language.
+3. Draft text references the v1.11 source package and preserves regime separation.
+4. Logistic and Planck remain unsupported unless strict support evidence is actually produced later.
 
-### Phase 61: Ablation and Baseline Diagnostics
+### Phase 65: Shallow Seed and Depth-Curve Refresh
 
-**Goal:** Add low-hanging diagnostics that explain which hybrid pieces matter.
+**Goal:** Add small current-code evidence refreshes that strengthen the bounded shallow recovery and depth-limit story.
 
 **Scope:**
-- Generate motif-depth deltas for logistic, Planck, and currently supported scientific laws where metadata is available.
-- Generate regime comparison rows for blind/scaffolded/warm-start/perturbed outcomes.
-- Add repair/refit or candidate-pool diagnostic rows from archived or current evidence.
-- Add scoped local conventional baseline diagnostics when feasible, clearly separated from EML recovery.
+- Run additional shallow pure-blind seeds and additional shallow scaffolded seeds, targeting five to ten new seeds per regime while keeping runs cheap.
+- Run a current-code depth refresh over depths 2 through 5 with at least two seeds per depth.
+- Write aggregate tables with seeds, budgets, depth, start mode, evidence class, verifier outcome, failure/unsupported reason, and artifact paths.
+- Preserve archived v1.6 depth evidence as historical context while labeling v1.12 current-code rows separately.
 
-**Requirements:** ABL-01, ABL-02, ABL-03, BASE-01, CLAIM-02
+**Requirements:** EVID-01, EVID-02, EVID-03
 
 **Success criteria:**
-- Ablation rows identify changed variable, held constants, source artifacts, and limitations.
-- Baseline rows are diagnostic-only and do not affect recovery denominators.
-- Tests cover schema and fail-closed status labels.
+1. Shallow refresh artifacts include at least five new pure-blind seeds and five new scaffolded seeds or explicit runtime failure notes.
+2. Depth refresh artifacts cover depths 2, 3, 4, and 5 with at least two seeds each.
+3. Aggregates keep regimes and denominators separate.
+4. Source tables can drive updated depth and shallow-recovery paper figures without hidden recomputation.
 
-### Phase 62: Paper Figure and Table Data Pipeline
+### Phase 66: Paper-Facing Figures, Captions, and Negative Results
 
-**Goal:** Generate deterministic, plot-ready paper assets from locked evidence.
+**Goal:** Make the paper visually and tabularly legible with motif evolution, pipeline, captions, and explicit negative-result framing.
 
 **Scope:**
-- Add a paper asset generator for machine-readable source tables and deterministic SVG figures.
-- Emit regime recovery, depth degradation, scientific-law support, motif delta, training outcome/lifecycle, failure taxonomy, and baseline diagnostic assets.
-- Include figure metadata with denominators, included statuses, source tables, and claim boundaries.
+- Add figure and table captions under the draft package with source references.
+- Add a motif library evolution figure or table with before/after examples for logistic, Planck, Shockley, Arrhenius, and Michaelis-Menten where source evidence exists.
+- Add one visual EML tree or pipeline figure covering data, soft complete EML tree, snap, candidate pool/repair/refit, and verifier.
+- Add a logistic/Planck negative-results table showing compile support, relaxed-depth improvement, blind probe outcome, and promotion status.
 
-**Requirements:** FIG-01, FIG-02, PAPER-03
+**Requirements:** DRAFT-02, FIG-01, FIG-02, FIG-03
 
 **Success criteria:**
-- Every figure has adjacent source data and a manifest entry.
-- Figures are generated from artifact fields, not recomputed claim logic.
-- Tests verify representative figure/table generation and non-empty SVG output.
+1. Caption files cover every paper-facing figure/table produced or reused by the v1.12 package.
+2. Motif before/after numbers come from source-locked tables, with Planck depth-convention differences explained if present.
+3. The pipeline figure has adjacent metadata or source data and a regeneration command.
+4. Logistic and Planck negative rows visibly record no promotion unless strict support and verifier recovery pass.
 
-### Phase 63: Paper Package Assembly and Claim Audit
+### Phase 67: Bounded Baseline and Logistic Strict-Support Probes
 
-**Goal:** Assemble the final v1.11 paper evidence package and verify it is claim-safe.
+**Goal:** Attempt the two high-upside but failure-prone upgrades without letting them block the paper skeleton.
 
 **Scope:**
-- Generate `artifacts/paper/v1.11/` with manifest, source locks, tables, figures, claim ledger, claim boundaries, scientific-law table, and reproduction commands.
-- Audit logistic/Planck status, mixed-regime denominators, figure source coverage, and unsupported/failure visibility.
-- Update docs and planning state with actual results.
+- Check for locally available conventional symbolic-regression tooling, such as PySR or another installed SR comparator.
+- If feasible, run one lightweight diagnostic baseline and report it as diagnostic-only.
+- If unavailable or installation would become a time sink, record deferred/unavailable status with limitation text.
+- Attempt a bounded reusable-motif logistic strict-support push, preserving fail-closed compiler behavior and strict gate honesty.
 
-**Requirements:** PAPER-01, PAPER-02, PAPER-03, FIG-01, FIG-02, CLAIM-01, CLAIM-02, CLAIM-03
+**Requirements:** BASE-01, COMP-01
 
 **Success criteria:**
-- Final package is reproducible from recorded commands.
-- Scientific-law table reflects current evidence.
-- Claim audit passes without hiding unsupported rows or non-blind evidence classes.
+1. Baseline status is one of completed, deferred, or unavailable with explicit limitation text.
+2. Baseline diagnostics never enter EML recovery denominators.
+3. Logistic compiler changes, if any, are structural and validation-gated.
+4. Logistic remains unsupported unless strict support and verifier evidence pass.
+
+### Phase 68: Package Assembly, Source Locks, and Claim Audit
+
+**Goal:** Assemble the v1.12 supplement to the v1.11 paper package and verify that all draft claims are source-backed.
+
+**Scope:**
+- Update or supplement `artifacts/paper/v1.11/manifest.json`, `source-locks.json`, claim-audit outputs, and reproduction commands for v1.12 additions.
+- Source-lock draft skeletons, captions, refreshed evidence, figures, tables, baseline status, and logistic strict-support probe outputs.
+- Audit mixed-regime denominator safety, logistic/Planck promotion status, figure/table source coverage, and draft-section presence.
+- Update planning docs with actual results and next recommended manuscript work.
+
+**Requirements:** AUDIT-01, AUDIT-02, AUDIT-03
+
+**Success criteria:**
+1. All v1.12-added paper artifacts are listed in a manifest or supplement manifest.
+2. Claim audit passes or reports actionable blockers without hiding unsupported rows.
+3. Reproduction commands distinguish mandatory refreshes from optional/deferred probes.
+4. The next phase after v1.12 can focus on manuscript prose rather than evidence organization.
 
 ## Execution Order
 
-1. Phase 59
-2. Phase 60
-3. Phase 61
-4. Phase 62
-5. Phase 63
+1. Phase 64
+2. Phase 65
+3. Phase 66
+4. Phase 67
+5. Phase 68
 
 ## Notes
 
-- Keep v1.6, v1.9, and v1.10 artifacts immutable and use them as source-locked anchors.
-- Prefer small current-code reruns over broad compute-heavy campaigns.
-- Logistic and Planck remain unsupported unless the full existing strict contract passes.
+- Keep `artifacts/paper/v1.11/` as the root requested by the milestone brief, adding `draft/` and v1.12 supplement files rather than mutating source claims invisibly.
+- Keep all evidence regimes separate: pure blind, scaffolded, warm-start, same-AST, perturbed-basin, repair/refit, compile-only, unsupported, and failed.
+- Prefer small current-code reruns and paper-facing synthesis over broad new campaigns.
+- Baseline and logistic strict-support work are high-upside probes, not success preconditions.
+- Do not relax strict support gates for logistic or Planck.
 
 ---
-*Roadmap opened for v1.11 on 2026-04-19*
+*Roadmap opened for v1.12 on 2026-04-19*

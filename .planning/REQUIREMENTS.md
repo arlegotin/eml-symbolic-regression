@@ -92,27 +92,27 @@ Acceptance:
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DRAFT-01 | TBD | Pending |
-| DRAFT-02 | TBD | Pending |
-| DRAFT-03 | TBD | Pending |
-| EVID-01 | TBD | Pending |
-| EVID-02 | TBD | Pending |
-| EVID-03 | TBD | Pending |
-| FIG-01 | TBD | Pending |
-| FIG-02 | TBD | Pending |
-| FIG-03 | TBD | Pending |
-| FIG-04 | TBD | Pending |
-| BASE-01 | TBD | Pending |
-| COMP-01 | TBD | Pending |
-| AUDIT-01 | TBD | Pending |
-| AUDIT-02 | TBD | Pending |
-| AUDIT-03 | TBD | Pending |
+| DRAFT-01 | Phase 64 | Pending |
+| DRAFT-02 | Phase 66 | Pending |
+| DRAFT-03 | Phase 64 | Pending |
+| EVID-01 | Phase 65 | Pending |
+| EVID-02 | Phase 65 | Pending |
+| EVID-03 | Phase 65 | Pending |
+| FIG-01 | Phase 66 | Pending |
+| FIG-02 | Phase 66 | Pending |
+| FIG-03 | Phase 66 | Pending |
+| FIG-04 | Phase 64 | Pending |
+| BASE-01 | Phase 67 | Pending |
+| COMP-01 | Phase 67 | Pending |
+| AUDIT-01 | Phase 68 | Pending |
+| AUDIT-02 | Phase 68 | Pending |
+| AUDIT-03 | Phase 68 | Pending |
 
 **Coverage:**
 - v1.12 requirements: 15 total
-- Mapped to phases: 0
-- Unmapped: 15
+- Mapped to phases: 15
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-19*
-*Last updated: 2026-04-19 after starting v1.12 milestone*
+*Last updated: 2026-04-19 after creating v1.12 roadmap*
