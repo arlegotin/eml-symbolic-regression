@@ -6,7 +6,7 @@ current_phase: null
 current_phase_name: None
 status: Planning next milestone
 stopped_at: v1.13 archived
-last_updated: "2026-04-20T15:28:15.000Z"
+last_updated: "2026-04-20T15:42:52.000Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 8
@@ -34,7 +34,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 Phase: Milestone complete
 Plan: Complete
 Status: Planning next milestone
-Last activity: 2026-04-20 - Completed quick task 260420-o7r: README plot legend-only cleanup
+Last activity: 2026-04-20 - Completed quick task 260420-oij: README current narrative and plot labels
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
@@ -118,6 +118,7 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 | 2026-04-20 | README narrative and conservative target plots | Complete | `.planning/quick/260420-nuw-simplify-readme-release-narrative-and-re/` |
 | 2026-04-20 | README data-split plot gallery | Complete | `.planning/quick/260420-o1v-update-readme-plot-gallery-with-data-spl/` |
 | 2026-04-20 | README plot legend-only cleanup | Complete | `.planning/quick/260420-o7r-simplify-readme-plot-gallery-labels-and-/` |
+| 2026-04-20 | README current narrative and plot labels | Complete | `.planning/quick/260420-oij-remove-readme-release-framing-and-label-/` |
 
 ### Blockers/Concerns
 
