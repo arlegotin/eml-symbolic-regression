@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.13
 milestone_name: Publication-grade reproduction and validation
-current_phase: 74
-current_phase_name: Expanded Dataset and Manifest Suite
+current_phase: 75
+current_phase_name: Matched Conventional Baseline Harness
 status: Ready to discuss
 stopped_at: v1.12 archived
-last_updated: "2026-04-20T13:37:28.182Z"
+last_updated: "2026-04-20T13:50:35Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 8
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
-  percent: 63
+  completed_phases: 6
+  total_plans: 6
+  completed_plans: 6
+  percent: 75
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 74
+**Current phase:** 75
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 ## Current Position
 
-Phase: 74 - Expanded Dataset and Manifest Suite
+Phase: 75 - Matched Conventional Baseline Harness
 Plan: Not started
 Status: Ready to discuss
-Last activity: 2026-04-20 - Completed Phase 73 and advanced to Phase 74
-Progress: [######----] 63% by completed phases
+Last activity: 2026-04-20 - Completed Phase 74 and advanced to Phase 75
+Progress: [########--] 75% by completed phases
 
 ## Current Milestone
 
@@ -81,10 +81,11 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 - Training artifacts must label `guarded` versus `faithful` semantics, expose guard/anomaly/post-snap diagnostics, and surface verifier certificate/evidence labels.
 - Full guarded-versus-faithful publication-matrix ablations are enabled by Phase 71 and remain part of the Phase 76 evidence rebuild.
 - Basis-only and literal-constant benchmark tracks are separate v1.13 denominators. Publication claims should use the new v1.13 track suites when denominator purity matters.
+- Expanded dataset manifests now cover noisy synthetic, parameter-identifiability, multivariable, unit-aware, and real observational inputs. The Hubble fixture is real-data plumbing evidence, not an exact recovery target.
 
 ### Pending Todos
 
-- Continue Phase 74 with autonomous discuss, plan, and execute.
+- Continue Phase 75 with autonomous discuss, plan, and execute.
 
 ### Completed Quick Tasks
 
@@ -112,4 +113,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-20 after Phase 73 completion*
+*Last updated: 2026-04-20 after Phase 74 completion*
