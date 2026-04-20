@@ -1,19 +1,18 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.13
-milestone_name: Publication-grade reproduction and validation
-current_phase: 70
-current_phase_name: Layered Verifier and Split Isolation
+milestone_name: milestone
+current_phase: 70 - Layered Verifier and Split Isolation
 status: executing
-stopped_at: phase 69 complete
-last_updated: "2026-04-20T12:11:58.463Z"
-last_activity: 2026-04-20
+stopped_at: v1.12 archived
+last_updated: "2026-04-20T12:14:55.220Z"
+last_activity: 2026-04-20 -- Phase 70 planning complete
 progress:
   total_phases: 8
   completed_phases: 1
-  total_plans: 1
+  total_plans: 2
   completed_plans: 1
-  percent: 100
+  percent: 50
 ---
 
 # GSD State: EML Symbolic Regression
@@ -33,8 +32,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 Phase: 70 - Layered Verifier and Split Isolation
 Plan: Not started
-Status: Ready to discuss
-Last activity: 2026-04-20 - Completed Phase 69 and advanced to Phase 70
+Status: Ready to execute
+Last activity: 2026-04-20 -- Phase 70 planning complete
 Progress: [#---------] 12% by completed phases
 
 ## Current Milestone
