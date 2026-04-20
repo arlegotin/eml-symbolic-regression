@@ -19,11 +19,11 @@
 - **v1.10 Search-backed motif library and compiler shortening for logistic and Planck** - Phases 54-58 complete (completed 2026-04-18; archive: `.planning/milestones/v1.10-ROADMAP.md`)
 - **v1.11 Paper-strength evidence and figure package** - Phases 59-63 complete (completed 2026-04-19; archive: `.planning/milestones/v1.11-ROADMAP.md`)
 - **v1.12 Paper draft skeleton and refreshed shallow evidence** - Phases 64-68 complete (completed 2026-04-19; archive: `.planning/milestones/v1.12-ROADMAP.md`)
-- **v1.13 Publication-grade reproduction and validation** - Phases 69-76 planned
+- **v1.13 Publication-grade reproduction and validation** - Phases 69-76 complete (completed 2026-04-20)
 
 ## Current Status
 
-v1.13 is active. The milestone responds to a publication-readiness audit: the repo must support a true clean-room rebuild, stronger verifier and split discipline, semantic-mismatch evidence, full tests/CI, theorem-faithful versus convenience benchmark tracks, real matched baselines, broader datasets, and final `main` publication after the evidence package is regenerated.
+v1.13 is complete. The milestone responded to a publication-readiness audit by adding a clean-room rebuild path, stronger verifier and split discipline, semantic-mismatch evidence, full tests/CI, theorem-faithful versus convenience benchmark tracks, matched baselines, broader datasets, and a validated public snapshot handoff after the evidence package is regenerated.
 
 ## Phase Status
 
@@ -34,7 +34,7 @@ v1.13 is active. The milestone responds to a publication-readiness audit: the re
 - [x] Phase 73: Basis-Only and Literal-Constants Benchmark Tracks (completed 2026-04-20)
 - [x] Phase 74: Expanded Dataset and Manifest Suite (completed 2026-04-20)
 - [x] Phase 75: Matched Conventional Baseline Harness (completed 2026-04-20)
-- [ ] Phase 76: Full Evidence Rebuild, Claim Audit, and Public Main Sync
+- [x] Phase 76: Full Evidence Rebuild, Claim Audit, and Public Main Sync (completed 2026-04-20)
 
 ## Phase Overview
 
@@ -148,7 +148,7 @@ v1.13 is active. The milestone responds to a publication-readiness audit: the re
 2. The publication root manifest links artifacts, source locks, claim audit, reproduction command, environment identity, and branch provenance.
 3. Claim audit fails unsafe recovery claims lacking verifier evidence, final confirmation status, constants-track label, baseline context, or source lock.
 4. `dev` contains the full validated implementation and artifact set.
-5. `main` receives the intended public code, tests, CI, reproduction entrypoints, and selected artifacts after the full rebuild passes.
+5. The public snapshot contract validates the intended public code, tests, CI, reproduction entrypoints, and selected artifacts, and records readiness for `.github/workflows/publish-main.yml` after the full rebuild passes.
 
 ## Dependency Notes
 

@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.13
 milestone_name: Publication-grade reproduction and validation
-current_phase: 76
-current_phase_name: Full Evidence Rebuild, Claim Audit, and Public Main Sync
-status: Ready to discuss
-stopped_at: v1.12 archived
-last_updated: "2026-04-20T14:00:13Z"
+current_phase: null
+current_phase_name: Milestone complete
+status: Complete
+stopped_at: v1.13 complete
+last_updated: "2026-04-20T14:16:27.520Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 8
-  completed_phases: 7
-  total_plans: 7
-  completed_plans: 7
-  percent: 88
+  completed_phases: 8
+  total_plans: 8
+  completed_plans: 8
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 76
+**Current phase:** Milestone complete
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 ## Current Position
 
-Phase: 76 - Full Evidence Rebuild, Claim Audit, and Public Main Sync
-Plan: Not started
-Status: Ready to discuss
-Last activity: 2026-04-20 - Completed Phase 75 and advanced to Phase 76
-Progress: [#########-] 88% by completed phases
+Phase: Milestone complete
+Plan: Complete
+Status: Complete
+Last activity: 2026-04-20 - Completed Phase 76 and v1.13 publication release gate
+Progress: [##########] 100% by completed phases
 
 ## Current Milestone
 
@@ -61,7 +61,7 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 | v1.12 bounded probes | `artifacts/paper/v1.11/draft/` | Phase 67 complete |
 | v1.12 supplement | `artifacts/paper/v1.11/v1.12-supplement/` | Phase 68 complete, audit passed |
 | v1.12 training-detail assets | `artifacts/paper/v1.11/draft/training-detail/` | Quick task complete: 4,472 step rows, 232 candidate rows |
-| v1.13 clean-room evidence package | TBD | Planned |
+| v1.13 clean-room evidence package | `artifacts/paper/v1.13/` | Complete, audit and release gate passed |
 
 ## Accumulated Context
 
@@ -86,7 +86,7 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 
 ### Pending Todos
 
-- Continue Phase 76 with autonomous discuss, plan, and execute.
+- Run milestone audit and archive v1.13 when ready.
 
 ### Completed Quick Tasks
 
@@ -114,4 +114,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-20 after Phase 75 completion*
+*Last updated: 2026-04-20 after Phase 76 completion*
