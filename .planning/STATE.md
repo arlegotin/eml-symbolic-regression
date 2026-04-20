@@ -1,59 +1,59 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.12
-milestone_name: Paper draft skeleton and refreshed shallow evidence
-current_phase: 68
-current_phase_name: Package Assembly, Source Locks, and Claim Audit
-status: milestone_complete
-stopped_at: v1.12 archived
-last_updated: "2026-04-20T11:38:02.000Z"
+milestone: v1.13
+milestone_name: Publication-grade reproduction and validation
+current_phase: null
+current_phase_name: Defining requirements
+status: defining_requirements
+stopped_at: milestone started
+last_updated: "2026-04-20T00:00:00.000Z"
 last_activity: 2026-04-20
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 68 - Package Assembly, Source Locks, and Claim Audit
+**Current phase:** Not started - defining v1.13 requirements
 **Mode:** YOLO
 
 ## Project Reference
 
-See: `.planning/PROJECT.md` (updated 2026-04-19)
+See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.12 archived; no active milestone.
+**Current focus:** v1.13 publication-grade reproduction and validation.
 
 ## Current Position
 
-Phase: 68 - Package Assembly, Source Locks, and Claim Audit
-Plan: Complete
-Status: Milestone archived
-Last activity: 2026-04-20 - Completed quick task 260420-ixp: return tests to generated main branch
-Progress: [##########] 100% by completed phases
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-20 - Milestone v1.13 started from publication-readiness audit
+Progress: [----------] 0% by completed phases
 
 ## Current Milestone
 
-**v1.12: Paper draft skeleton and refreshed shallow evidence**
+**v1.13: Publication-grade reproduction and validation**
 
-Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing the most reviewer-visible shallow/depth evidence and making claim boundaries explicit.
+Goal: Build a clean-room publication path that can regenerate the paper evidence from an empty checkout, strengthen verifier and split discipline, add real CI/test coverage, run dual-track and matched-baseline evidence, and publish the resulting code and artifacts safely to `main`.
 
 ## Artifacts
 
 | Artifact | Path | Status |
 |----------|------|--------|
-| Project context | `.planning/PROJECT.md` | Updated for v1.12 |
-| Archived v1.11 requirements | `.planning/milestones/v1.11-REQUIREMENTS.md` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.12 |
-| Roadmap | `.planning/ROADMAP.md` | Active v1.12 phases 64-68 |
+| Project context | `.planning/PROJECT.md` | Updated for v1.13 |
+| Archived v1.12 requirements | `.planning/milestones/v1.12-REQUIREMENTS.md` | Complete |
+| Requirements | `.planning/REQUIREMENTS.md` | Pending v1.13 definition |
+| Roadmap | `.planning/ROADMAP.md` | Pending v1.13 roadmap |
 | Research summary | `.planning/research/SUMMARY.md` | Reuse existing context; no new domain research selected |
 | Workflow config | `.planning/config.json` | Complete |
-| Milestone log | `.planning/MILESTONES.md` | Complete through v1.11 |
+| Milestone log | `.planning/MILESTONES.md` | Complete through v1.12 |
 | v1.11 final paper package | `artifacts/paper/v1.11/` | Complete, audit passed |
 | v1.12 draft skeleton | `artifacts/paper/v1.11/draft/` | Phase 64 complete |
 | v1.12 evidence refresh | `artifacts/campaigns/v1.12-evidence-refresh/` | Phase 65 complete |
@@ -61,6 +61,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 | v1.12 bounded probes | `artifacts/paper/v1.11/draft/` | Phase 67 complete |
 | v1.12 supplement | `artifacts/paper/v1.11/v1.12-supplement/` | Phase 68 complete, audit passed |
 | v1.12 training-detail assets | `artifacts/paper/v1.11/draft/training-detail/` | Quick task complete: 4,472 step rows, 232 candidate rows |
+| v1.13 clean-room evidence package | TBD | Planned |
 
 ## Accumulated Context
 
@@ -73,10 +74,14 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 - Additional shallow/depth seeds are credibility refreshes, not a change in the claim standard.
 - Conventional symbolic-regression comparison is useful but must not become a time sink; unavailable dependencies should be reported as deferred.
 - A logistic strict-support push is bounded compiler work and may fail; no gate relaxation is allowed.
+- v1.13 supersedes the manuscript-prose next step because publication-readiness gaps are now the blocking issue.
+- Clean-room reproduction, verifier strength, leakage removal, semantics mismatch quantification, dual benchmark tracks, matched baselines, expanded datasets, and final `main` publication are all in scope.
+- Placeholder snapshot metadata may remain only in deterministic-test fixtures, not in final paper/publication manifests.
+- Candidate selection and final confirmation data must be separated unless symbolic equivalence is established.
 
 ### Pending Todos
 
-- Start the next milestone with `$gsd-new-milestone`.
+- Define v1.13 requirements and roadmap, then begin Phase 69.
 
 ### Completed Quick Tasks
 
@@ -104,4 +109,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-20 after sanitized main publishing automation*
+*Last updated: 2026-04-20 after v1.13 milestone start*
