@@ -15,10 +15,10 @@
 
 ### Automated Tests and CI
 
-- [ ] **TEST-01**: Contributor can run unit tests covering EML semantics, complex principal-branch behavior, compiler output, verifier contracts, and artifact manifest validation.
-- [ ] **TEST-02**: Contributor can run integration tests covering a minimal evidence-regression pipeline from training through artifact generation.
-- [ ] **TEST-03**: CI runs the unit suite, selected integration/evidence smoke tests, clean-room reproduction smoke, and public snapshot checks on relevant branch and pull-request events.
-- [ ] **TEST-04**: CI preserves branch discipline by validating that `dev` has full source/test coverage and that `main` receives only the intended public snapshot contents.
+- [x] **TEST-01**: Contributor can run unit tests covering EML semantics, complex principal-branch behavior, compiler output, verifier contracts, and artifact manifest validation.
+- [x] **TEST-02**: Contributor can run integration tests covering a minimal evidence-regression pipeline from training through artifact generation.
+- [x] **TEST-03**: CI runs the unit suite, selected integration/evidence smoke tests, clean-room reproduction smoke, and public snapshot checks on relevant branch and pull-request events.
+- [x] **TEST-04**: CI preserves branch discipline by validating that `dev` has full source/test coverage and that `main` receives only the intended public snapshot contents.
 
 ### Verifier and Split Discipline
 
@@ -92,10 +92,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REPRO-03 | Phase 69 | Complete |
 | REPRO-04 | Phase 69 | Complete |
 | REPRO-05 | Phase 69 | Complete |
-| TEST-01 | Phase 72 | Pending |
-| TEST-02 | Phase 72 | Pending |
-| TEST-03 | Phase 72 | Pending |
-| TEST-04 | Phase 72 | Pending |
+| TEST-01 | Phase 72 | Complete |
+| TEST-02 | Phase 72 | Complete |
+| TEST-03 | Phase 72 | Complete |
+| TEST-04 | Phase 72 | Complete |
 | VERIF-01 | Phase 70 | Complete |
 | VERIF-02 | Phase 70 | Complete |
 | VERIF-03 | Phase 70 | Complete |
