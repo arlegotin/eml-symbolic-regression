@@ -122,7 +122,7 @@ def _target_scalar_from_split(split: DataSplit, context: Mapping[str, Any]) -> c
 
 
 def _symbolic_status(candidate: Candidate, target_sympy: sp.Expr | None, splits: list[DataSplit]) -> str:
-    symbolic_target = target_sympy or next((split.target_sympy for split in splits if split.target_sympy is not None), None)
+    symbolic_target = target_sympy if target_sympy is not None else next((split.target_sympy for split in splits if split.target_sympy is not None), None)
     if symbolic_target is None:
         return "unsupported_no_target"
     try:

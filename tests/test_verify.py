@@ -122,6 +122,19 @@ def test_verify_candidate_reports_symbolic_probes_certificate_and_roles():
     assert payload["metric_roles"]["diagnostic"] == 1
 
 
+def test_verify_candidate_accepts_zero_symbolic_target():
+    split = DataSplit(
+        name="verifier",
+        inputs={"x": np.asarray([0.0, 1.0], dtype=np.float64)},
+        target=np.asarray([0.0, 0.0], dtype=np.complex128),
+    )
+
+    report = verify_candidate(_StubCandidate(numpy_value=0.0, sympy_expr=sp.Integer(0)), [split], target_sympy=sp.Integer(0))
+
+    assert report.status == "recovered"
+    assert report.symbolic_status == "passed"
+
+
 def test_verify_candidate_labels_unsupported_layers_when_no_target_metadata():
     report = verify_candidate(_StubCandidate(numpy_value=1.0), [_split()], tolerance=1e-8)
 
