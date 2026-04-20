@@ -4,7 +4,12 @@ from pathlib import Path
 import pytest
 
 from eml_symbolic_regression.cli import build_parser, publication_rebuild_command
-from eml_symbolic_regression.publication import PublicationRebuildError, validate_publication_package, write_publication_rebuild
+from eml_symbolic_regression.publication import (
+    PublicationRebuildError,
+    build_publication_claim_audit,
+    validate_publication_package,
+    write_publication_rebuild,
+)
 
 
 def _json(path):
@@ -59,6 +64,114 @@ def test_publication_rebuild_cli_writes_package(tmp_path, capsys):
     assert "(passed)" in captured
     assert (output_dir / "manifest.json").exists()
     assert (output_dir / "validation.json").exists()
+
+
+def test_publication_rebuild_smoke_writes_audit_and_release_gate(tmp_path):
+    paths = write_publication_rebuild(output_dir=tmp_path / "paper", smoke=True, overwrite=True, allow_dirty=True)
+    manifest = _json(paths.manifest_json)
+    audit = _json(paths.claim_audit_json)
+    gate = _json(paths.release_gate_json)
+
+    assert audit["status"] == "skipped"
+    assert gate["status"] == "skipped"
+    assert manifest["claim_audit"]["json"].endswith("claim-audit.json")
+    assert manifest["release_gate"]["json"].endswith("release-gate.json")
+    assert any(row["path"].endswith("claim-audit.json") for row in manifest["outputs"])
+    assert any(row["path"].endswith("release-gate.json") for row in manifest["outputs"])
+
+
+def test_publication_claim_audit_passes_recovered_rows_with_verifier_and_baseline_context(tmp_path):
+    artifact = tmp_path / "run.json"
+    artifact.write_text(
+        json.dumps(
+            {
+                "compiled_eml_verification": {
+                    "status": "recovered",
+                    "metric_roles": {"training": 1, "diagnostic": 2, "final_confirmation": 0},
+                    "dense_random_status": "passed",
+                    "adversarial_status": "passed",
+                    "high_precision_status": "performed",
+                    "high_precision_max_error": 0.0,
+                    "tolerance": 1e-8,
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    aggregate = tmp_path / "aggregate.json"
+    aggregate.write_text(
+        json.dumps(
+            {
+                "counts": {"failed": 0, "execution_error": 0, "unsupported": 1},
+                "tracks": [{"track": "basis_only"}, {"track": "literal_constants"}],
+                "runs": [
+                    {
+                        "run_id": "exp-basis",
+                        "case_id": "exp-basis",
+                        "formula": "exp",
+                        "claim_status": "recovered",
+                        "benchmark_track": "basis_only",
+                        "constants_policy": "basis_only",
+                        "artifact_path": str(artifact),
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    baseline_manifest = tmp_path / "baseline-manifest.json"
+    baseline_manifest.write_text(json.dumps({"denominator_policy": "excluded_from_eml_recovery_denominators"}), encoding="utf-8")
+
+    audit = build_publication_claim_audit(
+        {
+            "paper_tracks": {"aggregate_json": str(aggregate)},
+            "baseline_harness": {"manifest_json": str(baseline_manifest)},
+        }
+    )
+
+    assert audit["status"] == "passed"
+    assert audit["recovered_claims"][0]["final_confirmation_status"] == "dense_adversarial_verifier_substitute"
+
+
+def test_publication_claim_audit_fails_missing_track_labels(tmp_path):
+    artifact = tmp_path / "run.json"
+    artifact.write_text(
+        json.dumps(
+            {
+                "verification": {
+                    "status": "recovered",
+                    "metric_roles": {"final_confirmation": 1},
+                    "dense_random_status": "passed",
+                    "adversarial_status": "passed",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    aggregate = tmp_path / "aggregate.json"
+    aggregate.write_text(
+        json.dumps(
+            {
+                "counts": {"failed": 0, "execution_error": 0, "unsupported": 0},
+                "tracks": [{"track": "basis_only"}, {"track": "literal_constants"}],
+                "runs": [{"run_id": "bad", "claim_status": "recovered", "artifact_path": str(artifact)}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    baseline_manifest = tmp_path / "baseline-manifest.json"
+    baseline_manifest.write_text(json.dumps({"denominator_policy": "excluded_from_eml_recovery_denominators"}), encoding="utf-8")
+
+    audit = build_publication_claim_audit(
+        {
+            "paper_tracks": {"aggregate_json": str(aggregate)},
+            "baseline_harness": {"manifest_json": str(baseline_manifest)},
+        }
+    )
+
+    assert audit["status"] == "failed"
+    checks = {check["id"]: check for check in audit["checks"]}
+    assert checks["recovered_rows_have_track_labels"]["status"] == "failed"
 
 
 def test_publication_validation_rejects_placeholder_metadata(tmp_path):

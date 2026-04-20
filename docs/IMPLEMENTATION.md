@@ -173,7 +173,15 @@ Phase 69 adds a clean-room publication rebuild entrypoint:
 PYTHONPATH=src python -m eml_symbolic_regression.cli publication-rebuild --output-dir artifacts/paper/v1.13 --smoke --overwrite
 ```
 
-The `--smoke` mode is a fast package-shape and provenance check. It writes a v1.13 publication root with `manifest.json`, `source-locks.json`, `reproduction.md`, `validation.json`, and `validation.md`. The full publication evidence campaign is not claimed by Phase 69 alone; the final full rebuild, claim audit, and release gate belong to the later publication rebuild/release phase.
+The `--smoke` mode is a fast package-shape and provenance check. It writes a v1.13 publication root with `manifest.json`, `source-locks.json`, `reproduction.md`, `claim-audit.json`, `release-gate.json`, `validation.json`, and Markdown companions. In smoke mode, claim audit and release gate are marked `skipped`.
+
+The full Phase 76 release gate is:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli publication-rebuild --output-dir artifacts/paper/v1.13 --overwrite --allow-dirty
+```
+
+Full mode regenerates the v1.13 paper-track campaign, matched baseline harness, expanded dataset manifests, claim audit, release gate, source locks, and publication validation. The release gate validates the dev branch and a synthetic public snapshot locally. It does not force-push `main`; sanitized public publication remains delegated to `.github/workflows/publish-main.yml` after `dev` is pushed.
 
 The publication manifest uses schema `eml.v113_publication_rebuild.v1` and records:
 
