@@ -10,6 +10,38 @@ This project turns that idea into a symbolic-regression engine. Instead of askin
 
 The short version: it is a PyTorch-first, verifier-gated equation discovery package for compact elementary formulas.
 
+## Current Release Evidence
+
+The v1.13 release package is source-locked under `artifacts/paper/v1.13/`. The release gate passed, the claim audit passed, and the final paper-track campaign ran 24 configured rows with zero execution failures.
+
+The headline numbers are deliberately split by evidence regime:
+
+| Track | Rows | Verifier recovered | Unsupported | Failed | What it means |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Basis-only compile track | 12 | 1 | 11 | 0 | Strict `{1, eml, variables}` style support is still narrow. |
+| Literal-constant warm-start track | 12 | 8 | 4 | 0 | Exact basins are strong when useful constants and seeds are explicit. |
+| Combined | 24 | 9 | 15 | 0 | 37.5% verifier-owned recovery, with unsupported cases kept in the denominator. |
+
+Those 9 recoveries are not all the same kind of claim: 1 is compile-only verified evidence, and 8 are same-AST warm-start returns. The release does not claim broad blind symbolic-regression superiority.
+
+| Recovery by formula | Recovery by start mode |
+| --- | --- |
+| ![Verifier recovery rate by formula](artifacts/campaigns/v1.13-paper-tracks-final/figures/recovery-by-formula.svg) | ![Verifier recovery rate by start mode](artifacts/campaigns/v1.13-paper-tracks-final/figures/recovery-by-start-mode.svg) |
+
+| Unsupported taxonomy | Training loss before and after snap |
+| --- | --- |
+| ![Failure and unsupported taxonomy](artifacts/campaigns/v1.13-paper-tracks-final/figures/failure-taxonomy.svg) | ![Training loss before and after snap](artifacts/campaigns/v1.13-paper-tracks-final/figures/loss-before-after-snap.svg) |
+
+Useful release artifacts:
+
+- `artifacts/paper/v1.13/manifest.json`: root publication manifest.
+- `artifacts/paper/v1.13/claim-audit.md`: claim audit, status `passed`.
+- `artifacts/paper/v1.13/release-gate.md`: release gate, status `passed`.
+- `artifacts/paper/v1.13/reproduction.md`: reproduction command and environment notes.
+- `artifacts/campaigns/v1.13-paper-tracks-final/tables/`: campaign tables.
+- `artifacts/baselines/v1.13/baseline-report.md`: matched baseline harness report.
+- `artifacts/datasets/v1.13/`: expanded dataset manifests.
+
 ## The Trick
 
 EML expressions are built from one repeated binary node:
@@ -126,6 +158,30 @@ Run the small smoke benchmark:
 eml-sr benchmark smoke
 ```
 
+Run the v1.13 paper-track campaign:
+
+```bash
+eml-sr campaign paper-tracks --output-root artifacts/campaigns --label v1.13-paper-tracks-final --overwrite
+```
+
+Rebuild the publication package:
+
+```bash
+eml-sr publication-rebuild --output-dir artifacts/paper/v1.13 --overwrite --allow-dirty
+```
+
+List expanded datasets:
+
+```bash
+eml-sr list-datasets
+```
+
+Run the matched baseline harness:
+
+```bash
+eml-sr baseline-harness --output-dir artifacts/baselines/v1.13 --overwrite
+```
+
 Run tests:
 
 ```bash
@@ -171,6 +227,7 @@ This is not a claim that arbitrary deep formulas can be discovered blindly. The 
 - warm starts can show that useful basins exist;
 - compiler paths can prove representability and provide seeds;
 - repairs can rescue some failed exact candidates, but they are still repair evidence;
+- basis-only and literal-constant runs have separate denominators;
 - every recovery claim belongs to the verifier, not the optimizer.
 
 That is the point of the package: make symbolic-regression experiments over EML trees concrete, reproducible, and hard to overstate.
