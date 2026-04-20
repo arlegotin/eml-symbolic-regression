@@ -36,13 +36,13 @@ Complete. Phase 70 adds layered verifier evidence fields and split-role isolatio
 PYTHONPATH=src python -m pytest tests/test_verify.py -q
 ```
 
-Result: passed, 7 tests.
+Result: passed, 8 tests.
 
 ```bash
 PYTHONPATH=src python -m pytest tests/test_verify.py tests/test_optimizer_cleanup.py tests/test_benchmark_reports.py -q
 ```
 
-Result: passed, 32 tests with 2 pre-existing numerical warnings from centered-family semantics.
+Result: passed, 33 tests with 2 pre-existing numerical warnings from centered-family semantics.
 
 ```bash
 python -m compileall -q src/eml_symbolic_regression/verify.py src/eml_symbolic_regression/optimize.py
@@ -65,7 +65,7 @@ Result: `recovered passed passed passed symbolic_equivalence symbolic {'training
 
 ## Commit
 
-Implementation commit: `788cecb`.
+Implementation commits: `788cecb`, `f63c63c`.
 
 ## Notes
 
