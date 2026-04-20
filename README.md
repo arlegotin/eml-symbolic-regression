@@ -49,7 +49,13 @@ Training mode can use numerical safety guards. Verification mode is stricter: sn
 
 ## What The Fits Look Like
 
-Each plot below shows sampled training points, the target function, and the candidate curve used by the verifier. For exact or same-AST cases, the candidate rides directly on top of the target. Planck is included as a stretch diagnostic, not as a recovered EML claim.
+Each panel shows sampled training points, the target function, and a candidate or diagnostic curve. Good cases should sit directly on the target. Bad cases are included on purpose: they show what a failed or stretch diagnostic looks like when the shape is not recovered.
+
+Good fits:
+
+![exp target and candidate curve](readme-assets/approximation-exp.svg)
+
+![log target and candidate curve](readme-assets/approximation-log.svg)
 
 ![Beer-Lambert target and candidate curve](readme-assets/approximation-beer-lambert.svg)
 
@@ -57,7 +63,13 @@ Each plot below shows sampled training points, the target function, and the cand
 
 ![Michaelis-Menten target and candidate curve](readme-assets/approximation-michaelis-menten.svg)
 
+Failed and stretch diagnostics:
+
 ![Planck target and diagnostic curve](readme-assets/approximation-planck.svg)
+
+![Logistic target and diagnostic curve](readme-assets/approximation-logistic.svg)
+
+![Damped oscillator target and diagnostic curve](readme-assets/approximation-damped-oscillator.svg)
 
 ## What Counts As Recovery
 
