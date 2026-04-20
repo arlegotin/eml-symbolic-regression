@@ -45,8 +45,8 @@
 - [x] **TRACK-03**: Aggregate reports keep basis-only and literal-constant-augmented denominators separate.
 - [ ] **BASE-01**: Maintainer can run EML and conventional symbolic-regression baselines through one standardized harness using identical datasets, seeds, budgets, constants policies, and blind/warm-start conditions.
 - [ ] **BASE-02**: Baseline integrations are dependency-checked, source-locked, fail-closed, and reported without changing EML recovery denominators.
-- [ ] **DATA-01**: Benchmark datasets include noisy synthetic sweeps, parameter-identifiability stress tests, multivariable cases, unit-aware formulations, and real datasets with independent test splits.
-- [ ] **DATA-02**: Dataset manifests record generator or source, units, noise policy, split policy, domain constraints, and whether the target is synthetic, semi-synthetic, or real.
+- [x] **DATA-01**: Benchmark datasets include noisy synthetic sweeps, parameter-identifiability stress tests, multivariable cases, unit-aware formulations, and real datasets with independent test splits.
+- [x] **DATA-02**: Dataset manifests record generator or source, units, noise policy, split policy, domain constraints, and whether the target is synthetic, semi-synthetic, or real.
 
 ### Publication Package and Release
 
@@ -113,8 +113,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TRACK-03 | Phase 73 | Complete |
 | BASE-01 | Phase 75 | Pending |
 | BASE-02 | Phase 75 | Pending |
-| DATA-01 | Phase 74 | Pending |
-| DATA-02 | Phase 74 | Pending |
+| DATA-01 | Phase 74 | Complete |
+| DATA-02 | Phase 74 | Complete |
 | PUB-01 | Phase 76 | Pending |
 | PUB-02 | Phase 76 | Pending |
 | PUB-03 | Phase 76 | Pending |
