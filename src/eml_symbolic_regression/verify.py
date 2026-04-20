@@ -7,6 +7,7 @@ from typing import Any, Callable, Mapping
 
 import mpmath as mp
 import numpy as np
+import sympy as sp
 
 from .expression import Candidate
 
@@ -17,6 +18,9 @@ class DataSplit:
     inputs: dict[str, np.ndarray]
     target: np.ndarray
     target_mpmath: Callable[[Mapping[str, Any]], mp.mpc] | None = None
+    target_sympy: sp.Expr | None = None
+    role: str | None = None
+    domain: dict[str, tuple[float, float]] | None = None
 
     def sample_mpmath_contexts(self, limit: int = 8) -> list[dict[str, Any]]:
         count = min(limit, len(next(iter(self.inputs.values()))))
@@ -30,6 +34,7 @@ class DataSplit:
 @dataclass(frozen=True)
 class SplitResult:
     name: str
+    role: str
     max_abs_error: float
     mse: float
     max_imag_residue: float
@@ -45,6 +50,14 @@ class VerificationReport:
     high_precision_max_error: float
     tolerance: float
     high_precision_status: str = "performed"
+    symbolic_status: str = "unsupported_no_target"
+    dense_random_status: str = "unsupported_no_target_evaluator"
+    adversarial_status: str = "unsupported_no_target_evaluator"
+    certificate_status: str = "unsupported_interval_certificate"
+    evidence_level: str = "split_numeric"
+    metric_roles: dict[str, int] | None = None
+    dense_random_max_error: float | None = None
+    adversarial_max_error: float | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -54,8 +67,47 @@ class VerificationReport:
             "tolerance": self.tolerance,
             "high_precision_max_error": self.high_precision_max_error,
             "high_precision_status": self.high_precision_status,
+            "symbolic_status": self.symbolic_status,
+            "dense_random_status": self.dense_random_status,
+            "dense_random_max_error": self.dense_random_max_error,
+            "adversarial_status": self.adversarial_status,
+            "adversarial_max_error": self.adversarial_max_error,
+            "certificate_status": self.certificate_status,
+            "evidence_level": self.evidence_level,
+            "metric_roles": dict(self.metric_roles or {}),
             "split_results": [result.__dict__ for result in self.split_results],
         }
+
+
+def split_role(split: DataSplit) -> str:
+    """Return the metric role for a split, with compatibility inference from names."""
+
+    if split.role:
+        return split.role
+    name = split.name.lower().replace("-", "_")
+    if name in {"train", "training"} or name.startswith("train_"):
+        return "training"
+    if "final" in name or "confirmation" in name:
+        return "final_confirmation"
+    if "selection" in name or "rank" in name:
+        return "selection"
+    if "heldout" in name or "holdout" in name or "extrap" in name or "diagnostic" in name:
+        return "diagnostic"
+    return "verifier"
+
+
+def metric_role_counts(splits: list[DataSplit]) -> dict[str, int]:
+    counts = {"training": 0, "selection": 0, "diagnostic": 0, "verifier": 0, "final_confirmation": 0}
+    for split in splits:
+        role = split_role(split)
+        counts[role] = counts.get(role, 0) + 1
+    return counts
+
+
+def selection_candidate_splits(splits: list[DataSplit]) -> list[DataSplit]:
+    """Return splits allowed to influence candidate ranking."""
+
+    return [split for split in splits if split_role(split) != "final_confirmation"]
 
 
 def _target_scalar_from_split(split: DataSplit, context: Mapping[str, Any]) -> complex | mp.mpc:
@@ -69,6 +121,108 @@ def _target_scalar_from_split(split: DataSplit, context: Mapping[str, Any]) -> c
     return complex(split.target[int(matches[0])])
 
 
+def _symbolic_status(candidate: Candidate, target_sympy: sp.Expr | None, splits: list[DataSplit]) -> str:
+    symbolic_target = target_sympy or next((split.target_sympy for split in splits if split.target_sympy is not None), None)
+    if symbolic_target is None:
+        return "unsupported_no_target"
+    try:
+        difference = sp.simplify(candidate.to_sympy() - symbolic_target)
+    except Exception:  # noqa: BLE001 - verifier reports unsupported symbolic paths instead of failing the run.
+        return "unsupported_symbolic_error"
+    if difference == 0:
+        return "passed"
+    try:
+        return "passed" if sp.simplify(difference) == 0 else "failed"
+    except Exception:  # noqa: BLE001 - simplification can fail on branch-sensitive expressions.
+        return "failed"
+
+
+def _split_domain(split: DataSplit) -> dict[str, tuple[float, float]]:
+    if split.domain is not None:
+        return dict(split.domain)
+    domain: dict[str, tuple[float, float]] = {}
+    for name, values in split.inputs.items():
+        real_values = np.asarray(values, dtype=np.float64)
+        domain[name] = (float(np.min(real_values)), float(np.max(real_values)))
+    return domain
+
+
+def _probe_status(
+    candidate: Candidate,
+    splits: list[DataSplit],
+    *,
+    tolerance: float,
+    mode: str,
+    count: int,
+    seed: int,
+) -> tuple[str, float | None]:
+    if count <= 0:
+        return "skipped", None
+    eligible = [split for split in splits if split.target_mpmath is not None]
+    if not eligible:
+        return "unsupported_no_target_evaluator", None
+    max_error = 0.0
+    any_context = False
+    rng = np.random.default_rng(seed)
+    for split in eligible:
+        contexts = _random_probe_contexts(split, count=count, rng=rng) if mode == "dense_random" else _adversarial_contexts(split, count=count)
+        for context in contexts:
+            any_context = True
+            try:
+                mp.mp.dps = 80
+                pred = candidate.evaluate_mpmath(context)
+                target = mp.mpc(split.target_mpmath(context))
+                max_error = max(max_error, float(abs(pred - target)))
+            except Exception:  # noqa: BLE001 - probe failures are verifier failures for this layer.
+                return "failed", float("inf")
+    if not any_context:
+        return "unsupported_no_domain", None
+    return ("passed" if max_error <= tolerance else "failed"), max_error
+
+
+def _random_probe_contexts(split: DataSplit, *, count: int, rng: np.random.Generator) -> list[dict[str, Any]]:
+    domain = _split_domain(split)
+    contexts: list[dict[str, Any]] = []
+    for _ in range(count):
+        contexts.append({name: float(rng.uniform(low, high)) for name, (low, high) in domain.items()})
+    return contexts
+
+
+def _adversarial_contexts(split: DataSplit, *, count: int) -> list[dict[str, Any]]:
+    domain = _split_domain(split)
+    if not domain:
+        return []
+    midpoint = {name: (low + high) / 2.0 for name, (low, high) in domain.items()}
+    contexts: list[dict[str, Any]] = []
+    for name, (low, high) in domain.items():
+        width = max(abs(high - low), 1.0)
+        epsilon = width * 1e-6
+        for value in (low, low + epsilon, (low + high) / 2.0, high - epsilon, high):
+            context = dict(midpoint)
+            context[name] = float(value)
+            contexts.append(context)
+            if len(contexts) >= count:
+                return contexts
+        if low < 0.0 < high:
+            for value in (-epsilon, epsilon):
+                context = dict(midpoint)
+                context[name] = float(value)
+                contexts.append(context)
+                if len(contexts) >= count:
+                    return contexts
+    return contexts[:count]
+
+
+def _evidence_level(status: str, symbolic_status: str, dense_status: str, adversarial_status: str) -> str:
+    if status not in {"recovered", "verified_showcase"}:
+        return "failed"
+    if symbolic_status == "passed":
+        return "symbolic"
+    if dense_status == "passed" and adversarial_status == "passed":
+        return "dense_adversarial_numeric"
+    return "split_numeric"
+
+
 def verify_candidate(
     candidate: Candidate,
     splits: list[DataSplit],
@@ -77,6 +231,10 @@ def verify_candidate(
     high_precision_points: int = 8,
     high_precision_skip_factor: float = 1e6,
     recovered_requires_exact_eml: bool = True,
+    target_sympy: sp.Expr | None = None,
+    dense_random_points: int = 16,
+    adversarial_points: int = 8,
+    random_seed: int = 8675309,
 ) -> VerificationReport:
     """Verify a candidate over numeric splits and mpmath point checks."""
 
@@ -94,7 +252,7 @@ def verify_candidate(
         max_imag = float(np.max(np.abs(np.imag(pred)))) if pred.size else 0.0
         passed = bool(max_abs <= tolerance)
         all_passed = all_passed and passed
-        split_results.append(SplitResult(split.name, max_abs, mse, max_imag, passed))
+        split_results.append(SplitResult(split.name, split_role(split), max_abs, mse, max_imag, passed))
         numeric_failure_is_nonfinite = not np.isfinite(max_abs)
         numeric_failure_is_decisive = (not passed) and (numeric_failure_is_nonfinite or max_abs > tolerance * high_precision_skip_factor)
         if numeric_failure_is_decisive:
@@ -126,6 +284,26 @@ def verify_candidate(
         status = "failed"
         reason = f"{failed}_failed"
 
+    symbolic_status = _symbolic_status(candidate, target_sympy, splits)
+    dense_random_status, dense_random_max_error = _probe_status(
+        candidate,
+        splits,
+        tolerance=tolerance,
+        mode="dense_random",
+        count=dense_random_points,
+        seed=random_seed,
+    )
+    adversarial_status, adversarial_max_error = _probe_status(
+        candidate,
+        splits,
+        tolerance=tolerance,
+        mode="adversarial",
+        count=adversarial_points,
+        seed=random_seed + 1,
+    )
+    certificate_status = "symbolic_equivalence" if symbolic_status == "passed" else "unsupported_interval_certificate"
+    evidence_level = _evidence_level(status, symbolic_status, dense_random_status, adversarial_status)
+
     return VerificationReport(
         status=status,
         candidate_kind=candidate_kind,
@@ -134,4 +312,12 @@ def verify_candidate(
         high_precision_max_error=hp_max,
         tolerance=tolerance,
         high_precision_status=high_precision_status,
+        symbolic_status=symbolic_status,
+        dense_random_status=dense_random_status,
+        dense_random_max_error=dense_random_max_error,
+        adversarial_status=adversarial_status,
+        adversarial_max_error=adversarial_max_error,
+        certificate_status=certificate_status,
+        evidence_level=evidence_level,
+        metric_roles=metric_role_counts(splits),
     )

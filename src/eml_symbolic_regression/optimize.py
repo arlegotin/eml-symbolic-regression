@@ -11,7 +11,7 @@ import torch
 from .expression import format_constant_value
 from .master_tree import ActiveSlotAlternatives, SnapDecision, SnapResult, SoftEMLTree, constant_label
 from .semantics import AnomalyStats, EmlOperator, TrainingSemanticsConfig, as_complex_tensor, mse_complex_numpy, raw_eml_operator
-from .verify import DataSplit, VerificationReport, verify_candidate
+from .verify import DataSplit, VerificationReport, selection_candidate_splits, verify_candidate
 from .witnesses import (
     CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING,
     known_scaffold_kinds,
@@ -391,13 +391,16 @@ def _select_exact_candidate(
 ) -> tuple[list[ExactCandidate], str]:
     selection_mode = "verifier_gated_exact_candidate_pool" if verification_splits is not None else "train_post_snap_exact_candidate_pool"
     ranked: list[ExactCandidate] = []
+    ranking_splits = selection_candidate_splits(verification_splits) if verification_splits is not None else None
+    has_final_confirmation = verification_splits is not None and len(ranking_splits or ()) != len(verification_splits)
     for candidate in candidates:
+        selection_report = verify_candidate(candidate.snap.expression, ranking_splits, tolerance=tolerance) if ranking_splits is not None else None
         report = (
             verify_candidate(candidate.snap.expression, verification_splits, tolerance=tolerance)
-            if verification_splits is not None
-            else None
+            if has_final_confirmation and verification_splits is not None
+            else selection_report
         )
-        ranked.append(replace(candidate, verification=report, selection_metrics=_selection_metrics(candidate, report)))
+        ranked.append(replace(candidate, verification=report, selection_metrics=_selection_metrics(candidate, selection_report)))
     ranked.sort(key=_candidate_ranking_key)
     return ranked, selection_mode
 
