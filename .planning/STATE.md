@@ -6,8 +6,8 @@ current_phase: 68
 current_phase_name: Package Assembly, Source Locks, and Claim Audit
 status: milestone_complete
 stopped_at: v1.12 archived
-last_updated: "2026-04-19T20:18:41.000Z"
-last_activity: 2026-04-19
+last_updated: "2026-04-20T06:08:11.000Z"
+last_activity: 2026-04-20
 progress:
   total_phases: 5
   completed_phases: 5
@@ -34,7 +34,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-19)
 Phase: 68 - Package Assembly, Source Locks, and Claim Audit
 Plan: Complete
 Status: Milestone archived
-Last activity: 2026-04-19 - Completed quick task 260419-uxg: public-facing README polish
+Last activity: 2026-04-20 - Completed quick task 260420-b8n: README approximation plots
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
@@ -85,6 +85,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 | 2026-04-19 | Paper-ready training detail artifacts | Complete | `artifacts/paper/v1.11/draft/training-detail/` |
 | 2026-04-19 | README clarity and usage rewrite | Complete | `.planning/quick/260419-ukc-rewrite-readme-to-make-it-clear-engaging/` |
 | 2026-04-19 | Public-facing README polish | Complete | `.planning/quick/260419-uxg-make-readme-clear-and-cool-without-menti/` |
+| 2026-04-20 | README approximation plots | Complete | `.planning/quick/260420-b8n-add-readme-plot-section-showing-how-demo/` |
 
 ### Blockers/Concerns
 
@@ -98,4 +99,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-19 after public-facing README polish*
+*Last updated: 2026-04-20 after README approximation plots*
