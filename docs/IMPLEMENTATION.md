@@ -269,3 +269,21 @@ PYTHONPATH=src python -m eml_symbolic_regression.cli benchmark v1.9-michaelis-ev
 ```
 
 At the default gates, Planck remains an honest stretch report: its catalog formula verifies, the relaxed compiler diagnostics show the macro-shortened exact tree, but the shipped compile/warm-start stage still reports unsupported depth instead of promotion. Michaelis-Menten is promoted only by the strict same-AST warm-start evidence above, not as blind discovery.
+
+## Expanded Dataset Manifests
+
+Phase 74 adds an expanded dataset registry alongside the legacy demo ladder. The registry covers noisy synthetic sweeps, parameter-identifiability stress data, multivariable cases, unit-aware semi-synthetic formulas, and a committed real Hubble 1929 velocity-distance fixture. These datasets are broader evidence inputs for the verifier, benchmark-track, and baseline harness contracts; the real observational fixture is not treated as exact formula-recovery evidence.
+
+List available expanded datasets:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli list-datasets
+```
+
+Write a manifest:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli dataset-manifest noisy_beer_lambert_sweep --points 80 --seed 0 --output artifacts/datasets/noisy-beer-lambert-manifest.json
+```
+
+Expanded dataset manifests use schema `eml.expanded_dataset_manifest.v1` and record generator or source, units, noise policy, split policy, domain constraints, target classification (`synthetic`, `semi_synthetic`, or `real`), compatibility tags, split roles, per-variable input hashes, and target hashes. The fixed Hubble fixture is stored at `data/real/hubble_1929_velocity_distance.csv` with train, held-out diagnostic, and final-confirmation splits.

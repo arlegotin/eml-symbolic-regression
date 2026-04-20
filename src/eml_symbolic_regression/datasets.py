@@ -5,7 +5,8 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import Any, Callable
+from pathlib import Path
+from typing import Any, Callable, Mapping
 
 import numpy as np
 import sympy as sp
@@ -14,6 +15,8 @@ from .expression import Candidate, SympyCandidate, exp_expr, log_expr
 from .verify import DataSplit
 
 ArrayFn = Callable[[np.ndarray], np.ndarray]
+MultiArrayFn = Callable[[Mapping[str, np.ndarray]], np.ndarray]
+REAL_DATA_ROOT = Path(__file__).resolve().parents[2] / "data" / "real"
 
 
 @dataclass(frozen=True)
@@ -63,8 +66,213 @@ class DemoSpec:
         }
 
 
+@dataclass(frozen=True)
+class ExpandedDatasetSpec:
+    id: str
+    formula_id: str
+    description: str
+    variables: tuple[str, ...]
+    target: MultiArrayFn | None
+    candidate: Candidate | None
+    split_domains: dict[str, dict[str, tuple[float, float]]]
+    units: dict[str, str]
+    target_unit: str
+    classification: str
+    category: str
+    source: str
+    source_url: str | None
+    generator: str
+    noise_policy: dict[str, Any]
+    split_policy: dict[str, Any]
+    domain_constraints: dict[str, Any]
+    compatible_contracts: tuple[str, ...]
+    data_path: Path | None = None
+
+    def make_splits(self, *, points: int = 80, seed: int = 0) -> list[DataSplit]:
+        points = int(points)
+        if points <= 0:
+            raise ValueError("points must be positive")
+        if self.data_path is not None:
+            return self._real_data_splits()
+
+        rng = np.random.default_rng(seed)
+        splits: list[DataSplit] = []
+        for split_name, domains in self.split_domains.items():
+            count = _split_count(split_name, points)
+            inputs = _sample_inputs(domains, count=count, rng=rng)
+            if self.target is None:
+                raise ValueError(f"expanded dataset {self.id!r} has no target generator")
+            clean_target = self.target(inputs).astype(np.complex128)
+            observed_target = _apply_noise(clean_target, self.noise_policy, split_name=split_name, rng=rng)
+            splits.append(
+                DataSplit(
+                    split_name,
+                    dict(inputs),
+                    observed_target,
+                    self.candidate.evaluate_mpmath if self.candidate is not None else None,
+                    self.candidate.to_sympy() if self.candidate is not None else None,
+                    role=_split_role(split_name),
+                    domain={name: tuple(domain) for name, domain in domains.items()},
+                )
+            )
+        return splits
+
+    def manifest(self, *, points: int = 80, seed: int = 0, tolerance: float = 1e-8) -> dict[str, Any]:
+        points = int(points)
+        tolerance = float(tolerance)
+        if points <= 0:
+            raise ValueError("points must be positive")
+        if tolerance <= 0:
+            raise ValueError("tolerance must be positive")
+        splits = self.make_splits(points=points, seed=seed)
+        split_metadata: list[dict[str, Any]] = []
+        for split in splits:
+            input_hashes = {name: _array_sha256(values) for name, values in split.inputs.items()}
+            split_metadata.append(
+                {
+                    "name": split.name,
+                    "role": split.role or _split_role(split.name),
+                    "domain": {
+                        name: [float(value) for value in domain]
+                        for name, domain in (split.domain or self.split_domains.get(split.name, {})).items()
+                    },
+                    "count": int(len(split.target)),
+                    "input_sha256": input_hashes,
+                    "target_sha256": _array_sha256(split.target),
+                    "units": {name: self.units[name] for name in split.inputs},
+                    "target_unit": self.target_unit,
+                }
+            )
+
+        manifest: dict[str, Any] = {
+            "schema": "eml.expanded_dataset_manifest.v1",
+            "dataset_id": self.id,
+            "formula_id": self.formula_id,
+            "description": self.description,
+            "variables": list(self.variables),
+            "target_expression": sp.sstr(self.candidate.to_sympy()) if self.candidate is not None else None,
+            "classification": self.classification,
+            "category": self.category,
+            "source": self.source,
+            "source_url": self.source_url,
+            "data_path": str(self.data_path) if self.data_path is not None else None,
+            "generator": self.generator,
+            "units": {**self.units, "target": self.target_unit},
+            "noise_policy": self.noise_policy,
+            "split_policy": self.split_policy,
+            "domain_constraints": self.domain_constraints,
+            "compatible_contracts": list(self.compatible_contracts),
+            "seed": int(seed),
+            "points": points,
+            "tolerance": tolerance,
+            "splits": split_metadata,
+        }
+        encoded = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        return {**manifest, "manifest_sha256": hashlib.sha256(encoded).hexdigest()}
+
+    def _real_data_splits(self) -> list[DataSplit]:
+        if self.data_path is None:
+            raise ValueError("real data path is not configured")
+        rows = _read_hubble_rows(self.data_path)
+        grouped: dict[str, list[dict[str, float | str]]] = {}
+        for row in rows:
+            grouped.setdefault(str(row["split"]), []).append(row)
+        splits: list[DataSplit] = []
+        for split_name in ("train", "heldout", "final_confirmation"):
+            split_rows = grouped.get(split_name, [])
+            distance = np.asarray([float(row["distance_mpc"]) for row in split_rows], dtype=np.float64)
+            velocity = np.asarray([float(row["velocity_km_s"]) for row in split_rows], dtype=np.complex128)
+            splits.append(
+                DataSplit(
+                    split_name,
+                    {"distance_mpc": distance},
+                    velocity,
+                    role=_split_role(split_name),
+                    domain={"distance_mpc": (float(np.min(distance)), float(np.max(distance)))},
+                )
+            )
+        return splits
+
+
 def _sympy_candidate(expr: sp.Expr, variable: str, name: str) -> SympyCandidate:
     return SympyCandidate(expr, (variable,), name=name)
+
+
+def _expanded_split_roles() -> dict[str, str]:
+    return {
+        "train": "training",
+        "selection": "selection",
+        "heldout": "diagnostic",
+        "extrapolation": "diagnostic",
+        "final_confirmation": "final_confirmation",
+    }
+
+
+def _split_role(split_name: str) -> str:
+    return _expanded_split_roles().get(split_name, "diagnostic")
+
+
+def _split_count(split_name: str, points: int) -> int:
+    if split_name == "train":
+        return points
+    if split_name == "final_confirmation":
+        return max(16, points // 2)
+    return max(12, points // 2)
+
+
+def _sample_inputs(
+    domains: Mapping[str, tuple[float, float]],
+    *,
+    count: int,
+    rng: np.random.Generator,
+) -> dict[str, np.ndarray]:
+    inputs: dict[str, np.ndarray] = {}
+    multivariable = len(domains) > 1
+    for name, domain in domains.items():
+        low, high = domain
+        if multivariable:
+            values = rng.uniform(low, high, count)
+        else:
+            values = np.linspace(low, high, count)
+            jitter = (high - low) * 0.002 * rng.standard_normal(count)
+            values = np.sort(values + jitter)
+        inputs[name] = values.astype(np.float64)
+    return inputs
+
+
+def _apply_noise(
+    clean_target: np.ndarray,
+    noise_policy: Mapping[str, Any],
+    *,
+    split_name: str,
+    rng: np.random.Generator,
+) -> np.ndarray:
+    if noise_policy.get("type") != "gaussian_relative":
+        return clean_target
+    applies_to = tuple(str(value) for value in noise_policy.get("applies_to", ()))
+    if applies_to and split_name not in applies_to:
+        return clean_target
+    sigma = float(noise_policy.get("relative_sigma", 0.0))
+    if sigma <= 0:
+        return clean_target
+    scale = np.maximum(np.abs(clean_target.real), 1e-12)
+    noise = rng.normal(0.0, sigma, clean_target.shape) * scale
+    return (clean_target.real + noise).astype(np.complex128)
+
+
+def _read_hubble_rows(path: Path) -> list[dict[str, float | str]]:
+    rows: list[dict[str, float | str]] = []
+    with path.open("r", encoding="utf-8") as handle:
+        header = handle.readline().strip().split(",")
+        expected = ["split", "distance_mpc", "velocity_km_s"]
+        if header != expected:
+            raise ValueError(f"unexpected Hubble CSV header: {header!r}")
+        for line in handle:
+            if not line.strip():
+                continue
+            split, distance, velocity = line.strip().split(",")
+            rows.append({"split": split, "distance_mpc": float(distance), "velocity_km_s": float(velocity)})
+    return rows
 
 
 def _basin_demo_specs() -> dict[str, DemoSpec]:
@@ -273,6 +481,165 @@ def demo_specs() -> dict[str, DemoSpec]:
     specs.update(_basin_demo_specs())
     specs.update(_depth_curve_demo_specs())
     return specs
+
+
+def expanded_dataset_specs() -> dict[str, ExpandedDatasetSpec]:
+    x = sp.Symbol("x")
+    t = sp.Symbol("t")
+    a = sp.Symbol("a")
+    current = sp.Symbol("current_amp")
+    resistance = sp.Symbol("resistance_ohm")
+    return {
+        "noisy_beer_lambert_sweep": ExpandedDatasetSpec(
+            id="noisy_beer_lambert_sweep",
+            formula_id="beer_lambert",
+            description="Synthetic Beer-Lambert sweep with controlled relative Gaussian observation noise.",
+            variables=("x",),
+            target=lambda inputs: np.exp(-0.8 * inputs["x"]),
+            candidate=_sympy_candidate(sp.exp(-sp.Float("0.8") * x), "x", "noisy_beer_lambert_clean_law"),
+            split_domains={
+                "train": {"x": (0.0, 3.0)},
+                "selection": {"x": (0.1, 2.8)},
+                "heldout": {"x": (0.15, 2.7)},
+                "extrapolation": {"x": (3.1, 4.5)},
+                "final_confirmation": {"x": (0.05, 4.25)},
+            },
+            units={"x": "dimensionless_absorbance_path"},
+            target_unit="relative_intensity",
+            classification="synthetic",
+            category="noisy_synthetic_sweep",
+            source="generated_from_clean_beer_lambert_formula",
+            source_url=None,
+            generator="linspace_with_seeded_jitter_plus_relative_gaussian_noise",
+            noise_policy={"type": "gaussian_relative", "relative_sigma": 0.01, "applies_to": ["train", "selection", "heldout"]},
+            split_policy={"type": "independent_domains", "roles": _expanded_split_roles()},
+            domain_constraints={"x": {"min": 0.0, "max": 4.5, "closed": True}},
+            compatible_contracts=("verifier", "benchmark_track", "baseline_harness"),
+        ),
+        "michaelis_parameter_identifiability": ExpandedDatasetSpec(
+            id="michaelis_parameter_identifiability",
+            formula_id="michaelis_menten",
+            description="Synthetic Michaelis-Menten parameter-identifiability stress with low-substrate and saturation-biased splits.",
+            variables=("x",),
+            target=lambda inputs: 2.0 * inputs["x"] / (0.5 + inputs["x"]),
+            candidate=_sympy_candidate(2 * x / (sp.Float("0.5") + x), "x", "michaelis_identifiability_clean_law"),
+            split_domains={
+                "train": {"x": (0.05, 0.9)},
+                "selection": {"x": (0.12, 1.6)},
+                "heldout": {"x": (1.8, 4.5)},
+                "extrapolation": {"x": (4.8, 7.0)},
+                "final_confirmation": {"x": (0.08, 6.5)},
+            },
+            units={"x": "millimolar_substrate_concentration"},
+            target_unit="micromole_per_minute",
+            classification="synthetic",
+            category="parameter_identifiability_stress",
+            source="generated_from_michaelis_menten_formula_with_fixed_parameters",
+            source_url=None,
+            generator="split_domains_selected_to_stress_vmax_km_identifiability",
+            noise_policy={"type": "none"},
+            split_policy={"type": "domain_shift_identifiability", "roles": _expanded_split_roles()},
+            domain_constraints={"x": {"min": 0.05, "max": 7.0, "positive": True}},
+            compatible_contracts=("verifier", "benchmark_track", "baseline_harness"),
+        ),
+        "multivariable_arrhenius_surface": ExpandedDatasetSpec(
+            id="multivariable_arrhenius_surface",
+            formula_id="arrhenius",
+            description="Synthetic multivariable Arrhenius surface with variable pre-exponential factor and dimensionless temperature.",
+            variables=("a", "t"),
+            target=lambda inputs: inputs["a"] * np.exp(-0.8 / inputs["t"]),
+            candidate=SympyCandidate(a * sp.exp(-sp.Float("0.8") / t), ("a", "t"), name="multivariable_arrhenius_clean_law"),
+            split_domains={
+                "train": {"a": (0.8, 1.2), "t": (0.6, 2.5)},
+                "selection": {"a": (0.85, 1.3), "t": (0.7, 2.7)},
+                "heldout": {"a": (0.75, 1.35), "t": (0.65, 2.8)},
+                "extrapolation": {"a": (1.25, 1.6), "t": (2.9, 4.2)},
+                "final_confirmation": {"a": (0.7, 1.55), "t": (0.6, 4.0)},
+            },
+            units={"a": "dimensionless_rate_prefactor", "t": "dimensionless_temperature"},
+            target_unit="dimensionless_rate",
+            classification="synthetic",
+            category="multivariable_case",
+            source="generated_from_multivariable_arrhenius_formula",
+            source_url=None,
+            generator="independent_seeded_uniform_multivariable_sampling",
+            noise_policy={"type": "none"},
+            split_policy={"type": "independent_multivariable_domains", "roles": _expanded_split_roles()},
+            domain_constraints={"a": {"min": 0.7, "max": 1.6}, "t": {"min": 0.6, "max": 4.2, "positive": True}},
+            compatible_contracts=("verifier", "benchmark_track", "baseline_harness"),
+        ),
+        "unit_aware_ohm_law": ExpandedDatasetSpec(
+            id="unit_aware_ohm_law",
+            formula_id="ohm_law",
+            description="Unit-aware semi-synthetic Ohm-law formulation with current, resistance, and voltage units.",
+            variables=("current_amp", "resistance_ohm"),
+            target=lambda inputs: inputs["current_amp"] * inputs["resistance_ohm"],
+            candidate=SympyCandidate(current * resistance, ("current_amp", "resistance_ohm"), name="unit_aware_ohm_law"),
+            split_domains={
+                "train": {"current_amp": (0.01, 0.5), "resistance_ohm": (50.0, 500.0)},
+                "selection": {"current_amp": (0.02, 0.45), "resistance_ohm": (75.0, 650.0)},
+                "heldout": {"current_amp": (0.05, 0.7), "resistance_ohm": (100.0, 800.0)},
+                "extrapolation": {"current_amp": (0.75, 1.0), "resistance_ohm": (850.0, 1200.0)},
+                "final_confirmation": {"current_amp": (0.015, 0.95), "resistance_ohm": (60.0, 1100.0)},
+            },
+            units={"current_amp": "ampere", "resistance_ohm": "ohm"},
+            target_unit="volt",
+            classification="semi_synthetic",
+            category="unit_aware_formulation",
+            source="generated_from_ohm_law_with_physical_units",
+            source_url=None,
+            generator="unit_aware_independent_uniform_sampling",
+            noise_policy={"type": "none"},
+            split_policy={"type": "unit_aware_independent_domains", "roles": _expanded_split_roles()},
+            domain_constraints={
+                "current_amp": {"min": 0.01, "max": 1.0, "unit": "ampere", "positive": True},
+                "resistance_ohm": {"min": 50.0, "max": 1200.0, "unit": "ohm", "positive": True},
+            },
+            compatible_contracts=("verifier", "benchmark_track", "baseline_harness"),
+        ),
+        "real_hubble_1929": ExpandedDatasetSpec(
+            id="real_hubble_1929",
+            formula_id="hubble_velocity_distance",
+            description="Real Hubble 1929 nebula distance and recession-velocity observations with fixed independent splits.",
+            variables=("distance_mpc",),
+            target=None,
+            candidate=None,
+            split_domains={},
+            units={"distance_mpc": "megaparsec"},
+            target_unit="kilometre_per_second",
+            classification="real",
+            category="real_dataset_path",
+            source="Hubble 1929 velocity-distance data table",
+            source_url="https://www2.stat.duke.edu/courses/Fall03/sta113/Hubble.html",
+            generator="committed_csv_fixture_with_fixed_split_column",
+            noise_policy={"type": "observational", "known_noise_model": False},
+            split_policy={"type": "fixed_csv_split_column", "roles": _expanded_split_roles()},
+            domain_constraints={"distance_mpc": {"min": 0.032, "max": 2.0, "positive": True}},
+            compatible_contracts=("verifier", "benchmark_track", "baseline_harness"),
+            data_path=REAL_DATA_ROOT / "hubble_1929_velocity_distance.csv",
+        ),
+    }
+
+
+def list_expanded_datasets() -> tuple[str, ...]:
+    return tuple(expanded_dataset_specs())
+
+
+def get_expanded_dataset(dataset_id: str) -> ExpandedDatasetSpec:
+    specs = expanded_dataset_specs()
+    try:
+        return specs[dataset_id]
+    except KeyError as exc:
+        available = ", ".join(sorted(specs))
+        raise KeyError(f"Unknown expanded dataset {dataset_id!r}. Available: {available}") from exc
+
+
+def make_expanded_dataset_splits(dataset_id: str, *, points: int = 80, seed: int = 0) -> list[DataSplit]:
+    return get_expanded_dataset(dataset_id).make_splits(points=points, seed=seed)
+
+
+def expanded_dataset_manifest(dataset_id: str, *, points: int = 80, seed: int = 0, tolerance: float = 1e-8) -> dict[str, Any]:
+    return get_expanded_dataset(dataset_id).manifest(points=points, seed=seed, tolerance=tolerance)
 
 
 def get_demo(name: str) -> DemoSpec:

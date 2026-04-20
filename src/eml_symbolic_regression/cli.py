@@ -22,7 +22,7 @@ from .benchmark import (
 from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_presets, run_campaign
 from .cleanup import cleanup_candidate
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
-from .datasets import demo_specs, get_demo, proof_dataset_manifest
+from .datasets import demo_specs, expanded_dataset_manifest, expanded_dataset_specs, get_demo, proof_dataset_manifest
 from .diagnostics import (
     DEFAULT_BASELINE_CAMPAIGNS,
     run_diagnostic_subset,
@@ -71,6 +71,12 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
 def list_demos(args: argparse.Namespace | None = None) -> int:
     for name, spec in sorted(demo_specs().items()):
         print(f"{name}: {spec.description}")
+    return 0
+
+
+def list_datasets(args: argparse.Namespace | None = None) -> int:
+    for name, spec in sorted(expanded_dataset_specs().items()):
+        print(f"{name}: {spec.description} [{spec.classification}/{spec.category}]")
     return 0
 
 
@@ -245,6 +251,14 @@ def proof_dataset_command(args: argparse.Namespace) -> int:
     manifest = proof_dataset_manifest(args.formula, points=args.points, seed=args.seed, tolerance=args.tolerance)
     _write_json(output, manifest)
     print(f"{args.formula}: dataset manifest -> {output}")
+    return 0
+
+
+def dataset_manifest_command(args: argparse.Namespace) -> int:
+    output = Path(args.output) if args.output else Path("artifacts") / "datasets" / f"{args.dataset_id}-manifest.json"
+    manifest = expanded_dataset_manifest(args.dataset_id, points=args.points, seed=args.seed, tolerance=args.tolerance)
+    _write_json(output, manifest)
+    print(f"{args.dataset_id}: dataset manifest -> {output}")
     return 0
 
 
@@ -629,6 +643,9 @@ def build_parser() -> argparse.ArgumentParser:
     list_parser = sub.add_parser("list-demos", help="List built-in demo targets.")
     list_parser.set_defaults(func=list_demos)
 
+    list_dataset_parser = sub.add_parser("list-datasets", help="List expanded dataset families.")
+    list_dataset_parser.set_defaults(func=list_datasets)
+
     demo = sub.add_parser("demo", help="Run a demo verification/report pipeline.")
     demo.add_argument("name", help="Demo name. Use list-demos to inspect options.")
     demo.add_argument("--output", default="artifacts/demo-report.json")
@@ -685,6 +702,14 @@ def build_parser() -> argparse.ArgumentParser:
     proof_dataset.add_argument("--seed", type=int, default=0)
     proof_dataset.add_argument("--tolerance", type=float, default=1e-8)
     proof_dataset.set_defaults(func=proof_dataset_command)
+
+    dataset_manifest = sub.add_parser("dataset-manifest", help="Write an expanded dataset manifest.")
+    dataset_manifest.add_argument("dataset_id", help="Dataset ID. Use list-datasets to inspect options.")
+    dataset_manifest.add_argument("--output", help="Output manifest path. Defaults to artifacts/datasets/<dataset-id>-manifest.json.")
+    dataset_manifest.add_argument("--points", type=int, default=80)
+    dataset_manifest.add_argument("--seed", type=int, default=0)
+    dataset_manifest.add_argument("--tolerance", type=float, default=1e-8)
+    dataset_manifest.set_defaults(func=dataset_manifest_command)
 
     bench = sub.add_parser("benchmark", help="Run a benchmark suite or filtered subset.")
     bench.add_argument("suite", help="Built-in suite name or path to a suite JSON file.")
