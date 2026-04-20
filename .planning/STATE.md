@@ -34,7 +34,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 Phase: Milestone complete
 Plan: Complete
 Status: Planning next milestone
-Last activity: 2026-04-20 - Archived v1.13 milestone and phase artifacts
+Last activity: 2026-04-20 - Completed quick task 260420-ng7: README v1.13 release evidence plots
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
@@ -113,6 +113,7 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 | 2026-04-20 | Publish sanitized main from dev | Complete | `.planning/quick/260420-fsn-add-github-actions-automation-to-publish/` |
 | 2026-04-20 | Include curated public artifacts | Complete | `.planning/quick/260420-g7h-include-useful-public-artifacts-in-sanit/` |
 | 2026-04-20 | Return tests to generated main branch | Complete | `.planning/quick/260420-ixp-return-tests-to-generated-main-branch/` |
+| 2026-04-20 | README v1.13 release evidence plots | Complete | `.planning/quick/260420-ng7-update-readme-with-v1-13-release-evidenc/` |
 
 ### Blockers/Concerns
 
