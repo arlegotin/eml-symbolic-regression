@@ -10,11 +10,11 @@ This project turns that idea into a symbolic-regression engine. Instead of askin
 
 The short version: it is a PyTorch-first, verifier-gated equation discovery package for compact elementary formulas.
 
-## Current Release Evidence
+## Current Evidence
 
-The v1.13 release package is source-locked under `artifacts/paper/v1.13/`. The release gate and claim audit both passed. The final paper-track campaign ran 24 configured rows with zero execution failures: 12 publication targets in a basis-only compiler-policy track and the same 12 targets in a literal-constant warm-start track.
+The checked-in evidence run covers 12 target formulas under two settings: a basis-only compiler-policy track and a literal-constant warm-start track. It ran 24 configured rows with zero execution failures.
 
-Nine rows passed the verifier, and fifteen were kept as unsupported by the declared compiler, depth, or operator gates. That is the intended claim boundary: the project has reproducible evidence for shallow and explicitly seeded EML recovery paths, but it does not claim broad blind symbolic-regression superiority. The detailed manifest, audit, reproduction notes, campaign tables, baseline report, and dataset manifests live under `artifacts/paper/v1.13/`, `artifacts/campaigns/v1.13-paper-tracks-final/`, `artifacts/baselines/v1.13/`, and `artifacts/datasets/v1.13/`.
+Nine rows passed the verifier. Fifteen were kept as unsupported by the declared compiler, depth, or operator gates. That is the current claim boundary: the project has reproducible evidence for shallow and explicitly seeded EML recovery paths, while broader blind recovery remains an open problem. The detailed campaign tables, manifests, baseline reports, and dataset manifests are checked in under `artifacts/`.
 
 ## The Trick
 
@@ -53,11 +53,11 @@ The engine has a few important moving parts:
 
 Training mode can use numerical safety guards. Verification mode is stricter: snapped formulas are evaluated again under the recovery contract.
 
-## What The Explored Functions Look Like
+## Target Curves And Data
 
-The grid below plots every v1.13 publication target with its generated data splits. Blue dots are training data, red triangles are held-out validation data, the black line is the target function, and a green dashed EML curve appears only when at least one v1.13 paper-track row recovered that target.
+The grid below plots the current target set with generated data splits. Each panel is labeled by formula and has named axes without numeric tick labels. Blue dots are training data, red triangles are held-out validation data, the black line is the target function, and a green dashed EML curve appears only when at least one checked-in evidence row recovered that target.
 
-![Twelve target plots with training, validation, target, and verified EML curves](readme-assets/fit-gallery.svg)
+![Twelve labeled target plots with training, validation, target, and verified EML curves](readme-assets/fit-gallery.svg)
 
 ## What Counts As Recovery
 
@@ -132,16 +132,10 @@ Run the small smoke benchmark:
 eml-sr benchmark smoke
 ```
 
-Run the v1.13 paper-track campaign:
+Run the full checked-in campaign suite:
 
 ```bash
-eml-sr campaign paper-tracks --output-root artifacts/campaigns --label v1.13-paper-tracks-final --overwrite
-```
-
-Rebuild the publication package:
-
-```bash
-eml-sr publication-rebuild --output-dir artifacts/paper/v1.13 --overwrite --allow-dirty
+eml-sr campaign paper-tracks --output-root artifacts/campaigns --label current-paper-tracks --overwrite
 ```
 
 List expanded datasets:
@@ -153,7 +147,7 @@ eml-sr list-datasets
 Run the matched baseline harness:
 
 ```bash
-eml-sr baseline-harness --output-dir artifacts/baselines/v1.13 --overwrite
+eml-sr baseline-harness --output-dir artifacts/baselines/current --overwrite
 ```
 
 Run tests:
