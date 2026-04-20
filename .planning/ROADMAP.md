@@ -25,11 +25,22 @@
 
 v1.13 is active. The milestone responds to a publication-readiness audit: the repo must support a true clean-room rebuild, stronger verifier and split discipline, semantic-mismatch evidence, full tests/CI, theorem-faithful versus convenience benchmark tracks, real matched baselines, broader datasets, and final `main` publication after the evidence package is regenerated.
 
+## Phase Status
+
+- [x] Phase 69: Clean-Room Reproduction Path and Provenance (completed 2026-04-20)
+- [ ] Phase 70: Layered Verifier and Split Isolation
+- [ ] Phase 71: Training and Verification Semantics Alignment
+- [ ] Phase 72: Automated Test Suite and CI Hardening
+- [ ] Phase 73: Basis-Only and Literal-Constants Benchmark Tracks
+- [ ] Phase 74: Expanded Dataset and Manifest Suite
+- [ ] Phase 75: Matched Conventional Baseline Harness
+- [ ] Phase 76: Full Evidence Rebuild, Claim Audit, and Public Main Sync
+
 ## Phase Overview
 
 | Phase | Name | Goal | Requirements |
 |-------|------|------|--------------|
-| 69 | 1/1 | Complete    | 2026-04-20 |
+| 69 | Clean-Room Reproduction Path and Provenance | Build the locked one-command rebuild path and remove publication placeholder provenance. | REPRO-01, REPRO-02, REPRO-03, REPRO-04, REPRO-05 |
 | 70 | Layered Verifier and Split Isolation | Upgrade verifier evidence and eliminate selection/final-evaluation leakage. | VERIF-01, VERIF-02, VERIF-03, VERIF-04, VERIF-05, SPLIT-01, SPLIT-02, SPLIT-03 |
 | 71 | Training and Verification Semantics Alignment | Match training to verified semantics where possible and quantify surrogate mismatch where not. | SEM-01, SEM-02, SEM-03, SEM-04 |
 | 72 | Automated Test Suite and CI Hardening | Add algorithmic tests and CI gates for code, manifests, reproduction smoke, and public snapshots. | TEST-01, TEST-02, TEST-03, TEST-04 |

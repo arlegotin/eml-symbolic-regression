@@ -1,10 +1,11 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.13
-milestone_name: milestone
+milestone_name: Publication-grade reproduction and validation
 current_phase: 70
+current_phase_name: Layered Verifier and Split Isolation
 status: executing
-stopped_at: v1.12 archived
+stopped_at: phase 69 complete
 last_updated: "2026-04-20T12:11:58.463Z"
 last_activity: 2026-04-20
 progress:
@@ -18,7 +19,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 70
+**Current phase:** 70 - Layered Verifier and Split Isolation
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 ## Current Position
 
-Phase: 69 - Clean-Room Reproduction Path and Provenance
+Phase: 70 - Layered Verifier and Split Isolation
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-04-20
-Progress: [----------] 0% by completed phases
+Status: Ready to discuss
+Last activity: 2026-04-20 - Completed Phase 69 and advanced to Phase 70
+Progress: [#---------] 12% by completed phases
 
 ## Current Milestone
 
@@ -80,7 +81,7 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 
 ### Pending Todos
 
-- Start Phase 69 with `$gsd-discuss-phase 69` or `$gsd-plan-phase 69`.
+- Continue Phase 70 with autonomous discuss, plan, and execute.
 
 ### Completed Quick Tasks
 
