@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.13
 milestone_name: Publication-grade reproduction and validation
-current_phase: 73
-current_phase_name: Basis-Only and Literal-Constants Benchmark Tracks
+current_phase: 74
+current_phase_name: Expanded Dataset and Manifest Suite
 status: Ready to discuss
 stopped_at: v1.12 archived
-last_updated: "2026-04-20T13:13:33.096Z"
+last_updated: "2026-04-20T13:37:28.182Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 8
-  completed_phases: 4
-  total_plans: 4
-  completed_plans: 4
-  percent: 50
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 63
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 73
+**Current phase:** 74
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 ## Current Position
 
-Phase: 73 - Basis-Only and Literal-Constants Benchmark Tracks
+Phase: 74 - Expanded Dataset and Manifest Suite
 Plan: Not started
 Status: Ready to discuss
-Last activity: 2026-04-20 - Completed Phase 72 and advanced to Phase 73
-Progress: [#####-----] 50% by completed phases
+Last activity: 2026-04-20 - Completed Phase 73 and advanced to Phase 74
+Progress: [######----] 63% by completed phases
 
 ## Current Milestone
 
@@ -80,10 +80,11 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 - Candidate selection and final confirmation data must be separated unless symbolic equivalence is established.
 - Training artifacts must label `guarded` versus `faithful` semantics, expose guard/anomaly/post-snap diagnostics, and surface verifier certificate/evidence labels.
 - Full guarded-versus-faithful publication-matrix ablations are enabled by Phase 71 and remain part of the Phase 76 evidence rebuild.
+- Basis-only and literal-constant benchmark tracks are separate v1.13 denominators. Publication claims should use the new v1.13 track suites when denominator purity matters.
 
 ### Pending Todos
 
-- Continue Phase 73 with autonomous discuss, plan, and execute.
+- Continue Phase 74 with autonomous discuss, plan, and execute.
 
 ### Completed Quick Tasks
 
@@ -111,4 +112,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-20 after Phase 72 completion*
+*Last updated: 2026-04-20 after Phase 73 completion*
