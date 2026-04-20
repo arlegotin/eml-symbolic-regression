@@ -1,0 +1,140 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - dev
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core-tests:
+    name: Core unit contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run core tests
+        run: |
+          python -m pytest \
+            tests/test_semantics_expression.py \
+            tests/test_master_tree.py \
+            tests/test_compiler_warm_start.py \
+            tests/test_verify.py \
+            tests/test_optimizer_cleanup.py \
+            tests/test_benchmark_contract.py \
+            tests/test_evidence_regression.py \
+            tests/test_publication_rebuild.py \
+            tests/test_ci_contract.py \
+            -q
+
+  integration-smoke:
+    name: Selected integration smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run selected smoke tests
+        run: |
+          python -m pytest \
+            tests/test_benchmark_runner.py::test_runner_filter_executes_subset \
+            tests/test_verifier_demos_cli.py::test_cli_demo_train_eml_writes_selection_and_fallback_provenance \
+            -q
+
+  publication-smoke:
+    name: Clean-room publication smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run publication rebuild smoke
+        run: bash scripts/publication-rebuild.sh
+
+  branch-discipline:
+    name: Branch and public snapshot contract
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate dev tree contract
+        run: python scripts/validate-ci-contract.py --mode dev --root .
+
+      - name: Validate simulated public snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          snapshot="$(mktemp -d)"
+          git archive HEAD | tar -x -C "$snapshot"
+
+          rm -rf \
+            "$snapshot/AGENTS.md" \
+            "$snapshot/.planning" \
+            "$snapshot/docs" \
+            "$snapshot/sources"
+          rm -f "$snapshot/.github/workflows/publish-main.yml"
+
+          if [ -d "$snapshot/artifacts" ]; then
+            find "$snapshot/artifacts" -name '.DS_Store' -delete
+            find "$snapshot/artifacts" -type d \( -name runs -o -name raw-runs \) -prune -exec rm -rf {} +
+            find "$snapshot/artifacts" -type f \( \
+              -name 'suite-result.json' -o \
+              -name '*-suite-result.json' -o \
+              -name 'aggregate.json' -o \
+              -name '*-aggregate.json' -o \
+              -name 'training-step-traces.json' -o \
+              -name 'training-step-traces.csv' -o \
+              -name 'training-step-traces.md' \
+            \) -delete
+            find "$snapshot/artifacts/paper" -type d -name sources -prune -exec rm -rf {} + 2>/dev/null || true
+          fi
+
+          python scripts/validate-ci-contract.py --mode public-snapshot --root "$snapshot"
