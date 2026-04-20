@@ -30,7 +30,7 @@ v1.13 is active. The milestone responds to a publication-readiness audit: the re
 - [x] Phase 69: Clean-Room Reproduction Path and Provenance (completed 2026-04-20)
 - [x] Phase 70: Layered Verifier and Split Isolation (completed 2026-04-20)
 - [x] Phase 71: Training and Verification Semantics Alignment (completed 2026-04-20)
-- [ ] Phase 72: Automated Test Suite and CI Hardening
+- [x] Phase 72: Automated Test Suite and CI Hardening (completed 2026-04-20)
 - [ ] Phase 73: Basis-Only and Literal-Constants Benchmark Tracks
 - [ ] Phase 74: Expanded Dataset and Manifest Suite
 - [ ] Phase 75: Matched Conventional Baseline Harness
