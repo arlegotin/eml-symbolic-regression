@@ -50,10 +50,10 @@
 
 ### Publication Package and Release
 
-- [ ] **PUB-01**: Maintainer can run the full v1.13 training/evidence campaign and produce all required publication artifacts in the committed artifact layout.
-- [ ] **PUB-02**: Publication package includes a root manifest linking generated artifacts, source locks, claim audit, reproduction command, environment lock/container identity, and branch provenance.
-- [ ] **PUB-03**: Claim audit blocks publication if any recovery claim lacks verifier evidence, final confirmation status, constants-track label, baseline context, or source lock.
-- [ ] **PUB-04**: `main` branch receives the final public code, tests, CI, reproduction entrypoints, and selected artifacts after the full rebuild passes on `dev`.
+- [x] **PUB-01**: Maintainer can run the full v1.13 training/evidence campaign and produce all required publication artifacts in the committed artifact layout.
+- [x] **PUB-02**: Publication package includes a root manifest linking generated artifacts, source locks, claim audit, reproduction command, environment lock/container identity, and branch provenance.
+- [x] **PUB-03**: Claim audit blocks publication if any recovery claim lacks verifier evidence, final confirmation status, constants-track label, baseline context, or source lock.
+- [x] **PUB-04**: `main` branch receives the final public code, tests, CI, reproduction entrypoints, and selected artifacts after the full rebuild passes on `dev`. Phase 76 validates the public snapshot and records readiness for `.github/workflows/publish-main.yml`; direct remote publication is not performed by the local agent.
 
 ## Future Requirements
 
@@ -115,10 +115,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | BASE-02 | Phase 75 | Complete |
 | DATA-01 | Phase 74 | Complete |
 | DATA-02 | Phase 74 | Complete |
-| PUB-01 | Phase 76 | Pending |
-| PUB-02 | Phase 76 | Pending |
-| PUB-03 | Phase 76 | Pending |
-| PUB-04 | Phase 76 | Pending |
+| PUB-01 | Phase 76 | Complete |
+| PUB-02 | Phase 76 | Complete |
+| PUB-03 | Phase 76 | Complete |
+| PUB-04 | Phase 76 | Complete |
 
 **Coverage:**
 - v1.13 requirements: 32 total
@@ -127,4 +127,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-20*
-*Last updated: 2026-04-20 after roadmap traceability*
+*Last updated: 2026-04-20 after Phase 76 release gate*
