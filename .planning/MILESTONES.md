@@ -1,5 +1,22 @@
 # Milestones
 
+## v1.13 Publication-grade reproduction and validation (Shipped: 2026-04-20)
+
+**Phases completed:** 8 phases, 8 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added a clean-room publication rebuild path with lockfile/container provenance, source locks, and manifest validation.
+- Upgraded verifier and split discipline with symbolic, dense randomized, adversarial, certificate, evidence-level, and final-confirmation labels.
+- Added guarded versus faithful training semantics controls and published diagnostics for guard/anomaly/post-snap mismatch evidence.
+- Hardened CI with algorithmic tests, evidence-regression coverage, and dev/public-snapshot branch-discipline validation.
+- Added separated basis-only and literal-constant benchmark tracks, expanded dataset manifests, and a matched baseline harness.
+- Regenerated the v1.13 release evidence package with a passing claim audit and release gate.
+
+**Known deferred items at close:** 7 old quick-task bookkeeping records had missing or unknown open-artifact metadata; no debug sessions, todos, UAT gaps, verification gaps, or context questions were open. See `STATE.md` Deferred Items.
+
+---
+
 ## v1.12 Paper draft skeleton and refreshed shallow evidence (Shipped: 2026-04-19)
 
 **Phases completed:** 5 phases, 5 plans, 0 tasks

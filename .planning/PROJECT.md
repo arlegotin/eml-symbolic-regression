@@ -4,15 +4,15 @@
 
 This project implements a hybrid symbolic-regression engine based on the paper "All elementary functions from a single binary operator." It searches over complete depth-bounded EML trees, optimizes soft categorical choices with PyTorch, snaps the result into an exact EML tree, cleans it up symbolically, and verifies candidate formulas against held-out data and high-precision evaluators.
 
-The current release is a research-grade Python package and CLI for recovering compact elementary laws from synthetic scientific datasets, with demos, benchmark campaigns, proof artifacts, centered/scaled operator-family experiments, and paper-decision artifacts drawn from `sources/FOR_DEMO.md`.
+The current release is a research-grade Python package and CLI for recovering compact elementary laws from scientific datasets, with demos, benchmark campaigns, proof artifacts, centered/scaled operator-family experiments, publication evidence, claim audits, and release-gate artifacts drawn from `sources/FOR_DEMO.md`.
 
 ## Core Value
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.12 Shipped
+## Current State: v1.13 Shipped
 
-The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, and figure-asset foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, one-command proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, v1.10 focused motif evidence, and the v1.11 paper evidence package are all in place and archived through v1.11.
+The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, figure-asset, CI, dataset, baseline, and release-gate foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, and source-locked publication packages are all in place and archived through v1.13.
 
 The current evidence says raw EML is representationally viable but blind basin finding degrades sharply with depth. Perturbed true-tree recovery remains strong, scaffolded/warm-start regimes are useful when clearly labeled, centered-family evidence is negative under the supplied v1.8 setup, and v1.9 has a verified raw-hybrid paper package that keeps those regimes separate.
 
@@ -22,32 +22,26 @@ v1.11 adds the paper-strength evidence layer: real current-code training artifac
 
 v1.12 turns the evidence package into a paper-shaped argument. The repo now has `artifacts/paper/v1.11/draft/` with section skeletons, claim taxonomy, captions, motif evolution, negative-result tables, and a pipeline figure; `artifacts/campaigns/v1.12-evidence-refresh/` with current-code shallow/depth refreshes; and `artifacts/paper/v1.11/v1.12-supplement/` with 49 source locks and a passing claim audit. Conventional symbolic-regression comparison remains unavailable locally, and logistic remains unsupported at the strict gate, both recorded explicitly.
 
-## Last Completed Milestone: v1.12 Paper draft skeleton and refreshed shallow evidence
+v1.13 hardens that paper-shaped evidence into a publication-grade release gate. The repo now has a clean-room `publication-rebuild` path, locked provenance, stronger verifier and split discipline, guarded/faithful semantics controls, CI/public snapshot validation, separated basis-only and literal-constant benchmark tracks, expanded dataset manifests, a matched baseline harness, and a committed v1.13 evidence package with a passing claim audit and release gate.
 
-**Goal:** Turn the v1.11 evidence package into a paper-shaped draft while refreshing the most reviewer-visible shallow/depth evidence and making claim boundaries explicit.
+## Last Completed Milestone: v1.13 Publication-grade reproduction and validation
+
+**Goal:** Build a clean-room publication path that can regenerate the paper evidence from an empty checkout, strengthen verifier and split discipline, add real CI/test coverage, run dual-track and matched-baseline evidence, and publish the resulting code and artifacts safely through the public snapshot path.
 
 **Shipped features:**
 
-- Draft skeleton under `artifacts/paper/v1.11/draft/` with abstract, methods, results, limitations, claim taxonomy, figure captions, and table captions.
-- Current-code v1.12 shallow refresh with 10/10 verifier-recovered shallow rows across separate pure-blind and scaffolded regimes.
-- Current-code depth refresh over depths 2-5, with 4/8 verifier-recovered rows and clear depth-limit evidence.
-- Paper-facing motif evolution, logistic/Planck negative-results, and EML pipeline figure artifacts.
-- Bounded probe outputs showing conventional SR baseline unavailable locally and logistic strict support still unsupported at gate 13.
-- Source-locked v1.12 supplement with 49 source locks, reproduction commands, and a passing claim audit.
+- Clean-room publication rebuild command, lockfile/container provenance, source locks, and placeholder-metadata validation.
+- Layered verifier evidence and split isolation, including fresh dense/adversarial probes and final-confirmation separation.
+- Guarded versus faithful training semantics controls and anomaly/post-snap mismatch diagnostics.
+- CI hardening with algorithmic tests, evidence-regression coverage, and dev/public snapshot validators.
+- Basis-only and literal-constant benchmark tracks with separate denominators.
+- Expanded noisy, parameter-identifiability, multivariable, unit-aware, and real dataset manifests.
+- Matched EML/conventional baseline harness with fail-closed optional adapters.
+- Full v1.13 evidence package under `artifacts/paper/v1.13/` with passing claim audit and release gate.
 
-## Current Milestone: v1.13 Publication-grade reproduction and validation
+## Current Milestone: Planning next milestone
 
-**Goal:** Build a clean-room publication path that can regenerate the paper evidence from an empty checkout, strengthen verifier and split discipline, add real CI/test coverage, run dual-track and matched-baseline evidence, and publish the resulting code and artifacts safely to `main`.
-
-**Target features:**
-- One-command clean-room reproduction in a locked environment, with container/lockfile support and immutable provenance for every figure, table, aggregate, and source lock.
-- Publication-grade verifier and split discipline: symbolic equivalence where possible, fresh dense randomized and adversarial checks otherwise, final untouched confirmation data, and no held-out/extrapolation leakage into candidate selection.
-- Training/verification semantics alignment or quantified surrogate mismatch, including clamp/guard ablations and real-domain branch certificates for scientific-law claims.
-- Comprehensive automated tests and CI covering compiler behavior, verifier semantics, branch cuts, manifests, evidence regression, and public snapshot health.
-- Dual benchmark tracks for paper-faithful basis-only synthesis and literal-constant-augmented applied symbolic regression.
-- Matched-budget conventional symbolic-regression baselines under the same datasets, seeds, budgets, constants policies, and blind/warm-start conditions.
-- Expanded evidence beyond normalized synthetic demos, including noisy sweeps, parameter-identifiability stress tests, multivariable cases, unit-aware formulations, and real datasets with independent splits.
-- Final full training/evidence rebuild with all publication artifacts committed on `dev` and propagated to `main` through the approved public snapshot path.
+No active milestone is open. Candidate directions are manuscript packaging, formal assurance, external baseline expansion, and rebuild acceleration.
 
 ## Requirements
 
@@ -116,18 +110,20 @@ v1.12 turns the evidence package into a paper-shaped argument. The repo now has 
 - ✓ Paper-facing motif evolution, pipeline figure, and logistic/Planck negative-result tables — v1.12 Phase 66
 - ✓ Bounded conventional SR baseline status and logistic strict-support probe with no unsupported promotion — v1.12 Phase 67
 - ✓ v1.12 supplement with 49 source locks, reproduction commands, and passing claim audit — v1.12 Phase 68
+- ✓ Clean-room publication rebuild, locked provenance, source locks, and placeholder-metadata rejection — v1.13 Phase 69
+- ✓ Layered verifier evidence and final-confirmation split isolation — v1.13 Phase 70
+- ✓ Guarded/faithful training semantics controls and mismatch diagnostics — v1.13 Phase 71
+- ✓ CI hardening, evidence-regression tests, and public snapshot validation — v1.13 Phase 72
+- ✓ Basis-only and literal-constant benchmark tracks with separate denominators — v1.13 Phase 73
+- ✓ Expanded dataset manifests for noisy, identifiability, multivariable, unit-aware, and real data — v1.13 Phase 74
+- ✓ Matched baseline harness with fail-closed optional external adapters — v1.13 Phase 75
+- ✓ Full v1.13 evidence package, claim audit, release gate, and milestone audit — v1.13 Phase 76
 
 ### Active
 
-- [ ] Build a clean-room reproduction command that rebuilds the complete paper package from an empty checkout without requiring preexisting evidence artifacts.
-- [ ] Replace placeholder benchmark snapshot metadata with real immutable provenance: git revision, command, environment lock/container digest, input hashes, generated-at timestamps, and artifact hashes.
-- [ ] Expand tests and CI from smoke/contract checks into algorithmic correctness, numerical semantics, branch behavior, manifest validation, and minimal evidence-regression coverage.
-- [ ] Upgrade verifier evidence from sparse spot checks to layered symbolic, randomized, adversarial, interval/certificate, and final-confirmation validation.
-- [ ] Remove evaluation leakage by separating candidate generation/selection data from final confirmation data and by labeling all metrics by their role.
-- [ ] Make training and verification semantics match, or quantify the clamp/log-guard surrogate mismatch with hard ablations and real-domain branch certificates.
-- [ ] Run and report every benchmark in basis-only and literal-constant-augmented tracks.
-- [ ] Add matched-budget conventional symbolic-regression baselines and expanded noisy/multivariable/unit-aware/real-data evidence before claiming publication readiness.
-- [ ] Run all necessary training/evidence generation for the final publication package, then update `main` with the required code, tests, CI, and artifacts.
+- [ ] Decide the next milestone direction: manuscript packaging, formal assurance, external baseline expansion, or rebuild acceleration.
+- [ ] If publishing publicly, run `.github/workflows/publish-main.yml` from the validated `dev` state rather than force-pushing locally.
+- [ ] If external comparisons become a paper blocker, install and run optional baseline systems through the Phase 75 harness.
 
 ### Out of Scope
 
@@ -141,7 +137,7 @@ v1.12 turns the evidence package into a paper-shaped argument. The repo now has 
 - A web GUI - the first target remains a reproducible package, CLI, tests, and artifacts.
 - Broad blind symbolic-regression superiority claims - the publication can claim only what the locked evidence and matched baselines support.
 - Formal theorem-prover equivalence as a release blocker - targeted symbolic equivalence, interval/certificate checks, and strong falsification are in scope; full theorem proving remains future work unless explicitly adopted.
-- Manuscript prose expansion as the main milestone deliverable - prose can follow only after the clean-room reproduction and validation path is credible.
+- Manuscript prose that oversteps the v1.13 claim audit - prose can now proceed, but it must stay inside the verified evidence boundaries.
 
 ## Context
 
@@ -155,7 +151,7 @@ A quick post-v1.7 `family-smoke` run showed that full campaigns should not be la
 
 v1.8 found no positive centered-family recovery signal under the scoped local setup and identified a centered scaffold correctness confound: raw `exp`/`log` scaffold helpers are semantically raw witnesses and must not be silently reused for `CEML_s` or `ZEML_s`. v1.9 resolved that confound, added focused Arrhenius and Michaelis-Menten same-AST warm-start evidence, measured expanded cleanup as repair-only no-improvement evidence, and generated a raw-hybrid paper package with locked source artifacts and regime-separated claims.
 
-The v1.13 audit changes the priority from paper shaping to publication hardening. The repo now has useful tests and archived artifacts, but the public release must prove that a fresh checkout can rebuild every paper-facing artifact, that verifier evidence is stronger than sparse numeric spot checks, that final confirmation data is isolated from model selection, that training guards do not create spurious recoveries, and that conventional baselines and broader datasets are reported under a standardized harness.
+The v1.13 audit changed the priority from paper shaping to publication hardening. That work is now complete: a fresh checkout has a publication rebuild entrypoint, verifier evidence is layered and labeled, final confirmation is separated from model selection, training guard mismatch is surfaced in artifacts, and conventional baselines plus broader datasets are reported under standardized manifests and harnesses.
 
 ## Constraints
 
@@ -222,10 +218,11 @@ The v1.13 audit changes the priority from paper shaping to publication hardening
 | v1.10 prioritizes reusable compiler motifs over reporting work or gate changes | Logistic and Planck are high-visibility unsupported laws, and prior Shockley/Arrhenius/Michaelis wins came from reusable motif compression rather than looser recovery claims. | ✓ Good |
 | v1.12 prioritizes paper-shaped argument over broad new algorithm work | v1.11 already organized the evidence; the highest-leverage next step is to turn it into a draft skeleton while refreshing small, credibility-critical evidence gaps. | ✓ Good |
 | v1.12 treats conventional SR and logistic strict support as bounded probes | Both could help the paper, but dependency availability and compiler success are uncertain, so the milestone should record attempt/deferred/failure outcomes without blocking draft assembly. | ✓ Good |
-| v1.13 is a publication gate, not a prose milestone | The audit surfaced reproducibility, validation, leakage, baseline, dataset, and release-branch gaps that must be resolved before manuscript polish can be credible. | - Pending |
-| Matched-budget baselines are now in scope | External SR comparison was deferred while the hybrid pipeline matured; publication now requires a standardized comparator harness or a clearly failed, source-locked attempt. | - Pending |
-| Final confirmation is separate from candidate selection | Held-out/extrapolation performance can diagnose candidates, but publication recovery claims need untouched confirmation unless symbolic equivalence is proven. | - Pending |
-| `main` updates only after the full rebuild passes | The public branch should receive publication-ready code and artifacts, not intermediate dev-only evidence. | - Pending |
+| v1.13 is a publication gate, not a prose milestone | The audit surfaced reproducibility, validation, leakage, baseline, dataset, and release-branch gaps that had to be resolved before manuscript polish could be credible. | ✓ Good |
+| Matched-budget baselines are now in scope | External SR comparison was deferred while the hybrid pipeline matured; publication now requires a standardized comparator harness or a clearly failed, source-locked attempt. | ✓ Good |
+| Final confirmation is separate from candidate selection | Held-out/extrapolation performance can diagnose candidates, but publication recovery claims need untouched confirmation unless symbolic equivalence is proven. | ✓ Good |
+| `main` updates only after the full rebuild passes | The public branch should receive publication-ready code and artifacts, not intermediate dev-only evidence. | ✓ Good |
+| Direct local force-pushes are not part of release closeout | Phase 76 validates the public snapshot and records readiness for the publish workflow; remote publication remains a workflow action. | ✓ Good |
 
 ## Evolution
 
@@ -245,4 +242,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-20 after v1.13 milestone start*
+*Last updated: 2026-04-20 after v1.13 milestone completion*

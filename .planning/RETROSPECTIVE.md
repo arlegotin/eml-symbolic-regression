@@ -91,6 +91,53 @@
 
 ---
 
+## Milestone: v1.13 — Publication-grade reproduction and validation
+
+**Shipped:** 2026-04-20
+**Phases:** 8 | **Plans:** 8 | **Sessions:** 1
+
+### What Was Built
+
+- Clean-room publication rebuild path with lockfile/container provenance, source locks, validation, and smoke/full modes.
+- Layered verifier and split-discipline upgrades for symbolic, dense randomized, adversarial, certificate, evidence-level, and final-confirmation reporting.
+- Guarded versus faithful training semantics controls with manifest diagnostics for guard/anomaly/post-snap mismatch evidence.
+- CI/public snapshot validation, basis-only and literal-constant benchmark tracks, expanded dataset manifests, and matched baseline harness.
+- Final v1.13 evidence package under `artifacts/paper/v1.13/` with a passing claim audit, release gate, and milestone audit.
+
+### What Worked
+
+- Using the Phase 76 rebuild as the release gate forced the campaign, baselines, dataset manifests, audit, and public snapshot checks to agree.
+- Keeping basis-only and literal-constant denominators separate made the final evidence more honest without blocking applied literal-constant demos.
+- Fail-closed optional baseline adapters kept the harness reproducible in the local environment while making missing dependencies explicit.
+- Excluding raw campaign run payloads from source locks kept the committed evidence package small and reviewable.
+
+### What Was Inefficient
+
+- `gsd-tools audit-open` still fails through the CLI path with `output is not defined`; the structured audit had to be invoked through the underlying module.
+- `gsd-tools phase complete` and `milestone complete` still corrupt or stale some generated roadmap/state text, so closeout required manual repair.
+- Full publication rebuilds create large raw run payloads before pruning; the release path should make curated versus scratch output clearer.
+
+### Patterns Established
+
+- Publication artifacts should include both a claim audit and a release gate, not just a manifest.
+- Baseline rows must stay outside EML recovery denominators.
+- Final confirmation and verifier evidence should be machine-readable release blockers.
+- Public `main` publication should be workflow-gated, not a local force-push.
+
+### Key Lessons
+
+1. The project is now ready for manuscript packaging work, but only with the v1.13 claim boundaries.
+2. External baseline depth can improve only after dependencies are deliberately installed; silent absence is no longer acceptable.
+3. Release artifacts need a curated output policy so large scratch payloads do not become accidental source-lock or git history baggage.
+
+### Cost Observations
+
+- Model mix: local Codex orchestration with no spawned subagents.
+- Sessions: 1
+- Notable: The full release rebuild and artifact pruning were the expensive path; focused regression tests stayed fast.
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -101,6 +148,7 @@
 | v1.2 | 1 | 5 | Benchmark evidence replaced anecdotal training checks. |
 | v1.3 | 1 | 5 | Campaign reports made benchmark evidence presentation-ready. |
 | v1.6 | 2 | 5 | Hybrid exact-candidate recovery and regime-aware proof evidence became paper-grade. |
+| v1.13 | 1 | 8 | Publication-grade rebuild, audit, baseline, dataset, CI, and release-gate contracts replaced ad hoc paper packaging. |
 
 ### Cumulative Quality
 
@@ -110,6 +158,7 @@
 | v1.2 | 38 | Benchmark contract and runner coverage | Aggregate Markdown evidence |
 | v1.3 | 45 | Campaign, CSV, plot, report, and CLI coverage | CSV export, SVG figures, Markdown report |
 | v1.6 | 120+ | Candidate pooling, cleanup, refit, compiler, campaign, proof, and report coverage | Hash-locked proof and comparison artifacts |
+| v1.13 | 150+ | CI contract, evidence regression, verifier, benchmark, publication, baseline, and dataset coverage | Claim audit, release gate, dataset manifests, baseline reports |
 
 ### Top Lessons
 
@@ -117,3 +166,4 @@
 2. Measurement should precede optimizer changes when the failure modes are not yet clear.
 3. Reproducible artifacts are more useful than one-off demo output for this project.
 4. Manuscript claims should be written from aggregate-backed evidence rows, not from narrative report prose alone.
+5. Release credibility needs a machine-readable claim audit and public snapshot gate before any branch publication.

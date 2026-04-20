@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.13
 milestone_name: Publication-grade reproduction and validation
 current_phase: null
-current_phase_name: Milestone complete
-status: Complete
-stopped_at: v1.13 complete
-last_updated: "2026-04-20T14:16:27.520Z"
+current_phase_name: None
+status: Planning next milestone
+stopped_at: v1.13 archived
+last_updated: "2026-04-20T14:19:54.160Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 8
@@ -27,21 +27,19 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.13 publication-grade reproduction and validation.
+**Current focus:** Planning the next milestone after v1.13 publication-grade reproduction and validation shipped.
 
 ## Current Position
 
 Phase: Milestone complete
 Plan: Complete
-Status: Complete
-Last activity: 2026-04-20 - Completed Phase 76 and v1.13 publication release gate
+Status: Planning next milestone
+Last activity: 2026-04-20 - Archived v1.13 milestone and phase artifacts
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
 
-**v1.13: Publication-grade reproduction and validation**
-
-Goal: Build a clean-room publication path that can regenerate the paper evidence from an empty checkout, strengthen verifier and split discipline, add real CI/test coverage, run dual-track and matched-baseline evidence, and publish the resulting code and artifacts safely to `main`.
+No active milestone is open. v1.13 Publication-grade reproduction and validation is archived, and the next milestone should start at Phase 77.
 
 ## Artifacts
 
@@ -49,11 +47,11 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 |----------|------|--------|
 | Project context | `.planning/PROJECT.md` | Updated for v1.13 |
 | Archived v1.12 requirements | `.planning/milestones/v1.12-REQUIREMENTS.md` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.13 |
-| Roadmap | `.planning/ROADMAP.md` | Active v1.13 phases 69-76 |
+| Archived requirements | `.planning/milestones/v1.13-REQUIREMENTS.md` | Complete |
+| Roadmap | `.planning/ROADMAP.md` | No active milestone; next phase starts at 77 |
 | Research summary | `.planning/research/SUMMARY.md` | Reuse existing context; no new domain research selected |
 | Workflow config | `.planning/config.json` | Complete |
-| Milestone log | `.planning/MILESTONES.md` | Complete through v1.12 |
+| Milestone log | `.planning/MILESTONES.md` | Complete through v1.13 |
 | v1.11 final paper package | `artifacts/paper/v1.11/` | Complete, audit passed |
 | v1.12 draft skeleton | `artifacts/paper/v1.11/draft/` | Phase 64 complete |
 | v1.12 evidence refresh | `artifacts/campaigns/v1.12-evidence-refresh/` | Phase 65 complete |
@@ -86,7 +84,21 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 
 ### Pending Todos
 
-- Run milestone audit and archive v1.13 when ready.
+- Start the next milestone with `$gsd-new-milestone` when ready.
+
+### Deferred Items
+
+Items acknowledged and deferred at milestone close on 2026-04-20:
+
+| Category | Item | Status |
+|----------|------|--------|
+| quick_task | 260419-ukc-rewrite-readme-to-make-it-clear-engaging | missing |
+| quick_task | 260419-uxg-make-readme-clear-and-cool-without-menti | missing |
+| quick_task | 260420-b8n-add-readme-plot-section-showing-how-demo | missing |
+| quick_task | 260420-bdg-expand-readme-fit-plots-with-four-additi | missing |
+| quick_task | 260420-bia-fix-readme-plot-gallery-to-one-conservat | missing |
+| quick_task | 260420-g7h-include-useful-public-artifacts-in-sanit | unknown |
+| quick_task | 260420-ixp-return-tests-to-generated-main-branch | unknown |
 
 ### Completed Quick Tasks
 
@@ -114,4 +126,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-20 after Phase 76 completion*
+*Last updated: 2026-04-20 after v1.13 archive*
