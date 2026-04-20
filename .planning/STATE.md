@@ -6,7 +6,7 @@ current_phase: 68
 current_phase_name: Package Assembly, Source Locks, and Claim Audit
 status: milestone_complete
 stopped_at: v1.12 archived
-last_updated: "2026-04-20T09:23:40.000Z"
+last_updated: "2026-04-20T09:41:22.000Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 5
@@ -34,7 +34,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-19)
 Phase: 68 - Package Assembly, Source Locks, and Claim Audit
 Plan: Complete
 Status: Milestone archived
-Last activity: 2026-04-20 - Completed quick task 260420-fsn: publish sanitized main from dev
+Last activity: 2026-04-20 - Completed quick task 260420-g7h: include curated artifacts in main snapshot
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
@@ -89,6 +89,7 @@ Goal: Turn the v1.11 evidence package into a paper-shaped draft while refreshing
 | 2026-04-20 | Expanded conservative README plot gallery | Complete | `.planning/quick/260420-bdg-expand-readme-fit-plots-with-four-additi/` |
 | 2026-04-20 | Fixed 2x2 README plot gallery | Complete | `.planning/quick/260420-bia-fix-readme-plot-gallery-to-one-conservat/` |
 | 2026-04-20 | Publish sanitized main from dev | Complete | `.planning/quick/260420-fsn-add-github-actions-automation-to-publish/` |
+| 2026-04-20 | Include curated public artifacts | Complete | `.planning/quick/260420-g7h-include-useful-public-artifacts-in-sanit/` |
 
 ### Blockers/Concerns
 

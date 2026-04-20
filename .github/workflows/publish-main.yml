@@ -14,18 +14,18 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish sanitized snapshot
+    name: Publish main
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout dev
+      - name: Checkout source
         uses: actions/checkout@v4
         with:
           ref: dev
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Publish sanitized main
+      - name: Publish main
         shell: bash
         run: |
           set -euo pipefail
@@ -41,10 +41,28 @@ jobs:
             AGENTS.md \
             .github \
             .planning \
-            artifacts \
             docs \
             sources \
             tests
+
+          # Keep public-facing reports, tables, figures, manifests, and audits,
+          # but drop raw run payloads, duplicated source bundles, and large traces.
+          git ls-files -z -- \
+            ':(glob)artifacts/.DS_Store' \
+            ':(glob)artifacts/**/.DS_Store' \
+            ':(glob)artifacts/**/runs/**' \
+            ':(glob)artifacts/**/raw-runs/**' \
+            ':(glob)artifacts/**/suite-result.json' \
+            ':(glob)artifacts/**/*-suite-result.json' \
+            ':(glob)artifacts/**/aggregate.json' \
+            ':(glob)artifacts/**/*-aggregate.json' \
+            ':(glob)artifacts/**/training-step-traces.json' \
+            ':(glob)artifacts/**/training-step-traces.csv' \
+            ':(glob)artifacts/**/training-step-traces.md' \
+            ':(glob)artifacts/paper/**/sources/**' \
+            | while IFS= read -r -d '' artifact_path; do
+                git rm -r -f --ignore-unmatch -- "$artifact_path"
+              done
 
           if git diff --cached --quiet; then
             echo "Sanitized snapshot is empty; refusing to publish main."
