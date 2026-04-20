@@ -82,11 +82,15 @@ Built-in suites:
 - `v1.9-arrhenius-evidence`: a single focused `arrhenius-warm` run for normalized Arrhenius exact compiler warm-start evidence.
 - `v1.9-michaelis-evidence`: a single focused `michaelis-warm` run for normalized Michaelis-Menten exact compiler warm-start / same-AST evidence.
 - `v1.9-repair-evidence`: focused near-miss default-vs-expanded cleanup pairs for repair-only evidence with no proof threshold policy.
+- `v1.13-paper-basis-only`: every publication target under the paper-faithful `{1, eml, variables}` basis-only compiler policy.
+- `v1.13-paper-literal-constants`: every publication target under the applied literal-constant policy with declared literal catalogs and warm-start rows.
+- `v1.13-paper-tracks`: combined basis-only and literal-constant rows with aggregate denominators kept separate.
 
 Each run writes schema `eml.benchmark_run.v1` with:
 
 - run identity and artifact path,
 - dataset and optimizer configuration,
+- benchmark track metadata, including constants policy, literal catalog, and scaffold initializer status,
 - start mode, seed, perturbation noise, and tags,
 - stage statuses,
 - normalized metrics such as best loss, post-snap loss, snap margin, active slot changes, verifier status, repair status, repair variant count, and high-precision error when available,
@@ -113,7 +117,12 @@ Run artifacts can also include a `refit` section. That section records:
 
 Training anomaly summaries now distinguish `exp` clamp counts from `exp` overflow pressure, and they separately record `log` small-magnitude inputs, non-positive-real inputs, branch-cut hits, non-finite log inputs, and any training-only log-safety penalty that was applied. Optimizer manifests also include a `semantics_alignment` section. It states whether the objective used `faithful` verifier-matching semantics or default `guarded` training semantics, records the guarded fallback reason when applicable, summarizes anomaly totals, and surfaces post-snap verifier and certificate status fields for publication audits.
 
-Aggregate reports use schema `eml.benchmark_aggregate.v1` and are written as both JSON and Markdown. Recovery rates are grouped by formula, start mode, perturbation level, depth, and seed group. `claim_status == "recovered"` is the only source of verifier-owned recovery counts.
+Aggregate reports use schema `eml.benchmark_aggregate.v1` and are written as both JSON and Markdown. Recovery rates are grouped by formula, start mode, benchmark track, constants policy, perturbation level, depth, and seed group. Mixed-track suites also include a top-level `tracks` denominator table so basis-only and literal-constant rows cannot share a recovery denominator. `claim_status == "recovered"` is the only source of verifier-owned recovery counts.
+
+The v1.13 track contract is:
+
+- `basis_only`: compiler policy `basis_only`, no non-1 terminal constants, and no silent fallback to literal constants. Literal-coefficient formulas may be unsupported in this track; that unsupported row remains part of the basis-only denominator.
+- `literal_constants`: compiler policy `literal_constants`, a declared literal catalog in `benchmark_track.literal_catalog`, and explicit scaffold initializer status in `benchmark_track.scaffold_status`. These rows are applied convenience evidence, not bare `{1, eml, variables}` synthesis.
 
 The taxonomy intentionally separates:
 

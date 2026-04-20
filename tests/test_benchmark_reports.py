@@ -36,6 +36,8 @@ def _synthetic_result(
     claim_id: str | None = "paper-shallow-blind-recovery",
     claim_class: str | None = "measured_training_boundary",
     threshold_policy_id: str | None = "measured_pure_blind_recovery",
+    track: str = "literal_constants",
+    constants_policy: str = "literal_constants",
 ) -> BenchmarkRunResult:
     run = BenchmarkRun(
         suite_id="synthetic-proof",
@@ -50,6 +52,8 @@ def _synthetic_result(
         claim_id=claim_id,
         threshold_policy_id=threshold_policy_id,
         training_mode=training_mode,
+        track=track,
+        constants_policy=constants_policy,
     )
     payload = {
         "run": run.as_dict(),
@@ -63,6 +67,7 @@ def _synthetic_result(
         "raw_status": raw_status,
         "repair_status": repair_status,
         "threshold": {"id": threshold_policy_id} if threshold_policy_id is not None else None,
+        "benchmark_track": run.as_dict()["benchmark_track"],
         "dataset": run.dataset.as_dict(),
         "dataset_manifest": {"schema": "eml.proof_dataset_manifest.v1"},
         "provenance": {"symbolic_expression": "exp(x)"},
@@ -122,6 +127,56 @@ def test_aggregate_run_rows_preserve_hybrid_selection_and_refit_metrics():
     assert metrics["refit_status"] == "accepted"
     assert metrics["refit_accepted"] is True
     assert metrics["refit_constant_count"] == 2
+
+
+def test_aggregate_evidence_keeps_benchmark_track_denominators_separate():
+    suite = BenchmarkSuite("synthetic-tracks", "synthetic track aggregate", ())
+    result = SimpleNamespace(
+        suite=suite,
+        results=(
+            _synthetic_result(
+                case_id="exp-basis",
+                start_mode="compile",
+                training_mode="compile_only_verification",
+                evidence_class="unsupported",
+                status="unsupported",
+                claim_status="unsupported",
+                track="basis_only",
+                constants_policy="basis_only",
+                claim_id=None,
+                claim_class=None,
+                threshold_policy_id=None,
+            ),
+            _synthetic_result(
+                case_id="exp-literal",
+                start_mode="warm_start",
+                training_mode="compiler_warm_start_training",
+                evidence_class="same_ast",
+                status="same_ast_return",
+                claim_status="recovered",
+                track="literal_constants",
+                constants_policy="literal_constants",
+                claim_id=None,
+                claim_class=None,
+                threshold_policy_id=None,
+            ),
+        ),
+    )
+
+    aggregate = aggregate_evidence(result)
+    tracks = {row["track"]: row for row in aggregate["tracks"]}
+    markdown = render_aggregate_markdown(aggregate)
+
+    assert tracks["basis_only"]["total"] == 1
+    assert tracks["basis_only"]["unsupported"] == 1
+    assert tracks["basis_only"]["verifier_recovered"] == 0
+    assert tracks["basis_only"]["constants_policies"] == ["basis_only"]
+    assert tracks["literal_constants"]["total"] == 1
+    assert tracks["literal_constants"]["verifier_recovered"] == 1
+    assert tracks["literal_constants"]["constants_policies"] == ["literal_constants"]
+    assert {group["key"] for group in aggregate["groups"]["benchmark_track"]} == {"basis_only", "literal_constants"}
+    assert "## Track Denominators" in markdown
+    assert "| basis_only | 1 | 0 | 1 | 0 | 0.000 | basis_only |" in markdown
 
 
 def test_warm_start_depth_gate_overrides_compiled_seed_claim_status(tmp_path):

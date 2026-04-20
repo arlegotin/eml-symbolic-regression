@@ -11,6 +11,7 @@ from eml_symbolic_regression.benchmark import (
     BenchmarkValidationError,
     DatasetConfig,
     OptimizerBudget,
+    PUBLICATION_BENCHMARK_TARGETS,
     builtin_suite,
     list_builtin_suites,
     load_suite,
@@ -123,6 +124,9 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "v1.10-planck-diagnostics",
         "v1.11-paper-training",
         "v1.11-logistic-planck-probes",
+        "v1.13-paper-basis-only",
+        "v1.13-paper-literal-constants",
+        "v1.13-paper-tracks",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -308,6 +312,57 @@ def test_v111_logistic_planck_probe_suite_has_compile_and_training_rows():
     assert by_case["planck-blind-probe"].optimizer.constants[2] == pytest.approx(2.718281828459045)
     assert all(run.expect_recovery is False for run in runs)
     assert {"compile", "blind"} == {run.start_mode for run in runs}
+
+
+def test_v113_publication_track_suites_cover_every_target_with_separate_policies():
+    basis = builtin_suite("v1.13-paper-basis-only")
+    literal = builtin_suite("v1.13-paper-literal-constants")
+    combined = builtin_suite("v1.13-paper-tracks")
+
+    basis_runs = basis.expanded_runs()
+    literal_runs = literal.expanded_runs()
+    combined_runs = combined.expanded_runs()
+
+    assert tuple(run.formula for run in basis_runs) == PUBLICATION_BENCHMARK_TARGETS
+    assert tuple(run.formula for run in literal_runs) == PUBLICATION_BENCHMARK_TARGETS
+    assert len(combined_runs) == len(PUBLICATION_BENCHMARK_TARGETS) * 2
+
+    assert {run.track for run in basis_runs} == {"basis_only"}
+    assert {run.constants_policy for run in basis_runs} == {"basis_only"}
+    assert {run.start_mode for run in basis_runs} == {"compile"}
+    assert all(run.optimizer.constants == (1.0,) for run in basis_runs)
+    assert all(run.as_dict()["benchmark_track"]["literal_catalog"] == [] for run in basis_runs)
+
+    assert {run.track for run in literal_runs} == {"literal_constants"}
+    assert {run.constants_policy for run in literal_runs} == {"literal_constants"}
+    assert {run.start_mode for run in literal_runs} == {"warm_start"}
+    assert all(run.as_dict()["benchmark_track"]["scaffold_status"] == "disabled" for run in literal_runs)
+
+    by_formula = {run.formula: run for run in literal_runs}
+    assert set(by_formula["logistic"].as_dict()["benchmark_track"]["literal_catalog"]) == {"2", "-1.3"}
+    assert set(by_formula["michaelis_menten"].as_dict()["benchmark_track"]["literal_catalog"]) == {"0.5", "2"}
+    assert set(by_formula["planck"].as_dict()["benchmark_track"]["literal_catalog"]) == {"2.718281828459045", "3"}
+
+
+def test_basis_only_track_rejects_literal_terminal_constants():
+    case = BenchmarkCase.from_mapping(
+        {
+            "id": "bad-basis",
+            "formula": "beer_lambert",
+            "start_mode": "compile",
+            "track": "basis_only",
+            "constants_policy": "basis_only",
+            "optimizer": {"constants": [1.0, -0.8]},
+        },
+        path="cases[0]",
+    )
+    suite = BenchmarkSuite("bad-basis", "bad basis-only constants", (case,))
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        suite.validate()
+
+    assert exc.value.reason == "invalid_track"
+    assert exc.value.path == "cases[0].optimizer.constants"
 
 
 def test_benchmark_case_and_run_serialize_optional_repair_config():

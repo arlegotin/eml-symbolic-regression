@@ -40,6 +40,22 @@ from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
 
 
 START_MODES = ("catalog", "compile", "blind", "warm_start", "perturbed_tree")
+BENCHMARK_TRACKS = ("basis_only", "literal_constants")
+CONSTANT_POLICIES = ("basis_only", "literal_constants")
+PUBLICATION_BENCHMARK_TARGETS = (
+    "exp",
+    "log",
+    "radioactive_decay",
+    "beer_lambert",
+    "scaled_exp_growth",
+    "scaled_exp_fast_decay",
+    "arrhenius",
+    "michaelis_menten",
+    "logistic",
+    "shockley",
+    "damped_oscillator",
+    "planck",
+)
 BUILTIN_SUITES = (
     "smoke",
     "v1.2-evidence",
@@ -73,6 +89,9 @@ BUILTIN_SUITES = (
     "v1.10-planck-diagnostics",
     "v1.11-paper-training",
     "v1.11-logistic-planck-probes",
+    "v1.13-paper-basis-only",
+    "v1.13-paper-literal-constants",
+    "v1.13-paper-tracks",
 )
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 CAMPAIGN_ARTIFACT_ROOT = Path("artifacts") / "campaigns"
@@ -401,6 +420,8 @@ class BenchmarkCase:
     threshold_policy_id: str | None = None
     training_mode: str | None = None
     repair: BenchmarkRepairConfig | None = None
+    track: str = "literal_constants"
+    constants_policy: str = "literal_constants"
 
     @classmethod
     def from_mapping(cls, payload: Mapping[str, Any], *, path: str) -> "BenchmarkCase":
@@ -417,6 +438,8 @@ class BenchmarkCase:
                 "evidence_class is derived from execution results and cannot be supplied by suite JSON",
                 path=f"{path}.evidence_class",
             )
+        track = _track_name_from_payload(payload, default="literal_constants")
+        constants_policy = _constants_policy_from_payload(payload, track=track)
         return cls(
             id=str(payload["id"]),
             formula=str(payload["formula"]),
@@ -435,6 +458,8 @@ class BenchmarkCase:
                 if "repair" in payload and payload.get("repair") is not None
                 else None
             ),
+            track=track,
+            constants_policy=constants_policy,
         )
 
     def validate(self, path: str) -> None:
@@ -475,6 +500,12 @@ class BenchmarkCase:
             self._validate_proof_contract(path)
         self.dataset.validate(f"{path}.dataset")
         self.optimizer.validate(f"{path}.optimizer")
+        _validate_track_contract(
+            self.track,
+            self.constants_policy,
+            self.optimizer.constants,
+            path=path,
+        )
         if self.repair is not None:
             self.repair.validate(f"{path}.repair")
 
@@ -615,6 +646,14 @@ class BenchmarkCase:
             "claim_id": self.claim_id,
             "threshold_policy_id": self.threshold_policy_id,
             "training_mode": self.training_mode,
+            "track": self.track,
+            "constants_policy": self.constants_policy,
+            "benchmark_track": _track_payload(
+                self.track,
+                self.constants_policy,
+                self.optimizer,
+                start_mode=self.start_mode,
+            ),
         }
         if self.repair is not None:
             payload["repair"] = self.repair.as_dict()
@@ -638,6 +677,8 @@ class BenchmarkRun:
     threshold_policy_id: str | None = None
     training_mode: str | None = None
     repair: BenchmarkRepairConfig | None = None
+    track: str = "literal_constants"
+    constants_policy: str = "literal_constants"
 
     @property
     def run_id(self) -> str:
@@ -659,6 +700,11 @@ class BenchmarkRun:
             }
         if self.repair is not None:
             parts["repair"] = self.repair.as_dict()
+        if self.track != "literal_constants" or self.constants_policy != "literal_constants":
+            parts["benchmark_track"] = {
+                "track": self.track,
+                "constants_policy": self.constants_policy,
+            }
         digest = hashlib.sha1(json.dumps(parts, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()[:12]
         return f"{_slug(self.suite_id)}-{_slug(self.case_id)}-{digest}"
 
@@ -679,6 +725,14 @@ class BenchmarkRun:
             "claim_id": self.claim_id,
             "threshold_policy_id": self.threshold_policy_id,
             "training_mode": self.training_mode,
+            "track": self.track,
+            "constants_policy": self.constants_policy,
+            "benchmark_track": _track_payload(
+                self.track,
+                self.constants_policy,
+                self.optimizer,
+                start_mode=self.start_mode,
+            ),
         }
         if self.repair is not None:
             payload["repair"] = self.repair.as_dict()
@@ -825,6 +879,8 @@ class BenchmarkSuite:
                         threshold_policy_id=case.threshold_policy_id,
                         training_mode=training_mode,
                         repair=case.repair,
+                        track=case.track,
+                        constants_policy=case.constants_policy,
                     )
                     runs.append(
                         BenchmarkRun(
@@ -843,6 +899,8 @@ class BenchmarkSuite:
                             threshold_policy_id=placeholder.threshold_policy_id,
                             training_mode=placeholder.training_mode,
                             repair=placeholder.repair,
+                            track=placeholder.track,
+                            constants_policy=placeholder.constants_policy,
                         )
                     )
         return tuple(runs)
@@ -889,6 +947,98 @@ def _optional_str(value: Any) -> str | None:
     if value is None:
         return None
     return str(value)
+
+
+def _track_name_from_payload(payload: Mapping[str, Any], *, default: str) -> str:
+    value = payload.get("track", payload.get("benchmark_track", default))
+    if isinstance(value, Mapping):
+        value = value.get("name", value.get("track", default))
+    return str(value)
+
+
+def _constants_policy_from_payload(payload: Mapping[str, Any], *, track: str) -> str:
+    if "constants_policy" in payload:
+        return str(payload["constants_policy"])
+    benchmark_track = payload.get("benchmark_track")
+    if isinstance(benchmark_track, Mapping) and benchmark_track.get("constants_policy") is not None:
+        return str(benchmark_track["constants_policy"])
+    return "basis_only" if track == "basis_only" else "literal_constants"
+
+
+def _is_basis_constant(value: complex) -> bool:
+    return abs(complex(value) - (1.0 + 0.0j)) <= 1e-12
+
+
+def _literal_catalog(constants: Iterable[complex]) -> tuple[complex, ...]:
+    return tuple(complex(value) for value in constants if not _is_basis_constant(value))
+
+
+def _format_constant_catalog(constants: Iterable[complex]) -> list[str | dict[str, str]]:
+    return [format_constant_value(value) for value in constants]
+
+
+def _track_payload(
+    track: str,
+    constants_policy: str,
+    optimizer: OptimizerBudget,
+    *,
+    start_mode: str | None = None,
+) -> dict[str, Any]:
+    literal_catalog = _literal_catalog(optimizer.constants)
+    scaffold_initializers = tuple(optimizer.scaffold_initializers)
+    payload = {
+        "name": track,
+        "constants_policy": constants_policy,
+        "denominator_key": track,
+        "basis_constants": _format_constant_catalog(value for value in optimizer.constants if _is_basis_constant(value)),
+        "literal_catalog": _format_constant_catalog(literal_catalog),
+        "uses_literal_constants": constants_policy == "literal_constants" and bool(literal_catalog),
+        "scaffold_initializers": list(scaffold_initializers),
+        "scaffold_exclusions": list(optimizer.scaffold_exclusions),
+        "scaffold_status": "enabled" if scaffold_initializers else "disabled",
+        "warm_start_or_scaffold_status": _warm_start_or_scaffold_status(scaffold_initializers),
+    }
+    if start_mode is not None:
+        payload["start_mode"] = start_mode
+        payload["warm_start_status"] = "compiler_warm_start" if start_mode == "warm_start" else "not_warm_start"
+    return payload
+
+
+def _warm_start_or_scaffold_status(scaffold_initializers: tuple[str, ...]) -> str:
+    return "scaffold_initializers_enabled" if scaffold_initializers else "no_scaffold_initializers"
+
+
+def _validate_track_contract(track: str, constants_policy: str, constants: Iterable[complex], *, path: str) -> None:
+    if track not in BENCHMARK_TRACKS:
+        raise BenchmarkValidationError(
+            "invalid_track",
+            f"track must be one of: {', '.join(BENCHMARK_TRACKS)}",
+            path=f"{path}.track",
+        )
+    if constants_policy not in CONSTANT_POLICIES:
+        raise BenchmarkValidationError(
+            "invalid_track",
+            f"constants_policy must be one of: {', '.join(CONSTANT_POLICIES)}",
+            path=f"{path}.constants_policy",
+        )
+    if track == "basis_only" and constants_policy != "basis_only":
+        raise BenchmarkValidationError(
+            "invalid_track",
+            "basis_only track must use basis_only constants_policy",
+            path=f"{path}.constants_policy",
+        )
+    if track == "literal_constants" and constants_policy != "literal_constants":
+        raise BenchmarkValidationError(
+            "invalid_track",
+            "literal_constants track must use literal_constants constants_policy",
+            path=f"{path}.constants_policy",
+        )
+    if track == "basis_only" and any(not _is_basis_constant(value) for value in constants):
+        raise BenchmarkValidationError(
+            "invalid_track",
+            "basis_only track cannot declare non-1 literal terminal constants",
+            path=f"{path}.optimizer.constants",
+        )
 
 
 def _default_training_mode(start_mode: str) -> str:
@@ -959,7 +1109,10 @@ def _case(
     operator_family: EmlOperator | None = None,
     operator_schedule: Iterable[EmlOperator] = (),
     repair: BenchmarkRepairConfig | None = None,
+    track: str = "literal_constants",
+    constants_policy: str | None = None,
 ) -> BenchmarkCase:
+    policy = constants_policy if constants_policy is not None else ("basis_only" if track == "basis_only" else "literal_constants")
     return BenchmarkCase(
         id=id,
         formula=formula,
@@ -985,6 +1138,8 @@ def _case(
         threshold_policy_id=threshold_policy_id,
         training_mode=training_mode,
         repair=repair,
+        track=track,
+        constants_policy=policy,
     )
 
 
@@ -1128,6 +1283,78 @@ def _family_calibration_suite() -> BenchmarkSuite:
         description="Focused v1.8 family calibration probes for shallow exp/log behavior across fixed scales and schedules.",
         cases=tuple(_family_case(case, variant, suite_tag="v1.8") for case in cases for variant in variants),
     )
+
+
+def publication_benchmark_targets() -> tuple[str, ...]:
+    return PUBLICATION_BENCHMARK_TARGETS
+
+
+def _publication_literal_catalog(formula: str) -> tuple[complex, ...]:
+    catalogs: dict[str, tuple[complex, ...]] = {
+        "exp": (),
+        "log": (),
+        "radioactive_decay": (-0.4,),
+        "beer_lambert": (-0.8,),
+        "scaled_exp_growth": (0.4,),
+        "scaled_exp_fast_decay": (-1.2,),
+        "arrhenius": (-0.8,),
+        "michaelis_menten": (2.0, 0.5),
+        "logistic": (2.0, -1.3),
+        "shockley": (0.2, 1.4),
+        "damped_oscillator": (-0.15, 2.5, 0.2),
+        "planck": (3.0, np.e),
+    }
+    return catalogs[formula]
+
+
+def _literal_track_constants(formula: str) -> tuple[complex, ...]:
+    constants: list[complex] = [1.0 + 0.0j]
+    for value in _publication_literal_catalog(formula):
+        scalar = complex(value)
+        if scalar not in constants:
+            constants.append(scalar)
+    return tuple(constants)
+
+
+def _publication_track_cases(track: str) -> tuple[BenchmarkCase, ...]:
+    if track == "basis_only":
+        return tuple(
+            _case(
+                f"{_slug(formula)}-basis-only-compile",
+                formula,
+                "compile",
+                seeds=(0,),
+                points=24,
+                constants=(1.0,),
+                scaffold_initializers=(),
+                tags=("v1.13", "paper_track", "basis_only"),
+                expect_recovery=False,
+                track="basis_only",
+                constants_policy="basis_only",
+            )
+            for formula in PUBLICATION_BENCHMARK_TARGETS
+        )
+    if track == "literal_constants":
+        return tuple(
+            _case(
+                f"{_slug(formula)}-literal-warm",
+                formula,
+                "warm_start",
+                seeds=(0,),
+                perturbation_noise=(0.0,),
+                points=24,
+                warm_steps=1,
+                warm_restarts=1,
+                constants=_literal_track_constants(formula),
+                scaffold_initializers=(),
+                tags=("v1.13", "paper_track", "literal_constants", "warm_start"),
+                expect_recovery=False,
+                track="literal_constants",
+                constants_policy="literal_constants",
+            )
+            for formula in PUBLICATION_BENCHMARK_TARGETS
+        )
+    raise BenchmarkValidationError("invalid_track", f"unknown publication track {track!r}", path="track")
 
 
 def builtin_suite(name: str) -> BenchmarkSuite:
@@ -1815,6 +2042,36 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 ),
             ),
         )
+    if name == "v1.13-paper-basis-only":
+        return BenchmarkSuite(
+            id="v1.13-paper-basis-only",
+            description=(
+                "v1.13 paper-faithful basis-only publication target track using only the canonical 1 terminal, "
+                "variables, and EML under compiler basis_only policy."
+            ),
+            cases=_publication_track_cases("basis_only"),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
+    if name == "v1.13-paper-literal-constants":
+        return BenchmarkSuite(
+            id="v1.13-paper-literal-constants",
+            description=(
+                "v1.13 applied literal-constant publication target track with declared literal catalogs and "
+                "compiler warm-start rows under literal_constants policy."
+            ),
+            cases=_publication_track_cases("literal_constants"),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
+    if name == "v1.13-paper-tracks":
+        return BenchmarkSuite(
+            id="v1.13-paper-tracks",
+            description=(
+                "Combined v1.13 publication target suite with basis-only and literal-constant tracks kept as "
+                "separate aggregate denominators."
+            ),
+            cases=(*_publication_track_cases("basis_only"), *_publication_track_cases("literal_constants")),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
 
 
@@ -1875,6 +2132,7 @@ def _minimal_run_payload(run: BenchmarkRun) -> dict[str, Any]:
         "dataset": run.dataset.as_dict(),
         "dataset_manifest": None,
         "budget": run.optimizer.as_dict(),
+        "benchmark_track": _track_payload(run.track, run.constants_policy, run.optimizer, start_mode=run.start_mode),
         "provenance": None,
     }
 
@@ -1893,6 +2151,7 @@ def _base_run_payload(run: BenchmarkRun) -> dict[str, Any]:
         "dataset": run.dataset.as_dict(),
         "dataset_manifest": manifest,
         "budget": run.optimizer.as_dict(),
+        "benchmark_track": _track_payload(run.track, run.constants_policy, run.optimizer, start_mode=run.start_mode),
         "provenance": manifest["provenance"],
         "environment": {
             "python": platform.python_version(),
@@ -2718,7 +2977,7 @@ def _compile_demo(run: BenchmarkRun, splits: Any) -> dict[str, Any]:
     validation_inputs = {spec.variable: np.concatenate([split.inputs[spec.variable] for split in splits])}
     compiler_config = CompilerConfig(
         variables=(spec.variable,),
-        constant_policy="literal_constants",
+        constant_policy=run.constants_policy,
         max_depth=run.optimizer.max_compile_depth,
         max_nodes=run.optimizer.max_compile_nodes,
         max_power=run.optimizer.max_power,
@@ -2969,6 +3228,8 @@ def aggregate_evidence(result: BenchmarkSuiteResult) -> dict[str, Any]:
         "groups": {
             "formula": _group_counts(runs, lambda item: item["formula"]),
             "start_mode": _group_counts(runs, lambda item: item["start_mode"]),
+            "benchmark_track": _group_counts(runs, lambda item: item.get("benchmark_track") or "unknown"),
+            "constants_policy": _group_counts(runs, lambda item: item.get("constants_policy") or "unknown"),
             "evidence_class": _group_counts(runs, lambda item: item["evidence_class"]),
             "return_kind": _group_counts(runs, lambda item: item.get("return_kind") or "none"),
             "raw_status": _group_counts(runs, lambda item: item.get("raw_status") or "none"),
@@ -2977,6 +3238,7 @@ def aggregate_evidence(result: BenchmarkSuiteResult) -> dict[str, Any]:
             "depth": _group_counts(runs, lambda item: str(item["optimizer"]["depth"])),
             "seed_group": _group_counts(runs, lambda item: "all" if item["seed"] is not None else "unknown"),
         },
+        "tracks": _track_summary(runs),
         "depth_curve": _depth_curve_summary(runs),
         "thresholds": _threshold_summary(runs),
         "runs": runs,
@@ -3022,6 +3284,9 @@ def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
     lines.append(f"| verifier_recovery_rate | {counts['verifier_recovery_rate']:.3f} |")
     lines.extend(["", "## By Formula", "", _markdown_group_table(aggregate["groups"]["formula"])])
     lines.extend(["", "## By Start Mode", "", _markdown_group_table(aggregate["groups"]["start_mode"])])
+    lines.extend(["", "## Track Denominators", "", _markdown_track_table(aggregate.get("tracks", []))])
+    lines.extend(["", "## By Benchmark Track", "", _markdown_group_table(aggregate["groups"]["benchmark_track"])])
+    lines.extend(["", "## By Constants Policy", "", _markdown_group_table(aggregate["groups"]["constants_policy"])])
     lines.extend(["", "## By Evidence Class", "", _markdown_group_table(aggregate["groups"]["evidence_class"])])
     lines.extend(["", "## By Return Kind", "", _markdown_group_table(aggregate["groups"]["return_kind"])])
     lines.extend(["", "## By Raw Status", "", _markdown_group_table(aggregate["groups"]["raw_status"])])
@@ -3048,6 +3313,22 @@ def _markdown_group_table(groups: list[Mapping[str, Any]]) -> str:
         lines.append(
             f"| {group['key']} | {group['total']} | {group['verifier_recovered']} | {group['same_ast_return']} | "
             f"{group['unsupported']} | {group['failed']} | {group['verifier_recovery_rate']:.3f} |"
+        )
+    return "\n".join(lines)
+
+
+def _markdown_track_table(tracks: list[Mapping[str, Any]]) -> str:
+    if not tracks:
+        return "No benchmark track metadata."
+    lines = [
+        "| Track | Total | Verifier Recovered | Unsupported | Failed | Recovery Rate | Constants Policy |",
+        "|-------|-------|--------------------|-------------|--------|---------------|------------------|",
+    ]
+    for row in tracks:
+        policies = ",".join(str(value) for value in row.get("constants_policies", []))
+        lines.append(
+            f"| {row['track']} | {row['total']} | {row['verifier_recovered']} | {row['unsupported']} | "
+            f"{row['failed']} | {row['verifier_recovery_rate']:.3f} | {policies} |"
         )
     return "\n".join(lines)
 
@@ -3082,6 +3363,32 @@ def _markdown_threshold_table(thresholds: list[Mapping[str, Any]]) -> str:
             f"{row['failed']} | {row['rate']:.3f} | {required_value} | {row['status']} |"
         )
     return "\n".join(lines)
+
+
+def _track_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[str, list[Mapping[str, Any]]] = {}
+    for run in runs:
+        grouped.setdefault(str(run.get("benchmark_track") or "unknown"), []).append(run)
+
+    rows: list[dict[str, Any]] = []
+    for track, items in sorted(grouped.items()):
+        recovered = sum(1 for run in items if run.get("claim_status") == "recovered")
+        unsupported = sum(1 for run in items if run.get("classification") == "unsupported")
+        failed = sum(1 for run in items if run.get("classification") in {"failed", "snapped_but_failed", "soft_fit_only"})
+        rows.append(
+            {
+                "track": track,
+                "total": len(items),
+                "verifier_recovered": recovered,
+                "unsupported": unsupported,
+                "failed": failed,
+                "verifier_recovery_rate": recovered / len(items) if items else 0.0,
+                "constants_policies": sorted({str(run.get("constants_policy") or "unknown") for run in items}),
+                "formulas": sorted({str(run.get("formula") or "unknown") for run in items}),
+                "evidence_classes": _count_by_key(items, "evidence_class"),
+            }
+        )
+    return rows
 
 
 def _depth_curve_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -3189,6 +3496,10 @@ def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
         "start_mode": result.run.start_mode,
         "seed": result.run.seed,
         "perturbation_noise": result.run.perturbation_noise,
+        "benchmark_track": result.run.track,
+        "constants_policy": result.run.constants_policy,
+        "track": payload.get("benchmark_track")
+        or _track_payload(result.run.track, result.run.constants_policy, result.run.optimizer, start_mode=result.run.start_mode),
         "optimizer": result.run.optimizer.as_dict(),
         "dataset": result.run.dataset.as_dict(),
         "claim_id": payload.get("claim_id"),

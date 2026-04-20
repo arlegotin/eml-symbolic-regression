@@ -1326,6 +1326,38 @@ def test_logistic_v110_compile_benchmark_records_improved_unsupported_diagnostic
     assert aggregate_run["metrics"]["unsupported_reason"] == "depth_exceeded"
 
 
+def test_v113_basis_only_compile_fails_closed_on_literal_coefficients(tmp_path):
+    base = builtin_suite("v1.13-paper-basis-only")
+    suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")
+
+    result = run_benchmark_suite(suite, run_filter=RunFilter(case_ids=("beer-lambert-basis-only-compile",), seeds=(0,)))
+
+    assert len(result.results) == 1
+    assert result.results[0].status == "unsupported"
+    artifact = json.loads(result.results[0].artifact_path.read_text(encoding="utf-8"))
+
+    assert artifact["run"]["track"] == "basis_only"
+    assert artifact["run"]["constants_policy"] == "basis_only"
+    assert artifact["benchmark_track"]["literal_catalog"] == []
+    assert artifact["status"] == "unsupported"
+    assert artifact["compiled_eml"]["reason"] == "constant_policy"
+
+    aggregate = benchmark_module.aggregate_evidence(result)
+    assert aggregate["tracks"] == [
+        {
+            "track": "basis_only",
+            "total": 1,
+            "verifier_recovered": 0,
+            "unsupported": 1,
+            "failed": 0,
+            "verifier_recovery_rate": 0.0,
+            "constants_policies": ["basis_only"],
+            "formulas": ["beer_lambert"],
+            "evidence_classes": {"unsupported": 1},
+        }
+    ]
+
+
 def test_planck_v110_compile_benchmark_records_improved_unsupported_diagnostic(tmp_path):
     base = builtin_suite("v1.10-planck-diagnostics")
     suite = type(base)(base.id, base.description, base.cases, tmp_path / "artifacts")

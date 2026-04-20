@@ -206,6 +206,16 @@ _PRESETS = {
         description="Focused v1.11 logistic and Planck compile diagnostics plus low-budget real blind probes.",
         budget_guardrail="4 runs; compile diagnostics and unsupported/stretch blind probes only, with no promotion from loss.",
     ),
+    "paper-tracks": CampaignPreset(
+        name="paper-tracks",
+        suite="v1.13-paper-tracks",
+        tier="v1.13-paper",
+        description="Combined v1.13 basis-only and literal-constant benchmark tracks with separated denominators.",
+        budget_guardrail=(
+            "24 configured rows; every publication target appears once in the basis-only compiler policy "
+            "track and once in the literal-constant warm-start track."
+        ),
+    ),
 }
 
 

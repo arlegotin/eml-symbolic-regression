@@ -93,6 +93,7 @@ def test_campaign_presets_map_to_budgeted_suites():
         "family-showcase",
         "paper-training",
         "paper-probes",
+        "paper-tracks",
     )
 
     standard = campaign_preset("standard")
@@ -154,6 +155,13 @@ def test_campaign_presets_map_to_budgeted_suites():
     assert paper_probes.suite == "v1.11-logistic-planck-probes"
     assert {run.formula for run in paper_probe_runs} == {"logistic", "planck"}
     assert {run.start_mode for run in paper_probe_runs} == {"compile", "blind"}
+
+    paper_tracks = campaign_preset("paper-tracks")
+    paper_track_runs = load_suite(paper_tracks.suite).expanded_runs()
+    assert paper_tracks.suite == "v1.13-paper-tracks"
+    assert paper_tracks.tier == "v1.13-paper"
+    assert {run.track for run in paper_track_runs} == {"basis_only", "literal_constants"}
+    assert len(paper_track_runs) == 24
 
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):
