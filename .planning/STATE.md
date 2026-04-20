@@ -1,24 +1,25 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.13
-milestone_name: milestone
-current_phase: 70 - Layered Verifier and Split Isolation
+milestone_name: Publication-grade reproduction and validation
+current_phase: 71
+current_phase_name: Training and Verification Semantics Alignment
 status: executing
-stopped_at: v1.12 archived
-last_updated: "2026-04-20T12:14:55.220Z"
-last_activity: 2026-04-20 -- Phase 70 planning complete
+stopped_at: phase 70 complete
+last_updated: "2026-04-20T12:20:15.542Z"
+last_activity: 2026-04-20
 progress:
   total_phases: 8
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 2
-  completed_plans: 1
-  percent: 50
+  completed_plans: 2
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 70 - Layered Verifier and Split Isolation
+**Current phase:** 71 - Training and Verification Semantics Alignment
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 ## Current Position
 
-Phase: 70 - Layered Verifier and Split Isolation
+Phase: 71 - Training and Verification Semantics Alignment
 Plan: Not started
-Status: Ready to execute
-Last activity: 2026-04-20 -- Phase 70 planning complete
-Progress: [#---------] 12% by completed phases
+Status: Ready to discuss
+Last activity: 2026-04-20 - Completed Phase 70 and advanced to Phase 71
+Progress: [##--------] 25% by completed phases
 
 ## Current Milestone
 
@@ -80,7 +81,7 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 
 ### Pending Todos
 
-- Continue Phase 70 with autonomous discuss, plan, and execute.
+- Continue Phase 71 with autonomous discuss, plan, and execute.
 
 ### Completed Quick Tasks
 

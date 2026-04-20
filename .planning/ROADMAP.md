@@ -28,7 +28,7 @@ v1.13 is active. The milestone responds to a publication-readiness audit: the re
 ## Phase Status
 
 - [x] Phase 69: Clean-Room Reproduction Path and Provenance (completed 2026-04-20)
-- [ ] Phase 70: Layered Verifier and Split Isolation
+- [x] Phase 70: Layered Verifier and Split Isolation (completed 2026-04-20)
 - [ ] Phase 71: Training and Verification Semantics Alignment
 - [ ] Phase 72: Automated Test Suite and CI Hardening
 - [ ] Phase 73: Basis-Only and Literal-Constants Benchmark Tracks

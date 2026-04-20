@@ -22,14 +22,14 @@
 
 ### Verifier and Split Discipline
 
-- [ ] **VERIF-01**: Verifier attempts symbolic equivalence or targeted simplification for candidates where SymPy/exported expression forms support it.
-- [ ] **VERIF-02**: Verifier labels every accepted candidate by evidence level, separating symbolic proof, dense numeric falsification, interval/certificate checks, and final confirmation.
-- [ ] **VERIF-03**: Verifier checks non-symbolic candidates on fresh dense randomized points that are not reused from training, held-out, extrapolation, or selection grids.
-- [ ] **VERIF-04**: Verifier probes adversarial domain points, near singularities, and complex branch-cut neighborhoods relevant to each candidate's intended domain.
-- [ ] **VERIF-05**: Verifier reports interval or certificate-style evidence on the intended real domain where feasible, and records unsupported certificate status otherwise.
-- [ ] **SPLIT-01**: Candidate generation, candidate ranking, and exact-candidate cleanup do not use final confirmation data.
-- [ ] **SPLIT-02**: Final confirmation data is generated or revealed only after candidate selection unless symbolic equivalence has already been established.
-- [ ] **SPLIT-03**: Artifacts distinguish training, selection, held-out diagnostic, extrapolation diagnostic, verifier, and final-confirmation metrics.
+- [x] **VERIF-01**: Verifier attempts symbolic equivalence or targeted simplification for candidates where SymPy/exported expression forms support it.
+- [x] **VERIF-02**: Verifier labels every accepted candidate by evidence level, separating symbolic proof, dense numeric falsification, interval/certificate checks, and final confirmation.
+- [x] **VERIF-03**: Verifier checks non-symbolic candidates on fresh dense randomized points that are not reused from training, held-out, extrapolation, or selection grids.
+- [x] **VERIF-04**: Verifier probes adversarial domain points, near singularities, and complex branch-cut neighborhoods relevant to each candidate's intended domain.
+- [x] **VERIF-05**: Verifier reports interval or certificate-style evidence on the intended real domain where feasible, and records unsupported certificate status otherwise.
+- [x] **SPLIT-01**: Candidate generation, candidate ranking, and exact-candidate cleanup do not use final confirmation data.
+- [x] **SPLIT-02**: Final confirmation data is generated or revealed only after candidate selection unless symbolic equivalence has already been established.
+- [x] **SPLIT-03**: Artifacts distinguish training, selection, held-out diagnostic, extrapolation diagnostic, verifier, and final-confirmation metrics.
 
 ### Training and Verified Semantics
 
@@ -96,14 +96,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TEST-02 | Phase 72 | Pending |
 | TEST-03 | Phase 72 | Pending |
 | TEST-04 | Phase 72 | Pending |
-| VERIF-01 | Phase 70 | Pending |
-| VERIF-02 | Phase 70 | Pending |
-| VERIF-03 | Phase 70 | Pending |
-| VERIF-04 | Phase 70 | Pending |
-| VERIF-05 | Phase 70 | Pending |
-| SPLIT-01 | Phase 70 | Pending |
-| SPLIT-02 | Phase 70 | Pending |
-| SPLIT-03 | Phase 70 | Pending |
+| VERIF-01 | Phase 70 | Complete |
+| VERIF-02 | Phase 70 | Complete |
+| VERIF-03 | Phase 70 | Complete |
+| VERIF-04 | Phase 70 | Complete |
+| VERIF-05 | Phase 70 | Complete |
+| SPLIT-01 | Phase 70 | Complete |
+| SPLIT-02 | Phase 70 | Complete |
+| SPLIT-03 | Phase 70 | Complete |
 | SEM-01 | Phase 71 | Pending |
 | SEM-02 | Phase 71 | Pending |
 | SEM-03 | Phase 71 | Pending |
