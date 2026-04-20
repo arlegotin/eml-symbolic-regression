@@ -6,7 +6,7 @@ current_phase: null
 current_phase_name: None
 status: Planning next milestone
 stopped_at: v1.13 archived
-last_updated: "2026-04-20T14:19:54.160Z"
+last_updated: "2026-04-20T15:03:04.000Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 8
@@ -34,7 +34,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 Phase: Milestone complete
 Plan: Complete
 Status: Planning next milestone
-Last activity: 2026-04-20 - Completed quick task 260420-ng7: README v1.13 release evidence plots
+Last activity: 2026-04-20 - Completed quick task 260420-nll: README clearer v1.13 evidence and fit plots
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
@@ -114,6 +114,7 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 | 2026-04-20 | Include curated public artifacts | Complete | `.planning/quick/260420-g7h-include-useful-public-artifacts-in-sanit/` |
 | 2026-04-20 | Return tests to generated main branch | Complete | `.planning/quick/260420-ixp-return-tests-to-generated-main-branch/` |
 | 2026-04-20 | README v1.13 release evidence plots | Complete | `.planning/quick/260420-ng7-update-readme-with-v1-13-release-evidenc/` |
+| 2026-04-20 | README clearer v1.13 evidence and fit plots | Complete | `.planning/quick/260420-nll-replace-readme-plots-with-clearer-v1-13-/` |
 
 ### Blockers/Concerns
 
