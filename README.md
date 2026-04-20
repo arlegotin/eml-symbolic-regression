@@ -24,13 +24,7 @@ The headline numbers are deliberately split by evidence regime:
 
 Those 9 recoveries are not all the same kind of claim: 1 is compile-only verified evidence, and 8 are same-AST warm-start returns. The release does not claim broad blind symbolic-regression superiority.
 
-| Recovery by formula | Recovery by start mode |
-| --- | --- |
-| ![Verifier recovery rate by formula](artifacts/campaigns/v1.13-paper-tracks-final/figures/recovery-by-formula.svg) | ![Verifier recovery rate by start mode](artifacts/campaigns/v1.13-paper-tracks-final/figures/recovery-by-start-mode.svg) |
-
-| Unsupported taxonomy | Training loss before and after snap |
-| --- | --- |
-| ![Failure and unsupported taxonomy](artifacts/campaigns/v1.13-paper-tracks-final/figures/failure-taxonomy.svg) | ![Training loss before and after snap](artifacts/campaigns/v1.13-paper-tracks-final/figures/loss-before-after-snap.svg) |
+![v1.13 release evidence summary](readme-assets/v113-evidence-summary.svg)
 
 Useful release artifacts:
 
@@ -81,9 +75,9 @@ Training mode can use numerical safety guards. Verification mode is stricter: sn
 
 ## What The Fits Look Like
 
-The grid below shows two good fits and two failed/stretch diagnostics. Good candidates sit directly on the target; diagnostic candidates visibly miss the shape. The legend is outside the panels, and the curves use solid colors so overlap does not turn into dashed-line clutter.
+The grid below shows two verified overlays and two unsupported targets. The unsupported panels intentionally do not publish a candidate as recovered: they show what kind of shape remains outside the current v1.13 gate.
 
-![2x2 grid of EML good fits and failed diagnostics](readme-assets/fit-gallery.svg)
+![2x2 grid of verified EML overlays and unsupported targets](readme-assets/fit-gallery.svg)
 
 ## What Counts As Recovery
 
