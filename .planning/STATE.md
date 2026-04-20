@@ -120,6 +120,7 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 | 2026-04-20 | README plot legend-only cleanup | Complete | `.planning/quick/260420-o7r-simplify-readme-plot-gallery-labels-and-/` |
 | 2026-04-20 | README current narrative and plot labels | Complete | `.planning/quick/260420-oij-remove-readme-release-framing-and-label-/` |
 | 2026-04-20 | README unverified EML trial plot curves | Complete | `.planning/quick/260420-oth-show-unverified-eml-trial-curves-and-fun/` |
+| 2026-04-20 | README EML status plot restyle | Complete | `.planning/quick/260420-p1b-restyle-readme-plot-gallery-with-status-/` |
 
 ### Blockers/Concerns
 
@@ -133,4 +134,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-20 after README unverified EML trial plot update*
+*Last updated: 2026-04-20 after README EML status plot restyle*
