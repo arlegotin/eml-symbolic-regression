@@ -287,3 +287,15 @@ PYTHONPATH=src python -m eml_symbolic_regression.cli dataset-manifest noisy_beer
 ```
 
 Expanded dataset manifests use schema `eml.expanded_dataset_manifest.v1` and record generator or source, units, noise policy, split policy, domain constraints, target classification (`synthetic`, `semi_synthetic`, or `real`), compatibility tags, split roles, per-variable input hashes, and target hashes. The fixed Hubble fixture is stored at `data/real/hubble_1929_velocity_distance.csv` with train, held-out diagnostic, and final-confirmation splits.
+
+## Matched Baseline Harness
+
+Phase 75 adds a baseline comparison harness that is separate from EML benchmark recovery denominators. It writes row-level artifacts keyed by expanded dataset ID, adapter, seed, constants policy, and start condition. Every row carries the dataset manifest hash, budget fields, dependency status, split metrics when a model runs, and denominator policy `excluded_from_eml_recovery_denominators`.
+
+Run a small matched comparison bundle:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli baseline-harness --dataset unit_aware_ohm_law --adapter eml_reference --adapter polynomial_least_squares --adapter pysr --constants-policy literal_constants --start-condition blind --start-condition warm_start --output-dir artifacts/baselines/v1.13-smoke --overwrite
+```
+
+The built-in `polynomial_least_squares` adapter is a deterministic conventional symbolic baseline over a fixed polynomial feature library. Optional external symbolic-regression adapters (`pysr`, `gplearn`, `pyoperon`, `karoo_gp`) are dependency-checked and fail closed as `unavailable` when not installed; the harness does not install packages or hide missing comparators.

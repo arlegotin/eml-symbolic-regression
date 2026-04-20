@@ -19,6 +19,14 @@ from .benchmark import (
     suite_with_semantics_mode,
     write_aggregate_reports,
 )
+from .baselines import (
+    BASELINE_ADAPTERS,
+    CONSTANT_POLICIES,
+    DEFAULT_BASELINE_DATASETS,
+    DEFAULT_BASELINE_OUTPUT_DIR,
+    START_CONDITIONS,
+    write_baseline_harness,
+)
 from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_presets, run_campaign
 from .cleanup import cleanup_candidate
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
@@ -260,6 +268,61 @@ def dataset_manifest_command(args: argparse.Namespace) -> int:
     _write_json(output, manifest)
     print(f"{args.dataset_id}: dataset manifest -> {output}")
     return 0
+
+
+def baseline_harness_command(args: argparse.Namespace) -> int:
+    paths = write_baseline_harness(
+        output_dir=Path(args.output_dir),
+        datasets=tuple(args.dataset or DEFAULT_BASELINE_DATASETS),
+        adapters=tuple(args.adapter or ("eml_reference", "polynomial_least_squares", "pysr", "gplearn")),
+        seeds=tuple(args.seed or (0,)),
+        constants_policies=tuple(args.constants_policy or CONSTANT_POLICIES),
+        start_conditions=tuple(args.start_condition or START_CONDITIONS),
+        points=args.points,
+        tolerance=args.tolerance,
+        time_seconds=args.time_seconds,
+        max_evaluations=args.max_evaluations,
+        overwrite=args.overwrite,
+        command=_baseline_harness_command_string(args),
+    )
+    print(
+        f"baseline harness: manifest -> {paths.manifest_json}; "
+        f"rows -> {paths.rows_json}; report -> {paths.report_md}"
+    )
+    return 0
+
+
+def _baseline_harness_command_string(args: argparse.Namespace) -> str:
+    parts = [
+        "PYTHONPATH=src",
+        "python",
+        "-m",
+        "eml_symbolic_regression.cli",
+        "baseline-harness",
+        "--output-dir",
+        str(args.output_dir),
+    ]
+    for value in args.dataset or ():
+        parts.extend(["--dataset", str(value)])
+    for value in args.adapter or ():
+        parts.extend(["--adapter", str(value)])
+    for value in args.seed or ():
+        parts.extend(["--seed", str(value)])
+    for value in args.constants_policy or ():
+        parts.extend(["--constants-policy", str(value)])
+    for value in args.start_condition or ():
+        parts.extend(["--start-condition", str(value)])
+    for flag, value, default in (
+        ("--points", args.points, 32),
+        ("--tolerance", args.tolerance, 1e-8),
+        ("--time-seconds", args.time_seconds, 5.0),
+        ("--max-evaluations", args.max_evaluations, 1000),
+    ):
+        if value != default:
+            parts.extend([flag, str(value)])
+    if args.overwrite:
+        parts.append("--overwrite")
+    return shlex.join(parts)
 
 
 def list_campaigns(args: argparse.Namespace | None = None) -> int:
@@ -710,6 +773,20 @@ def build_parser() -> argparse.ArgumentParser:
     dataset_manifest.add_argument("--seed", type=int, default=0)
     dataset_manifest.add_argument("--tolerance", type=float, default=1e-8)
     dataset_manifest.set_defaults(func=dataset_manifest_command)
+
+    baseline_harness = sub.add_parser("baseline-harness", help="Run matched EML and conventional symbolic baseline rows.")
+    baseline_harness.add_argument("--output-dir", default=str(DEFAULT_BASELINE_OUTPUT_DIR), help="Directory for baseline harness artifacts.")
+    baseline_harness.add_argument("--dataset", action="append", help="Expanded dataset ID. Repeatable; defaults to all Phase 74 datasets.")
+    baseline_harness.add_argument("--adapter", choices=BASELINE_ADAPTERS, action="append", help="Baseline adapter. Repeatable.")
+    baseline_harness.add_argument("--seed", type=int, action="append", help="Seed. Repeatable; defaults to 0.")
+    baseline_harness.add_argument("--constants-policy", choices=CONSTANT_POLICIES, action="append", help="Constants policy. Repeatable.")
+    baseline_harness.add_argument("--start-condition", choices=START_CONDITIONS, action="append", help="Start condition. Repeatable.")
+    baseline_harness.add_argument("--points", type=int, default=32)
+    baseline_harness.add_argument("--tolerance", type=float, default=1e-8)
+    baseline_harness.add_argument("--time-seconds", type=float, default=5.0)
+    baseline_harness.add_argument("--max-evaluations", type=int, default=1000)
+    baseline_harness.add_argument("--overwrite", action="store_true", help="Allow writing into a non-empty output directory.")
+    baseline_harness.set_defaults(func=baseline_harness_command)
 
     bench = sub.add_parser("benchmark", help="Run a benchmark suite or filtered subset.")
     bench.add_argument("suite", help="Built-in suite name or path to a suite JSON file.")
