@@ -42,8 +42,7 @@ jobs:
             .github \
             .planning \
             docs \
-            sources \
-            tests
+            sources
 
           # Keep public-facing reports, tables, figures, manifests, and audits,
           # but drop raw run payloads, duplicated source bundles, and large traces.
