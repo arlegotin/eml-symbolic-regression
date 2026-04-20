@@ -1,0 +1,61 @@
+name: Publish sanitized main
+
+on:
+  push:
+    branches:
+      - dev
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-sanitized-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish sanitized snapshot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Publish sanitized main
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          source_sha="$(git rev-parse HEAD)"
+          git fetch origin main:refs/remotes/origin/main
+          expected_main="$(git rev-parse refs/remotes/origin/main)"
+
+          git checkout --orphan sanitized-main
+          git rm -r -f --ignore-unmatch \
+            AGENTS.md \
+            .github \
+            .planning \
+            artifacts \
+            docs \
+            sources \
+            tests
+
+          if git diff --cached --quiet; then
+            echo "Sanitized snapshot is empty; refusing to publish main."
+            exit 1
+          fi
+
+          git commit \
+            -m "Publish sanitized snapshot from dev" \
+            -m "Source dev commit: ${source_sha}"
+          git branch -M main
+          git push \
+            --force-with-lease=refs/heads/main:"${expected_main}" \
+            origin main:main
