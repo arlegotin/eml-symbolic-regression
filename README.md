@@ -55,9 +55,9 @@ Training mode can use numerical safety guards. Verification mode is stricter: sn
 
 ## Target Curves And Data
 
-The grid below plots the current target set with generated data splits. Each panel is labeled by function name and formula, and the axes are named without numeric tick labels. Blue dots are training data, red triangles are held-out validation data, and the black line is the target function. Green dashed curves are verified EML curves from recovered evidence rows. Gray dotted curves are the fixed exact EML trial `1`, shown only where no verified EML curve is available; they are not recovery claims.
+The grid below plots the current target set with generated data splits. Each panel is labeled by function name, formula, and the current EML evidence status. `EML: worked` means at least one checked-in row recovered that target. `EML: failed (...)` means no checked-in row recovered it under the current gates, with the reason shown in parentheses; this is an evidence status, not a proof that the function cannot be expressed in EML. Blue dots are training data, red triangles are held-out validation data, the pale gray line is the target function, and green dashed curves are verified EML curves from recovered evidence rows.
 
-![Twelve target plots labeled by function name and formula, with training data, validation data, target curves, verified EML curves, and unverified EML trial curves where needed](readme-assets/fit-gallery.svg)
+![Twelve target plots labeled by function name, formula, and EML worked or failed status, with training data, validation data, pale target curves, and verified EML curves where recovered](readme-assets/fit-gallery.svg)
 
 ## What Counts As Recovery
 
