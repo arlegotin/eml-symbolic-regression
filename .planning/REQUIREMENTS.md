@@ -33,10 +33,10 @@
 
 ### Training and Verified Semantics
 
-- [ ] **SEM-01**: Maintainer can run a faithful-semantics training mode whose optimized objective matches verifier semantics on supported domains, or a documented fallback explains why it is unavailable.
-- [ ] **SEM-02**: Maintainer can run clamp/log-guard ablations that quantify whether surrogate training semantics create spurious recoveries.
-- [ ] **SEM-03**: Publication artifacts report clamp, guard, NaN/Inf, branch, and post-snap mismatch diagnostics for every training run.
-- [ ] **SEM-04**: Scientific-law claims include real-domain and branch-validity certificates or explicit unsupported-certificate labels.
+- [x] **SEM-01**: Maintainer can run a faithful-semantics training mode whose optimized objective matches verifier semantics on supported domains, or a documented fallback explains why it is unavailable.
+- [x] **SEM-02**: Maintainer can run clamp/log-guard ablations that quantify whether surrogate training semantics create spurious recoveries.
+- [x] **SEM-03**: Publication artifacts report clamp, guard, NaN/Inf, branch, and post-snap mismatch diagnostics for every training run.
+- [x] **SEM-04**: Scientific-law claims include real-domain and branch-validity certificates or explicit unsupported-certificate labels.
 
 ### Benchmark Tracks and Evidence Breadth
 
@@ -104,10 +104,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SPLIT-01 | Phase 70 | Complete |
 | SPLIT-02 | Phase 70 | Complete |
 | SPLIT-03 | Phase 70 | Complete |
-| SEM-01 | Phase 71 | Pending |
-| SEM-02 | Phase 71 | Pending |
-| SEM-03 | Phase 71 | Pending |
-| SEM-04 | Phase 71 | Pending |
+| SEM-01 | Phase 71 | Complete |
+| SEM-02 | Phase 71 | Complete |
+| SEM-03 | Phase 71 | Complete |
+| SEM-04 | Phase 71 | Complete |
 | TRACK-01 | Phase 73 | Pending |
 | TRACK-02 | Phase 73 | Pending |
 | TRACK-03 | Phase 73 | Pending |

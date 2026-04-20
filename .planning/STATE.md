@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.13
 milestone_name: Publication-grade reproduction and validation
-current_phase: 71
-current_phase_name: Training and Verification Semantics Alignment
+current_phase: 72
+current_phase_name: Automated Test Suite and CI Hardening
 status: executing
-stopped_at: phase 70 complete
-last_updated: "2026-04-20T12:20:15.542Z"
+stopped_at: phase 71 complete
+last_updated: "2026-04-20T13:01:57.431Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 8
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  completed_phases: 3
+  total_plans: 3
+  completed_plans: 3
+  percent: 38
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 71 - Training and Verification Semantics Alignment
+**Current phase:** 72 - Automated Test Suite and CI Hardening
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 ## Current Position
 
-Phase: 71 - Training and Verification Semantics Alignment
+Phase: 72 - Automated Test Suite and CI Hardening
 Plan: Not started
 Status: Ready to discuss
-Last activity: 2026-04-20 - Completed Phase 70 and advanced to Phase 71
-Progress: [##--------] 25% by completed phases
+Last activity: 2026-04-20 - Completed Phase 71 and advanced to Phase 72
+Progress: [####------] 38% by completed phases
 
 ## Current Milestone
 
@@ -78,10 +78,12 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 - Clean-room reproduction, verifier strength, leakage removal, semantics mismatch quantification, dual benchmark tracks, matched baselines, expanded datasets, and final `main` publication are all in scope.
 - Placeholder snapshot metadata may remain only in deterministic-test fixtures, not in final paper/publication manifests.
 - Candidate selection and final confirmation data must be separated unless symbolic equivalence is established.
+- Training artifacts must label `guarded` versus `faithful` semantics, expose guard/anomaly/post-snap diagnostics, and surface verifier certificate/evidence labels.
+- Full guarded-versus-faithful publication-matrix ablations are enabled by Phase 71 and remain part of the Phase 76 evidence rebuild.
 
 ### Pending Todos
 
-- Continue Phase 71 with autonomous discuss, plan, and execute.
+- Continue Phase 72 with autonomous discuss, plan, and execute.
 
 ### Completed Quick Tasks
 
@@ -109,4 +111,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-20 after v1.13 roadmap creation*
+*Last updated: 2026-04-20 after Phase 71 completion*
