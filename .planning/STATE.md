@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.13
-milestone_name: Publication-grade reproduction and validation
-current_phase: 69
-current_phase_name: Clean-Room Reproduction Path and Provenance
-status: ready_to_plan
-stopped_at: roadmap created
-last_updated: "2026-04-20T00:00:00.000Z"
-last_activity: 2026-04-20
+milestone_name: milestone
+current_phase: 69 - Clean-Room Reproduction Path and Provenance
+status: executing
+stopped_at: v1.12 archived
+last_updated: "2026-04-20T12:04:00.719Z"
+last_activity: 2026-04-20 -- Phase 69 planning complete
 progress:
   total_phases: 8
   completed_phases: 0
-  total_plans: 8
+  total_plans: 1
   completed_plans: 0
   percent: 0
 ---
@@ -33,8 +32,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 Phase: 69 - Clean-Room Reproduction Path and Provenance
 Plan: Not started
-Status: Ready to plan
-Last activity: 2026-04-20 - Created v1.13 roadmap with phases 69-76
+Status: Ready to execute
+Last activity: 2026-04-20 -- Phase 69 planning complete
 Progress: [----------] 0% by completed phases
 
 ## Current Milestone
