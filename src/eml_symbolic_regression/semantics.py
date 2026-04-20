@@ -164,6 +164,17 @@ class TrainingSemanticsConfig:
     log_safety_weight: float = 0.0
     log_safety_margin: float = 1e-6
     log_safety_imag_tolerance: float = 1e-6
+    mode: str = "guarded"
+
+    def __post_init__(self) -> None:
+        mode = str(self.mode)
+        if mode not in {"guarded", "faithful"}:
+            raise ValueError("training semantics mode must be 'guarded' or 'faithful'")
+        self.mode = mode
+
+    @property
+    def uses_training_guards(self) -> bool:
+        return self.mode == "guarded"
 
 
 @dataclass
@@ -323,7 +334,8 @@ def eml_torch(
     clamp_count = 0
     exp_overflow_count = 0
 
-    if training:
+    use_training_guards = training and semantics.uses_training_guards
+    if use_training_guards:
         real = torch.clamp(x.real, min=-semantics.clamp_exp_real, max=semantics.clamp_exp_real)
         clamp_count = int((real != x.real).sum().detach().item())
         exp_overflow_count = int((x.detach().real > semantics.clamp_exp_real).sum().item())
@@ -347,7 +359,7 @@ def eml_torch(
     )
 
     log_safety_penalty = None
-    if training and semantics.log_safety_weight > 0:
+    if use_training_guards and semantics.log_safety_weight > 0:
         safe_margin = max(float(semantics.log_safety_margin), float(semantics.log_domain_epsilon))
         imag_tolerance = max(float(semantics.log_safety_imag_tolerance), float(semantics.log_domain_epsilon))
         real_pressure = torch.relu(safe_margin - y.real)
@@ -407,7 +419,8 @@ def centered_eml_torch(
     exp_arg = x / s
     clamp_count = 0
     expm1_overflow_count = 0
-    if training:
+    use_training_guards = training and semantics.uses_training_guards
+    if use_training_guards:
         real = torch.clamp(exp_arg.real, min=-semantics.clamp_exp_real, max=semantics.clamp_exp_real)
         clamp_count = int((real != exp_arg.real).sum().detach().item())
         expm1_overflow_count = int((exp_arg.detach().real > semantics.clamp_exp_real).sum().item())
@@ -436,7 +449,7 @@ def centered_eml_torch(
     shifted_singularity_min_distance = float(shifted_distance.min().item()) if shifted_distance.numel() else None
 
     log_safety_penalty = None
-    if training and semantics.log_safety_weight > 0:
+    if use_training_guards and semantics.log_safety_weight > 0:
         safe_margin = max(float(semantics.log_safety_margin), float(semantics.log_domain_epsilon))
         imag_tolerance = max(float(semantics.log_safety_imag_tolerance), float(semantics.log_domain_epsilon))
         real_pressure = torch.relu(safe_margin - log_arg.real)

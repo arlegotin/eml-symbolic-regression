@@ -172,6 +172,7 @@ class OptimizerBudget:
     log_safety_weight: float = 0.0
     log_safety_margin: float = 1e-6
     log_safety_imag_tolerance: float = 1e-6
+    semantics_mode: str = "guarded"
     refit_steps: int = 80
     refit_lr: float = 0.02
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
@@ -204,6 +205,7 @@ class OptimizerBudget:
         values["max_compile_nodes"] = int(values["max_compile_nodes"])
         values["max_warm_depth"] = int(values["max_warm_depth"])
         values["max_power"] = int(values["max_power"])
+        values["semantics_mode"] = str(values["semantics_mode"])
         values["lr"] = float(values["lr"])
         values["clamp_exp_real"] = float(values["clamp_exp_real"])
         values["log_domain_epsilon"] = float(values["log_domain_epsilon"])
@@ -288,6 +290,12 @@ class OptimizerBudget:
                 "hardening_temperature_end must be positive",
                 path=f"{path}.hardening_temperature_end",
             )
+        if self.semantics_mode not in {"guarded", "faithful"}:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "semantics_mode must be one of: guarded, faithful",
+                path=f"{path}.semantics_mode",
+            )
         if self.clamp_exp_real <= 0:
             raise BenchmarkValidationError("invalid_budget", "clamp_exp_real must be positive", path=f"{path}.clamp_exp_real")
         if self.log_domain_epsilon <= 0:
@@ -361,6 +369,7 @@ class OptimizerBudget:
             "log_safety_weight": self.log_safety_weight,
             "log_safety_margin": self.log_safety_margin,
             "log_safety_imag_tolerance": self.log_safety_imag_tolerance,
+            "semantics_mode": self.semantics_mode,
             "refit_steps": self.refit_steps,
             "refit_lr": self.refit_lr,
             "scaffold_initializers": list(self.scaffold_initializers),
@@ -640,7 +649,7 @@ class BenchmarkRun:
             "seed": self.seed,
             "perturbation_noise": self.perturbation_noise,
             "dataset": self.dataset.as_dict(),
-            "optimizer": self.optimizer.as_dict(),
+            "optimizer": _optimizer_run_id_payload(self.optimizer),
         }
         if self.claim_id is not None or self.threshold_policy_id is not None:
             parts["proof"] = {
@@ -848,9 +857,32 @@ class BenchmarkSuite:
         }
 
 
+def suite_with_semantics_mode(suite: BenchmarkSuite, semantics_mode: str) -> BenchmarkSuite:
+    """Return a suite clone with every optimizer budget using the same semantics mode."""
+
+    mode = str(semantics_mode)
+    if mode not in {"guarded", "faithful"}:
+        raise BenchmarkValidationError(
+            "invalid_budget",
+            "semantics_mode must be one of: guarded, faithful",
+            path="optimizer.semantics_mode",
+        )
+    return replace(
+        suite,
+        cases=tuple(replace(case, optimizer=replace(case.optimizer, semantics_mode=mode)) for case in suite.cases),
+    )
+
+
 def _slug(value: str) -> str:
     slug = "".join(character.lower() if character.isalnum() else "-" for character in value)
     return "-".join(part for part in slug.split("-") if part)
+
+
+def _optimizer_run_id_payload(optimizer: OptimizerBudget) -> dict[str, Any]:
+    payload = optimizer.as_dict()
+    if optimizer.semantics_mode == "guarded":
+        payload.pop("semantics_mode", None)
+    return payload
 
 
 def _optional_str(value: Any) -> str | None:
@@ -2347,6 +2379,7 @@ def _training_config_from_budget(
         hardening_steps=run.optimizer.hardening_steps,
         hardening_temperature_end=run.optimizer.hardening_temperature_end,
         hardening_emit_interval=run.optimizer.hardening_emit_interval,
+        semantics_mode=run.optimizer.semantics_mode,
         clamp_exp_real=run.optimizer.clamp_exp_real,
         log_domain_epsilon=run.optimizer.log_domain_epsilon,
         log_safety_weight=run.optimizer.log_safety_weight,
@@ -2770,6 +2803,9 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         else None
     )
     candidate_config = candidate.get("config") if isinstance(candidate, Mapping) and isinstance(candidate.get("config"), Mapping) else {}
+    semantics_alignment = (
+        candidate.get("semantics_alignment") if isinstance(candidate, Mapping) and isinstance(candidate.get("semantics_alignment"), Mapping) else {}
+    )
     candidate_operator = candidate_config.get("operator_family") if isinstance(candidate_config.get("operator_family"), Mapping) else {}
     candidate_schedule = candidate_config.get("operator_schedule")
     candidate_schedule_label = (
@@ -2800,6 +2836,11 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "operator_family": candidate_operator.get("label") or budget_operator.get("label"),
         "operator_schedule": candidate_schedule_label or budget_schedule_label,
+        "training_semantics_mode": semantics_alignment.get("training_semantics_mode")
+        or candidate_config.get("semantics_mode")
+        or budget.get("semantics_mode"),
+        "objective_matches_verifier_semantics": semantics_alignment.get("objective_matches_verifier_semantics"),
+        "semantics_fallback_reason": semantics_alignment.get("fallback_reason"),
         "scaffold_exclusions": list(budget.get("scaffold_exclusions", ())) if isinstance(budget, Mapping) else [],
         "unsupported_reason": _run_reason(payload) if payload.get("status") == "unsupported" else None,
         "best_loss": (

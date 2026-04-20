@@ -24,7 +24,32 @@ def test_optimizer_returns_snapped_candidate_manifest():
     )
     assert result.status in {"snapped_candidate", "failed"}
     assert "restarts" in result.manifest
+    assert result.manifest["config"]["semantics_mode"] == "guarded"
+    assert result.manifest["semantics_alignment"]["training_semantics_mode"] == "guarded"
+    assert result.manifest["semantics_alignment"]["objective_matches_verifier_semantics"] is False
+    assert result.manifest["semantics_alignment"]["fallback_reason"] is not None
     assert result.snap.expression.node_count() >= 3
+
+
+def test_optimizer_manifest_records_faithful_semantics_alignment_and_certificates():
+    spec = get_demo("exp")
+    splits = spec.make_splits(points=16)
+    result = fit_eml_tree(
+        splits[0].inputs,
+        splits[0].target,
+        TrainingConfig(depth=1, variables=("x",), steps=2, restarts=1, seed=0, semantics_mode="faithful"),
+        verification_splits=splits,
+    )
+
+    alignment = result.manifest["semantics_alignment"]
+
+    assert alignment["training_semantics_mode"] == "faithful"
+    assert alignment["objective_matches_verifier_semantics"] is True
+    assert alignment["fallback_reason"] is None
+    assert "trace_totals" in alignment["anomaly_summary"]
+    assert alignment["post_snap_mismatch"]["selected_candidate_id"] == result.manifest["selected_candidate"]["candidate_id"]
+    assert alignment["verifier_evidence"]["certificate_status"] == result.verification.certificate_status
+    assert alignment["verifier_evidence"]["evidence_level"] == result.verification.evidence_level
 
 
 def test_optimizer_scaffold_recovers_exp_with_manifest_provenance():

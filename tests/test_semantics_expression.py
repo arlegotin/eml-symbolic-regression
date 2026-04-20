@@ -116,6 +116,29 @@ def test_eml_torch_reports_log_domain_anomalies_and_penalty():
     assert stats.by_node["root"]["log_branch_cut_count"] == 1
 
 
+def test_eml_torch_faithful_training_bypasses_training_guards():
+    stats = AnomalyStats()
+    semantics = TrainingSemanticsConfig(
+        mode="faithful",
+        clamp_exp_real=1.0,
+        log_domain_epsilon=0.05,
+        log_safety_weight=2.0,
+        log_safety_margin=0.4,
+        log_safety_imag_tolerance=0.1,
+    )
+    x = torch.tensor([2.0 + 0.0j], dtype=torch.complex128)
+    y = torch.tensor([0.01 + 0.0j], dtype=torch.complex128)
+
+    out = eml_torch(x, y, training=True, semantics=semantics, stats=stats, node="root")
+
+    torch.testing.assert_close(out, torch.exp(x) - torch.log(y))
+    assert stats.clamp_count == 0
+    assert stats.exp_overflow_count == 0
+    assert stats.log_small_magnitude_count == 1
+    assert stats.log_safety_penalty == 0.0
+    assert float(stats.training_penalty().item()) == 0.0
+
+
 def test_centered_eml_torch_reports_shifted_singularity_diagnostics():
     stats = AnomalyStats()
     semantics = TrainingSemanticsConfig(clamp_exp_real=1.0, log_domain_epsilon=0.05, log_safety_weight=1.0)
@@ -132,3 +155,28 @@ def test_centered_eml_torch_reports_shifted_singularity_diagnostics():
     assert stats.shifted_singularity_min_distance == 0.0
     assert stats.by_node["root"]["shifted_singularity_near_count"] == 1
     assert float(stats.training_penalty().item()) > 0.0
+
+
+def test_centered_eml_torch_faithful_training_bypasses_training_guards():
+    stats = AnomalyStats()
+    semantics = TrainingSemanticsConfig(mode="faithful", clamp_exp_real=1.0, log_domain_epsilon=0.05, log_safety_weight=1.0)
+    x = torch.tensor([4.0 + 0.0j], dtype=torch.complex128)
+    y = torch.tensor([1.0 + 0.0j], dtype=torch.complex128)
+
+    out = centered_eml_torch(x, y, operator=ceml_s_operator(2.0), training=True, semantics=semantics, stats=stats, node="root")
+
+    expected = 2.0 * torch.expm1(x / 2.0) - 2.0 * torch.log1p((y - 1.0) / 2.0)
+    torch.testing.assert_close(out, expected)
+    assert stats.clamp_count == 0
+    assert stats.expm1_overflow_count == 0
+    assert stats.log_safety_penalty == 0.0
+    assert float(stats.training_penalty().item()) == 0.0
+
+
+def test_training_semantics_config_rejects_unknown_mode():
+    try:
+        TrainingSemanticsConfig(mode="almost-faithful")
+    except ValueError as exc:
+        assert "guarded" in str(exc)
+    else:
+        raise AssertionError("unknown semantics mode should fail")

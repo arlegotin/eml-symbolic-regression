@@ -40,6 +40,7 @@ class TrainingConfig:
     log_safety_weight: float = 0.0
     log_safety_margin: float = 1e-6
     log_safety_imag_tolerance: float = 1e-6
+    semantics_mode: str = "guarded"
     refit_steps: int = 80
     refit_lr: float = 0.02
     seed: int = 0
@@ -47,8 +48,15 @@ class TrainingConfig:
     operator_family: EmlOperator = field(default_factory=raw_eml_operator)
     operator_schedule: tuple[EmlOperator, ...] = ()
 
+    def __post_init__(self) -> None:
+        mode = str(self.semantics_mode)
+        if mode not in {"guarded", "faithful"}:
+            raise ValueError("semantics_mode must be 'guarded' or 'faithful'")
+        object.__setattr__(self, "semantics_mode", mode)
+
     def semantics_config(self) -> TrainingSemanticsConfig:
         return TrainingSemanticsConfig(
+            mode=self.semantics_mode,
             clamp_exp_real=self.clamp_exp_real,
             log_domain_epsilon=self.log_domain_epsilon,
             log_safety_weight=self.log_safety_weight,
@@ -285,6 +293,120 @@ def _manifest_trace_summary(restart_logs: list[Mapping[str, Any]]) -> dict[str, 
         "best_fit_loss_min": min(best_values) if best_values else None,
         "best_fit_loss_max": max(best_values) if best_values else None,
         "trace_available": total_steps > 0,
+    }
+
+
+_ANOMALY_COUNT_FIELDS = (
+    "nan_count",
+    "inf_count",
+    "clamp_count",
+    "exp_overflow_count",
+    "log_small_magnitude_count",
+    "log_non_positive_real_count",
+    "log_branch_cut_count",
+    "log_non_finite_input_count",
+    "expm1_overflow_count",
+    "log1p_branch_cut_count",
+    "shifted_singularity_near_count",
+)
+
+
+def _numeric(value: Any, default: float = 0.0) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return default
+    return number
+
+
+def _anomaly_summary(restart_logs: list[Mapping[str, Any]]) -> dict[str, Any]:
+    final_rows = [row.get("final_anomalies") for row in restart_logs if isinstance(row.get("final_anomalies"), Mapping)]
+    trace_rows: list[Mapping[str, Any]] = []
+    for row in restart_logs:
+        trace = row.get("trace")
+        if isinstance(trace, list):
+            trace_rows.extend(item for item in trace if isinstance(item, Mapping))
+
+    def summarize(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
+        max_abs_values = [_numeric(row.get("max_abs")) for row in rows]
+        max_exp_values = [_numeric(row.get("max_exp_real")) for row in rows]
+        singularity_values = [
+            _numeric(row.get("shifted_singularity_min_distance"), default=float("inf"))
+            for row in rows
+            if row.get("shifted_singularity_min_distance") is not None
+        ]
+        payload = {field: int(sum(_numeric(row.get(field)) for row in rows)) for field in _ANOMALY_COUNT_FIELDS}
+        payload.update(
+            {
+                "log_safety_penalty": float(sum(_numeric(row.get("log_safety_penalty")) for row in rows)),
+                "max_abs": max(max_abs_values) if max_abs_values else 0.0,
+                "max_exp_real": max(max_exp_values) if max_exp_values else 0.0,
+                "shifted_singularity_min_distance": min(singularity_values) if singularity_values else None,
+            }
+        )
+        return payload
+
+    return {
+        "final_by_restart": summarize(final_rows),
+        "trace_totals": summarize(trace_rows),
+    }
+
+
+def _semantics_alignment_payload(
+    config: TrainingConfig,
+    restart_logs: list[Mapping[str, Any]],
+    selected_candidate: ExactCandidate,
+) -> dict[str, Any]:
+    verification = selected_candidate.verification
+    split_errors = [result.max_abs_error for result in verification.split_results] if verification is not None else []
+    post_snap_delta = (
+        selected_candidate.post_snap_loss - selected_candidate.best_fit_loss
+        if np.isfinite(selected_candidate.post_snap_loss) and np.isfinite(selected_candidate.best_fit_loss)
+        else None
+    )
+    return {
+        "training_semantics_mode": config.semantics_mode,
+        "objective_matches_verifier_semantics": config.semantics_mode == "faithful",
+        "fallback_reason": None
+        if config.semantics_mode == "faithful"
+        else "guarded_training_uses_exp_clamp_and_optional_log_safety_penalty",
+        "guard_parameters": {
+            "clamp_exp_real": config.clamp_exp_real,
+            "log_domain_epsilon": config.log_domain_epsilon,
+            "log_safety_weight": config.log_safety_weight,
+            "log_safety_margin": config.log_safety_margin,
+            "log_safety_imag_tolerance": config.log_safety_imag_tolerance,
+        },
+        "ablation_contract": {
+            "control_mode": "faithful",
+            "treatment_mode": "guarded",
+            "suite_override": "benchmark --semantics-mode {guarded,faithful}",
+            "comparison_keys": [
+                "verifier_status",
+                "post_snap_loss",
+                "high_precision_max_error",
+                "anomaly_clamp_count",
+                "anomaly_log_safety_penalty",
+            ],
+        },
+        "anomaly_summary": _anomaly_summary(restart_logs),
+        "post_snap_mismatch": {
+            "selected_candidate_id": selected_candidate.candidate_id,
+            "soft_best_fit_loss": selected_candidate.best_fit_loss,
+            "post_snap_loss": selected_candidate.post_snap_loss,
+            "post_snap_minus_soft_best": post_snap_delta,
+            "verifier_status": verification.status if verification is not None else None,
+            "high_precision_max_error": verification.high_precision_max_error if verification is not None else None,
+            "split_max_abs_error": max(split_errors) if split_errors else None,
+        },
+        "verifier_evidence": {
+            "symbolic_status": verification.symbolic_status if verification is not None else None,
+            "dense_random_status": verification.dense_random_status if verification is not None else None,
+            "adversarial_status": verification.adversarial_status if verification is not None else None,
+            "certificate_status": verification.certificate_status if verification is not None else None,
+            "evidence_level": verification.evidence_level if verification is not None else None,
+            "metric_roles": verification.metric_roles if verification is not None else None,
+        },
     }
 
 
@@ -600,6 +722,7 @@ def fit_eml_tree(
         "best_restart": best_log,
         "restarts": restart_logs,
         "trace_summary": _manifest_trace_summary(restart_logs),
+        "semantics_alignment": _semantics_alignment_payload(effective_config, restart_logs, selected_candidate),
         "candidates": [candidate.as_dict() for candidate in ranked_candidates],
         "selection": {
             "mode": selection_mode,

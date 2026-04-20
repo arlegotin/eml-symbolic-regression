@@ -10,7 +10,15 @@ from typing import Any
 
 import numpy as np
 
-from .benchmark import START_MODES, RunFilter, list_builtin_suites, load_suite, run_benchmark_suite, write_aggregate_reports
+from .benchmark import (
+    START_MODES,
+    RunFilter,
+    list_builtin_suites,
+    load_suite,
+    run_benchmark_suite,
+    suite_with_semantics_mode,
+    write_aggregate_reports,
+)
 from .campaign import DEFAULT_CAMPAIGN_ROOT, campaign_preset, list_campaign_presets, run_campaign
 from .cleanup import cleanup_candidate
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
@@ -111,6 +119,7 @@ def run_demo(args: argparse.Namespace) -> int:
             hardening_steps=args.hardening_steps,
             hardening_temperature_end=args.hardening_temperature_end,
             hardening_emit_interval=args.hardening_emit_interval,
+            semantics_mode=args.semantics_mode,
         )
         fit = fit_eml_tree(
             train.inputs,
@@ -181,6 +190,7 @@ def run_demo(args: argparse.Namespace) -> int:
                 hardening_steps=args.hardening_steps,
                 hardening_temperature_end=args.hardening_temperature_end,
                 hardening_emit_interval=args.hardening_emit_interval,
+                semantics_mode=args.semantics_mode,
             )
             warm = fit_warm_started_eml_tree(
                 train.inputs,
@@ -247,6 +257,8 @@ def list_campaigns(args: argparse.Namespace | None = None) -> int:
 
 def run_benchmark(args: argparse.Namespace) -> int:
     suite = load_suite(args.suite)
+    if args.semantics_mode:
+        suite = suite_with_semantics_mode(suite, args.semantics_mode)
     if args.output_dir:
         suite = type(suite)(suite.id, suite.description, suite.cases, Path(args.output_dir), suite.schema)
     run_filter = RunFilter(
@@ -631,6 +643,12 @@ def build_parser() -> argparse.ArgumentParser:
     demo.add_argument("--hardening-steps", type=int, default=4)
     demo.add_argument("--hardening-temperature-end", type=float, default=0.02)
     demo.add_argument("--hardening-emit-interval", type=int, default=2)
+    demo.add_argument(
+        "--semantics-mode",
+        choices=("guarded", "faithful"),
+        default="guarded",
+        help="Training semantics for soft EML optimization.",
+    )
     demo.add_argument("--compile-eml", action="store_true", help="Compile the demo source expression into an exact EML AST.")
     demo.add_argument(
         "--warm-start-eml",
@@ -676,6 +694,11 @@ def build_parser() -> argparse.ArgumentParser:
     bench.add_argument("--case", action="append", help="Only run this benchmark case ID. Repeatable.")
     bench.add_argument("--seed", type=int, action="append", help="Only run this seed. Repeatable.")
     bench.add_argument("--perturbation-noise", type=float, action="append", help="Only run this perturbation noise. Repeatable.")
+    bench.add_argument(
+        "--semantics-mode",
+        choices=("guarded", "faithful"),
+        help="Override optimizer semantics mode for every case in the suite.",
+    )
     bench.set_defaults(func=run_benchmark)
 
     list_campaign = sub.add_parser("list-campaigns", help="List named benchmark campaign presets.")

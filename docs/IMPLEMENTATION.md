@@ -111,7 +111,7 @@ Run artifacts can also include a `refit` section. That section records:
 - the final anomaly summary from refit optimization,
 - and the accept/reject decision against the preserved fallback candidate.
 
-Training anomaly summaries now distinguish `exp` clamp counts from `exp` overflow pressure, and they separately record `log` small-magnitude inputs, non-positive-real inputs, branch-cut hits, non-finite log inputs, and any training-only log-safety penalty that was applied.
+Training anomaly summaries now distinguish `exp` clamp counts from `exp` overflow pressure, and they separately record `log` small-magnitude inputs, non-positive-real inputs, branch-cut hits, non-finite log inputs, and any training-only log-safety penalty that was applied. Optimizer manifests also include a `semantics_alignment` section. It states whether the objective used `faithful` verifier-matching semantics or default `guarded` training semantics, records the guarded fallback reason when applicable, summarizes anomaly totals, and surfaces post-snap verifier and certificate status fields for publication audits.
 
 Aggregate reports use schema `eml.benchmark_aggregate.v1` and are written as both JSON and Markdown. Recovery rates are grouped by formula, start mode, perturbation level, depth, and seed group. `claim_status == "recovered"` is the only source of verifier-owned recovery counts.
 
@@ -203,6 +203,8 @@ Campaign output is rooted at `artifacts/campaigns/<label-or-timestamp>/`. Stable
 - `report.md` with headline metrics, figure/table links, raw artifact links, exact reproduction command, strengths, limitations, failed/unsupported cases, and next experiments.
 
 The report deliberately separates blind recovery from same-AST warm-start return, verified-equivalent warm-start recovery, unsupported gates, and failed fits. It is a reproducible evidence bundle, not a claim that arbitrary deep formulas are solved.
+
+Benchmark suites can be rerun under a uniform semantics mode with `benchmark --semantics-mode guarded` or `benchmark --semantics-mode faithful`. The default `guarded` mode preserves existing run IDs; `faithful` mode produces distinct run IDs so clamp/log-guard ablations can be compared without overwriting guarded evidence.
 
 ## Paper-Grounded Fixtures
 

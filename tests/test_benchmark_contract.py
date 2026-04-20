@@ -14,6 +14,7 @@ from eml_symbolic_regression.benchmark import (
     builtin_suite,
     list_builtin_suites,
     load_suite,
+    suite_with_semantics_mode,
 )
 from eml_symbolic_regression.cli import build_parser
 from eml_symbolic_regression.datasets import get_demo
@@ -718,6 +719,20 @@ def test_optimizer_budget_parses_and_serializes_constants():
     assert exc.value.path == "optimizer.scaffold_initializers"
 
 
+def test_optimizer_budget_parses_and_serializes_semantics_mode():
+    budget = OptimizerBudget.from_mapping({"semantics_mode": "faithful"})
+
+    budget.validate("optimizer")
+    assert budget.semantics_mode == "faithful"
+    assert budget.as_dict()["semantics_mode"] == "faithful"
+
+    with pytest.raises(BenchmarkValidationError) as exc:
+        OptimizerBudget.from_mapping({"semantics_mode": "almost-faithful"}).validate("optimizer")
+
+    assert exc.value.reason == "invalid_budget"
+    assert exc.value.path == "optimizer.semantics_mode"
+
+
 def test_optimizer_budget_parses_operator_family_and_schedule():
     budget = OptimizerBudget.from_mapping(
         {
@@ -748,6 +763,25 @@ def test_optimizer_budget_parses_operator_family_and_schedule():
 
     assert exc.value.reason == "invalid_budget"
     assert exc.value.path == "optimizer.operator_schedule[0]"
+
+
+def test_suite_with_semantics_mode_overrides_every_case_without_mutating_source():
+    suite = builtin_suite("smoke")
+    overridden = suite_with_semantics_mode(suite, "faithful")
+
+    assert {case.optimizer.semantics_mode for case in suite.cases} == {"guarded"}
+    assert {case.optimizer.semantics_mode for case in overridden.cases} == {"faithful"}
+    assert overridden.id == suite.id
+
+
+def test_cli_parses_semantics_mode_for_demo_and_benchmark():
+    parser = build_parser()
+
+    demo_args = parser.parse_args(["demo", "exp", "--train-eml", "--semantics-mode", "faithful"])
+    benchmark_args = parser.parse_args(["benchmark", "smoke", "--semantics-mode", "faithful"])
+
+    assert demo_args.semantics_mode == "faithful"
+    assert benchmark_args.semantics_mode == "faithful"
 
 
 def test_operator_family_participates_in_benchmark_run_id():

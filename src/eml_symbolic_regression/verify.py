@@ -34,11 +34,11 @@ class DataSplit:
 @dataclass(frozen=True)
 class SplitResult:
     name: str
-    role: str
     max_abs_error: float
     mse: float
     max_imag_residue: float
     passed: bool
+    role: str = "diagnostic"
 
 
 @dataclass(frozen=True)
@@ -252,7 +252,7 @@ def verify_candidate(
         max_imag = float(np.max(np.abs(np.imag(pred)))) if pred.size else 0.0
         passed = bool(max_abs <= tolerance)
         all_passed = all_passed and passed
-        split_results.append(SplitResult(split.name, split_role(split), max_abs, mse, max_imag, passed))
+        split_results.append(SplitResult(split.name, max_abs, mse, max_imag, passed, role=split_role(split)))
         numeric_failure_is_nonfinite = not np.isfinite(max_abs)
         numeric_failure_is_decisive = (not passed) and (numeric_failure_is_nonfinite or max_abs > tolerance * high_precision_skip_factor)
         if numeric_failure_is_decisive:
