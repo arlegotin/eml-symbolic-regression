@@ -6,7 +6,7 @@ current_phase: null
 current_phase_name: None
 status: Planning next milestone
 stopped_at: v1.13 archived
-last_updated: "2026-04-20T15:14:15.000Z"
+last_updated: "2026-04-20T15:22:21.000Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 8
@@ -34,7 +34,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 Phase: Milestone complete
 Plan: Complete
 Status: Planning next milestone
-Last activity: 2026-04-20 - Completed quick task 260420-nuw: README narrative and conservative target plots
+Last activity: 2026-04-20 - Completed quick task 260420-o1v: README data-split plot gallery
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
@@ -116,6 +116,7 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 | 2026-04-20 | README v1.13 release evidence plots | Complete | `.planning/quick/260420-ng7-update-readme-with-v1-13-release-evidenc/` |
 | 2026-04-20 | README clearer v1.13 evidence and fit plots | Complete | `.planning/quick/260420-nll-replace-readme-plots-with-clearer-v1-13-/` |
 | 2026-04-20 | README narrative and conservative target plots | Complete | `.planning/quick/260420-nuw-simplify-readme-release-narrative-and-re/` |
+| 2026-04-20 | README data-split plot gallery | Complete | `.planning/quick/260420-o1v-update-readme-plot-gallery-with-data-spl/` |
 
 ### Blockers/Concerns
 
