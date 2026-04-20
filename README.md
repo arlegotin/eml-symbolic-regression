@@ -55,9 +55,9 @@ Training mode can use numerical safety guards. Verification mode is stricter: sn
 
 ## Target Curves And Data
 
-The grid below plots the current target set with generated data splits. Each panel is labeled by formula and has named axes without numeric tick labels. Blue dots are training data, red triangles are held-out validation data, the black line is the target function, and a green dashed EML curve appears only when at least one checked-in evidence row recovered that target.
+The grid below plots the current target set with generated data splits. Each panel is labeled by function name and formula, and the axes are named without numeric tick labels. Blue dots are training data, red triangles are held-out validation data, and the black line is the target function. Green dashed curves are verified EML curves from recovered evidence rows. Gray dotted curves are the fixed exact EML trial `1`, shown only where no verified EML curve is available; they are not recovery claims.
 
-![Twelve labeled target plots with training, validation, target, and verified EML curves](readme-assets/fit-gallery.svg)
+![Twelve target plots labeled by function name and formula, with training data, validation data, target curves, verified EML curves, and unverified EML trial curves where needed](readme-assets/fit-gallery.svg)
 
 ## What Counts As Recovery
 
