@@ -61,7 +61,7 @@ def write_publication_rebuild(
         validation_md=output_dir / "validation.md",
     )
     if output_dir.exists() and overwrite:
-        shutil.rmtree(output_dir)
+        _remove_existing_output_dir(output_dir)
     if paths.manifest_json.exists() and not overwrite:
         raise PublicationRebuildError(f"{paths.manifest_json} already exists; pass overwrite=True to refresh")
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -108,7 +108,7 @@ def write_publication_rebuild(
     validation = validate_publication_package(output_dir, allowed_placeholder_paths=allowed_placeholder_paths)
     _write_json(paths.validation_json, validation)
     paths.validation_md.write_text(_validation_markdown(validation), encoding="utf-8")
-    manifest["outputs"] = _output_locks((paths.source_locks_json, paths.reproduction_md, paths.validation_md))
+    manifest["outputs"] = _output_locks((paths.source_locks_json, paths.reproduction_md, paths.validation_json, paths.validation_md))
     manifest["validation"] = {
         "status": validation["status"],
         "validation_json": str(paths.validation_json),
@@ -169,6 +169,16 @@ def _default_source_inputs() -> list[dict[str, Any]]:
         if path.is_file():
             rows.append(_lock_row("source_input", path))
     return rows
+
+
+def _remove_existing_output_dir(output_dir: Path) -> None:
+    resolved = output_dir.resolve()
+    forbidden = {Path.cwd().resolve(), Path("/").resolve()}
+    if Path.home().exists():
+        forbidden.add(Path.home().resolve())
+    if resolved in forbidden:
+        raise PublicationRebuildError(f"refusing to overwrite unsafe output directory: {output_dir}")
+    shutil.rmtree(output_dir)
 
 
 def _output_locks(paths: Iterable[Path]) -> list[dict[str, Any]]:

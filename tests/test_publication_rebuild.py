@@ -1,7 +1,10 @@
 import json
+from pathlib import Path
+
+import pytest
 
 from eml_symbolic_regression.cli import build_parser, publication_rebuild_command
-from eml_symbolic_regression.publication import validate_publication_package, write_publication_rebuild
+from eml_symbolic_regression.publication import PublicationRebuildError, validate_publication_package, write_publication_rebuild
 
 
 def _json(path):
@@ -32,6 +35,7 @@ def test_publication_rebuild_smoke_writes_manifest_locks_and_validation(tmp_path
     assert manifest["validation"]["status"] == "passed"
     assert all(row["sha256"] and row["bytes"] > 0 for row in manifest["inputs"])
     assert all(row["sha256"] and row["bytes"] > 0 for row in manifest["outputs"])
+    assert any(row["path"].endswith("validation.json") for row in manifest["outputs"])
 
 
 def test_publication_rebuild_cli_writes_package(tmp_path, capsys):
@@ -80,3 +84,8 @@ def test_publication_validation_allows_explicit_deterministic_fixture(tmp_path):
     validation = validate_publication_package(paths.output_dir, allowed_placeholder_paths=("fixtures/stable.json",))
 
     assert validation["status"] == "passed"
+
+
+def test_publication_rebuild_refuses_unsafe_overwrite_target():
+    with pytest.raises(PublicationRebuildError):
+        write_publication_rebuild(output_dir=Path.cwd(), smoke=True, overwrite=True, allow_dirty=True)
