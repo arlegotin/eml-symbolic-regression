@@ -7,11 +7,11 @@
 
 ### Clean-Room Reproduction
 
-- [ ] **REPRO-01**: Maintainer can run one documented command from an empty checkout to rebuild every publication figure, table, aggregate, manifest, and source-lock artifact.
-- [ ] **REPRO-02**: Maintainer can execute the rebuild in a locked environment using committed lockfile and container support.
-- [ ] **REPRO-03**: Publication reproduction does not require preexisting generated artifacts or `--require-existing` inputs.
-- [ ] **REPRO-04**: Publication manifests record immutable provenance for every generated artifact, including git revision, command, environment identity, input hashes, output hashes, and generated-at timestamp.
-- [ ] **REPRO-05**: Publication artifacts fail validation if placeholder metadata such as `1970-01-01T00:00:00+00:00` or `"snapshot"` appears outside explicitly labeled deterministic-test fixtures.
+- [x] **REPRO-01**: Maintainer can run one documented command from an empty checkout to rebuild every publication figure, table, aggregate, manifest, and source-lock artifact.
+- [x] **REPRO-02**: Maintainer can execute the rebuild in a locked environment using committed lockfile and container support.
+- [x] **REPRO-03**: Publication reproduction does not require preexisting generated artifacts or `--require-existing` inputs.
+- [x] **REPRO-04**: Publication manifests record immutable provenance for every generated artifact, including git revision, command, environment identity, input hashes, output hashes, and generated-at timestamp.
+- [x] **REPRO-05**: Publication artifacts fail validation if placeholder metadata such as `1970-01-01T00:00:00+00:00` or `"snapshot"` appears outside explicitly labeled deterministic-test fixtures.
 
 ### Automated Tests and CI
 
@@ -87,11 +87,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPRO-01 | Phase 69 | Pending |
-| REPRO-02 | Phase 69 | Pending |
-| REPRO-03 | Phase 69 | Pending |
-| REPRO-04 | Phase 69 | Pending |
-| REPRO-05 | Phase 69 | Pending |
+| REPRO-01 | Phase 69 | Complete |
+| REPRO-02 | Phase 69 | Complete |
+| REPRO-03 | Phase 69 | Complete |
+| REPRO-04 | Phase 69 | Complete |
+| REPRO-05 | Phase 69 | Complete |
 | TEST-01 | Phase 72 | Pending |
 | TEST-02 | Phase 72 | Pending |
 | TEST-03 | Phase 72 | Pending |

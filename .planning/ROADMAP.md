@@ -29,7 +29,7 @@ v1.13 is active. The milestone responds to a publication-readiness audit: the re
 
 | Phase | Name | Goal | Requirements |
 |-------|------|------|--------------|
-| 69 | Clean-Room Reproduction Path and Provenance | Build the locked one-command rebuild path and remove publication placeholder provenance. | REPRO-01, REPRO-02, REPRO-03, REPRO-04, REPRO-05 |
+| 69 | 1/1 | Complete    | 2026-04-20 |
 | 70 | Layered Verifier and Split Isolation | Upgrade verifier evidence and eliminate selection/final-evaluation leakage. | VERIF-01, VERIF-02, VERIF-03, VERIF-04, VERIF-05, SPLIT-01, SPLIT-02, SPLIT-03 |
 | 71 | Training and Verification Semantics Alignment | Match training to verified semantics where possible and quantify surrogate mismatch where not. | SEM-01, SEM-02, SEM-03, SEM-04 |
 | 72 | Automated Test Suite and CI Hardening | Add algorithmic tests and CI gates for code, manifests, reproduction smoke, and public snapshots. | TEST-01, TEST-02, TEST-03, TEST-04 |
