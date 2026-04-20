@@ -1,98 +1,182 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="700" viewBox="0 0 1000 700" role="img" aria-labelledby="title desc">
-  <title id="title">v1.13 fit gallery</title>
-  <desc id="desc">Four panels showing two verified overlays and two unsupported targets with no verified candidate published.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1020" viewBox="0 0 1120 1020" role="img" aria-labelledby="title desc">
+  <title id="title">v1.13 explored target functions</title>
+  <desc id="desc">Twelve target functions from the v1.13 paper-track campaign, each drawn as an unsmoothed blue polyline over its training domain with a per-target recovered count.</desc>
   <style>
-    .title { font: 700 26px Arial, sans-serif; fill: #1d252c; }
-    .subtitle { font: 400 14px Arial, sans-serif; fill: #52616f; }
-    .panel-title { font: 700 17px Arial, sans-serif; fill: #1d252c; }
-    .small { font: 400 13px Arial, sans-serif; fill: #52616f; }
-    .axis { stroke: #24313a; stroke-width: 1.3; }
-    .grid { stroke: #d8dee5; stroke-width: 1; }
-    .target { fill: none; stroke: #1d252c; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-    .candidate { fill: none; stroke: #2f6f8f; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.76; }
-    .unsupported { fill: none; stroke: #d1495b; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; opacity: 0.5; stroke-dasharray: 8 8; }
-    .sample { fill: #ffffff; stroke: #1d252c; stroke-width: 1.5; }
-    .badge-ok { fill: #edf6f1; stroke: #4f8a3a; stroke-width: 1.2; }
-    .badge-warn { fill: #fff4ef; stroke: #d1495b; stroke-width: 1.2; }
-    .badge-text { font: 700 12px Arial, sans-serif; fill: #1d252c; }
+    text { font-family: Arial, sans-serif; fill: #111111; }
+    .title { font-size: 24px; font-weight: 700; }
+    .subtitle { font-size: 13px; fill: #333333; }
+    .panel-title { font-size: 14px; font-weight: 700; }
+    .expr { font-size: 11px; fill: #333333; }
+    .tick { font-size: 9px; fill: #444444; }
+    .status-ok { font-size: 11px; fill: #1b7f3a; font-weight: 700; }
+    .status-bad { font-size: 11px; fill: #b22222; font-weight: 700; }
+    .axis { stroke: #111111; stroke-width: 1; }
+    .grid { stroke: #d0d0d0; stroke-width: 0.7; }
+    .target { fill: none; stroke: #0057b8; stroke-width: 2; stroke-linejoin: miter; stroke-linecap: butt; }
+    .panel { fill: #ffffff; stroke: #bbbbbb; stroke-width: 1; }
   </style>
-
-  <rect width="1000" height="700" fill="#ffffff"/>
-  <text x="48" y="44" class="title">What the v1.13 examples look like</text>
-  <text x="48" y="70" class="subtitle">Verified overlays mean the exact snapped candidate passed the verifier. Unsupported panels show targets where no verified candidate is published.</text>
-
-  <!-- Panel 1 -->
-  <text x="75" y="112" class="panel-title">exp: basis-only compile verified</text>
-  <text x="75" y="134" class="small">target and exact candidate overlap</text>
-  <line x1="90" y1="330" x2="460" y2="330" class="axis"/>
-  <line x1="90" y1="150" x2="90" y2="330" class="axis"/>
-  <line x1="90" y1="270" x2="460" y2="270" class="grid"/>
-  <line x1="90" y1="210" x2="460" y2="210" class="grid"/>
-  <path d="M110 306 C165 296 215 276 260 244 C310 207 365 162 440 112" class="candidate"/>
-  <path d="M110 306 C165 296 215 276 260 244 C310 207 365 162 440 112" class="target"/>
-  <circle cx="110" cy="306" r="4" class="sample"/>
-  <circle cx="180" cy="290" r="4" class="sample"/>
-  <circle cx="250" cy="251" r="4" class="sample"/>
-  <circle cx="320" cy="199" r="4" class="sample"/>
-  <circle cx="390" cy="145" r="4" class="sample"/>
-  <rect x="300" y="305" width="135" height="28" class="badge-ok" rx="6"/>
-  <text x="316" y="324" class="badge-text">verified recovery</text>
-
-  <!-- Panel 2 -->
-  <text x="545" y="112" class="panel-title">Beer-Lambert: literal warm-start</text>
-  <text x="545" y="134" class="small">same-AST return, verifier passed</text>
-  <line x1="560" y1="330" x2="930" y2="330" class="axis"/>
-  <line x1="560" y1="150" x2="560" y2="330" class="axis"/>
-  <line x1="560" y1="270" x2="930" y2="270" class="grid"/>
-  <line x1="560" y1="210" x2="930" y2="210" class="grid"/>
-  <path d="M580 162 C640 194 692 232 742 264 C800 297 862 315 910 322" class="candidate"/>
-  <path d="M580 162 C640 194 692 232 742 264 C800 297 862 315 910 322" class="target"/>
-  <circle cx="580" cy="162" r="4" class="sample"/>
-  <circle cx="650" cy="202" r="4" class="sample"/>
-  <circle cx="720" cy="252" r="4" class="sample"/>
-  <circle cx="790" cy="292" r="4" class="sample"/>
-  <circle cx="860" cy="314" r="4" class="sample"/>
-  <rect x="770" y="305" width="140" height="28" class="badge-ok" rx="6"/>
-  <text x="786" y="324" class="badge-text">same-AST return</text>
-
-  <!-- Panel 3 -->
-  <text x="75" y="410" class="panel-title">Logistic: unsupported in v1.13</text>
-  <text x="75" y="432" class="small">target shown; no verified EML candidate claimed</text>
-  <line x1="90" y1="628" x2="460" y2="628" class="axis"/>
-  <line x1="90" y1="448" x2="90" y2="628" class="axis"/>
-  <line x1="90" y1="568" x2="460" y2="568" class="grid"/>
-  <line x1="90" y1="508" x2="460" y2="508" class="grid"/>
-  <path d="M110 595 C175 594 212 577 242 535 C280 481 325 455 440 455" class="target"/>
-  <path d="M110 596 C188 582 250 552 310 514 C365 480 405 462 440 458" class="unsupported"/>
-  <circle cx="110" cy="595" r="4" class="sample"/>
-  <circle cx="185" cy="590" r="4" class="sample"/>
-  <circle cx="260" cy="510" r="4" class="sample"/>
-  <circle cx="335" cy="465" r="4" class="sample"/>
-  <circle cx="410" cy="456" r="4" class="sample"/>
-  <rect x="288" y="604" width="150" height="28" class="badge-warn" rx="6"/>
-  <text x="307" y="623" class="badge-text">unsupported gate</text>
-
-  <!-- Panel 4 -->
-  <text x="545" y="410" class="panel-title">Planck: unsupported in v1.13</text>
-  <text x="545" y="432" class="small">peak-and-tail shape remains stretch evidence</text>
-  <line x1="560" y1="628" x2="930" y2="628" class="axis"/>
-  <line x1="560" y1="448" x2="560" y2="628" class="axis"/>
-  <line x1="560" y1="568" x2="930" y2="568" class="grid"/>
-  <line x1="560" y1="508" x2="930" y2="508" class="grid"/>
-  <path d="M580 615 C614 585 645 505 688 493 C742 477 807 548 910 611" class="target"/>
-  <path d="M580 616 C640 610 693 600 752 585 C812 568 865 560 910 558" class="unsupported"/>
-  <circle cx="580" cy="615" r="4" class="sample"/>
-  <circle cx="650" cy="506" r="4" class="sample"/>
-  <circle cx="720" cy="500" r="4" class="sample"/>
-  <circle cx="790" cy="541" r="4" class="sample"/>
-  <circle cx="860" cy="590" r="4" class="sample"/>
-  <rect x="758" y="604" width="150" height="28" class="badge-warn" rx="6"/>
-  <text x="777" y="623" class="badge-text">unsupported gate</text>
-
-  <line x1="250" y1="668" x2="292" y2="668" class="target"/>
-  <text x="305" y="672" class="small">target</text>
-  <line x1="388" y1="668" x2="430" y2="668" class="candidate"/>
-  <text x="443" y="672" class="small">verified candidate overlay</text>
-  <line x1="620" y1="668" x2="662" y2="668" class="unsupported"/>
-  <text x="675" y="672" class="small">not a verified candidate</text>
+  <rect width="1120" height="1020" fill="#ffffff"/>
+  <text x="52" y="42" class="title">v1.13 target functions</text>
+  <text x="52" y="68" class="subtitle">One blue polyline per explored target. Lines are evaluated points connected directly; no smoothing and no fitted surrogate curve.</text>
+  <text x="52" y="90" class="subtitle">Each panel uses its own y-scale. Status is the number of v1.13 paper-track rows recovered out of the two rows run for that target.</text>
+  <rect x="52" y="118" width="322" height="188" class="panel"/>
+  <text x="66" y="142" class="panel-title">exp</text>
+  <text x="66" y="161" class="expr">exp(x)</text>
+  <text x="272" y="142" class="status-ok">2/2 recovered</text>
+  <line x1="94.0" y1="174.0" x2="346.0" y2="174.0" class="grid"/>
+  <line x1="94.0" y1="222.0" x2="346.0" y2="222.0" class="grid"/>
+  <line x1="94.0" y1="270.0" x2="346.0" y2="270.0" class="axis"/>
+  <line x1="94.0" y1="174.0" x2="94.0" y2="270.0" class="axis"/>
+  <polyline points="94.0,263.4 98.0,263.0 102.0,262.5 106.0,262.1 110.0,261.6 114.0,261.2 118.0,260.7 122.0,260.2 126.0,259.6 130.0,259.1 134.0,258.5 138.0,258.0 142.0,257.4 146.0,256.8 150.0,256.1 154.0,255.5 158.0,254.8 162.0,254.1 166.0,253.4 170.0,252.7 174.0,251.9 178.0,251.1 182.0,250.3 186.0,249.4 190.0,248.6 194.0,247.7 198.0,246.8 202.0,245.8 206.0,244.8 210.0,243.8 214.0,242.8 218.0,241.7 222.0,240.6 226.0,239.4 230.0,238.2 234.0,237.0 238.0,235.7 242.0,234.4 246.0,233.1 250.0,231.7 254.0,230.2 258.0,228.7 262.0,227.2 266.0,225.6 270.0,224.0 274.0,222.3 278.0,220.5 282.0,218.7 286.0,216.9 290.0,215.0 294.0,213.0 298.0,210.9 302.0,208.8 306.0,206.7 310.0,204.4 314.0,202.1 318.0,199.7 322.0,197.2 326.0,194.7 330.0,192.0 334.0,189.3 338.0,186.5 342.0,183.6 346.0,180.6" class="target"/>
+  <text x="94.0" y="287.0" class="tick">x=-1</text>
+  <text x="304.0" y="287.0" class="tick">x=1</text>
+  <text x="60.0" y="273.0" class="tick">0.179847</text>
+  <text x="60.0" y="177.0" class="tick">2.90631</text>
+  <rect x="408" y="118" width="322" height="188" class="panel"/>
+  <text x="422" y="142" class="panel-title">Log</text>
+  <text x="422" y="161" class="expr">log(x)</text>
+  <text x="628" y="142" class="status-bad">0/2 recovered</text>
+  <line x1="450.0" y1="174.0" x2="702.0" y2="174.0" class="grid"/>
+  <line x1="450.0" y1="222.0" x2="702.0" y2="222.0" class="grid"/>
+  <line x1="450.0" y1="270.0" x2="702.0" y2="270.0" class="axis"/>
+  <line x1="450.0" y1="174.0" x2="450.0" y2="270.0" class="axis"/>
+  <polyline points="450.0,263.4 454.0,258.0 458.0,253.4 462.0,249.4 466.0,245.7 470.0,242.5 474.0,239.5 478.0,236.8 482.0,234.3 486.0,231.9 490.0,229.7 494.0,227.7 498.0,225.7 502.0,223.9 506.0,222.2 510.0,220.5 514.0,219.0 518.0,217.5 522.0,216.0 526.0,214.7 530.0,213.3 534.0,212.1 538.0,210.9 542.0,209.7 546.0,208.5 550.0,207.4 554.0,206.4 558.0,205.3 562.0,204.3 566.0,203.4 570.0,202.4 574.0,201.5 578.0,200.6 582.0,199.7 586.0,198.9 590.0,198.0 594.0,197.2 598.0,196.5 602.0,195.7 606.0,194.9 610.0,194.2 614.0,193.5 618.0,192.8 622.0,192.1 626.0,191.4 630.0,190.7 634.0,190.1 638.0,189.4 642.0,188.8 646.0,188.2 650.0,187.6 654.0,187.0 658.0,186.4 662.0,185.9 666.0,185.3 670.0,184.7 674.0,184.2 678.0,183.7 682.0,183.1 686.0,182.6 690.0,182.1 694.0,181.6 698.0,181.1 702.0,180.6" class="target"/>
+  <text x="450.0" y="287.0" class="tick">x=0.25</text>
+  <text x="660.0" y="287.0" class="tick">x=3</text>
+  <text x="416.0" y="273.0" class="tick">-1.58509</text>
+  <text x="416.0" y="177.0" class="tick">1.2974</text>
+  <rect x="764" y="118" width="322" height="188" class="panel"/>
+  <text x="778" y="142" class="panel-title">Radioactive Decay</text>
+  <text x="778" y="161" class="expr">exp(-0.4 t)</text>
+  <text x="984" y="142" class="status-ok">1/2 recovered</text>
+  <line x1="806.0" y1="174.0" x2="1058.0" y2="174.0" class="grid"/>
+  <line x1="806.0" y1="222.0" x2="1058.0" y2="222.0" class="grid"/>
+  <line x1="806.0" y1="270.0" x2="1058.0" y2="270.0" class="axis"/>
+  <line x1="806.0" y1="174.0" x2="806.0" y2="270.0" class="axis"/>
+  <polyline points="806.0,180.6 810.0,183.6 814.0,186.5 818.0,189.3 822.0,192.0 826.0,194.7 830.0,197.2 834.0,199.7 838.0,202.1 842.0,204.4 846.0,206.7 850.0,208.8 854.0,210.9 858.0,213.0 862.0,215.0 866.0,216.9 870.0,218.7 874.0,220.5 878.0,222.3 882.0,224.0 886.0,225.6 890.0,227.2 894.0,228.7 898.0,230.2 902.0,231.7 906.0,233.1 910.0,234.4 914.0,235.7 918.0,237.0 922.0,238.2 926.0,239.4 930.0,240.6 934.0,241.7 938.0,242.8 942.0,243.8 946.0,244.8 950.0,245.8 954.0,246.8 958.0,247.7 962.0,248.6 966.0,249.4 970.0,250.3 974.0,251.1 978.0,251.9 982.0,252.7 986.0,253.4 990.0,254.1 994.0,254.8 998.0,255.5 1002.0,256.1 1006.0,256.8 1010.0,257.4 1014.0,258.0 1018.0,258.5 1022.0,259.1 1026.0,259.6 1030.0,260.2 1034.0,260.7 1038.0,261.2 1042.0,261.6 1046.0,262.1 1050.0,262.5 1054.0,263.0 1058.0,263.4" class="target"/>
+  <text x="806.0" y="287.0" class="tick">t=0</text>
+  <text x="1016.0" y="287.0" class="tick">t=5</text>
+  <text x="772.0" y="273.0" class="tick">0.0661621</text>
+  <text x="772.0" y="177.0" class="tick">1.06917</text>
+  <rect x="52" y="348" width="322" height="188" class="panel"/>
+  <text x="66" y="372" class="panel-title">Beer Lambert</text>
+  <text x="66" y="391" class="expr">exp(-0.8 x)</text>
+  <text x="272" y="372" class="status-ok">1/2 recovered</text>
+  <line x1="94.0" y1="404.0" x2="346.0" y2="404.0" class="grid"/>
+  <line x1="94.0" y1="452.0" x2="346.0" y2="452.0" class="grid"/>
+  <line x1="94.0" y1="500.0" x2="346.0" y2="500.0" class="axis"/>
+  <line x1="94.0" y1="404.0" x2="94.0" y2="500.0" class="axis"/>
+  <polyline points="94.0,410.6 98.0,414.0 102.0,417.3 106.0,420.5 110.0,423.5 114.0,426.4 118.0,429.2 122.0,431.9 126.0,434.5 130.0,437.0 134.0,439.5 138.0,441.8 142.0,444.0 146.0,446.2 150.0,448.2 154.0,450.2 158.0,452.2 162.0,454.0 166.0,455.8 170.0,457.5 174.0,459.2 178.0,460.7 182.0,462.3 186.0,463.7 190.0,465.2 194.0,466.5 198.0,467.8 202.0,469.1 206.0,470.3 210.0,471.5 214.0,472.6 218.0,473.7 222.0,474.7 226.0,475.7 230.0,476.7 234.0,477.6 238.0,478.5 242.0,479.4 246.0,480.2 250.0,481.0 254.0,481.8 258.0,482.5 262.0,483.3 266.0,483.9 270.0,484.6 274.0,485.2 278.0,485.9 282.0,486.4 286.0,487.0 290.0,487.6 294.0,488.1 298.0,488.6 302.0,489.1 306.0,489.6 310.0,490.0 314.0,490.4 318.0,490.9 322.0,491.3 326.0,491.6 330.0,492.0 334.0,492.4 338.0,492.7 342.0,493.1 346.0,493.4" class="target"/>
+  <text x="94.0" y="517.0" class="tick">x=0</text>
+  <text x="304.0" y="517.0" class="tick">x=3</text>
+  <text x="60.0" y="503.0" class="tick">0.0179754</text>
+  <text x="60.0" y="407.0" class="tick">1.07274</text>
+  <rect x="408" y="348" width="322" height="188" class="panel"/>
+  <text x="422" y="372" class="panel-title">Scaled exp Growth</text>
+  <text x="422" y="391" class="expr">exp(0.4 x)</text>
+  <text x="628" y="372" class="status-ok">1/2 recovered</text>
+  <line x1="450.0" y1="404.0" x2="702.0" y2="404.0" class="grid"/>
+  <line x1="450.0" y1="452.0" x2="702.0" y2="452.0" class="grid"/>
+  <line x1="450.0" y1="500.0" x2="702.0" y2="500.0" class="axis"/>
+  <line x1="450.0" y1="404.0" x2="450.0" y2="500.0" class="axis"/>
+  <polyline points="450.0,493.4 454.0,492.8 458.0,492.3 462.0,491.7 466.0,491.1 470.0,490.5 474.0,489.9 478.0,489.3 482.0,488.7 486.0,488.0 490.0,487.3 494.0,486.6 498.0,485.9 502.0,485.2 506.0,484.4 510.0,483.7 514.0,482.9 518.0,482.1 522.0,481.2 526.0,480.4 530.0,479.5 534.0,478.6 538.0,477.7 542.0,476.8 546.0,475.8 550.0,474.8 554.0,473.8 558.0,472.8 562.0,471.7 566.0,470.6 570.0,469.5 574.0,468.3 578.0,467.1 582.0,465.9 586.0,464.7 590.0,463.4 594.0,462.1 598.0,460.7 602.0,459.4 606.0,457.9 610.0,456.5 614.0,455.0 618.0,453.5 622.0,451.9 626.0,450.3 630.0,448.7 634.0,447.0 638.0,445.2 642.0,443.5 646.0,441.6 650.0,439.8 654.0,437.9 658.0,435.9 662.0,433.9 666.0,431.8 670.0,429.7 674.0,427.5 678.0,425.3 682.0,423.0 686.0,420.6 690.0,418.2 694.0,415.8 698.0,413.2 702.0,410.6" class="target"/>
+  <text x="450.0" y="517.0" class="tick">x=-2</text>
+  <text x="660.0" y="517.0" class="tick">x=2</text>
+  <text x="416.0" y="503.0" class="tick">0.307232</text>
+  <text x="416.0" y="407.0" class="tick">2.36764</text>
+  <rect x="764" y="348" width="322" height="188" class="panel"/>
+  <text x="778" y="372" class="panel-title">Scaled exp Fast Decay</text>
+  <text x="778" y="391" class="expr">exp(-1.2 x)</text>
+  <text x="984" y="372" class="status-ok">1/2 recovered</text>
+  <line x1="806.0" y1="404.0" x2="1058.0" y2="404.0" class="grid"/>
+  <line x1="806.0" y1="452.0" x2="1058.0" y2="452.0" class="grid"/>
+  <line x1="806.0" y1="500.0" x2="1058.0" y2="500.0" class="axis"/>
+  <line x1="806.0" y1="404.0" x2="806.0" y2="500.0" class="axis"/>
+  <polyline points="806.0,410.6 810.0,414.7 814.0,418.5 818.0,422.2 822.0,425.7 826.0,429.1 830.0,432.3 834.0,435.3 838.0,438.2 842.0,441.0 846.0,443.6 850.0,446.1 854.0,448.5 858.0,450.8 862.0,453.0 866.0,455.1 870.0,457.1 874.0,459.0 878.0,460.8 882.0,462.5 886.0,464.1 890.0,465.7 894.0,467.2 898.0,468.6 902.0,469.9 906.0,471.2 910.0,472.5 914.0,473.6 918.0,474.8 922.0,475.8 926.0,476.8 930.0,477.8 934.0,478.7 938.0,479.6 942.0,480.5 946.0,481.3 950.0,482.0 954.0,482.8 958.0,483.5 962.0,484.1 966.0,484.8 970.0,485.4 974.0,485.9 978.0,486.5 982.0,487.0 986.0,487.5 990.0,488.0 994.0,488.4 998.0,488.9 1002.0,489.3 1006.0,489.7 1010.0,490.0 1014.0,490.4 1018.0,490.7 1022.0,491.1 1026.0,491.4 1030.0,491.7 1034.0,491.9 1038.0,492.2 1042.0,492.5 1046.0,492.7 1050.0,492.9 1054.0,493.2 1058.0,493.4" class="target"/>
+  <text x="806.0" y="517.0" class="tick">x=0</text>
+  <text x="1016.0" y="517.0" class="tick">x=2.5</text>
+  <text x="772.0" y="503.0" class="tick">-0.02623</text>
+  <text x="772.0" y="407.0" class="tick">1.07602</text>
+  <rect x="52" y="578" width="322" height="188" class="panel"/>
+  <text x="66" y="602" class="panel-title">Arrhenius</text>
+  <text x="66" y="621" class="expr">exp(-0.8/x)</text>
+  <text x="272" y="602" class="status-ok">1/2 recovered</text>
+  <line x1="94.0" y1="634.0" x2="346.0" y2="634.0" class="grid"/>
+  <line x1="94.0" y1="682.0" x2="346.0" y2="682.0" class="grid"/>
+  <line x1="94.0" y1="730.0" x2="346.0" y2="730.0" class="axis"/>
+  <line x1="94.0" y1="634.0" x2="94.0" y2="730.0" class="axis"/>
+  <polyline points="94.0,723.4 98.0,719.7 102.0,716.1 106.0,712.7 110.0,709.4 114.0,706.3 118.0,703.4 122.0,700.5 126.0,697.9 130.0,695.3 134.0,692.9 138.0,690.6 142.0,688.3 146.0,686.2 150.0,684.2 154.0,682.3 158.0,680.5 162.0,678.7 166.0,677.1 170.0,675.5 174.0,673.9 178.0,672.5 182.0,671.1 186.0,669.7 190.0,668.4 194.0,667.2 198.0,666.0 202.0,664.8 206.0,663.7 210.0,662.6 214.0,661.6 218.0,660.6 222.0,659.6 226.0,658.7 230.0,657.8 234.0,656.9 238.0,656.1 242.0,655.3 246.0,654.5 250.0,653.7 254.0,653.0 258.0,652.3 262.0,651.6 266.0,650.9 270.0,650.2 274.0,649.6 278.0,649.0 282.0,648.4 286.0,647.8 290.0,647.2 294.0,646.7 298.0,646.1 302.0,645.6 306.0,645.1 310.0,644.6 314.0,644.1 318.0,643.6 322.0,643.2 326.0,642.7 330.0,642.3 334.0,641.9 338.0,641.4 342.0,641.0 346.0,640.6" class="target"/>
+  <text x="94.0" y="747.0" class="tick">x=0.5</text>
+  <text x="304.0" y="747.0" class="tick">x=3</text>
+  <text x="60.0" y="733.0" class="tick">0.156774</text>
+  <text x="60.0" y="637.0" class="tick">0.811051</text>
+  <rect x="408" y="578" width="322" height="188" class="panel"/>
+  <text x="422" y="602" class="panel-title">Michaelis Menten</text>
+  <text x="422" y="621" class="expr">2x/(x + 0.5)</text>
+  <text x="628" y="602" class="status-ok">1/2 recovered</text>
+  <line x1="450.0" y1="634.0" x2="702.0" y2="634.0" class="grid"/>
+  <line x1="450.0" y1="682.0" x2="702.0" y2="682.0" class="grid"/>
+  <line x1="450.0" y1="730.0" x2="702.0" y2="730.0" class="axis"/>
+  <line x1="450.0" y1="634.0" x2="450.0" y2="730.0" class="axis"/>
+  <polyline points="450.0,723.4 454.0,711.9 458.0,702.9 462.0,695.8 466.0,689.9 470.0,685.1 474.0,680.9 478.0,677.4 482.0,674.3 486.0,671.7 490.0,669.3 494.0,667.2 498.0,665.3 502.0,663.6 506.0,662.1 510.0,660.7 514.0,659.4 518.0,658.2 522.0,657.2 526.0,656.2 530.0,655.3 534.0,654.4 538.0,653.6 542.0,652.9 546.0,652.2 550.0,651.5 554.0,650.9 558.0,650.4 562.0,649.8 566.0,649.3 570.0,648.8 574.0,648.4 578.0,647.9 582.0,647.5 586.0,647.1 590.0,646.8 594.0,646.4 598.0,646.1 602.0,645.7 606.0,645.4 610.0,645.1 614.0,644.8 618.0,644.6 622.0,644.3 626.0,644.0 630.0,643.8 634.0,643.6 638.0,643.3 642.0,643.1 646.0,642.9 650.0,642.7 654.0,642.5 658.0,642.3 662.0,642.2 666.0,642.0 670.0,641.8 674.0,641.6 678.0,641.5 682.0,641.3 686.0,641.2 690.0,641.0 694.0,640.9 698.0,640.8 702.0,640.6" class="target"/>
+  <text x="450.0" y="747.0" class="tick">x=0.05</text>
+  <text x="660.0" y="747.0" class="tick">x=5</text>
+  <text x="416.0" y="733.0" class="tick">0.0509091</text>
+  <text x="416.0" y="637.0" class="tick">1.94909</text>
+  <rect x="764" y="578" width="322" height="188" class="panel"/>
+  <text x="778" y="602" class="panel-title">Logistic</text>
+  <text x="778" y="621" class="expr">1/(1 + 2 exp(-1.3x))</text>
+  <text x="984" y="602" class="status-bad">0/2 recovered</text>
+  <line x1="806.0" y1="634.0" x2="1058.0" y2="634.0" class="grid"/>
+  <line x1="806.0" y1="682.0" x2="1058.0" y2="682.0" class="grid"/>
+  <line x1="806.0" y1="730.0" x2="1058.0" y2="730.0" class="axis"/>
+  <line x1="806.0" y1="634.0" x2="806.0" y2="730.0" class="axis"/>
+  <polyline points="806.0,723.4 810.0,720.5 814.0,717.5 818.0,714.4 822.0,711.3 826.0,708.1 830.0,704.9 834.0,701.7 838.0,698.5 842.0,695.3 846.0,692.1 850.0,689.0 854.0,686.0 858.0,683.1 862.0,680.2 866.0,677.5 870.0,674.8 874.0,672.3 878.0,669.9 882.0,667.6 886.0,665.5 890.0,663.5 894.0,661.6 898.0,659.8 902.0,658.2 906.0,656.7 910.0,655.3 914.0,653.9 918.0,652.7 922.0,651.6 926.0,650.6 930.0,649.7 934.0,648.8 938.0,648.0 942.0,647.3 946.0,646.6 950.0,646.0 954.0,645.5 958.0,645.0 962.0,644.6 966.0,644.1 970.0,643.8 974.0,643.4 978.0,643.1 982.0,642.9 986.0,642.6 990.0,642.4 994.0,642.2 998.0,642.0 1002.0,641.8 1006.0,641.7 1010.0,641.5 1014.0,641.4 1018.0,641.3 1022.0,641.2 1026.0,641.1 1030.0,641.0 1034.0,640.9 1038.0,640.9 1042.0,640.8 1046.0,640.8 1050.0,640.7 1054.0,640.7 1058.0,640.6" class="target"/>
+  <text x="806.0" y="747.0" class="tick">x=0</text>
+  <text x="1016.0" y="747.0" class="tick">x=5</text>
+  <text x="772.0" y="733.0" class="tick">0.28024</text>
+  <text x="772.0" y="637.0" class="tick">1.0501</text>
+  <rect x="52" y="808" width="322" height="188" class="panel"/>
+  <text x="66" y="832" class="panel-title">Shockley</text>
+  <text x="66" y="851" class="expr">0.2(exp(1.4x) - 1)</text>
+  <text x="272" y="832" class="status-ok">1/2 recovered</text>
+  <line x1="94.0" y1="864.0" x2="346.0" y2="864.0" class="grid"/>
+  <line x1="94.0" y1="912.0" x2="346.0" y2="912.0" class="grid"/>
+  <line x1="94.0" y1="960.0" x2="346.0" y2="960.0" class="axis"/>
+  <line x1="94.0" y1="864.0" x2="94.0" y2="960.0" class="axis"/>
+  <polyline points="94.0,953.4 98.0,953.1 102.0,952.9 106.0,952.6 110.0,952.3 114.0,952.0 118.0,951.7 122.0,951.4 126.0,951.1 130.0,950.7 134.0,950.4 138.0,950.0 142.0,949.6 146.0,949.2 150.0,948.8 154.0,948.3 158.0,947.8 162.0,947.3 166.0,946.8 170.0,946.3 174.0,945.7 178.0,945.1 182.0,944.5 186.0,943.8 190.0,943.2 194.0,942.5 198.0,941.7 202.0,940.9 206.0,940.1 210.0,939.3 214.0,938.4 218.0,937.5 222.0,936.5 226.0,935.5 230.0,934.5 234.0,933.4 238.0,932.2 242.0,931.0 246.0,929.7 250.0,928.4 254.0,927.0 258.0,925.6 262.0,924.1 266.0,922.5 270.0,920.9 274.0,919.1 278.0,917.3 282.0,915.5 286.0,913.5 290.0,911.4 294.0,909.3 298.0,907.0 302.0,904.7 306.0,902.2 310.0,899.7 314.0,897.0 318.0,894.2 322.0,891.2 326.0,888.2 330.0,885.0 334.0,881.6 338.0,878.1 342.0,874.5 346.0,870.6" class="target"/>
+  <text x="94.0" y="977.0" class="tick">x=0</text>
+  <text x="304.0" y="977.0" class="tick">x=2</text>
+  <text x="60.0" y="963.0" class="tick">-0.247114</text>
+  <text x="60.0" y="867.0" class="tick">3.33604</text>
+  <rect x="408" y="808" width="322" height="188" class="panel"/>
+  <text x="422" y="832" class="panel-title">Damped Oscillator</text>
+  <text x="422" y="851" class="expr">exp(-0.15t) cos(2.5t + 0.2)</text>
+  <text x="628" y="832" class="status-bad">0/2 recovered</text>
+  <line x1="450.0" y1="864.0" x2="702.0" y2="864.0" class="grid"/>
+  <line x1="450.0" y1="912.0" x2="702.0" y2="912.0" class="grid"/>
+  <line x1="450.0" y1="960.0" x2="702.0" y2="960.0" class="axis"/>
+  <line x1="450.0" y1="864.0" x2="450.0" y2="960.0" class="axis"/>
+  <polyline points="450.0,870.6 454.0,874.6 458.0,880.7 462.0,888.6 466.0,897.7 470.0,907.6 474.0,917.6 478.0,927.2 482.0,935.8 486.0,943.1 490.0,948.6 494.0,952.1 498.0,953.4 502.0,952.5 506.0,949.6 510.0,944.9 514.0,938.6 518.0,931.2 522.0,923.1 526.0,914.8 530.0,906.8 534.0,899.4 538.0,893.2 542.0,888.3 546.0,885.1 550.0,883.6 554.0,884.0 558.0,886.1 562.0,889.8 566.0,894.7 570.0,900.7 574.0,907.3 578.0,914.2 582.0,920.9 586.0,927.1 590.0,932.5 594.0,936.8 598.0,939.7 602.0,941.2 606.0,941.2 610.0,939.7 614.0,937.0 618.0,933.0 622.0,928.2 626.0,922.8 630.0,917.1 634.0,911.5 638.0,906.3 642.0,901.6 646.0,897.9 650.0,895.3 654.0,893.8 658.0,893.6 662.0,894.5 666.0,896.7 670.0,899.7 674.0,903.6 678.0,908.0 682.0,912.7 686.0,917.4 690.0,921.8 694.0,925.7 698.0,929.0 702.0,931.4" class="target"/>
+  <text x="450.0" y="977.0" class="tick">t=0</text>
+  <text x="660.0" y="977.0" class="tick">t=6</text>
+  <text x="416.0" y="963.0" class="tick">-0.98502</text>
+  <text x="416.0" y="867.0" class="tick">1.12563</text>
+  <rect x="764" y="808" width="322" height="188" class="panel"/>
+  <text x="778" y="832" class="panel-title">Planck</text>
+  <text x="778" y="851" class="expr">x^3/(exp(x) - 1)</text>
+  <text x="984" y="832" class="status-bad">0/2 recovered</text>
+  <line x1="806.0" y1="864.0" x2="1058.0" y2="864.0" class="grid"/>
+  <line x1="806.0" y1="912.0" x2="1058.0" y2="912.0" class="grid"/>
+  <line x1="806.0" y1="960.0" x2="1058.0" y2="960.0" class="axis"/>
+  <line x1="806.0" y1="864.0" x2="806.0" y2="960.0" class="axis"/>
+  <polyline points="806.0,953.4 810.0,950.2 814.0,946.0 818.0,941.1 822.0,935.5 826.0,929.7 830.0,923.6 834.0,917.5 838.0,911.5 842.0,905.7 846.0,900.2 850.0,895.1 854.0,890.4 858.0,886.2 862.0,882.5 866.0,879.3 870.0,876.6 874.0,874.5 878.0,872.8 882.0,871.6 886.0,870.9 890.0,870.6 894.0,870.7 898.0,871.3 902.0,872.1 906.0,873.3 910.0,874.7 914.0,876.4 918.0,878.3 922.0,880.4 926.0,882.6 930.0,884.9 934.0,887.4 938.0,889.9 942.0,892.5 946.0,895.1 950.0,897.7 954.0,900.3 958.0,902.9 962.0,905.5 966.0,908.0 970.0,910.4 974.0,912.9 978.0,915.2 982.0,917.5 986.0,919.6 990.0,921.8 994.0,923.8 998.0,925.7 1002.0,927.6 1006.0,929.3 1010.0,931.0 1014.0,932.6 1018.0,934.1 1022.0,935.6 1026.0,936.9 1030.0,938.2 1034.0,939.4 1038.0,940.6 1042.0,941.6 1046.0,942.6 1050.0,943.6 1054.0,944.5 1058.0,945.3" class="target"/>
+  <text x="806.0" y="977.0" class="tick">x=0.2</text>
+  <text x="1016.0" y="977.0" class="tick">x=8</text>
+  <text x="772.0" y="963.0" class="tick">-0.0746828</text>
+  <text x="772.0" y="867.0" class="tick">1.53215</text>
+  <line x1="52" y1="985" x2="92" y2="985" class="target"/>
+  <text x="102" y="989" class="subtitle">target function over training domain</text>
+  <text x="365" y="989" class="subtitle"><tspan fill="#1b7f3a" font-weight="700">green</tspan>: at least one recovered row</text>
+  <text x="625" y="989" class="subtitle"><tspan fill="#b22222" font-weight="700">red</tspan>: no recovered rows</text>
 </svg>

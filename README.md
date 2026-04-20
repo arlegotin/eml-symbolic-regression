@@ -12,29 +12,9 @@ The short version: it is a PyTorch-first, verifier-gated equation discovery pack
 
 ## Current Release Evidence
 
-The v1.13 release package is source-locked under `artifacts/paper/v1.13/`. The release gate passed, the claim audit passed, and the final paper-track campaign ran 24 configured rows with zero execution failures.
+The v1.13 release package is source-locked under `artifacts/paper/v1.13/`. The release gate and claim audit both passed. The final paper-track campaign ran 24 configured rows with zero execution failures: 12 publication targets in a basis-only compiler-policy track and the same 12 targets in a literal-constant warm-start track.
 
-The headline numbers are deliberately split by evidence regime:
-
-| Track | Rows | Verifier recovered | Unsupported | Failed | What it means |
-| --- | ---: | ---: | ---: | ---: | --- |
-| Basis-only compile track | 12 | 1 | 11 | 0 | Strict `{1, eml, variables}` style support is still narrow. |
-| Literal-constant warm-start track | 12 | 8 | 4 | 0 | Exact basins are strong when useful constants and seeds are explicit. |
-| Combined | 24 | 9 | 15 | 0 | 37.5% verifier-owned recovery, with unsupported cases kept in the denominator. |
-
-Those 9 recoveries are not all the same kind of claim: 1 is compile-only verified evidence, and 8 are same-AST warm-start returns. The release does not claim broad blind symbolic-regression superiority.
-
-![v1.13 release evidence summary](readme-assets/v113-evidence-summary.svg)
-
-Useful release artifacts:
-
-- `artifacts/paper/v1.13/manifest.json`: root publication manifest.
-- `artifacts/paper/v1.13/claim-audit.md`: claim audit, status `passed`.
-- `artifacts/paper/v1.13/release-gate.md`: release gate, status `passed`.
-- `artifacts/paper/v1.13/reproduction.md`: reproduction command and environment notes.
-- `artifacts/campaigns/v1.13-paper-tracks-final/tables/`: campaign tables.
-- `artifacts/baselines/v1.13/baseline-report.md`: matched baseline harness report.
-- `artifacts/datasets/v1.13/`: expanded dataset manifests.
+Nine rows passed the verifier, and fifteen were kept as unsupported by the declared compiler, depth, or operator gates. That is the intended claim boundary: the project has reproducible evidence for shallow and explicitly seeded EML recovery paths, but it does not claim broad blind symbolic-regression superiority. The detailed manifest, audit, reproduction notes, campaign tables, baseline report, and dataset manifests live under `artifacts/paper/v1.13/`, `artifacts/campaigns/v1.13-paper-tracks-final/`, `artifacts/baselines/v1.13/`, and `artifacts/datasets/v1.13/`.
 
 ## The Trick
 
@@ -73,11 +53,11 @@ The engine has a few important moving parts:
 
 Training mode can use numerical safety guards. Verification mode is stricter: snapped formulas are evaluated again under the recovery contract.
 
-## What The Fits Look Like
+## What The Explored Functions Look Like
 
-The grid below shows two verified overlays and two unsupported targets. The unsupported panels intentionally do not publish a candidate as recovered: they show what kind of shape remains outside the current v1.13 gate.
+The grid below plots every v1.13 publication target over its training domain. It is intentionally plain: one target curve per panel, no smoothing, no sample-point decoration, and no fitted surrogate curve. The status text only reports how many of the two v1.13 paper-track rows recovered that target.
 
-![2x2 grid of verified EML overlays and unsupported targets](readme-assets/fit-gallery.svg)
+![Twelve plain target-function plots for the v1.13 publication campaign](readme-assets/fit-gallery.svg)
 
 ## What Counts As Recovery
 
@@ -92,7 +72,7 @@ A formula is `recovered` only when an exact candidate passes the verifier across
 
 Compiler output alone is not trained recovery. A compiler seed can prove that a formula is representable and can initialize a run, but it is not a discovery claim by itself.
 
-Warm starts, same-AST returns, scaffolded runs, refits, repaired candidates, compile-only checks, and unsupported cases are all separate evidence regimes. That separation is deliberate. It keeps a successful scaffolded or repaired result from being mistaken for blind discovery.
+Warm starts that return to their seed tree, scaffolded runs, refits, repaired candidates, compile-only checks, and unsupported cases are all separate evidence regimes. That separation is deliberate. It keeps a successful scaffolded or repaired result from being mistaken for blind discovery.
 
 ## Install
 
@@ -196,7 +176,7 @@ The demos favor normalized, dimensionless formulas with a useful mix of recogniz
 - `planck`: iconic normalized spectrum, currently a stretch diagnostic rather than a solved blind recovery.
 - `damped_oscillator`: visually strong, but harder because it mixes decay and oscillation.
 
-Arrhenius and Michaelis-Menten currently count as exact compiler warm-start / same-AST evidence, not blind discovery. Planck and logistic stay in the stretch/unsupported bucket unless the strict compiler, warm-start, and verifier contracts pass.
+Arrhenius and Michaelis-Menten currently count as exact compiler warm-start evidence, not blind discovery. Planck and logistic stay in the stretch/unsupported bucket unless the strict compiler, warm-start, and verifier contracts pass.
 
 ## Evidence Labels
 
