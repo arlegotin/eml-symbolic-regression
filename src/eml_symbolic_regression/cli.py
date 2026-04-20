@@ -49,6 +49,7 @@ from .paper_v112 import (
 )
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
+from .publication import DEFAULT_V113_PUBLICATION_DIR, write_publication_rebuild
 from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
@@ -526,6 +527,41 @@ def paper_training_detail_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def publication_rebuild_command(args: argparse.Namespace) -> int:
+    paths = write_publication_rebuild(
+        output_dir=Path(args.output_dir),
+        smoke=args.smoke,
+        overwrite=args.overwrite,
+        allow_dirty=args.allow_dirty,
+        command=_publication_rebuild_command_string(args),
+    )
+    validation = json.loads(paths.validation_json.read_text(encoding="utf-8"))
+    print(
+        f"publication rebuild: manifest -> {paths.manifest_json}; "
+        f"validation -> {paths.validation_json} ({validation['status']})"
+    )
+    return 0 if validation["status"] == "passed" else 1
+
+
+def _publication_rebuild_command_string(args: argparse.Namespace) -> str:
+    parts = [
+        "PYTHONPATH=src",
+        "python",
+        "-m",
+        "eml_symbolic_regression.cli",
+        "publication-rebuild",
+        "--output-dir",
+        str(args.output_dir),
+    ]
+    if args.smoke:
+        parts.append("--smoke")
+    if args.overwrite:
+        parts.append("--overwrite")
+    if args.allow_dirty:
+        parts.append("--allow-dirty")
+    return shlex.join(parts)
+
+
 def paper_decision_command(args: argparse.Namespace) -> int:
     paths = write_paper_decision_package(
         tuple(Path(path) for path in args.aggregate or ()),
@@ -777,6 +813,24 @@ def build_parser() -> argparse.ArgumentParser:
         help="v1.12 evidence-refresh directory containing traced run artifacts.",
     )
     paper_training_detail.set_defaults(func=paper_training_detail_command)
+
+    publication_rebuild = sub.add_parser(
+        "publication-rebuild",
+        help="Rebuild the v1.13 publication package and validate provenance.",
+    )
+    publication_rebuild.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V113_PUBLICATION_DIR),
+        help="Directory for v1.13 publication manifest, source locks, reproduction docs, and validation.",
+    )
+    publication_rebuild.add_argument("--smoke", action="store_true", help="Run the fast smoke rebuild contract.")
+    publication_rebuild.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing publication package.")
+    publication_rebuild.add_argument(
+        "--allow-dirty",
+        action="store_true",
+        help="Record dirty git state instead of failing before publication validation.",
+    )
+    publication_rebuild.set_defaults(func=publication_rebuild_command)
 
     diagnostics = sub.add_parser("diagnostics", help="Inspect baseline evidence, rerun focused subsets, and compare campaign outputs.")
     diagnostics_sub = diagnostics.add_subparsers(dest="diagnostics_command", required=True)

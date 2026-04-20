@@ -156,6 +156,32 @@ The `scientific-law-table` columns are `law`, `formula`, `compile_support`, `com
 
 The package deliberately reports centered-family material only as negative diagnostics under missing same-family witnesses. It does not claim centered-family impossibility.
 
+## v1.13 Publication Rebuild Contract
+
+Phase 69 adds a clean-room publication rebuild entrypoint:
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli publication-rebuild --output-dir artifacts/paper/v1.13 --smoke --overwrite
+```
+
+The `--smoke` mode is a fast package-shape and provenance check. It writes a v1.13 publication root with `manifest.json`, `source-locks.json`, `reproduction.md`, `validation.json`, and `validation.md`. The full publication evidence campaign is not claimed by Phase 69 alone; the final full rebuild, claim audit, and release gate belong to the later publication rebuild/release phase.
+
+The publication manifest uses schema `eml.v113_publication_rebuild.v1` and records:
+
+- the exact reproduction command;
+- `generated_at`;
+- git revision, branch, dirty-state, and short status;
+- Python/platform identity;
+- `requirements-lock.txt` path and SHA-256 when present;
+- `Dockerfile` path and SHA-256 when present;
+- source input hashes;
+- generated output hashes;
+- validation status and validation artifact paths.
+
+`requirements-lock.txt` captures the committed Python dependency set used by the local publication smoke path. `Dockerfile` installs that lockfile, copies the package sources, sets `PYTHONPATH=src`, and runs the same `publication-rebuild` command as its default command. The container path is support infrastructure for reproducibility; normal local tests do not require Docker.
+
+Publication validation rejects placeholder metadata such as `1970-01-01T00:00:00+00:00` and `"snapshot"` outside explicitly allowed deterministic-test fixtures. Stable snapshot constants may still exist for deterministic tests, but publication manifests must not silently promote those placeholders as real provenance.
+
 ## Campaign Report Contract
 
 Campaign presets are the showcase layer over benchmark suites:
