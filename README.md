@@ -55,9 +55,9 @@ Training mode can use numerical safety guards. Verification mode is stricter: sn
 
 ## What The Explored Functions Look Like
 
-The grid below plots every v1.13 publication target with its generated data splits. Blue dots are training data, red triangles are held-out validation data, and black squares are extrapolation data. The black line is the target function. A green dashed EML curve appears only when at least one v1.13 paper-track row recovered that target.
+The grid below plots every v1.13 publication target with its generated data splits. Blue dots are training data, red triangles are held-out validation data, the black line is the target function, and a green dashed EML curve appears only when at least one v1.13 paper-track row recovered that target.
 
-![Twelve target plots with training, validation, extrapolation, and verified EML curves](readme-assets/fit-gallery.svg)
+![Twelve target plots with training, validation, target, and verified EML curves](readme-assets/fit-gallery.svg)
 
 ## What Counts As Recovery
 
