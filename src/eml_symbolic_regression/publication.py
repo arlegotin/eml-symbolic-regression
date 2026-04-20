@@ -568,13 +568,18 @@ def _linked_artifact_root(output_dir: Path) -> Path:
 
 def _linked_evidence_paths(evidence: Mapping[str, Any]) -> tuple[Path, ...]:
     paths: list[Path] = []
+    skipped_keys = {"suite_result_json"}
 
     def visit(value: Any) -> None:
         if isinstance(value, Mapping):
             for key, child in value.items():
+                if key in skipped_keys:
+                    continue
                 if key.endswith("_json") or key.endswith("_markdown") or key in {"path", "rows_csv", "report_md"}:
                     if child:
-                        paths.append(Path(str(child)))
+                        path = Path(str(child))
+                        if "runs" not in path.parts:
+                            paths.append(path)
                 else:
                     visit(child)
         elif isinstance(value, list):
