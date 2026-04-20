@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.13
 milestone_name: Publication-grade reproduction and validation
-current_phase: null
-current_phase_name: Defining requirements
-status: defining_requirements
-stopped_at: milestone started
+current_phase: 69
+current_phase_name: Clean-Room Reproduction Path and Provenance
+status: ready_to_plan
+stopped_at: roadmap created
 last_updated: "2026-04-20T00:00:00.000Z"
 last_activity: 2026-04-20
 progress:
-  total_phases: 0
+  total_phases: 8
   completed_phases: 0
-  total_plans: 0
+  total_plans: 8
   completed_plans: 0
   percent: 0
 ---
@@ -19,7 +19,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Not started - defining v1.13 requirements
+**Current phase:** 69 - Clean-Room Reproduction Path and Provenance
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,10 +31,10 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-20 - Milestone v1.13 started from publication-readiness audit
+Phase: 69 - Clean-Room Reproduction Path and Provenance
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-04-20 - Created v1.13 roadmap with phases 69-76
 Progress: [----------] 0% by completed phases
 
 ## Current Milestone
@@ -49,8 +49,8 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 |----------|------|--------|
 | Project context | `.planning/PROJECT.md` | Updated for v1.13 |
 | Archived v1.12 requirements | `.planning/milestones/v1.12-REQUIREMENTS.md` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Pending v1.13 definition |
-| Roadmap | `.planning/ROADMAP.md` | Pending v1.13 roadmap |
+| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.13 |
+| Roadmap | `.planning/ROADMAP.md` | Active v1.13 phases 69-76 |
 | Research summary | `.planning/research/SUMMARY.md` | Reuse existing context; no new domain research selected |
 | Workflow config | `.planning/config.json` | Complete |
 | Milestone log | `.planning/MILESTONES.md` | Complete through v1.12 |
@@ -81,7 +81,7 @@ Goal: Build a clean-room publication path that can regenerate the paper evidence
 
 ### Pending Todos
 
-- Define v1.13 requirements and roadmap, then begin Phase 69.
+- Start Phase 69 with `$gsd-discuss-phase 69` or `$gsd-plan-phase 69`.
 
 ### Completed Quick Tasks
 
@@ -109,4 +109,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-20 after v1.13 milestone start*
+*Last updated: 2026-04-20 after v1.13 roadmap creation*

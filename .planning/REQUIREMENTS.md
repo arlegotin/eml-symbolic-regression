@@ -87,44 +87,44 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REPRO-01 | Pending | Pending |
-| REPRO-02 | Pending | Pending |
-| REPRO-03 | Pending | Pending |
-| REPRO-04 | Pending | Pending |
-| REPRO-05 | Pending | Pending |
-| TEST-01 | Pending | Pending |
-| TEST-02 | Pending | Pending |
-| TEST-03 | Pending | Pending |
-| TEST-04 | Pending | Pending |
-| VERIF-01 | Pending | Pending |
-| VERIF-02 | Pending | Pending |
-| VERIF-03 | Pending | Pending |
-| VERIF-04 | Pending | Pending |
-| VERIF-05 | Pending | Pending |
-| SPLIT-01 | Pending | Pending |
-| SPLIT-02 | Pending | Pending |
-| SPLIT-03 | Pending | Pending |
-| SEM-01 | Pending | Pending |
-| SEM-02 | Pending | Pending |
-| SEM-03 | Pending | Pending |
-| SEM-04 | Pending | Pending |
-| TRACK-01 | Pending | Pending |
-| TRACK-02 | Pending | Pending |
-| TRACK-03 | Pending | Pending |
-| BASE-01 | Pending | Pending |
-| BASE-02 | Pending | Pending |
-| DATA-01 | Pending | Pending |
-| DATA-02 | Pending | Pending |
-| PUB-01 | Pending | Pending |
-| PUB-02 | Pending | Pending |
-| PUB-03 | Pending | Pending |
-| PUB-04 | Pending | Pending |
+| REPRO-01 | Phase 69 | Pending |
+| REPRO-02 | Phase 69 | Pending |
+| REPRO-03 | Phase 69 | Pending |
+| REPRO-04 | Phase 69 | Pending |
+| REPRO-05 | Phase 69 | Pending |
+| TEST-01 | Phase 72 | Pending |
+| TEST-02 | Phase 72 | Pending |
+| TEST-03 | Phase 72 | Pending |
+| TEST-04 | Phase 72 | Pending |
+| VERIF-01 | Phase 70 | Pending |
+| VERIF-02 | Phase 70 | Pending |
+| VERIF-03 | Phase 70 | Pending |
+| VERIF-04 | Phase 70 | Pending |
+| VERIF-05 | Phase 70 | Pending |
+| SPLIT-01 | Phase 70 | Pending |
+| SPLIT-02 | Phase 70 | Pending |
+| SPLIT-03 | Phase 70 | Pending |
+| SEM-01 | Phase 71 | Pending |
+| SEM-02 | Phase 71 | Pending |
+| SEM-03 | Phase 71 | Pending |
+| SEM-04 | Phase 71 | Pending |
+| TRACK-01 | Phase 73 | Pending |
+| TRACK-02 | Phase 73 | Pending |
+| TRACK-03 | Phase 73 | Pending |
+| BASE-01 | Phase 75 | Pending |
+| BASE-02 | Phase 75 | Pending |
+| DATA-01 | Phase 74 | Pending |
+| DATA-02 | Phase 74 | Pending |
+| PUB-01 | Phase 76 | Pending |
+| PUB-02 | Phase 76 | Pending |
+| PUB-03 | Phase 76 | Pending |
+| PUB-04 | Phase 76 | Pending |
 
 **Coverage:**
 - v1.13 requirements: 32 total
-- Mapped to phases: 0
-- Unmapped: 32
+- Mapped to phases: 32
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-20*
-*Last updated: 2026-04-20 after initial definition*
+*Last updated: 2026-04-20 after roadmap traceability*
