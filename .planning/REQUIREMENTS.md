@@ -40,9 +40,9 @@
 
 ### Benchmark Tracks and Evidence Breadth
 
-- [ ] **TRACK-01**: Every publication benchmark target runs in a paper-faithful basis-only track using only the declared EML basis and allowed variables.
-- [ ] **TRACK-02**: Every publication benchmark target runs in a literal-constant-augmented track with constants policy, literal catalog, and warm-start/scaffold status explicit in artifacts.
-- [ ] **TRACK-03**: Aggregate reports keep basis-only and literal-constant-augmented denominators separate.
+- [x] **TRACK-01**: Every publication benchmark target runs in a paper-faithful basis-only track using only the declared EML basis and allowed variables.
+- [x] **TRACK-02**: Every publication benchmark target runs in a literal-constant-augmented track with constants policy, literal catalog, and warm-start/scaffold status explicit in artifacts.
+- [x] **TRACK-03**: Aggregate reports keep basis-only and literal-constant-augmented denominators separate.
 - [ ] **BASE-01**: Maintainer can run EML and conventional symbolic-regression baselines through one standardized harness using identical datasets, seeds, budgets, constants policies, and blind/warm-start conditions.
 - [ ] **BASE-02**: Baseline integrations are dependency-checked, source-locked, fail-closed, and reported without changing EML recovery denominators.
 - [ ] **DATA-01**: Benchmark datasets include noisy synthetic sweeps, parameter-identifiability stress tests, multivariable cases, unit-aware formulations, and real datasets with independent test splits.
@@ -108,9 +108,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SEM-02 | Phase 71 | Complete |
 | SEM-03 | Phase 71 | Complete |
 | SEM-04 | Phase 71 | Complete |
-| TRACK-01 | Phase 73 | Pending |
-| TRACK-02 | Phase 73 | Pending |
-| TRACK-03 | Phase 73 | Pending |
+| TRACK-01 | Phase 73 | Complete |
+| TRACK-02 | Phase 73 | Complete |
+| TRACK-03 | Phase 73 | Complete |
 | BASE-01 | Phase 75 | Pending |
 | BASE-02 | Phase 75 | Pending |
 | DATA-01 | Phase 74 | Pending |
