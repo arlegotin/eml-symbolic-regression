@@ -47,6 +47,18 @@ The engine has a few important moving parts:
 
 Training mode can use numerical safety guards. Verification mode is stricter: snapped formulas are evaluated again under the recovery contract.
 
+## What The Fits Look Like
+
+Each plot below shows sampled training points, the target function, and the candidate curve used by the verifier. For exact or same-AST cases, the candidate rides directly on top of the target. Planck is included as a stretch diagnostic, not as a recovered EML claim.
+
+![Beer-Lambert target and candidate curve](readme-assets/approximation-beer-lambert.svg)
+
+![Arrhenius target and candidate curve](readme-assets/approximation-arrhenius.svg)
+
+![Michaelis-Menten target and candidate curve](readme-assets/approximation-michaelis-menten.svg)
+
+![Planck target and diagnostic curve](readme-assets/approximation-planck.svg)
+
 ## What Counts As Recovery
 
 Training loss alone is not recovery.
