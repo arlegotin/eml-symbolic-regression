@@ -1,4 +1,4 @@
-name: Publish sanitized main
+name: Publish main
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: publish-sanitized-main
+  group: publish-main
   cancel-in-progress: false
 
 jobs:
@@ -39,10 +39,10 @@ jobs:
           git checkout --orphan sanitized-main
           git rm -r -f --ignore-unmatch \
             AGENTS.md \
+            .github \
             .planning \
             docs \
             sources
-          git rm -f --ignore-unmatch .github/workflows/publish-main.yml
 
           # Keep public-facing reports, tables, figures, manifests, and audits,
           # but drop raw run payloads, duplicated source bundles, and large traces.
@@ -68,7 +68,7 @@ jobs:
             exit 1
           fi
 
-          git commit -m "Update public snapshot"
+          git commit -m "Update"
           git branch -M main
           git push \
             --force-with-lease=refs/heads/main:"${expected_main}" \

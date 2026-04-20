@@ -6,7 +6,7 @@ current_phase: null
 current_phase_name: None
 status: Planning next milestone
 stopped_at: v1.13 archived
-last_updated: "2026-04-20T15:42:52.000Z"
+last_updated: "2026-04-20T16:11:13.000Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 8
@@ -34,7 +34,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-20)
 Phase: Milestone complete
 Plan: Complete
 Status: Planning next milestone
-Last activity: 2026-04-20 - Completed quick task 260420-oij: README current narrative and plot labels
+Last activity: 2026-04-20 - Completed quick task 260420-p9c: hide workflows from main and shorten update commit
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
@@ -121,6 +121,7 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 | 2026-04-20 | README current narrative and plot labels | Complete | `.planning/quick/260420-oij-remove-readme-release-framing-and-label-/` |
 | 2026-04-20 | README unverified EML trial plot curves | Complete | `.planning/quick/260420-oth-show-unverified-eml-trial-curves-and-fun/` |
 | 2026-04-20 | README EML status plot restyle | Complete | `.planning/quick/260420-p1b-restyle-readme-plot-gallery-with-status-/` |
+| 2026-04-20 | Hide workflows from main and shorten update commit | Complete | `.planning/quick/260420-p9c-hide-github-workflows-from-generated-mai/` |
 
 ### Blockers/Concerns
 
