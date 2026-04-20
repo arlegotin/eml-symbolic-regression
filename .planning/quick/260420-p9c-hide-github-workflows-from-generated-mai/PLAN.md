@@ -10,6 +10,7 @@ Keep GitHub workflows functional from `dev`, but hide `.github/workflows` from t
 - Use a generic visible workflow label.
 - Keep workflow files on `dev`; only the generated `main` snapshot is affected.
 - Change the generated public commit message to `Update`.
+- Update the CI contract and simulated public snapshot check to match the hidden `.github` policy.
 - Keep existing `tests` inclusion and curated artifact pruning unchanged.
 - Push `dev` and verify the regenerated `main` branch.
 
@@ -20,3 +21,4 @@ Keep GitHub workflows functional from `dev`, but hide `.github/workflows` from t
 - `main` remains a one-commit generated branch.
 - The latest `main` commit subject is `Update`.
 - `tests` remain present on `main`.
+- CI branch/snapshot contract accepts the new policy.

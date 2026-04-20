@@ -117,10 +117,10 @@ jobs:
 
           rm -rf \
             "$snapshot/AGENTS.md" \
+            "$snapshot/.github" \
             "$snapshot/.planning" \
             "$snapshot/docs" \
             "$snapshot/sources"
-          rm -f "$snapshot/.github/workflows/publish-main.yml"
 
           if [ -d "$snapshot/artifacts" ]; then
             find "$snapshot/artifacts" -name '.DS_Store' -delete

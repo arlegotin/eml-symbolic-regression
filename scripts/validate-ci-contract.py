@@ -28,15 +28,14 @@ PUBLIC_REQUIRED_PATHS = (
     "README.md",
     "src/eml_symbolic_regression",
     "tests",
-    ".github/workflows/ci.yml",
 )
 
 PUBLIC_FORBIDDEN_PATHS = (
     "AGENTS.md",
+    ".github",
     ".planning",
     "sources",
     "docs",
-    ".github/workflows/publish-main.yml",
 )
 
 
@@ -55,10 +54,10 @@ def validate_dev(root: Path) -> list[str]:
         errors.append("publish-main workflow must be restricted to dev pushes")
     if "--force-with-lease" not in publish_text:
         errors.append("publish-main workflow must use --force-with-lease")
-    if ".github/workflows/publish-main.yml" not in publish_text:
-        errors.append("publish-main workflow must remove the dev-only publish workflow from public main")
-    if "git rm -r -f --ignore-unmatch \\" in publish_text and "\n            .github \\" in publish_text:
-        errors.append("publish-main workflow must not remove all .github content; public CI must remain")
+    if "git rm -r -f --ignore-unmatch \\" not in publish_text or "\n            .github \\" not in publish_text:
+        errors.append("publish-main workflow must remove .github from public main")
+    if 'git commit -m "Update"' not in publish_text:
+        errors.append("publish-main workflow must use the public commit subject 'Update'")
     return errors
 
 
