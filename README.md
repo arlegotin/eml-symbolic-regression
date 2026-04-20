@@ -49,27 +49,9 @@ Training mode can use numerical safety guards. Verification mode is stricter: sn
 
 ## What The Fits Look Like
 
-Each panel shows sampled training points, the target function, and a candidate or diagnostic curve. Good cases should sit directly on the target. Bad cases are included on purpose: they show what a failed or stretch diagnostic looks like when the shape is not recovered.
+The grid below shows two good fits and two failed/stretch diagnostics. Good candidates sit directly on the target; diagnostic candidates visibly miss the shape. The legend is outside the panels, and the curves use solid colors so overlap does not turn into dashed-line clutter.
 
-Good fits:
-
-![exp target and candidate curve](readme-assets/approximation-exp.svg)
-
-![log target and candidate curve](readme-assets/approximation-log.svg)
-
-![Beer-Lambert target and candidate curve](readme-assets/approximation-beer-lambert.svg)
-
-![Arrhenius target and candidate curve](readme-assets/approximation-arrhenius.svg)
-
-![Michaelis-Menten target and candidate curve](readme-assets/approximation-michaelis-menten.svg)
-
-Failed and stretch diagnostics:
-
-![Planck target and diagnostic curve](readme-assets/approximation-planck.svg)
-
-![Logistic target and diagnostic curve](readme-assets/approximation-logistic.svg)
-
-![Damped oscillator target and diagnostic curve](readme-assets/approximation-damped-oscillator.svg)
+![2x2 grid of EML good fits and failed diagnostics](readme-assets/fit-gallery.svg)
 
 ## What Counts As Recovery
 
