@@ -40,13 +40,13 @@ Complete. Phase 69 adds a v1.13 publication rebuild smoke path with explicit pro
 PYTHONPATH=src python -m pytest tests/test_publication_rebuild.py -q
 ```
 
-Result: passed, 4 tests.
+Result: passed, 5 tests.
 
 ```bash
 PYTHONPATH=src python -m pytest tests/test_publication_rebuild.py tests/test_paper_package.py tests/test_paper_v112.py -q
 ```
 
-Result: passed, 31 tests.
+Result: passed, 32 tests.
 
 ```bash
 PYTHONPATH=src python -m eml_symbolic_regression.cli publication-rebuild --output-dir /tmp/eml-v113-smoke --smoke --overwrite --allow-dirty
@@ -56,7 +56,7 @@ Result: passed; `/tmp/eml-v113-smoke/manifest.json` and `/tmp/eml-v113-smoke/val
 
 ## Commit
 
-Implementation commit: `21562e5`.
+Implementation commits: `21562e5`, `2985eac`.
 
 ## Notes
 
