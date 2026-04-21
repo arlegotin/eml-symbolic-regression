@@ -12,9 +12,9 @@ The short version: it is a PyTorch-first, verifier-gated equation discovery pack
 
 ## Current Evidence
 
-The checked-in evidence run covers 12 target formulas under two settings: a basis-only compiler-policy track and a literal-constant warm-start track. It ran 24 configured rows with zero execution failures.
+The checked-in corrected evidence run covers 12 target formulas under two settings: a basis-only compiler-policy track and a literal-constant warm-start track. It ran 24 configured rows with zero execution failures.
 
-Nine rows passed the verifier. Fifteen were kept as unsupported by the declared compiler, depth, or operator gates. That is the current claim boundary: the project has reproducible evidence for shallow and explicitly seeded EML recovery paths, while broader blind recovery remains an open problem. The detailed campaign tables, manifests, quarantined baseline context, and dataset manifests are checked in under `artifacts/`.
+Eight rows are trained exact recoveries. One additional row is compile-only verified support, which proves representability but is not trained recovery. Fifteen rows were kept as unsupported by the declared compiler, depth, or operator gates. That is the current claim boundary: the project has reproducible evidence for shallow and explicitly seeded EML recovery paths, while broader blind recovery remains an open problem. The corrected package is checked in under `artifacts/paper/v1.14/`; historical v1.13 artifacts remain inspectable under `artifacts/paper/v1.13/`.
 
 ## The Trick
 

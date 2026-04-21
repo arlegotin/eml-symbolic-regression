@@ -19,7 +19,8 @@ from .campaign import DEFAULT_CAMPAIGN_ROOT, run_campaign
 from .datasets import expanded_dataset_manifest
 
 
-DEFAULT_V113_PUBLICATION_DIR = Path("artifacts") / "paper" / "v1.13"
+DEFAULT_PUBLICATION_DIR = Path("artifacts") / "paper" / "v1.14"
+DEFAULT_V113_PUBLICATION_DIR = DEFAULT_PUBLICATION_DIR
 DEFAULT_LOCKFILE = Path("requirements-lock.txt")
 DEFAULT_CONTAINER_FILE = Path("Dockerfile")
 DEFAULT_V113_CAMPAIGN_LABEL = "v1.13-paper-tracks-final"
@@ -52,14 +53,14 @@ class PublicationRebuildPaths:
 
 def write_publication_rebuild(
     *,
-    output_dir: Path = DEFAULT_V113_PUBLICATION_DIR,
+    output_dir: Path = DEFAULT_PUBLICATION_DIR,
     smoke: bool = False,
     overwrite: bool = False,
     allow_dirty: bool = True,
     command: str | None = None,
     allowed_placeholder_paths: Iterable[str] = (),
 ) -> PublicationRebuildPaths:
-    """Write a v1.13 publication rebuild package with source and output provenance."""
+    """Write a corrected publication rebuild package with source and output provenance."""
 
     output_dir = Path(output_dir)
     paths = PublicationRebuildPaths(
@@ -587,21 +588,20 @@ def _write_publication_evidence(output_dir: Path, *, smoke: bool) -> dict[str, A
         return {"mode": "smoke", "generated": False, "reason": "smoke mode skips full linked evidence generation"}
 
     artifact_root = _linked_artifact_root(output_dir)
+    version_label = _publication_version_label(output_dir)
     campaign = run_campaign(
         "paper-tracks",
         output_root=artifact_root / "campaigns",
-        label=DEFAULT_V113_CAMPAIGN_LABEL,
+        label=_campaign_label_for_output(output_dir),
         overwrite=True,
     )
+    baseline_output_dir = artifact_root / "baselines" / version_label
     baseline_paths = write_baseline_harness(
-        output_dir=artifact_root / "baselines" / "v1.13",
+        output_dir=baseline_output_dir,
         overwrite=True,
-        command=(
-            "PYTHONPATH=src python -m eml_symbolic_regression.cli baseline-harness "
-            "--output-dir artifacts/baselines/v1.13 --overwrite"
-        ),
+        command=f"PYTHONPATH=src python -m eml_symbolic_regression.cli baseline-harness --output-dir {baseline_output_dir} --overwrite",
     )
-    dataset_manifest_dir = artifact_root / "datasets" / "v1.13"
+    dataset_manifest_dir = artifact_root / "datasets" / version_label
     dataset_manifest_dir.mkdir(parents=True, exist_ok=True)
     dataset_manifests: list[dict[str, Any]] = []
     for dataset_id in DEFAULT_BASELINE_DATASETS:
@@ -632,9 +632,23 @@ def _write_publication_evidence(output_dir: Path, *, smoke: bool) -> dict[str, A
 
 def _linked_artifact_root(output_dir: Path) -> Path:
     output_dir = Path(output_dir)
-    if output_dir.parent.name == "paper" and output_dir.parent.parent.name == "artifacts":
+    if output_dir.name == "v1.13" and output_dir.parent.name == "paper" and output_dir.parent.parent.name == "artifacts":
         return output_dir.parent.parent
+    if output_dir.parent.name == "paper" and output_dir.parent.parent.name == "artifacts":
+        return output_dir / "linked-artifacts"
     return output_dir.parent / "linked-artifacts"
+
+
+def _publication_version_label(output_dir: Path) -> str:
+    name = Path(output_dir).name
+    return name if name.startswith("v") else "v1.14"
+
+
+def _campaign_label_for_output(output_dir: Path) -> str:
+    version_label = _publication_version_label(output_dir)
+    if version_label == "v1.13":
+        return DEFAULT_V113_CAMPAIGN_LABEL
+    return f"{version_label}-corrected-paper-tracks"
 
 
 def _linked_evidence_paths(evidence: Mapping[str, Any]) -> tuple[Path, ...]:
@@ -970,7 +984,7 @@ def _reproduction_markdown(*, output_dir: Path, command: str, smoke: bool) -> st
     )
     return "\n".join(
         [
-            "# v1.13 Publication Rebuild",
+            "# Corrected Publication Rebuild",
             "",
             f"Mode: `{mode}`",
             "",

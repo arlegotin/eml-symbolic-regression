@@ -65,7 +65,7 @@ from .paper_v112 import (
 )
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
-from .publication import DEFAULT_V113_PUBLICATION_DIR, write_publication_rebuild
+from .publication import DEFAULT_PUBLICATION_DIR, write_publication_rebuild
 from .raw_hybrid_paper import DEFAULT_RAW_HYBRID_OUTPUT_DIR, raw_hybrid_paper_presets, write_raw_hybrid_paper_package
 from .verify import verify_candidate
 from .warm_start import PerturbationConfig, fit_warm_started_eml_tree
@@ -941,12 +941,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     publication_rebuild = sub.add_parser(
         "publication-rebuild",
-        help="Rebuild the v1.13 publication package and validate provenance.",
+        help="Rebuild the corrected publication package and validate provenance.",
     )
     publication_rebuild.add_argument(
         "--output-dir",
-        default=str(DEFAULT_V113_PUBLICATION_DIR),
-        help="Directory for v1.13 publication manifest, source locks, reproduction docs, and validation.",
+        default=str(DEFAULT_PUBLICATION_DIR),
+        help="Directory for corrected publication manifest, source locks, reproduction docs, and validation.",
     )
     publication_rebuild.add_argument("--smoke", action="store_true", help="Run the fast smoke rebuild contract.")
     publication_rebuild.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing publication package.")

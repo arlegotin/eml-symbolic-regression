@@ -5,7 +5,10 @@ import pytest
 
 from eml_symbolic_regression.cli import build_parser, publication_rebuild_command
 from eml_symbolic_regression.publication import (
+    DEFAULT_PUBLICATION_DIR,
     PublicationRebuildError,
+    _campaign_label_for_output,
+    _linked_artifact_root,
     build_publication_claim_audit,
     validate_publication_package,
     write_publication_rebuild,
@@ -64,6 +67,16 @@ def test_publication_rebuild_cli_writes_package(tmp_path, capsys):
     assert "(passed)" in captured
     assert (output_dir / "manifest.json").exists()
     assert (output_dir / "validation.json").exists()
+
+
+def test_publication_rebuild_defaults_to_v114_without_overwriting_historical_v113():
+    args = build_parser().parse_args(["publication-rebuild", "--smoke"])
+
+    assert args.output_dir == str(DEFAULT_PUBLICATION_DIR)
+    assert args.output_dir.endswith("artifacts/paper/v1.14")
+    assert _linked_artifact_root(Path("artifacts/paper/v1.14")) == Path("artifacts/paper/v1.14/linked-artifacts")
+    assert _campaign_label_for_output(Path("artifacts/paper/v1.14")) == "v1.14-corrected-paper-tracks"
+    assert _linked_artifact_root(Path("artifacts/paper/v1.13")) == Path("artifacts")
 
 
 def test_publication_rebuild_smoke_writes_audit_and_release_gate(tmp_path):
