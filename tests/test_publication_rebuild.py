@@ -9,6 +9,7 @@ from eml_symbolic_regression.publication import (
     PublicationRebuildError,
     _campaign_label_for_output,
     _linked_artifact_root,
+    _validate_synthetic_public_snapshot,
     build_publication_claim_audit,
     validate_publication_package,
     write_publication_rebuild,
@@ -77,6 +78,10 @@ def test_publication_rebuild_defaults_to_v114_without_overwriting_historical_v11
     assert _linked_artifact_root(Path("artifacts/paper/v1.14")) == Path("artifacts/paper/v1.14/linked-artifacts")
     assert _campaign_label_for_output(Path("artifacts/paper/v1.14")) == "v1.14-corrected-paper-tracks"
     assert _linked_artifact_root(Path("artifacts/paper/v1.13")) == Path("artifacts")
+
+
+def test_publication_rebuild_public_snapshot_contract_omits_private_workflows():
+    assert _validate_synthetic_public_snapshot()["status"] == "passed"
 
 
 def test_publication_rebuild_smoke_writes_audit_and_release_gate(tmp_path):

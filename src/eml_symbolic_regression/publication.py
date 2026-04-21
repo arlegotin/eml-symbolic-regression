@@ -825,7 +825,7 @@ def _run_ci_contract(mode: str, root: Path) -> dict[str, Any]:
 def _validate_synthetic_public_snapshot() -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="eml-public-snapshot-") as tmp:
         root = Path(tmp)
-        for relative in ("pyproject.toml", "README.md", "src", "tests", ".github/workflows/ci.yml"):
+        for relative in ("pyproject.toml", "README.md", "src", "tests"):
             _copy_public_path(Path(relative), root / relative)
         return _run_ci_contract("public-snapshot", root)
 
