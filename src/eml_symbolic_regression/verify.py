@@ -113,12 +113,24 @@ def selection_candidate_splits(splits: list[DataSplit]) -> list[DataSplit]:
 def _target_scalar_from_split(split: DataSplit, context: Mapping[str, Any]) -> complex | mp.mpc:
     if split.target_mpmath is not None:
         return split.target_mpmath(context)
-    first_key = next(iter(split.inputs))
-    values = split.inputs[first_key]
-    matches = np.where(values == context[first_key])[0]
-    if len(matches) == 0:
-        raise ValueError("Could not find context in split")
-    return complex(split.target[int(matches[0])])
+    matches = _matching_context_indices(split, context)
+    target = np.asarray(split.target, dtype=np.complex128)
+    target_values = target[matches]
+    if not np.all(target_values == target_values[0]):
+        raise ValueError("Context matches multiple target values in split")
+    return complex(target_values[0])
+
+
+def _matching_context_indices(split: DataSplit, context: Mapping[str, Any]) -> list[int]:
+    matches: set[int] | None = None
+    for name, values in split.inputs.items():
+        if name not in context:
+            raise ValueError(f"Context missing input {name!r}")
+        current = {int(index) for index in np.where(np.asarray(values) == context[name])[0]}
+        matches = current if matches is None else matches & current
+    if not matches:
+        raise ValueError("Could not find full context in split")
+    return sorted(matches)
 
 
 def _symbolic_status(candidate: Candidate, target_sympy: sp.Expr | None, splits: list[DataSplit]) -> str:

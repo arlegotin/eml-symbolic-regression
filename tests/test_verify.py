@@ -55,6 +55,21 @@ class _LinearCandidate:
         return x + 1
 
 
+class _TwoVariableSumCandidate:
+    candidate_kind = "exact_eml"
+
+    def evaluate_numpy(self, context):
+        return np.asarray(context["x"], dtype=np.complex128) + np.asarray(context["y"], dtype=np.complex128)
+
+    def evaluate_mpmath(self, context):
+        return mp.mpc(context["x"]) + mp.mpc(context["y"])
+
+    def to_sympy(self):
+        x = sp.Symbol("x")
+        y = sp.Symbol("y")
+        return x + y
+
+
 def _split() -> DataSplit:
     return DataSplit(
         name="heldout",
@@ -120,6 +135,30 @@ def test_verify_candidate_reports_symbolic_probes_certificate_and_roles():
     assert report.evidence_level == "symbolic"
     assert payload["split_results"][0]["role"] == "diagnostic"
     assert payload["metric_roles"]["diagnostic"] == 1
+
+
+def test_verify_candidate_matches_multivariate_high_precision_targets_by_full_row():
+    split = DataSplit(
+        name="heldout",
+        inputs={
+            "x": np.asarray([0.0, 0.0, 1.0], dtype=np.float64),
+            "y": np.asarray([0.0, 1.0, 1.0], dtype=np.float64),
+        },
+        target=np.asarray([0.0, 1.0, 2.0], dtype=np.complex128),
+    )
+
+    report = verify_candidate(
+        _TwoVariableSumCandidate(),
+        [split],
+        tolerance=1e-8,
+        dense_random_points=0,
+        adversarial_points=0,
+    )
+
+    assert report.status == "recovered"
+    assert report.reason == "verified"
+    assert report.high_precision_status == "performed"
+    assert report.high_precision_max_error == 0.0
 
 
 def test_verify_candidate_accepts_zero_symbolic_target():
