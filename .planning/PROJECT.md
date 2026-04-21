@@ -39,9 +39,18 @@ v1.13 hardens that paper-shaped evidence into a publication-grade release gate. 
 - Matched EML/conventional baseline harness with fail-closed optional adapters.
 - Full v1.13 evidence package under `artifacts/paper/v1.13/` with passing claim audit and release gate.
 
-## Current Milestone: Planning next milestone
+## Current Milestone: v1.14 Evidence claim integrity and audit hardening
 
-No active milestone is open. Candidate directions are manuscript packaging, formal assurance, external baseline expansion, and rebuild acceleration.
+**Goal:** Repair public claim accounting and evidence labels so compile-only support, same-AST seed retention, unsupported baselines, and multivariate verifier behavior cannot be overstated.
+
+**Target features:**
+
+- A two-axis recovery accounting model that separates verification outcome from evidence regime or discovery class.
+- Regenerated aggregate, claim-audit, paper-table, README, and report outputs where compile-only support cannot increment trained recovery headlines.
+- Corrected public numbers: 8 trained exact recoveries, 1 compile-only verified support row, 15 unsupported rows, and 0 failed rows for the current package-level evidence.
+- Warm-start evidence labels that treat zero-perturbation same-AST returns as exact seed round-trips unless a real perturbation study backs robustness claims.
+- Baseline harness output quarantined from the main claim surface unless fixed-budget external baselines actually run.
+- Multivariate verifier target lookup fixed so high-precision verification cannot silently match targets by only the first input coordinate.
 
 ## Requirements
 
@@ -121,9 +130,11 @@ No active milestone is open. Candidate directions are manuscript packaging, form
 
 ### Active
 
-- [ ] Decide the next milestone direction: manuscript packaging, formal assurance, external baseline expansion, or rebuild acceleration.
-- [ ] If publishing publicly, run `.github/workflows/publish-main.yml` from the validated `dev` state rather than force-pushing locally.
-- [ ] If external comparisons become a paper blocker, install and run optional baseline systems through the Phase 75 harness.
+- [ ] Fix recovery accounting so `start_mode=compile` rows are compile-only verified support, not trained recovery.
+- [ ] Regenerate public evidence artifacts and narrative text from the corrected two-axis accounting schema.
+- [ ] Relabel zero-perturbation same-AST warm-start rows as exact seed round-trips unless a nonzero perturbation study is added.
+- [ ] Quarantine or clearly demote baseline harness rows from the main claim surface when external adapters are unavailable or unsupported.
+- [ ] Fix multivariate verifier target matching when no `target_mpmath` evaluator is present.
 
 ### Out of Scope
 
@@ -153,6 +164,8 @@ v1.8 found no positive centered-family recovery signal under the scoped local se
 
 The v1.13 audit changed the priority from paper shaping to publication hardening. That work is now complete: a fresh checkout has a publication rebuild entrypoint, verifier evidence is layered and labeled, final confirmation is separated from model selection, training guard mismatch is surfaced in artifacts, and conventional baselines plus broader datasets are reported under standardized manifests and harnesses.
 
+The post-v1.13 public-materials audit found a higher-priority claim-integrity issue: compile-only verified support was still counted inside the recovered headline even though the prose correctly says compiler output is not trained recovery. v1.14 fixes that accounting model before manuscript or release work continues. The same audit also flagged weak warm-start wording, baseline harness overexposure, and a latent multivariate verifier target-matching bug.
+
 ## Constraints
 
 - **Paper fidelity**: EML semantics, complete-tree construction, snapping, hardening, and complex arithmetic must stay grounded in `sources/paper.pdf` and `sources/NORTH_STAR.md`.
@@ -173,6 +186,9 @@ The v1.13 audit changed the priority from paper shaping to publication hardening
 - **Split discipline**: Held-out, extrapolation, and final confirmation data must not rank or select candidates unless symbolic equivalence has already been established.
 - **Verifier strength**: Numeric agreement alone is insufficient for publication claims; verifier outputs must label symbolic, randomized, adversarial, interval/certificate, and final-confirmation evidence separately.
 - **Release branch discipline**: Work happens on `dev`; `main` receives only the intended public code, tests, CI, and publication artifacts after the full evidence rebuild passes.
+- **Recovery accounting**: Compile-only verification may support representability, but `start_mode=compile` must never increment trained recovery headlines.
+- **Warm-start honesty**: Zero-perturbation, one-step, same-AST warm-start rows are exact seed round-trips unless a nonzero perturbation grid with multiple seeds and enough optimization budget demonstrates basin robustness.
+- **Baseline honesty**: Baseline harness rows with unavailable dependencies, unsupported adapters, or excluded denominators cannot carry main-text comparison claims.
 
 ## Key Decisions
 
@@ -223,6 +239,7 @@ The v1.13 audit changed the priority from paper shaping to publication hardening
 | Final confirmation is separate from candidate selection | Held-out/extrapolation performance can diagnose candidates, but publication recovery claims need untouched confirmation unless symbolic equivalence is proven. | ✓ Good |
 | `main` updates only after the full rebuild passes | The public branch should receive publication-ready code and artifacts, not intermediate dev-only evidence. | ✓ Good |
 | Direct local force-pushes are not part of release closeout | Phase 76 validates the public snapshot and records readiness for the publish workflow; remote publication remains a workflow action. | ✓ Good |
+| v1.14 prioritizes claim-accounting repair before manuscript polish | Public materials must not mix compile-only support, same-AST seed retention, and trained recovery in one headline. | - Pending |
 
 ## Evolution
 
@@ -242,4 +259,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-20 after v1.13 milestone completion*
+*Last updated: 2026-04-21 after v1.14 milestone start*
