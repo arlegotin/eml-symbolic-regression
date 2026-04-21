@@ -179,7 +179,7 @@ Arrhenius and Michaelis-Menten currently count as exact compiler warm-start evid
 | `recovered` | An exact EML candidate passed verifier checks. |
 | `blind_recovery` | Random or scaffold-free training snapped to an exact EML candidate that verified. |
 | `trained_exact_recovery` | A post-training snapped exact EML AST verified. |
-| `same_ast_warm_start_return` | A warm start returned to the same exact AST and verified. Useful basin evidence, not blind discovery. |
+| `same_ast_warm_start_return` | A warm start returned to the same exact AST and verified. With zero perturbation this is exact seed round-trip evidence, not blind discovery or evidence about behavior away from the seed. |
 | `verified_equivalent_warm_start_recovery` | A warm start snapped to a different exact AST that still verified. |
 | `compiled_seed` | The source formula compiled into exact EML and validated as a seed. |
 | `verified_showcase` | A non-EML catalog formula verified for demo coverage; it is not EML discovery. |
@@ -192,7 +192,7 @@ This is not a claim that arbitrary deep formulas can be discovered blindly. The 
 
 - shallow blind recovery is plausible and testable;
 - deeper random-initialized recovery gets hard quickly;
-- warm starts can show that useful basins exist;
+- zero-perturbation warm starts check exact seed round-trips, while claims about behavior away from the seed require perturbed, multi-seed, multi-step evidence;
 - compiler paths can prove representability and provide seeds;
 - repairs can rescue some failed exact candidates, but they are still repair evidence;
 - basis-only and literal-constant runs have separate denominators;

@@ -2118,6 +2118,8 @@ def execute_benchmark_run(run: BenchmarkRun) -> BenchmarkRunResult:
     payload["verification_outcome"] = verification_outcome_for_payload(payload)
     payload["evidence_regime"] = evidence_regime_for_payload(payload)
     payload["discovery_class"] = discovery_class_for_payload(payload)
+    payload["warm_start_evidence"] = warm_start_evidence_for_payload(payload)
+    payload["ast_return_status"] = ast_return_status_for_payload(payload)
     payload["metrics"] = _extract_run_metrics(payload)
     payload["timing"] = {"elapsed_seconds": time.perf_counter() - started}
     _write_json(run.artifact_path, payload)
@@ -3094,6 +3096,9 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     post_refit = refit.get("post_refit_candidate") if isinstance(refit.get("post_refit_candidate"), Mapping) else {}
     post_refit_verification = post_refit.get("verification") if isinstance(post_refit.get("verification"), Mapping) else {}
     refit_constants = refit.get("refittable_constants")
+    run = payload.get("run") if isinstance(payload.get("run"), Mapping) else {}
+    optimizer = run.get("optimizer") if isinstance(run.get("optimizer"), Mapping) else {}
+    start_mode = str(run.get("start_mode") or "")
 
     return {
         "operator_family": candidate_operator.get("label") or budget_operator.get("label"),
@@ -3165,6 +3170,9 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "high_precision_max_error": verification.get("high_precision_max_error") if isinstance(verification, Mapping) else None,
         "warm_start_mechanism": diagnosis.get("mechanism"),
         "warm_start_status": diagnosis.get("status"),
+        "warm_start_evidence": warm_start_evidence_for_payload(payload),
+        "ast_return_status": ast_return_status_for_payload(payload),
+        "total_restarts": _total_restarts_for_optimizer(optimizer, start_mode=start_mode),
         "repair_status": payload.get("repair_status"),
         "repair_variant_count": repair_variant_count,
         "repair_candidate_root_count": repair.get("candidate_root_count") if isinstance(repair, Mapping) else None,
@@ -3234,6 +3242,8 @@ def aggregate_evidence(result: BenchmarkSuiteResult) -> dict[str, Any]:
             "benchmark_track": _group_counts(runs, lambda item: item.get("benchmark_track") or "unknown"),
             "constants_policy": _group_counts(runs, lambda item: item.get("constants_policy") or "unknown"),
             "evidence_class": _group_counts(runs, lambda item: item["evidence_class"]),
+            "warm_start_evidence": _group_counts(runs, lambda item: item.get("warm_start_evidence") or "not_warm_start"),
+            "ast_return_status": _group_counts(runs, lambda item: item.get("ast_return_status") or "not_applicable"),
             "return_kind": _group_counts(runs, lambda item: item.get("return_kind") or "none"),
             "raw_status": _group_counts(runs, lambda item: item.get("raw_status") or "none"),
             "repair_status": _group_counts(runs, lambda item: item.get("repair_status") or "none"),
@@ -3294,6 +3304,8 @@ def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
     lines.extend(["", "## By Benchmark Track", "", _markdown_group_table(aggregate["groups"]["benchmark_track"])])
     lines.extend(["", "## By Constants Policy", "", _markdown_group_table(aggregate["groups"]["constants_policy"])])
     lines.extend(["", "## By Evidence Class", "", _markdown_group_table(aggregate["groups"]["evidence_class"])])
+    lines.extend(["", "## By Warm-Start Evidence", "", _markdown_group_table(aggregate["groups"]["warm_start_evidence"])])
+    lines.extend(["", "## By AST Return Status", "", _markdown_group_table(aggregate["groups"]["ast_return_status"])])
     lines.extend(["", "## By Return Kind", "", _markdown_group_table(aggregate["groups"]["return_kind"])])
     lines.extend(["", "## By Raw Status", "", _markdown_group_table(aggregate["groups"]["raw_status"])])
     lines.extend(["", "## By Repair Status", "", _markdown_group_table(aggregate["groups"]["repair_status"])])
@@ -3506,6 +3518,9 @@ def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
     verification_outcome = payload.get("verification_outcome") or verification_outcome_for_payload(payload)
     evidence_regime = payload.get("evidence_regime") or evidence_regime_for_payload(payload)
     discovery_class = payload.get("discovery_class") or discovery_class_for_payload(payload)
+    warm_start_evidence = payload.get("warm_start_evidence") or warm_start_evidence_for_payload(payload)
+    ast_return_status = payload.get("ast_return_status") or ast_return_status_for_payload(payload)
+    optimizer = result.run.optimizer.as_dict()
     return {
         "run_id": result.run.run_id,
         "artifact_path": str(result.artifact_path),
@@ -3519,7 +3534,8 @@ def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
         "constants_policy": result.run.constants_policy,
         "track": payload.get("benchmark_track")
         or _track_payload(result.run.track, result.run.constants_policy, result.run.optimizer, start_mode=result.run.start_mode),
-        "optimizer": result.run.optimizer.as_dict(),
+        "optimizer": optimizer,
+        "total_restarts": _total_restarts_for_optimizer(optimizer, start_mode=result.run.start_mode),
         "dataset": result.run.dataset.as_dict(),
         "claim_id": payload.get("claim_id"),
         "claim_class": payload.get("claim_class"),
@@ -3536,6 +3552,8 @@ def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
         "verification_outcome": verification_outcome,
         "evidence_regime": evidence_regime,
         "discovery_class": discovery_class,
+        "warm_start_evidence": warm_start_evidence,
+        "ast_return_status": ast_return_status,
         "classification": classify_run(payload),
         "evidence_class": payload.get("evidence_class") or evidence_class_for_payload(payload),
         "reason": _run_reason(payload),
@@ -3676,6 +3694,52 @@ def discovery_class_for_payload(payload: Mapping[str, Any]) -> str:
     return regime
 
 
+def warm_start_evidence_for_payload(payload: Mapping[str, Any]) -> str:
+    """Return the evidence actually provided by a compiler warm-start row."""
+
+    run = payload.get("run") if isinstance(payload.get("run"), Mapping) else {}
+    if str(run.get("start_mode") or "") != "warm_start":
+        return "not_warm_start"
+    classification = classify_run(payload)
+    if classification in {"unsupported", "execution_failure"}:
+        return classification
+    if classification in {"failed", "snapped_but_failed", "soft_fit_only"}:
+        return classification
+    ast_status = ast_return_status_for_payload(payload)
+    perturbed = _declares_nonzero_perturbation(run)
+    if ast_status == "same_ast":
+        return "perturbed_same_ast_return" if perturbed else "exact_seed_round_trip"
+    if ast_status == "verified_equivalent_ast":
+        return "perturbed_verified_equivalent_return" if perturbed else "verified_equivalent_warm_start_return"
+    if verification_outcome_for_payload(payload) in {"recovered", "verified_showcase"}:
+        return "verified_warm_start_recovery"
+    return ast_status
+
+
+def ast_return_status_for_payload(payload: Mapping[str, Any]) -> str:
+    """Return same/equivalent AST status without promoting it to a discovery claim."""
+
+    run = payload.get("run") if isinstance(payload.get("run"), Mapping) else {}
+    start_mode = str(run.get("start_mode") or "")
+    if start_mode not in {"warm_start", "perturbed_tree"}:
+        return "not_applicable"
+    return_kind = str(payload.get("return_kind") or payload.get("status") or "")
+    if return_kind == "same_ast_return":
+        return "same_ast"
+    if return_kind == "verified_equivalent_ast":
+        return "verified_equivalent_ast"
+    if return_kind in {"snapped_but_failed", "soft_fit_only", "unsupported", "failed", "execution_error"}:
+        return return_kind
+    classification = classify_run(payload)
+    if classification in {"same_ast_warm_start_return", "same_ast_return"}:
+        return "same_ast"
+    if classification in {"verified_equivalent_warm_start_recovery", "verified_equivalent_ast"}:
+        return "verified_equivalent_ast"
+    if str(payload.get("status") or "") == "recovered":
+        return "verified_exact_ast"
+    return "no_exact_return"
+
+
 def classify_run(payload: Mapping[str, Any]) -> str:
     status = payload.get("status")
     claim_status = payload.get("claim_status")
@@ -3766,6 +3830,21 @@ def _declares_nonzero_perturbation(run: Mapping[str, Any]) -> bool:
         return float(run.get("perturbation_noise", 0.0)) != 0.0
     except (TypeError, ValueError):
         return False
+
+
+def _total_restarts_for_optimizer(optimizer: Mapping[str, Any], *, start_mode: str) -> int:
+    if start_mode in {"warm_start", "perturbed_tree"}:
+        return _int_or_zero(optimizer.get("warm_restarts"))
+    if start_mode in {"compile", "catalog"}:
+        return 0
+    return _int_or_zero(optimizer.get("restarts"))
+
+
+def _int_or_zero(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
 
 
 def _blind_payload_used_scaffold(payload: Mapping[str, Any]) -> bool:

@@ -97,6 +97,10 @@ def test_aggregate_evidence_separates_unsupported_and_same_ast(tmp_path):
     assert aggregate["counts"]["evidence_classes"]["unsupported"] == 1
     assert {group["key"] for group in aggregate["groups"]["evidence_class"]} == {"same_ast", "unsupported"}
     assert {run["classification"] for run in aggregate["runs"]} == {"same_ast_warm_start_return", "unsupported"}
+    warm_run = next(run for run in aggregate["runs"] if run["start_mode"] == "warm_start")
+    assert warm_run["warm_start_evidence"] == "exact_seed_round_trip"
+    assert warm_run["ast_return_status"] == "same_ast"
+    assert warm_run["total_restarts"] == 1
 
 
 def test_aggregate_run_rows_preserve_hybrid_selection_and_refit_metrics():
@@ -230,6 +234,8 @@ def test_aggregate_evidence_separates_verification_passed_from_trained_recovery(
     assert rows["compile-support"]["verification_outcome"] == "recovered"
     assert rows["compile-support"]["discovery_class"] == "compile_only_verified_support"
     assert rows["warm-trained"]["discovery_class"] == "trained_exact_recovery"
+    assert rows["warm-trained"]["warm_start_evidence"] == "exact_seed_round_trip"
+    assert rows["warm-trained"]["ast_return_status"] == "same_ast"
     assert rows["unsupported"]["verification_outcome"] == "unsupported"
 
 

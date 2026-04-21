@@ -326,6 +326,9 @@ def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
         "runtime_seconds",
         "changed_slot_count",
         "warm_start_mechanism",
+        "warm_start_evidence",
+        "ast_return_status",
+        "total_restarts",
         "artifact_path",
     } <= set(run_rows[0])
     assert {
@@ -341,6 +344,17 @@ def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
     assert "threshold_status" not in set(run_rows[0])
     assert run_rows[0]["training_mode"]
     assert run_rows[0]["claim_id"] == ""
+    warm_row = next(row for row in run_rows if row["start_mode"] == "warm_start")
+    assert warm_row["warm_start_evidence"] == "exact_seed_round_trip"
+    assert warm_row["ast_return_status"] == "same_ast"
+    assert warm_row["total_restarts"] == warm_row["warm_restarts"] == "1"
+
+    report = result.report_path.read_text(encoding="utf-8")
+    assert "## Warm-Start Evidence" in report
+    assert "exact_seed_round_trip" in report
+    assert "exact seed round-trips" in report
+    assert "robustness" not in report.lower()
+    assert "warm-start basin" not in report.lower()
 
     headline = json.loads(result.table_paths["headline_json"].read_text())
     assert headline["total_runs"] == 2

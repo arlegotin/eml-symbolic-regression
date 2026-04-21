@@ -442,6 +442,7 @@ def write_campaign_report(
         "",
     ]
     lines.extend(_regime_summary_section(runs))
+    lines.extend(_warm_start_evidence_section(runs))
     lines.extend(_proof_contract_section(runs, aggregate))
     lines.extend(_depth_curve_report_section(aggregate))
     lines.extend(_operator_family_report_section(runs, campaign_dir, table_paths))
@@ -483,7 +484,7 @@ def write_campaign_report(
             "",
             "## Next Experiments",
             "",
-            "- Improve blind optimizer robustness and compare against this campaign's `snapped_but_failed` cases.",
+            "- Improve blind optimizer stability and compare against this campaign's `snapped_but_failed` cases.",
             "- Reduce compiled arithmetic tree depth for formulas gated as unsupported, especially Michaelis-Menten and Planck-style expressions.",
             "- Expand perturbation sweeps after optimizer changes so same-AST returns and verified-equivalent recoveries can be compared over time.",
             "- Add external noisy datasets only after the synthetic/source-document campaign remains reproducible and interpretable.",
@@ -605,6 +606,7 @@ _RUN_COLUMNS = [
     "warm_steps",
     "restarts",
     "warm_restarts",
+    "total_restarts",
     "perturbation_noise",
     "operator_family",
     "operator_schedule",
@@ -618,6 +620,8 @@ _RUN_COLUMNS = [
     "verification_outcome",
     "evidence_regime",
     "discovery_class",
+    "warm_start_evidence",
+    "ast_return_status",
     "claim_id",
     "claim_class",
     "training_mode",
@@ -769,6 +773,7 @@ def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
         "warm_steps": optimizer.get("warm_steps"),
         "restarts": optimizer.get("restarts"),
         "warm_restarts": optimizer.get("warm_restarts"),
+        "total_restarts": run.get("total_restarts") if run.get("total_restarts") is not None else metrics.get("total_restarts"),
         "perturbation_noise": run.get("perturbation_noise"),
         "operator_family": metrics.get("operator_family"),
         "operator_schedule": metrics.get("operator_schedule"),
@@ -782,6 +787,8 @@ def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
         "verification_outcome": run.get("verification_outcome"),
         "evidence_regime": run.get("evidence_regime"),
         "discovery_class": run.get("discovery_class"),
+        "warm_start_evidence": run.get("warm_start_evidence") or metrics.get("warm_start_evidence"),
+        "ast_return_status": run.get("ast_return_status") or metrics.get("ast_return_status"),
         "claim_id": run.get("claim_id"),
         "claim_class": run.get("claim_class"),
         "training_mode": run.get("training_mode"),
@@ -1230,7 +1237,7 @@ def _strengths_paragraph(runs: list[Mapping[str, Any]], counts: Mapping[str, Any
             f"{trained_exact}/{total} blind runs are trained exact recoveries, including "
             f"{_count_phrase(pure_blind, 'threshold-eligible pure blind recovery', 'threshold-eligible pure blind recoveries')}"
             f"{repaired_note}. "
-            "These rows are recovery-boundary evidence, not warm-start basin evidence."
+            "These rows are recovery-boundary evidence, not warm-start exact-return evidence."
         )
 
     if perturbed_runs and not (blind_runs or warm_runs or compile_runs or catalog_runs):
@@ -1244,7 +1251,7 @@ def _strengths_paragraph(runs: list[Mapping[str, Any]], counts: Mapping[str, Any
         return (
             f"This campaign isolates warm-start exact-return behavior: {trained_exact}/{total} runs are trained exact recoveries, "
             f"with {same_ast} returns to the same compiled EML AST and {equivalent} verified-equivalent returns. "
-            "Those are recovery and basin checks, not blind-discovery claims."
+            "Zero-perturbation same-AST rows are exact seed round-trips, not blind-discovery claims or evidence about behavior away from the seed."
         )
 
     return (
@@ -1252,7 +1259,7 @@ def _strengths_paragraph(runs: list[Mapping[str, Any]], counts: Mapping[str, Any
         f"{verification_passed}/{total} rows passed verification, split into {trained_exact} trained exact recoveries and "
         f"{compile_support} compile-only verified support rows. It includes {blind_recovered}/{len(blind_runs) if blind_runs else 0} "
         f"blind recoveries, {same_ast} same-AST exact returns, and {equivalent} verified-equivalent exact returns. "
-        "Those evidence paths remain separated in the tables so blind discovery, warm-start basin behavior, and non-training diagnostics are "
+        "Those evidence paths remain separated in the tables so blind discovery, warm-start exact returns, and non-training diagnostics are "
         "not merged into one claim."
     )
 
@@ -1279,7 +1286,40 @@ def _regime_summary_section(runs: list[Mapping[str, Any]]) -> list[str]:
     lines.extend(
         [
             "",
-            "This table keeps blind, compiler-assisted warm-start, compile-only, catalog, and perturbed-basin evidence visibly separate before any narrative interpretation.",
+            "This table keeps blind, compiler-assisted warm-start, compile-only, catalog, and perturbed true-tree evidence visibly separate before any narrative interpretation.",
+            "",
+        ]
+    )
+    return lines
+
+
+def _warm_start_evidence_section(runs: list[Mapping[str, Any]]) -> list[str]:
+    warm_runs = [run for run in runs if run.get("start_mode") == "warm_start"]
+    if not warm_runs:
+        return []
+    lines = [
+        "## Warm-Start Evidence",
+        "",
+        "| Run | Evidence | Perturbation Noise | Warm Steps | Warm Restarts | Total Restarts | Return Kind | AST Return |",
+        "|-----|----------|--------------------|------------|---------------|----------------|-------------|------------|",
+    ]
+    for run in warm_runs:
+        optimizer = run.get("optimizer") if isinstance(run.get("optimizer"), Mapping) else {}
+        metrics = run.get("metrics") if isinstance(run.get("metrics"), Mapping) else {}
+        evidence = run.get("warm_start_evidence") or metrics.get("warm_start_evidence") or "unknown"
+        ast_return = run.get("ast_return_status") or metrics.get("ast_return_status") or "unknown"
+        total_restarts = run.get("total_restarts") if run.get("total_restarts") is not None else metrics.get("total_restarts")
+        if total_restarts is None:
+            total_restarts = ""
+        lines.append(
+            f"| {run.get('run_id', '')} | {evidence} | {run.get('perturbation_noise', '')} | "
+            f"{optimizer.get('warm_steps', '')} | {optimizer.get('warm_restarts', '')} | {total_restarts} | "
+            f"{run.get('return_kind') or ''} | {ast_return} |"
+        )
+    lines.extend(
+        [
+            "",
+            "Rows labeled `exact_seed_round_trip` are exact seed round-trips: they start from the compiled seed with zero perturbation and return to the same exact AST.",
             "",
         ]
     )
@@ -1429,7 +1469,7 @@ def _limitations_section(runs: list[Mapping[str, Any]]) -> str:
     return "\n".join(
         [
             f"- Blind training recovery: {blind_recovered}/{blind_total} blind runs recovered.{blind_note}",
-            f"- Same-AST exact return: {same_ast} runs snapped back to the compiled seed or exact target; useful basin evidence, not discovery.",
+            f"- Same-AST exact return: {same_ast} runs snapped back to the compiled seed or exact target; seed-retention evidence, not discovery.",
             f"- Verified-equivalent exact return: {equivalent} runs snapped to a different exact AST that verified.",
             f"- Unsupported gates: {unsupported} runs were blocked by compiler/depth/operator limits and remain in the denominator.",
             f"- Failed fits: {failed} runs did not pass verifier-owned recovery after training or execution.",
