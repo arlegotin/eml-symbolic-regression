@@ -31,7 +31,7 @@ v1.14 is open. It repairs a post-v1.13 claim-integrity audit finding: compile-on
 - [x] Phase 78: Warm-Start Evidence Relabeling
 - [x] Phase 79: Baseline Claim Surface Quarantine
 - [x] Phase 80: Multivariate Verifier Target Matching
-- [ ] Phase 81: Corrected Evidence Rebuild and Claim Audit
+- [x] Phase 81: Corrected Evidence Rebuild and Claim Audit
 
 ## Phase Overview
 

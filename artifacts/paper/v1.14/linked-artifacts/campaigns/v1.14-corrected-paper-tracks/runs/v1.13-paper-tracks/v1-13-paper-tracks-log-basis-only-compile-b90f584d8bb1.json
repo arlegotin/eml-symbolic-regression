@@ -1,0 +1,308 @@
+{
+  "ast_return_status": "not_applicable",
+  "benchmark_track": {
+    "basis_constants": [
+      "1"
+    ],
+    "constants_policy": "basis_only",
+    "denominator_key": "basis_only",
+    "literal_catalog": [],
+    "name": "basis_only",
+    "scaffold_exclusions": [],
+    "scaffold_initializers": [],
+    "scaffold_status": "disabled",
+    "start_mode": "compile",
+    "uses_literal_constants": false,
+    "warm_start_or_scaffold_status": "no_scaffold_initializers",
+    "warm_start_status": "not_warm_start"
+  },
+  "budget": {
+    "clamp_exp_real": 40.0,
+    "constants": [
+      "1"
+    ],
+    "depth": 2,
+    "hardening_emit_interval": 2,
+    "hardening_steps": 4,
+    "hardening_temperature_end": 0.02,
+    "log_domain_epsilon": 1e-09,
+    "log_safety_imag_tolerance": 1e-06,
+    "log_safety_margin": 1e-06,
+    "log_safety_weight": 0.0,
+    "lr": 0.05,
+    "max_compile_depth": 13,
+    "max_compile_nodes": 256,
+    "max_power": 3,
+    "max_warm_depth": 14,
+    "operator_family": {
+      "family": "raw_eml",
+      "label": "raw_eml",
+      "s": 1.0,
+      "t": 1.0,
+      "terminal": "one"
+    },
+    "operator_schedule": [],
+    "refit_lr": 0.02,
+    "refit_steps": 80,
+    "restarts": 1,
+    "scaffold_exclusions": [],
+    "scaffold_initializers": [],
+    "semantics_mode": "guarded",
+    "steps": 8,
+    "warm_depth": 0,
+    "warm_restarts": 1,
+    "warm_steps": 8
+  },
+  "claim_class": null,
+  "claim_id": null,
+  "claim_status": "unsupported",
+  "compiled_eml": {
+    "detail": "basis_only policy only allows literal 1",
+    "diagnostic": {
+      "relaxed_error": {
+        "detail": "basis_only policy only allows literal 1",
+        "expression": "E",
+        "reason": "constant_policy"
+      },
+      "schema": "eml.compiler_diagnostic.v1",
+      "status": "unsupported",
+      "strict": {
+        "detail": "basis_only policy only allows literal 1",
+        "expression": "E",
+        "reason": "constant_policy"
+      }
+    },
+    "expression": "E",
+    "reason": "constant_policy",
+    "status": "unsupported"
+  },
+  "dataset": {
+    "points": 24,
+    "tolerance": 1e-08
+  },
+  "dataset_manifest": {
+    "formula_id": "log",
+    "manifest_sha256": "233dec39b6608f64a02052b470c118a5164ad9c81232c5a0772fb62f79feed93",
+    "points": 24,
+    "provenance": {
+      "candidate_name": "exact_eml",
+      "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+      "formula_id": "log",
+      "normalized_dimensionless": true,
+      "source_document": "sources/paper.pdf",
+      "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+      "symbolic_expression": "E - log(exp(E)/x)",
+      "variable": "x"
+    },
+    "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+    "schema": "eml.proof_dataset_manifest.v1",
+    "seed": 0,
+    "splits": [
+      {
+        "count": 24,
+        "domain": [
+          0.25,
+          3.0
+        ],
+        "input_sha256": "e3a490a0aed9ff8d4f22af7c6d3ac0262f00c3d90255d9a1fb2818c75ea6daf9",
+        "name": "train",
+        "target_sha256": "898f7651439ce4ad0a412ddc3f2e8c87ade0ce5caafa3c5adb77a2a07380541e"
+      },
+      {
+        "count": 16,
+        "domain": [
+          0.35,
+          2.75
+        ],
+        "input_sha256": "9c422468f759253c2e789af5bc68d8d26d01125b42d6e9d76fe6a201a0a4629f",
+        "name": "heldout",
+        "target_sha256": "299cfbf89ce7e9bdb262683093db440b5432c41f5a4e55b090effd76fd4cfaae"
+      },
+      {
+        "count": 16,
+        "domain": [
+          3.1,
+          4.2
+        ],
+        "input_sha256": "301148227c1d0026c03b52fb2e00b8f46537a4074b925ce67339592267e9c736",
+        "name": "extrapolation",
+        "target_sha256": "6ed51e9ae6e048f326f44d5c7cd936edc4a10ca9680a9ff9643851f4cb9b0a79"
+      }
+    ],
+    "tolerance": 1e-08,
+    "variable": "x"
+  },
+  "discovery_class": "unsupported",
+  "environment": {
+    "code_version": "d2988de",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "evidence_class": "unsupported",
+  "evidence_regime": "unsupported",
+  "metrics": {
+    "active_slot_count": null,
+    "anomaly_clamp_count": null,
+    "anomaly_exp_overflow_count": null,
+    "anomaly_expm1_overflow_count": null,
+    "anomaly_log1p_branch_cut_count": null,
+    "anomaly_log_branch_cut_count": null,
+    "anomaly_log_non_finite_input_count": null,
+    "anomaly_log_non_positive_real_count": null,
+    "anomaly_log_safety_penalty": null,
+    "anomaly_log_small_magnitude_count": null,
+    "anomaly_shifted_singularity_min_distance": null,
+    "anomaly_shifted_singularity_near_count": null,
+    "ast_return_status": "not_applicable",
+    "best_loss": null,
+    "candidate_complexity": null,
+    "candidate_pool_size": null,
+    "changed_slot_count": null,
+    "fallback_candidate_attempt_index": null,
+    "fallback_candidate_checkpoint_index": null,
+    "fallback_candidate_id": null,
+    "fallback_candidate_source": null,
+    "fallback_post_snap_loss": null,
+    "high_precision_max_error": null,
+    "legacy_best_loss": null,
+    "objective_matches_verifier_semantics": null,
+    "operator_family": "raw_eml",
+    "operator_schedule": "",
+    "post_snap_loss": null,
+    "refit_accepted": null,
+    "refit_constant_count": 0,
+    "refit_post_snap_loss": null,
+    "refit_status": null,
+    "refit_verifier_status": null,
+    "repair_accepted_candidate_id": null,
+    "repair_accepted_candidate_root_source": null,
+    "repair_accepted_candidate_source": null,
+    "repair_accepted_move_count": 0,
+    "repair_candidate_root_count": null,
+    "repair_candidate_root_summary_count": 0,
+    "repair_deduped_variant_count": null,
+    "repair_move_count": 0,
+    "repair_status": null,
+    "repair_variant_count": null,
+    "repair_verifier_status": null,
+    "scaffold_coefficient": null,
+    "scaffold_exclusions": [],
+    "scaffold_source": null,
+    "scaffold_strategy": null,
+    "selected_candidate_attempt_index": null,
+    "selected_candidate_checkpoint_index": null,
+    "selected_candidate_id": null,
+    "selected_candidate_source": null,
+    "selection_mode": null,
+    "semantics_fallback_reason": null,
+    "snap_active_node_count": null,
+    "snap_min_margin": null,
+    "total_restarts": 0,
+    "training_semantics_mode": "guarded",
+    "unsupported_reason": "constant_policy",
+    "verifier_status": null,
+    "warm_start_evidence": "not_warm_start",
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "provenance": {
+    "candidate_name": "exact_eml",
+    "description": "Paper smoke test: ln(x) EML identity on the positive real axis.",
+    "formula_id": "log",
+    "normalized_dimensionless": true,
+    "source_document": "sources/paper.pdf",
+    "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for ln(x)",
+    "symbolic_expression": "E - log(exp(E)/x)",
+    "variable": "x"
+  },
+  "run": {
+    "artifact_path": "artifacts/paper/v1.14/linked-artifacts/campaigns/v1.14-corrected-paper-tracks/runs/v1.13-paper-tracks/v1-13-paper-tracks-log-basis-only-compile-b90f584d8bb1.json",
+    "benchmark_track": {
+      "basis_constants": [
+        "1"
+      ],
+      "constants_policy": "basis_only",
+      "denominator_key": "basis_only",
+      "literal_catalog": [],
+      "name": "basis_only",
+      "scaffold_exclusions": [],
+      "scaffold_initializers": [],
+      "scaffold_status": "disabled",
+      "start_mode": "compile",
+      "uses_literal_constants": false,
+      "warm_start_or_scaffold_status": "no_scaffold_initializers",
+      "warm_start_status": "not_warm_start"
+    },
+    "case_id": "log-basis-only-compile",
+    "claim_id": null,
+    "constants_policy": "basis_only",
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "log",
+    "optimizer": {
+      "clamp_exp_real": 40.0,
+      "constants": [
+        "1"
+      ],
+      "depth": 2,
+      "hardening_emit_interval": 2,
+      "hardening_steps": 4,
+      "hardening_temperature_end": 0.02,
+      "log_domain_epsilon": 1e-09,
+      "log_safety_imag_tolerance": 1e-06,
+      "log_safety_margin": 1e-06,
+      "log_safety_weight": 0.0,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 14,
+      "operator_family": {
+        "family": "raw_eml",
+        "label": "raw_eml",
+        "s": 1.0,
+        "t": 1.0,
+        "terminal": "one"
+      },
+      "operator_schedule": [],
+      "refit_lr": 0.02,
+      "refit_steps": 80,
+      "restarts": 1,
+      "scaffold_exclusions": [],
+      "scaffold_initializers": [],
+      "semantics_mode": "guarded",
+      "steps": 8,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-13-paper-tracks-log-basis-only-compile-b90f584d8bb1",
+    "seed": 0,
+    "start_mode": "compile",
+    "suite_id": "v1.13-paper-tracks",
+    "tags": [
+      "v1.13",
+      "paper_track",
+      "basis_only"
+    ],
+    "threshold_policy_id": null,
+    "track": "basis_only",
+    "training_mode": "compile_only_verification"
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "compiled_seed": "unsupported"
+  },
+  "status": "unsupported",
+  "threshold": null,
+  "timing": {
+    "elapsed_seconds": 0.10030029201880097
+  },
+  "training_mode": "compile_only_verification",
+  "verification_outcome": "unsupported",
+  "warm_start_evidence": "not_warm_start"
+}

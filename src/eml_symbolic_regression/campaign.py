@@ -60,7 +60,7 @@ class CampaignResult:
     preset: CampaignPreset
     campaign_dir: Path
     manifest_path: Path
-    suite_result_path: Path
+    suite_result_path: Path | None
     aggregate_paths: Mapping[str, Path]
     table_paths: Mapping[str, Path] = field(default_factory=dict)
     figure_paths: Mapping[str, Path] = field(default_factory=dict)
@@ -71,7 +71,7 @@ class CampaignResult:
             "preset": self.preset.as_dict(),
             "campaign_dir": str(self.campaign_dir),
             "manifest_path": str(self.manifest_path),
-            "suite_result_path": str(self.suite_result_path),
+            "suite_result_path": str(self.suite_result_path) if self.suite_result_path is not None else None,
             "aggregate_paths": {key: str(value) for key, value in self.aggregate_paths.items()},
             "table_paths": {key: str(value) for key, value in self.table_paths.items()},
             "figure_paths": {key: str(value) for key, value in self.figure_paths.items()},
@@ -237,6 +237,7 @@ def run_campaign(
     label: str | None = None,
     overwrite: bool = False,
     run_filter: RunFilter | None = None,
+    write_suite_result: bool = True,
 ) -> CampaignResult:
     preset = campaign_preset(preset_name)
     campaign_dir = _campaign_dir(output_root, preset.name, label)
@@ -257,8 +258,9 @@ def run_campaign(
         schema=base_suite.schema,
     )
     result = run_benchmark_suite(suite, run_filter=run_filter)
-    suite_result_path = campaign_dir / "suite-result.json"
-    _write_json(suite_result_path, result.as_dict())
+    suite_result_path = campaign_dir / "suite-result.json" if write_suite_result else None
+    if suite_result_path is not None:
+        _write_json(suite_result_path, result.as_dict())
     aggregate_paths = write_aggregate_reports(result, campaign_dir)
     aggregate = aggregate_evidence(result)
     table_paths = write_campaign_tables(aggregate, campaign_dir / "tables")
@@ -510,13 +512,24 @@ def _manifest_payload(
     overwrite: bool,
     run_filter: RunFilter | None,
     aggregate: Mapping[str, Any],
-    suite_result_path: Path,
+    suite_result_path: Path | None,
     aggregate_paths: Mapping[str, Path],
     table_paths: Mapping[str, Path],
     figure_paths: Mapping[str, Path],
 ) -> dict[str, Any]:
     filter_payload = _filter_payload(run_filter)
     command = _reproduction_command(preset.name, campaign_dir.parent, label, overwrite, filter_payload)
+    output = {
+        "campaign_dir": str(campaign_dir),
+        "raw_run_root": str(suite.artifact_root / suite.id),
+        "aggregate_json": str(aggregate_paths["json"]),
+        "aggregate_markdown": str(aggregate_paths["markdown"]),
+        "tables": {key: str(value) for key, value in table_paths.items()},
+        "figures": {key: str(value) for key, value in figure_paths.items()},
+    }
+    if suite_result_path is not None:
+        output["suite_result"] = str(suite_result_path)
+
     return {
         "schema": "eml.campaign_manifest.v1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -525,15 +538,7 @@ def _manifest_payload(
         "run_filter": filter_payload,
         "counts": aggregate["counts"],
         "thresholds": aggregate.get("thresholds", []),
-        "output": {
-            "campaign_dir": str(campaign_dir),
-            "raw_run_root": str(suite.artifact_root / suite.id),
-            "suite_result": str(suite_result_path),
-            "aggregate_json": str(aggregate_paths["json"]),
-            "aggregate_markdown": str(aggregate_paths["markdown"]),
-            "tables": {key: str(value) for key, value in table_paths.items()},
-            "figures": {key: str(value) for key, value in figure_paths.items()},
-        },
+        "output": output,
         "reproducibility": {
             "python": platform.python_version(),
             "platform": platform.platform(),

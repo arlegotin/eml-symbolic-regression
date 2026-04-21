@@ -594,6 +594,7 @@ def _write_publication_evidence(output_dir: Path, *, smoke: bool) -> dict[str, A
         output_root=artifact_root / "campaigns",
         label=_campaign_label_for_output(output_dir),
         overwrite=True,
+        write_suite_result=False,
     )
     baseline_output_dir = artifact_root / "baselines" / version_label
     baseline_paths = write_baseline_harness(
@@ -616,7 +617,6 @@ def _write_publication_evidence(output_dir: Path, *, smoke: bool) -> dict[str, A
         "paper_tracks": {
             "campaign_dir": str(campaign.campaign_dir),
             "manifest_json": str(campaign.manifest_path),
-            "suite_result_json": str(campaign.suite_result_path),
             "aggregate_json": str(campaign.aggregate_paths["json"]),
             "aggregate_markdown": str(campaign.aggregate_paths["markdown"]),
             "report_markdown": str(campaign.report_path) if campaign.report_path is not None else None,

@@ -1,0 +1,308 @@
+{
+  "ast_return_status": "not_applicable",
+  "benchmark_track": {
+    "basis_constants": [
+      "1"
+    ],
+    "constants_policy": "basis_only",
+    "denominator_key": "basis_only",
+    "literal_catalog": [],
+    "name": "basis_only",
+    "scaffold_exclusions": [],
+    "scaffold_initializers": [],
+    "scaffold_status": "disabled",
+    "start_mode": "compile",
+    "uses_literal_constants": false,
+    "warm_start_or_scaffold_status": "no_scaffold_initializers",
+    "warm_start_status": "not_warm_start"
+  },
+  "budget": {
+    "clamp_exp_real": 40.0,
+    "constants": [
+      "1"
+    ],
+    "depth": 2,
+    "hardening_emit_interval": 2,
+    "hardening_steps": 4,
+    "hardening_temperature_end": 0.02,
+    "log_domain_epsilon": 1e-09,
+    "log_safety_imag_tolerance": 1e-06,
+    "log_safety_margin": 1e-06,
+    "log_safety_weight": 0.0,
+    "lr": 0.05,
+    "max_compile_depth": 13,
+    "max_compile_nodes": 256,
+    "max_power": 3,
+    "max_warm_depth": 14,
+    "operator_family": {
+      "family": "raw_eml",
+      "label": "raw_eml",
+      "s": 1.0,
+      "t": 1.0,
+      "terminal": "one"
+    },
+    "operator_schedule": [],
+    "refit_lr": 0.02,
+    "refit_steps": 80,
+    "restarts": 1,
+    "scaffold_exclusions": [],
+    "scaffold_initializers": [],
+    "semantics_mode": "guarded",
+    "steps": 8,
+    "warm_depth": 0,
+    "warm_restarts": 1,
+    "warm_steps": 8
+  },
+  "claim_class": null,
+  "claim_id": null,
+  "claim_status": "unsupported",
+  "compiled_eml": {
+    "detail": "basis_only policy only allows literal 1",
+    "diagnostic": {
+      "relaxed_error": {
+        "detail": "basis_only policy only allows literal 1",
+        "expression": "-1.20000000000000",
+        "reason": "constant_policy"
+      },
+      "schema": "eml.compiler_diagnostic.v1",
+      "status": "unsupported",
+      "strict": {
+        "detail": "basis_only policy only allows literal 1",
+        "expression": "-1.20000000000000",
+        "reason": "constant_policy"
+      }
+    },
+    "expression": "-1.20000000000000",
+    "reason": "constant_policy",
+    "status": "unsupported"
+  },
+  "dataset": {
+    "points": 24,
+    "tolerance": 1e-08
+  },
+  "dataset_manifest": {
+    "formula_id": "scaled_exp_fast_decay",
+    "manifest_sha256": "5644acdf31ff5b08587f20decf2998545faa39e2542337019e9b94412c8ca2cb",
+    "points": 24,
+    "provenance": {
+      "candidate_name": "scaled_exp_fast_decay_catalog",
+      "description": "Phase 30 signed/scaled exponential proof target with a larger negative exponent coefficient.",
+      "formula_id": "scaled_exp_fast_decay",
+      "normalized_dimensionless": true,
+      "source_document": "sources/NORTH_STAR.md",
+      "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(-1.2*x) fast-decay coefficient variant",
+      "symbolic_expression": "exp(-1.2*x)",
+      "variable": "x"
+    },
+    "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+    "schema": "eml.proof_dataset_manifest.v1",
+    "seed": 0,
+    "splits": [
+      {
+        "count": 24,
+        "domain": [
+          0.0,
+          2.5
+        ],
+        "input_sha256": "77c6ba66eff57aecbba41385002fa8e7cfae4850b2ed2fe045c2809ec44535a6",
+        "name": "train",
+        "target_sha256": "bb7304cab2fbbe9019d74af2a6d530e8374a3b6858a2b42c831cfa73be82977d"
+      },
+      {
+        "count": 16,
+        "domain": [
+          0.1,
+          2.3
+        ],
+        "input_sha256": "4bece3efa8341400944f38513f821465a7115638b3f01070dd2c5e2e23b23daf",
+        "name": "heldout",
+        "target_sha256": "add11c23c5545c9eb0be02baad961c987543d81a953b3d3314d2562e23fc7494"
+      },
+      {
+        "count": 16,
+        "domain": [
+          2.6,
+          3.5
+        ],
+        "input_sha256": "6396cb29965b35cd2e83117dc438005ee6aa77ce055a8846eb263b905fde044b",
+        "name": "extrapolation",
+        "target_sha256": "b8cc5f9db5cbf847498a6cd448880d56ac1fbff89904ceaafce44e3a183cec23"
+      }
+    ],
+    "tolerance": 1e-08,
+    "variable": "x"
+  },
+  "discovery_class": "unsupported",
+  "environment": {
+    "code_version": "d2988de",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "evidence_class": "unsupported",
+  "evidence_regime": "unsupported",
+  "metrics": {
+    "active_slot_count": null,
+    "anomaly_clamp_count": null,
+    "anomaly_exp_overflow_count": null,
+    "anomaly_expm1_overflow_count": null,
+    "anomaly_log1p_branch_cut_count": null,
+    "anomaly_log_branch_cut_count": null,
+    "anomaly_log_non_finite_input_count": null,
+    "anomaly_log_non_positive_real_count": null,
+    "anomaly_log_safety_penalty": null,
+    "anomaly_log_small_magnitude_count": null,
+    "anomaly_shifted_singularity_min_distance": null,
+    "anomaly_shifted_singularity_near_count": null,
+    "ast_return_status": "not_applicable",
+    "best_loss": null,
+    "candidate_complexity": null,
+    "candidate_pool_size": null,
+    "changed_slot_count": null,
+    "fallback_candidate_attempt_index": null,
+    "fallback_candidate_checkpoint_index": null,
+    "fallback_candidate_id": null,
+    "fallback_candidate_source": null,
+    "fallback_post_snap_loss": null,
+    "high_precision_max_error": null,
+    "legacy_best_loss": null,
+    "objective_matches_verifier_semantics": null,
+    "operator_family": "raw_eml",
+    "operator_schedule": "",
+    "post_snap_loss": null,
+    "refit_accepted": null,
+    "refit_constant_count": 0,
+    "refit_post_snap_loss": null,
+    "refit_status": null,
+    "refit_verifier_status": null,
+    "repair_accepted_candidate_id": null,
+    "repair_accepted_candidate_root_source": null,
+    "repair_accepted_candidate_source": null,
+    "repair_accepted_move_count": 0,
+    "repair_candidate_root_count": null,
+    "repair_candidate_root_summary_count": 0,
+    "repair_deduped_variant_count": null,
+    "repair_move_count": 0,
+    "repair_status": null,
+    "repair_variant_count": null,
+    "repair_verifier_status": null,
+    "scaffold_coefficient": null,
+    "scaffold_exclusions": [],
+    "scaffold_source": null,
+    "scaffold_strategy": null,
+    "selected_candidate_attempt_index": null,
+    "selected_candidate_checkpoint_index": null,
+    "selected_candidate_id": null,
+    "selected_candidate_source": null,
+    "selection_mode": null,
+    "semantics_fallback_reason": null,
+    "snap_active_node_count": null,
+    "snap_min_margin": null,
+    "total_restarts": 0,
+    "training_semantics_mode": "guarded",
+    "unsupported_reason": "constant_policy",
+    "verifier_status": null,
+    "warm_start_evidence": "not_warm_start",
+    "warm_start_mechanism": null,
+    "warm_start_status": null
+  },
+  "provenance": {
+    "candidate_name": "scaled_exp_fast_decay_catalog",
+    "description": "Phase 30 signed/scaled exponential proof target with a larger negative exponent coefficient.",
+    "formula_id": "scaled_exp_fast_decay",
+    "normalized_dimensionless": true,
+    "source_document": "sources/NORTH_STAR.md",
+    "source_linkage": "Phase 30 signed/scaled exponential proof coverage: exp(-1.2*x) fast-decay coefficient variant",
+    "symbolic_expression": "exp(-1.2*x)",
+    "variable": "x"
+  },
+  "run": {
+    "artifact_path": "artifacts/paper/v1.14/linked-artifacts/campaigns/v1.14-corrected-paper-tracks/runs/v1.13-paper-tracks/v1-13-paper-tracks-scaled-exp-fast-decay-basis-only-compile-1b1c434047ab.json",
+    "benchmark_track": {
+      "basis_constants": [
+        "1"
+      ],
+      "constants_policy": "basis_only",
+      "denominator_key": "basis_only",
+      "literal_catalog": [],
+      "name": "basis_only",
+      "scaffold_exclusions": [],
+      "scaffold_initializers": [],
+      "scaffold_status": "disabled",
+      "start_mode": "compile",
+      "uses_literal_constants": false,
+      "warm_start_or_scaffold_status": "no_scaffold_initializers",
+      "warm_start_status": "not_warm_start"
+    },
+    "case_id": "scaled-exp-fast-decay-basis-only-compile",
+    "claim_id": null,
+    "constants_policy": "basis_only",
+    "dataset": {
+      "points": 24,
+      "tolerance": 1e-08
+    },
+    "expect_recovery": false,
+    "formula": "scaled_exp_fast_decay",
+    "optimizer": {
+      "clamp_exp_real": 40.0,
+      "constants": [
+        "1"
+      ],
+      "depth": 2,
+      "hardening_emit_interval": 2,
+      "hardening_steps": 4,
+      "hardening_temperature_end": 0.02,
+      "log_domain_epsilon": 1e-09,
+      "log_safety_imag_tolerance": 1e-06,
+      "log_safety_margin": 1e-06,
+      "log_safety_weight": 0.0,
+      "lr": 0.05,
+      "max_compile_depth": 13,
+      "max_compile_nodes": 256,
+      "max_power": 3,
+      "max_warm_depth": 14,
+      "operator_family": {
+        "family": "raw_eml",
+        "label": "raw_eml",
+        "s": 1.0,
+        "t": 1.0,
+        "terminal": "one"
+      },
+      "operator_schedule": [],
+      "refit_lr": 0.02,
+      "refit_steps": 80,
+      "restarts": 1,
+      "scaffold_exclusions": [],
+      "scaffold_initializers": [],
+      "semantics_mode": "guarded",
+      "steps": 8,
+      "warm_depth": 0,
+      "warm_restarts": 1,
+      "warm_steps": 8
+    },
+    "perturbation_noise": 0.0,
+    "run_id": "v1-13-paper-tracks-scaled-exp-fast-decay-basis-only-compile-1b1c434047ab",
+    "seed": 0,
+    "start_mode": "compile",
+    "suite_id": "v1.13-paper-tracks",
+    "tags": [
+      "v1.13",
+      "paper_track",
+      "basis_only"
+    ],
+    "threshold_policy_id": null,
+    "track": "basis_only",
+    "training_mode": "compile_only_verification"
+  },
+  "schema": "eml.benchmark_run.v1",
+  "stage_statuses": {
+    "compiled_seed": "unsupported"
+  },
+  "status": "unsupported",
+  "threshold": null,
+  "timing": {
+    "elapsed_seconds": 0.009248291957192123
+  },
+  "training_mode": "compile_only_verification",
+  "verification_outcome": "unsupported",
+  "warm_start_evidence": "not_warm_start"
+}
