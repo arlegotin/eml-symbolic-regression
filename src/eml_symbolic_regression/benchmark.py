@@ -2115,6 +2115,9 @@ def execute_benchmark_run(run: BenchmarkRun) -> BenchmarkRunResult:
         payload["error"] = {"type": type(exc).__name__, "message": str(exc)}
     payload.pop("_compiled", None)
     payload["evidence_class"] = evidence_class_for_payload(payload)
+    payload["verification_outcome"] = verification_outcome_for_payload(payload)
+    payload["evidence_regime"] = evidence_regime_for_payload(payload)
+    payload["discovery_class"] = discovery_class_for_payload(payload)
     payload["metrics"] = _extract_run_metrics(payload)
     payload["timing"] = {"elapsed_seconds": time.perf_counter() - started}
     _write_json(run.artifact_path, payload)
@@ -3272,7 +3275,9 @@ def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
     counts = aggregate["counts"]
     for key in (
         "total",
-        "verifier_recovered",
+        "verification_passed",
+        "trained_exact_recovery",
+        "compile_only_verified_support",
         "same_ast_return",
         "verified_equivalent_ast",
         "repaired_candidate",
@@ -3281,7 +3286,8 @@ def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
         "execution_error",
     ):
         lines.append(f"| {key} | {counts[key]} |")
-    lines.append(f"| verifier_recovery_rate | {counts['verifier_recovery_rate']:.3f} |")
+    lines.append(f"| verification_passed_rate | {counts['verification_passed_rate']:.3f} |")
+    lines.append(f"| trained_exact_recovery_rate | {counts['trained_exact_recovery_rate']:.3f} |")
     lines.extend(["", "## By Formula", "", _markdown_group_table(aggregate["groups"]["formula"])])
     lines.extend(["", "## By Start Mode", "", _markdown_group_table(aggregate["groups"]["start_mode"])])
     lines.extend(["", "## Track Denominators", "", _markdown_track_table(aggregate.get("tracks", []))])
@@ -3306,13 +3312,14 @@ def render_aggregate_markdown(aggregate: Mapping[str, Any]) -> str:
 
 def _markdown_group_table(groups: list[Mapping[str, Any]]) -> str:
     lines = [
-        "| Group | Total | Verifier Recovered | Same AST | Unsupported | Failed | Recovery Rate |",
-        "|-------|-------|--------------------|----------|-------------|--------|---------------|",
+        "| Group | Total | Verification Passed | Trained Exact | Compile-only Support | Same AST | Unsupported | Failed | Verification Rate |",
+        "|-------|-------|---------------------|---------------|----------------------|----------|-------------|--------|-------------------|",
     ]
     for group in groups:
         lines.append(
-            f"| {group['key']} | {group['total']} | {group['verifier_recovered']} | {group['same_ast_return']} | "
-            f"{group['unsupported']} | {group['failed']} | {group['verifier_recovery_rate']:.3f} |"
+            f"| {group['key']} | {group['total']} | {group.get('verification_passed', group.get('verifier_recovered', 0))} | "
+            f"{group.get('trained_exact_recovery', 0)} | {group.get('compile_only_verified_support', 0)} | "
+            f"{group['same_ast_return']} | {group['unsupported']} | {group['failed']} | {group['verifier_recovery_rate']:.3f} |"
         )
     return "\n".join(lines)
 
@@ -3321,14 +3328,15 @@ def _markdown_track_table(tracks: list[Mapping[str, Any]]) -> str:
     if not tracks:
         return "No benchmark track metadata."
     lines = [
-        "| Track | Total | Verifier Recovered | Unsupported | Failed | Recovery Rate | Constants Policy |",
-        "|-------|-------|--------------------|-------------|--------|---------------|------------------|",
+        "| Track | Total | Verification Passed | Trained Exact | Compile-only Support | Unsupported | Failed | Verification Rate | Constants Policy |",
+        "|-------|-------|---------------------|---------------|----------------------|-------------|--------|-------------------|------------------|",
     ]
     for row in tracks:
         policies = ",".join(str(value) for value in row.get("constants_policies", []))
         lines.append(
-            f"| {row['track']} | {row['total']} | {row['verifier_recovered']} | {row['unsupported']} | "
-            f"{row['failed']} | {row['verifier_recovery_rate']:.3f} | {policies} |"
+            f"| {row['track']} | {row['total']} | {row['verifier_recovered']} | "
+            f"{row.get('trained_exact_recovery', 0)} | {row.get('compile_only_verified_support', 0)} | "
+            f"{row['unsupported']} | {row['failed']} | {row['verifier_recovery_rate']:.3f} | {policies} |"
         )
     return "\n".join(lines)
 
@@ -3372,7 +3380,9 @@ def _track_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
 
     rows: list[dict[str, Any]] = []
     for track, items in sorted(grouped.items()):
-        recovered = sum(1 for run in items if run.get("claim_status") == "recovered")
+        recovered = sum(1 for run in items if _verification_passed(run))
+        trained = sum(1 for run in items if _trained_exact_recovery(run))
+        compile_support = sum(1 for run in items if _compile_only_verified_support(run))
         unsupported = sum(1 for run in items if run.get("classification") == "unsupported")
         failed = sum(1 for run in items if run.get("classification") in {"failed", "snapped_but_failed", "soft_fit_only"})
         rows.append(
@@ -3380,12 +3390,18 @@ def _track_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
                 "track": track,
                 "total": len(items),
                 "verifier_recovered": recovered,
+                "verification_passed": recovered,
+                "trained_exact_recovery": trained,
+                "compile_only_verified_support": compile_support,
                 "unsupported": unsupported,
                 "failed": failed,
                 "verifier_recovery_rate": recovered / len(items) if items else 0.0,
+                "trained_exact_recovery_rate": trained / len(items) if items else 0.0,
                 "constants_policies": sorted({str(run.get("constants_policy") or "unknown") for run in items}),
                 "formulas": sorted({str(run.get("formula") or "unknown") for run in items}),
                 "evidence_classes": _count_by_key(items, "evidence_class"),
+                "evidence_regimes": _count_by_key(items, "evidence_regime"),
+                "discovery_classes": _count_by_key(items, "discovery_class"),
             }
         )
     return rows
@@ -3409,7 +3425,7 @@ def _depth_curve_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
         post_snap_losses = [_run_metric_number(run, "post_snap_loss") for run in items]
         runtimes = [_run_timing_seconds(run) for run in items]
         snap_margins = [_run_metric_number(run, "snap_min_margin") for run in items]
-        recovered = sum(1 for run in items if run.get("claim_status") == "recovered")
+        recovered = sum(1 for run in items if _trained_exact_recovery(run))
         rows.append(
             {
                 "depth": depth,
@@ -3487,6 +3503,9 @@ def _format_optional_number(value: Any) -> str:
 
 def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
     payload = result.payload
+    verification_outcome = payload.get("verification_outcome") or verification_outcome_for_payload(payload)
+    evidence_regime = payload.get("evidence_regime") or evidence_regime_for_payload(payload)
+    discovery_class = payload.get("discovery_class") or discovery_class_for_payload(payload)
     return {
         "run_id": result.run.run_id,
         "artifact_path": str(result.artifact_path),
@@ -3514,6 +3533,9 @@ def _run_summary(result: BenchmarkRunResult) -> dict[str, Any]:
         "raw_status": payload.get("raw_status"),
         "repair_status": payload.get("repair_status"),
         "claim_status": payload.get("claim_status"),
+        "verification_outcome": verification_outcome,
+        "evidence_regime": evidence_regime,
+        "discovery_class": discovery_class,
         "classification": classify_run(payload),
         "evidence_class": payload.get("evidence_class") or evidence_class_for_payload(payload),
         "reason": _run_reason(payload),
@@ -3552,6 +3574,106 @@ def _run_reason(payload: Mapping[str, Any]) -> str:
             return str(verification["reason"])
 
     return str(payload.get("status") or "unknown")
+
+
+def _payload_verification(payload: Mapping[str, Any], *, include_compile: bool = True) -> Mapping[str, Any]:
+    for key in ("trained_eml_verification",):
+        value = payload.get(key)
+        if isinstance(value, Mapping):
+            return value
+    warm_start = payload.get("warm_start_eml")
+    if isinstance(warm_start, Mapping) and isinstance(warm_start.get("verification"), Mapping):
+        return warm_start["verification"]
+    repair = payload.get("repair")
+    if isinstance(repair, Mapping) and isinstance(repair.get("verification"), Mapping):
+        return repair["verification"]
+    refit = payload.get("refit")
+    if isinstance(refit, Mapping):
+        post_refit = refit.get("post_refit_candidate")
+        if isinstance(post_refit, Mapping) and isinstance(post_refit.get("verification"), Mapping):
+            return post_refit["verification"]
+    if include_compile and isinstance(payload.get("compiled_eml_verification"), Mapping):
+        return payload["compiled_eml_verification"]
+    if isinstance(payload.get("verification"), Mapping):
+        return payload["verification"]
+    return {}
+
+
+def verification_outcome_for_payload(payload: Mapping[str, Any]) -> str:
+    """Return the verifier-layer outcome without interpreting discovery strength."""
+
+    status = str(payload.get("status") or "")
+    claim_status = str(payload.get("claim_status") or "")
+    if status == "execution_error":
+        return "not_performed"
+    if status == "unsupported" or claim_status == "unsupported":
+        return "unsupported"
+    run = payload.get("run") if isinstance(payload.get("run"), Mapping) else {}
+    verification = _payload_verification(payload, include_compile=str(run.get("start_mode") or "") == "compile")
+    if verification.get("status"):
+        return str(verification["status"])
+    if claim_status:
+        return claim_status
+    return status or "unknown"
+
+
+def evidence_regime_for_payload(payload: Mapping[str, Any]) -> str:
+    """Return the evidence bucket used for narrative and denominator separation."""
+
+    evidence_class = evidence_class_for_payload(payload)
+    classification = classify_run(payload)
+    run = payload.get("run") if isinstance(payload.get("run"), Mapping) else {}
+    start_mode = str(run.get("start_mode") or "")
+    verification_outcome = verification_outcome_for_payload(payload)
+
+    if evidence_class == EVIDENCE_CLASSES["unsupported"] or classification == "unsupported":
+        return "unsupported"
+    if evidence_class == EVIDENCE_CLASSES["execution_failure"] or classification == "execution_failure":
+        return "execution_failure"
+    if start_mode == "compile" and verification_outcome in {"recovered", "verified_showcase"}:
+        return "compile_only_verified_support"
+    if evidence_class == EVIDENCE_CLASSES["same_ast"]:
+        return "same_ast_seed_round_trip"
+    if evidence_class == EVIDENCE_CLASSES["verified_equivalent"]:
+        return "verified_equivalent_warm_start"
+    if evidence_class == EVIDENCE_CLASSES["repaired_candidate"]:
+        return "repaired_candidate"
+    if evidence_class in {
+        EVIDENCE_CLASSES["blind_training_recovered"],
+        EVIDENCE_CLASSES["scaffolded_blind_training_recovered"],
+        EVIDENCE_CLASSES["compiler_warm_start_recovered"],
+        EVIDENCE_CLASSES["perturbed_true_tree_recovered"],
+    }:
+        return evidence_class
+    if evidence_class in {
+        EVIDENCE_CLASSES["failed"],
+        EVIDENCE_CLASSES["snapped_but_failed"],
+        EVIDENCE_CLASSES["soft_fit_only"],
+    }:
+        return evidence_class
+    if start_mode == "catalog" and verification_outcome in {"recovered", "verified_showcase"}:
+        return "catalog_verified_support"
+    return evidence_class or classification or str(payload.get("status") or "unknown")
+
+
+def discovery_class_for_payload(payload: Mapping[str, Any]) -> str:
+    """Return the headline discovery class independent from verifier pass/fail."""
+
+    regime = evidence_regime_for_payload(payload)
+    if regime == "compile_only_verified_support":
+        return "compile_only_verified_support"
+    if regime in {"unsupported", "execution_failure"}:
+        return regime
+    if regime in {EVIDENCE_CLASSES["failed"], EVIDENCE_CLASSES["snapped_but_failed"], EVIDENCE_CLASSES["soft_fit_only"]}:
+        return "failed"
+    verification_outcome = verification_outcome_for_payload(payload)
+    run = payload.get("run") if isinstance(payload.get("run"), Mapping) else {}
+    start_mode = str(run.get("start_mode") or "")
+    if start_mode in {"blind", "warm_start", "perturbed_tree"} and verification_outcome in {"recovered", "verified_showcase"}:
+        return "trained_exact_recovery"
+    if regime == "catalog_verified_support":
+        return "catalog_verified_support"
+    return regime
 
 
 def classify_run(payload: Mapping[str, Any]) -> str:
@@ -3659,14 +3781,25 @@ def _blind_payload_used_scaffold(payload: Mapping[str, Any]) -> bool:
 
 def _aggregate_counts(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
     total = len(runs)
-    verifier_recovered = sum(1 for run in runs if run.get("claim_status") == "recovered")
+    verification_passed = sum(1 for run in runs if _verification_passed(run))
+    trained_exact_recovery = sum(1 for run in runs if _trained_exact_recovery(run))
+    compile_only_verified_support = sum(1 for run in runs if _compile_only_verified_support(run))
     evidence_classes: dict[str, int] = {}
+    evidence_regimes: dict[str, int] = {}
+    discovery_classes: dict[str, int] = {}
     for run in runs:
         evidence_class = str(run.get("evidence_class") or "unknown")
         evidence_classes[evidence_class] = evidence_classes.get(evidence_class, 0) + 1
+        evidence_regime = str(run.get("evidence_regime") or "unknown")
+        evidence_regimes[evidence_regime] = evidence_regimes.get(evidence_regime, 0) + 1
+        discovery_class = str(run.get("discovery_class") or "unknown")
+        discovery_classes[discovery_class] = discovery_classes.get(discovery_class, 0) + 1
     return {
         "total": total,
-        "verifier_recovered": verifier_recovered,
+        "verifier_recovered": verification_passed,
+        "verification_passed": verification_passed,
+        "trained_exact_recovery": trained_exact_recovery,
+        "compile_only_verified_support": compile_only_verified_support,
         "same_ast_return": sum(1 for run in runs if run["classification"] in {"same_ast_warm_start_return", "same_ast_return"}),
         "verified_equivalent_ast": sum(
             1 for run in runs if run["classification"] in {"verified_equivalent_warm_start_recovery", "verified_equivalent_ast"}
@@ -3675,9 +3808,26 @@ def _aggregate_counts(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
         "unsupported": sum(1 for run in runs if run["classification"] == "unsupported"),
         "failed": sum(1 for run in runs if run["classification"] in {"failed", "snapped_but_failed", "soft_fit_only"}),
         "execution_error": sum(1 for run in runs if run["classification"] == "execution_failure"),
-        "verifier_recovery_rate": verifier_recovered / total if total else 0.0,
+        "verifier_recovery_rate": verification_passed / total if total else 0.0,
+        "verification_passed_rate": verification_passed / total if total else 0.0,
+        "trained_exact_recovery_rate": trained_exact_recovery / total if total else 0.0,
+        "compile_only_verified_support_rate": compile_only_verified_support / total if total else 0.0,
         "evidence_classes": dict(sorted(evidence_classes.items())),
+        "evidence_regimes": dict(sorted(evidence_regimes.items())),
+        "discovery_classes": dict(sorted(discovery_classes.items())),
     }
+
+
+def _verification_passed(run: Mapping[str, Any]) -> bool:
+    return str(run.get("verification_outcome") or "") in {"recovered", "verified_showcase"}
+
+
+def _trained_exact_recovery(run: Mapping[str, Any]) -> bool:
+    return str(run.get("discovery_class") or "") == "trained_exact_recovery"
+
+
+def _compile_only_verified_support(run: Mapping[str, Any]) -> bool:
+    return str(run.get("discovery_class") or "") == "compile_only_verified_support"
 
 
 def _threshold_summary(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:

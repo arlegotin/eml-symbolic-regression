@@ -1348,12 +1348,18 @@ def test_v113_basis_only_compile_fails_closed_on_literal_coefficients(tmp_path):
             "track": "basis_only",
             "total": 1,
             "verifier_recovered": 0,
+            "verification_passed": 0,
+            "trained_exact_recovery": 0,
+            "compile_only_verified_support": 0,
             "unsupported": 1,
             "failed": 0,
             "verifier_recovery_rate": 0.0,
+            "trained_exact_recovery_rate": 0.0,
             "constants_policies": ["basis_only"],
             "formulas": ["beer_lambert"],
             "evidence_classes": {"unsupported": 1},
+            "evidence_regimes": {"unsupported": 1},
+            "discovery_classes": {"unsupported": 1},
         }
     ]
 

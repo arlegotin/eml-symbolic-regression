@@ -131,6 +131,8 @@ def test_publication_claim_audit_passes_recovered_rows_with_verifier_and_baselin
 
     assert audit["status"] == "passed"
     assert audit["recovered_claims"][0]["final_confirmation_status"] == "dense_adversarial_verifier_substitute"
+    assert audit["counts"]["trained_exact_recovery_rows"] == 1
+    assert audit["counts"]["compile_only_verified_support_rows"] == 0
 
 
 def test_publication_claim_audit_fails_missing_track_labels(tmp_path):
@@ -172,6 +174,61 @@ def test_publication_claim_audit_fails_missing_track_labels(tmp_path):
     assert audit["status"] == "failed"
     checks = {check["id"]: check for check in audit["checks"]}
     assert checks["recovered_rows_have_track_labels"]["status"] == "failed"
+
+
+def test_publication_claim_audit_rejects_compile_only_trained_recovery_promotion(tmp_path):
+    artifact = tmp_path / "compile.json"
+    artifact.write_text(
+        json.dumps(
+            {
+                "compiled_eml_verification": {
+                    "status": "recovered",
+                    "metric_roles": {"final_confirmation": 1},
+                    "dense_random_status": "passed",
+                    "adversarial_status": "passed",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    aggregate = tmp_path / "aggregate.json"
+    aggregate.write_text(
+        json.dumps(
+            {
+                "counts": {"failed": 0, "execution_error": 0, "unsupported": 0},
+                "tracks": [{"track": "basis_only"}, {"track": "literal_constants"}],
+                "runs": [
+                    {
+                        "run_id": "compile-promoted",
+                        "formula": "exp",
+                        "start_mode": "compile",
+                        "claim_status": "recovered",
+                        "verification_outcome": "recovered",
+                        "discovery_class": "trained_exact_recovery",
+                        "evidence_class": "compile_only_verified",
+                        "benchmark_track": "basis_only",
+                        "constants_policy": "basis_only",
+                        "artifact_path": str(artifact),
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    baseline_manifest = tmp_path / "baseline-manifest.json"
+    baseline_manifest.write_text(json.dumps({"denominator_policy": "excluded_from_eml_recovery_denominators"}), encoding="utf-8")
+
+    audit = build_publication_claim_audit(
+        {
+            "paper_tracks": {"aggregate_json": str(aggregate)},
+            "baseline_harness": {"manifest_json": str(baseline_manifest)},
+        }
+    )
+
+    checks = {check["id"]: check for check in audit["checks"]}
+    assert audit["status"] == "failed"
+    assert checks["compile_only_excluded_from_trained_recovery"]["status"] == "failed"
+    assert checks["compile_only_excluded_from_trained_recovery"]["details"]["compile_rows_in_trained"] == ["compile-promoted"]
 
 
 def test_publication_validation_rejects_placeholder_metadata(tmp_path):

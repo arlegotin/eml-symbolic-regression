@@ -187,7 +187,6 @@ def build_publication_claim_audit(evidence: Mapping[str, Any], *, smoke: bool = 
     aggregate = _read_json(aggregate_path) if aggregate_path.is_file() else {}
     runs = aggregate.get("runs") if isinstance(aggregate.get("runs"), list) else []
     counts = aggregate.get("counts") if isinstance(aggregate.get("counts"), Mapping) else {}
-    recovered = [run for run in runs if str(run.get("claim_status")) == "recovered" or str(run.get("status")) == "recovered"]
 
     _check(
         checks,
@@ -212,12 +211,22 @@ def build_publication_claim_audit(evidence: Mapping[str, Any], *, smoke: bool = 
         {"tracks": sorted(track_names)},
     )
 
+    verification_passed = [run for run in runs if _run_verification_passed(run)]
+    recovered = [run for run in runs if _run_trained_exact_recovery(run)]
+    compile_only_support = [run for run in runs if _run_compile_only_verified_support(run)]
+    compile_rows_in_trained = [
+        str(run.get("run_id") or run.get("case_id") or "unknown")
+        for run in recovered
+        if str(run.get("start_mode") or "") == "compile" or str(run.get("evidence_class") or "") == "compile_only_verified"
+    ]
+
     recovered_claims: list[dict[str, Any]] = []
+    compile_only_support_claims: list[dict[str, Any]] = []
     missing_verifier: list[str] = []
     missing_track: list[str] = []
     missing_artifact: list[str] = []
     missing_final_or_substitute: list[str] = []
-    for run in recovered:
+    for run in verification_passed:
         run_id = str(run.get("run_id") or run.get("case_id") or "unknown")
         artifact_path = Path(str(run.get("artifact_path") or ""))
         artifact = _read_json(artifact_path) if artifact_path.is_file() else {}
@@ -231,46 +240,78 @@ def build_publication_claim_audit(evidence: Mapping[str, Any], *, smoke: bool = 
             missing_track.append(run_id)
         if final_status["status"] == "missing":
             missing_final_or_substitute.append(run_id)
-        recovered_claims.append(
-            {
-                "run_id": run_id,
-                "formula": run.get("formula"),
-                "benchmark_track": run.get("benchmark_track"),
-                "constants_policy": run.get("constants_policy"),
-                "artifact_path": str(artifact_path),
-                "artifact_sha256": _sha256(artifact_path) if artifact_path.is_file() else None,
-                "verifier_status": verification.get("status") if verification else None,
-                "final_confirmation_status": final_status["status"],
-            }
-        )
+        row = {
+            "run_id": run_id,
+            "formula": run.get("formula"),
+            "benchmark_track": run.get("benchmark_track"),
+            "constants_policy": run.get("constants_policy"),
+            "artifact_path": str(artifact_path),
+            "artifact_sha256": _sha256(artifact_path) if artifact_path.is_file() else None,
+            "verification_outcome": _run_verification_outcome(run),
+            "evidence_regime": run.get("evidence_regime"),
+            "discovery_class": _run_discovery_class(run),
+            "verifier_status": verification.get("status") if verification else None,
+            "final_confirmation_status": final_status["status"],
+        }
+        if _run_compile_only_verified_support(run):
+            compile_only_support_claims.append(row)
+        elif _run_trained_exact_recovery(run):
+            recovered_claims.append(row)
 
     _check(
         checks,
         "recovered_rows_have_verifier_evidence",
         not missing_verifier,
-        "Recovered rows have verifier evidence payloads.",
-        {"missing": missing_verifier, "recovered_count": len(recovered)},
+        "Verification-passed rows have verifier evidence payloads.",
+        {"missing": missing_verifier, "verification_passed_count": len(verification_passed)},
     )
     _check(
         checks,
         "recovered_rows_have_track_labels",
         not missing_track,
-        "Recovered rows carry benchmark track and constants policy labels.",
+        "Verification-passed rows carry benchmark track and constants policy labels.",
         {"missing": missing_track},
     )
     _check(
         checks,
         "recovered_rows_have_source_artifacts",
         not missing_artifact,
-        "Recovered rows link existing source artifacts.",
+        "Verification-passed rows link existing source artifacts.",
         {"missing": missing_artifact},
     )
     _check(
         checks,
         "recovered_rows_have_final_confirmation_or_substitute",
         not missing_final_or_substitute,
-        "Recovered rows have final-confirmation status or stronger verifier-evidence substitute.",
+        "Verification-passed rows have final-confirmation status or stronger verifier-evidence substitute.",
         {"missing": missing_final_or_substitute},
+    )
+    _check(
+        checks,
+        "compile_only_excluded_from_trained_recovery",
+        not compile_rows_in_trained,
+        "Compile-only verified support rows are excluded from trained recovery claims.",
+        {"compile_rows_in_trained": compile_rows_in_trained, "compile_only_support_count": len(compile_only_support)},
+    )
+    headline_actual = {
+        "trained_exact_recovery_rows": len(recovered),
+        "compile_only_verified_support_rows": len(compile_only_support),
+        "unsupported_rows": int(counts.get("unsupported", 0) or 0),
+        "failed_rows": int(counts.get("failed", 0) or 0) + int(counts.get("execution_error", 0) or 0),
+    }
+    headline_expected = {
+        "trained_exact_recovery_rows": 8,
+        "compile_only_verified_support_rows": 1,
+        "unsupported_rows": 15,
+        "failed_rows": 0,
+    }
+    headline_applies = _is_publication_track_aggregate(aggregate)
+    _check(
+        checks,
+        "paper_track_corrected_headline_counts",
+        (not headline_applies) or headline_actual == headline_expected,
+        "Paper-track headline counts use trained recovery and compile-only support as separate axes.",
+        {"applied": headline_applies, "actual": headline_actual, "expected": headline_expected},
     )
 
     baseline = evidence.get("baseline_harness") if isinstance(evidence.get("baseline_harness"), Mapping) else {}
@@ -291,10 +332,15 @@ def build_publication_claim_audit(evidence: Mapping[str, Any], *, smoke: bool = 
         "status": status,
         "checks": checks,
         "recovered_claims": recovered_claims,
+        "compile_only_support_claims": compile_only_support_claims,
         "counts": {
             "paper_track_rows": len(runs),
+            "verification_passed_rows": len(verification_passed),
             "recovered_rows": len(recovered),
+            "trained_exact_recovery_rows": len(recovered),
+            "compile_only_verified_support_rows": len(compile_only_support),
             "unsupported_rows": int(counts.get("unsupported", 0) or 0),
+            "failed_rows": int(counts.get("failed", 0) or 0) + int(counts.get("execution_error", 0) or 0),
         },
     }
 
@@ -602,6 +648,58 @@ def _verification_payload(artifact: Mapping[str, Any]) -> Mapping[str, Any]:
     return {}
 
 
+def _run_verification_outcome(run: Mapping[str, Any]) -> str:
+    if run.get("verification_outcome") is not None:
+        return str(run["verification_outcome"])
+    if str(run.get("status") or "") == "unsupported" or str(run.get("claim_status") or "") == "unsupported":
+        return "unsupported"
+    if str(run.get("status") or "") == "execution_error":
+        return "not_performed"
+    if run.get("claim_status") is not None:
+        return str(run["claim_status"])
+    if run.get("status") is not None:
+        return str(run["status"])
+    return "unknown"
+
+
+def _run_verification_passed(run: Mapping[str, Any]) -> bool:
+    return _run_verification_outcome(run) in {"recovered", "verified_showcase"}
+
+
+def _run_discovery_class(run: Mapping[str, Any]) -> str:
+    if run.get("discovery_class") is not None:
+        return str(run["discovery_class"])
+    if not _run_verification_passed(run):
+        if str(run.get("classification") or "") == "unsupported" or str(run.get("status") or "") == "unsupported":
+            return "unsupported"
+        return "failed" if str(run.get("status") or "") in {"failed", "snapped_but_failed", "soft_fit_only"} else "unknown"
+    start_mode = str(run.get("start_mode") or "")
+    if start_mode == "compile" or str(run.get("evidence_class") or "") == "compile_only_verified":
+        return "compile_only_verified_support"
+    if start_mode in {"blind", "warm_start", "perturbed_tree"} or not start_mode:
+        return "trained_exact_recovery"
+    if start_mode == "catalog":
+        return "catalog_verified_support"
+    return "unknown"
+
+
+def _run_trained_exact_recovery(run: Mapping[str, Any]) -> bool:
+    return _run_discovery_class(run) == "trained_exact_recovery"
+
+
+def _run_compile_only_verified_support(run: Mapping[str, Any]) -> bool:
+    return _run_discovery_class(run) == "compile_only_verified_support"
+
+
+def _is_publication_track_aggregate(aggregate: Mapping[str, Any]) -> bool:
+    suite = aggregate.get("suite") if isinstance(aggregate.get("suite"), Mapping) else {}
+    if suite.get("id") == "v1.13-paper-tracks":
+        return True
+    tracks = {str(track.get("track")) for track in aggregate.get("tracks", []) if isinstance(track, Mapping)}
+    runs = aggregate.get("runs") if isinstance(aggregate.get("runs"), list) else []
+    return len(runs) == 24 and {"basis_only", "literal_constants"} <= tracks
+
+
 def _final_confirmation_or_substitute_status(verification: Mapping[str, Any]) -> dict[str, str]:
     roles = verification.get("metric_roles") if isinstance(verification.get("metric_roles"), Mapping) else {}
     if int(roles.get("final_confirmation", 0) or 0) > 0:
@@ -650,10 +748,19 @@ def _copy_public_path(source: Path, target: Path) -> None:
 
 
 def _claim_audit_markdown(audit: Mapping[str, Any]) -> str:
+    counts = audit.get("counts") if isinstance(audit.get("counts"), Mapping) else {}
     lines = [
         "# v1.13 Claim Audit",
         "",
         f"Status: `{audit['status']}`",
+        "",
+        "## Corrected Headline Counts",
+        "",
+        f"- Verification-passed rows: `{counts.get('verification_passed_rows', 0)}`",
+        f"- Trained exact recovery rows: `{counts.get('trained_exact_recovery_rows', 0)}`",
+        f"- Compile-only verified support rows: `{counts.get('compile_only_verified_support_rows', 0)}`",
+        f"- Unsupported rows: `{counts.get('unsupported_rows', 0)}`",
+        f"- Failed rows: `{counts.get('failed_rows', 0)}`",
         "",
         "| Check | Status |",
         "|-------|--------|",
@@ -667,6 +774,14 @@ def _claim_audit_markdown(audit: Mapping[str, Any]) -> str:
             f"{claim.get('constants_policy')} / {claim.get('final_confirmation_status')}"
         )
     if not audit.get("recovered_claims"):
+        lines.append("- None in this mode.")
+    lines.extend(["", "## Compile-only Verified Support", ""])
+    for claim in audit.get("compile_only_support_claims", []):
+        lines.append(
+            f"- `{claim['run_id']}`: {claim.get('formula')} / {claim.get('benchmark_track')} / "
+            f"{claim.get('constants_policy')} / {claim.get('final_confirmation_status')}"
+        )
+    if not audit.get("compile_only_support_claims"):
         lines.append("- None in this mode.")
     return "\n".join(lines) + "\n"
 

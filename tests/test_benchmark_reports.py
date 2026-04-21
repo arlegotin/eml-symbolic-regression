@@ -176,7 +176,61 @@ def test_aggregate_evidence_keeps_benchmark_track_denominators_separate():
     assert tracks["literal_constants"]["constants_policies"] == ["literal_constants"]
     assert {group["key"] for group in aggregate["groups"]["benchmark_track"]} == {"basis_only", "literal_constants"}
     assert "## Track Denominators" in markdown
-    assert "| basis_only | 1 | 0 | 1 | 0 | 0.000 | basis_only |" in markdown
+    assert "| basis_only | 1 | 0 | 0 | 0 | 1 | 0 | 0.000 | basis_only |" in markdown
+
+
+def test_aggregate_evidence_separates_verification_passed_from_trained_recovery():
+    suite = BenchmarkSuite("synthetic-two-axis", "synthetic two-axis aggregate", ())
+    result = SimpleNamespace(
+        suite=suite,
+        results=(
+            _synthetic_result(
+                case_id="compile-support",
+                start_mode="compile",
+                training_mode="compile_only_verification",
+                evidence_class="compile_only_verified",
+                claim_id=None,
+                claim_class=None,
+                threshold_policy_id=None,
+                track="basis_only",
+                constants_policy="basis_only",
+            ),
+            _synthetic_result(
+                case_id="warm-trained",
+                start_mode="warm_start",
+                training_mode="compiler_warm_start_training",
+                evidence_class="same_ast",
+                status="same_ast_return",
+                claim_id=None,
+                claim_class=None,
+                threshold_policy_id=None,
+            ),
+            _synthetic_result(
+                case_id="unsupported",
+                start_mode="compile",
+                training_mode="compile_only_verification",
+                evidence_class="unsupported",
+                status="unsupported",
+                claim_status="unsupported",
+                claim_id=None,
+                claim_class=None,
+                threshold_policy_id=None,
+                track="basis_only",
+                constants_policy="basis_only",
+            ),
+        ),
+    )
+
+    aggregate = aggregate_evidence(result)
+    rows = {run["case_id"]: run for run in aggregate["runs"]}
+
+    assert aggregate["counts"]["verification_passed"] == 2
+    assert aggregate["counts"]["trained_exact_recovery"] == 1
+    assert aggregate["counts"]["compile_only_verified_support"] == 1
+    assert rows["compile-support"]["verification_outcome"] == "recovered"
+    assert rows["compile-support"]["discovery_class"] == "compile_only_verified_support"
+    assert rows["warm-trained"]["discovery_class"] == "trained_exact_recovery"
+    assert rows["unsupported"]["verification_outcome"] == "unsupported"
 
 
 def test_warm_start_depth_gate_overrides_compiled_seed_claim_status(tmp_path):

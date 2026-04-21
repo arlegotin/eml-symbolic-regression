@@ -429,7 +429,9 @@ def write_campaign_report(
         "| Metric | Value |",
         "|--------|-------|",
         f"| Total runs | {headline['total_runs']} |",
-        f"| Verifier recovered | {headline['verifier_recovered']} ({headline['verifier_recovery_rate']:.1%}) |",
+        f"| Verification-passed rows | {headline['verification_passed']} ({headline['verification_passed_rate']:.1%}) |",
+        f"| Trained exact recoveries | {headline['trained_exact_recovery']} ({headline['trained_exact_recovery_rate']:.1%}) |",
+        f"| Compile-only verified support | {headline['compile_only_verified_support']} ({headline['compile_only_verified_support_rate']:.1%}) |",
         f"| Same-AST exact returns | {headline['same_ast_return']} ({headline['same_ast_return_rate']:.1%}) |",
         f"| Verified-equivalent exact returns | {headline['verified_equivalent_ast']} |",
         f"| Unsupported | {headline['unsupported']} ({headline['unsupported_rate']:.1%}) |",
@@ -613,6 +615,9 @@ _RUN_COLUMNS = [
     "recovery_class",
     "status",
     "claim_status",
+    "verification_outcome",
+    "evidence_regime",
+    "discovery_class",
     "claim_id",
     "claim_class",
     "training_mode",
@@ -641,6 +646,9 @@ _GROUP_COLUMNS = [
     "group",
     "total",
     "verifier_recovered",
+    "verification_passed",
+    "trained_exact_recovery",
+    "compile_only_verified_support",
     "same_ast_return",
     "verified_equivalent_ast",
     "unsupported",
@@ -771,6 +779,9 @@ def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
         "recovery_class": run.get("classification"),
         "status": run.get("status"),
         "claim_status": run.get("claim_status"),
+        "verification_outcome": run.get("verification_outcome"),
+        "evidence_regime": run.get("evidence_regime"),
+        "discovery_class": run.get("discovery_class"),
         "claim_id": run.get("claim_id"),
         "claim_class": run.get("claim_class"),
         "training_mode": run.get("training_mode"),
@@ -1009,7 +1020,9 @@ def _group_rows(runs: list[Mapping[str, Any]], key: str | Any) -> list[dict[str,
 
 def _count_summary(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
     total = len(runs)
-    verifier_recovered = sum(1 for run in runs if run.get("claim_status") == "recovered")
+    verifier_recovered = sum(1 for run in runs if _verification_passed(run))
+    trained_exact = sum(1 for run in runs if _trained_exact_recovery(run))
+    compile_support = sum(1 for run in runs if _compile_only_verified_support(run))
     classes = [_summary_class(run) for run in runs]
     same_ast = sum(1 for run in runs if _is_same_ast_return(run))
     verified_equivalent = sum(1 for run in runs if _is_verified_equivalent_return(run))
@@ -1019,12 +1032,18 @@ def _count_summary(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
     return {
         "total": total,
         "verifier_recovered": verifier_recovered,
+        "verification_passed": verifier_recovered,
+        "trained_exact_recovery": trained_exact,
+        "compile_only_verified_support": compile_support,
         "same_ast_return": same_ast,
         "verified_equivalent_ast": verified_equivalent,
         "unsupported": unsupported,
         "failed": failed,
         "execution_error": execution_error,
         "verifier_recovery_rate": _rate(verifier_recovered, total),
+        "verification_passed_rate": _rate(verifier_recovered, total),
+        "trained_exact_recovery_rate": _rate(trained_exact, total),
+        "compile_only_verified_support_rate": _rate(compile_support, total),
         "unsupported_rate": _rate(unsupported, total),
         "failure_rate": _rate(failed + execution_error, total),
     }
@@ -1032,6 +1051,27 @@ def _count_summary(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
 
 def _summary_class(run: Mapping[str, Any]) -> str:
     return str(run.get("evidence_class") or run.get("classification") or "unknown")
+
+
+def _verification_passed(run: Mapping[str, Any]) -> bool:
+    verification_outcome = run.get("verification_outcome")
+    if verification_outcome is not None:
+        return str(verification_outcome) in {"recovered", "verified_showcase"}
+    return str(run.get("claim_status") or "") in {"recovered", "verified_showcase"}
+
+
+def _trained_exact_recovery(run: Mapping[str, Any]) -> bool:
+    discovery_class = run.get("discovery_class")
+    if discovery_class is not None:
+        return str(discovery_class) == "trained_exact_recovery"
+    return _verification_passed(run) and str(run.get("start_mode") or "") in {"blind", "warm_start", "perturbed_tree"}
+
+
+def _compile_only_verified_support(run: Mapping[str, Any]) -> bool:
+    discovery_class = run.get("discovery_class")
+    if discovery_class is not None:
+        return str(discovery_class) == "compile_only_verified_support"
+    return _verification_passed(run) and str(run.get("start_mode") or "") == "compile"
 
 
 def _count_phrase(count: int, singular: str, plural: str | None = None) -> str:
@@ -1060,6 +1100,12 @@ def _headline_metrics(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
         "total_runs": total,
         "verifier_recovered": counts["verifier_recovered"],
         "verifier_recovery_rate": counts["verifier_recovery_rate"],
+        "verification_passed": counts["verification_passed"],
+        "verification_passed_rate": counts["verification_passed_rate"],
+        "trained_exact_recovery": counts["trained_exact_recovery"],
+        "trained_exact_recovery_rate": counts["trained_exact_recovery_rate"],
+        "compile_only_verified_support": counts["compile_only_verified_support"],
+        "compile_only_verified_support_rate": counts["compile_only_verified_support_rate"],
         "unsupported": counts["unsupported"],
         "unsupported_rate": counts["unsupported_rate"],
         "failed": counts["failed"],
@@ -1154,7 +1200,9 @@ def _write_csv(path: Path, rows: list[Mapping[str, Any]], fieldnames: list[str])
 
 
 def _strengths_paragraph(runs: list[Mapping[str, Any]], counts: Mapping[str, Any]) -> str:
-    recovered = int(counts.get("verifier_recovered", 0))
+    verification_passed = int(counts.get("verification_passed", counts.get("verifier_recovered", 0)))
+    trained_exact = int(counts.get("trained_exact_recovery", 0))
+    compile_support = int(counts.get("compile_only_verified_support", 0))
     same_ast = int(counts.get("same_ast_return", 0))
     equivalent = int(counts.get("verified_equivalent_ast", 0))
     total = int(counts.get("total", 0))
@@ -1166,20 +1214,20 @@ def _strengths_paragraph(runs: list[Mapping[str, Any]], counts: Mapping[str, Any
     scaffolded_blind = sum(1 for run in blind_runs if run.get("evidence_class") == "scaffolded_blind_training_recovered")
     pure_blind = sum(1 for run in blind_runs if run.get("evidence_class") == "blind_training_recovered")
     repaired = sum(1 for run in runs if run.get("classification") == "repaired_candidate")
-    blind_recovered = sum(1 for run in blind_runs if run.get("claim_status") == "recovered")
+    blind_recovered = sum(1 for run in blind_runs if _trained_exact_recovery(run))
 
     if blind_runs and not (warm_runs or compile_runs or catalog_runs or perturbed_runs):
         if scaffolded_blind:
             return (
                 f"This campaign shows the strongest current bounded blind-training behavior in this bundle: "
-                f"{recovered}/{total} blind runs passed verifier-owned recovery, and all {scaffolded_blind} recovered rows are "
+                f"{trained_exact}/{total} blind runs are trained exact recoveries, and all {scaffolded_blind} recovered rows are "
                 "scaffolded blind recoveries. Read these results as bounded scaffolded-training evidence, not as pure random-initialized "
                 "blind discovery."
             )
         repaired_note = f", plus {_count_phrase(repaired, 'repaired candidate')}" if repaired else ""
         return (
             f"This campaign measures the current pure random-initialized blind boundary: "
-            f"{recovered}/{total} blind runs passed verifier-owned recovery, including "
+            f"{trained_exact}/{total} blind runs are trained exact recoveries, including "
             f"{_count_phrase(pure_blind, 'threshold-eligible pure blind recovery', 'threshold-eligible pure blind recoveries')}"
             f"{repaired_note}. "
             "These rows are recovery-boundary evidence, not warm-start basin evidence."
@@ -1187,21 +1235,22 @@ def _strengths_paragraph(runs: list[Mapping[str, Any]], counts: Mapping[str, Any
 
     if perturbed_runs and not (blind_runs or warm_runs or compile_runs or catalog_runs):
         return (
-            f"This campaign isolates the perturbed true-tree basin: {recovered}/{total} perturbed runs passed verifier-owned recovery, "
+            f"This campaign isolates the perturbed true-tree basin: {trained_exact}/{total} perturbed runs are trained exact recoveries, "
             f"with {same_ast} same-AST returns, {equivalent} verified-equivalent returns, and {repaired} repaired candidates. "
             "Those outcomes demonstrate local basin and repair behavior, not blind-discovery performance."
         )
 
     if warm_runs and not (blind_runs or compile_runs or catalog_runs or perturbed_runs):
         return (
-            f"This campaign isolates warm-start recovery behavior: {recovered}/{total} runs passed verifier-owned recovery, "
+            f"This campaign isolates warm-start exact-return behavior: {trained_exact}/{total} runs are trained exact recoveries, "
             f"with {same_ast} returns to the same compiled EML AST and {equivalent} verified-equivalent returns. "
             "Those are recovery and basin checks, not blind-discovery claims."
         )
 
     return (
         f"This campaign shows the strongest current mixed-regime behavior when the EML representation is verified after snapping: "
-        f"{recovered}/{total} runs passed verifier-owned recovery. It includes {blind_recovered}/{len(blind_runs) if blind_runs else 0} "
+        f"{verification_passed}/{total} rows passed verification, split into {trained_exact} trained exact recoveries and "
+        f"{compile_support} compile-only verified support rows. It includes {blind_recovered}/{len(blind_runs) if blind_runs else 0} "
         f"blind recoveries, {same_ast} same-AST exact returns, and {equivalent} verified-equivalent exact returns. "
         "Those evidence paths remain separated in the tables so blind discovery, warm-start basin behavior, and non-training diagnostics are "
         "not merged into one claim."
@@ -1212,14 +1261,16 @@ def _regime_summary_section(runs: list[Mapping[str, Any]]) -> list[str]:
     lines = [
         "## Regime Summary",
         "",
-        "| Regime | Runs | Verifier Recovered | Same AST | Verified Equivalent | Unsupported | Failed |",
-        "|--------|------|--------------------|----------|---------------------|-------------|--------|",
+        "| Regime | Runs | Verification Passed | Trained Exact | Compile-only Support | Same AST | Verified Equivalent | Unsupported | Failed |",
+        "|--------|------|---------------------|---------------|----------------------|----------|---------------------|-------------|--------|",
     ]
     for regime in ("blind", "warm_start", "compile", "catalog", "perturbed_tree"):
         regime_runs = [run for run in runs if run.get("start_mode") == regime]
         lines.append(
             f"| {regime} | {len(regime_runs)} | "
-            f"{sum(1 for run in regime_runs if run.get('claim_status') == 'recovered')} | "
+            f"{sum(1 for run in regime_runs if _verification_passed(run))} | "
+            f"{sum(1 for run in regime_runs if _trained_exact_recovery(run))} | "
+            f"{sum(1 for run in regime_runs if _compile_only_verified_support(run))} | "
             f"{sum(1 for run in regime_runs if _is_same_ast_return(run))} | "
             f"{sum(1 for run in regime_runs if _is_verified_equivalent_return(run))} | "
             f"{sum(1 for run in regime_runs if run.get('classification') == 'unsupported')} | "
@@ -1356,9 +1407,7 @@ def _depth_curve_report_section(aggregate: Mapping[str, Any]) -> list[str]:
 
 def _limitations_section(runs: list[Mapping[str, Any]]) -> str:
     blind_total = sum(1 for run in runs if run.get("start_mode") == "blind")
-    blind_recovered = sum(
-        1 for run in runs if run.get("start_mode") == "blind" and run.get("claim_status") == "recovered"
-    )
+    blind_recovered = sum(1 for run in runs if run.get("start_mode") == "blind" and _trained_exact_recovery(run))
     blind_pure_recovered = sum(
         1 for run in runs if run.get("start_mode") == "blind" and run.get("evidence_class") == "blind_training_recovered"
     )

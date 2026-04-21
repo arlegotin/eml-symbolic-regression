@@ -499,7 +499,7 @@ def test_proof_basin_report_names_probe_suite_and_status_taxonomy(tmp_path):
     assert "`raw_status`" in report
     assert "`repair_status`" in report
     assert "| Same-AST exact returns | 1 (50.0%) |" in report
-    assert "| perturbed_tree | 2 | 1 | 1 | 0 | 0 | 1 |" in report
+    assert "| perturbed_tree | 2 | 1 | 1 | 0 | 1 | 0 | 0 | 1 |" in report
     assert "paper-perturbed-true-tree-basin" in proof_section
     assert "basin-beer-lambert-bound-probes" not in proof_section
 
