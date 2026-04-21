@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.14
 milestone_name: Evidence claim integrity and audit hardening
-current_phase: 80
-current_phase_name: "Multivariate Verifier Target Matching"
-status: Ready for Phase 80
-stopped_at: phase 79 complete
+current_phase: 81
+current_phase_name: "Corrected Evidence Rebuild and Claim Audit"
+status: Ready for Phase 81
+stopped_at: phase 80 complete
 last_updated: "2026-04-21T00:00:00.000Z"
 last_activity: 2026-04-21
 progress:
   total_phases: 5
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 5
-  completed_plans: 3
-  percent: 60
+  completed_plans: 4
+  percent: 80
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 80 - Multivariate Verifier Target Matching
+**Current phase:** Phase 81 - Corrected Evidence Rebuild and Claim Audit
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,15 +31,15 @@ See: `.planning/PROJECT.md` (updated 2026-04-21)
 
 ## Current Position
 
-Phase: 80 - Multivariate Verifier Target Matching
+Phase: 81 - Corrected Evidence Rebuild and Claim Audit
 Plan: Not started
-Status: Ready for Phase 80
-Last activity: 2026-04-21 - Phase 79 complete
-Progress: [######----] 60% by completed phases
+Status: Ready for Phase 81
+Last activity: 2026-04-21 - Phase 80 complete
+Progress: [########--] 80% by completed phases
 
 ## Current Milestone
 
-v1.14 Evidence claim integrity and audit hardening is open. Phases 77-79 are complete; continue with Phase 80: Multivariate Verifier Target Matching.
+v1.14 Evidence claim integrity and audit hardening is open. Phases 77-80 are complete; continue with Phase 81: Corrected Evidence Rebuild and Claim Audit.
 
 ## Artifacts
 
@@ -64,6 +64,7 @@ v1.14 Evidence claim integrity and audit hardening is open. Phases 77-79 are com
 | Phase 77 artifacts | `.planning/phases/77-two-axis-recovery-accounting-and-headline-rebuild/` | Complete |
 | Phase 78 artifacts | `.planning/phases/78-warm-start-evidence-relabeling/` | Complete |
 | Phase 79 artifacts | `.planning/phases/79-baseline-claim-surface-quarantine/` | Complete |
+| Phase 80 artifacts | `.planning/phases/80-multivariate-verifier-target-matching/` | Complete |
 
 ## Accumulated Context
 
@@ -89,10 +90,11 @@ v1.14 Evidence claim integrity and audit hardening is open. Phases 77-79 are com
 - Phase 77 added separate `verification_outcome`, `evidence_regime`, and `discovery_class` accounting fields. Compile-only verified support is no longer counted as trained exact recovery.
 - Phase 78 added explicit `warm_start_evidence`, `ast_return_status`, and `total_restarts` fields. Zero-perturbation same-AST warm starts are labeled `exact_seed_round_trip`.
 - Phase 79 added baseline launch/quarantine fields and claim-audit checks. Current baseline rows remain diagnostic/future-work context, not public comparator evidence.
+- Phase 80 fixed high-precision target lookup for multivariate splits without `target_mpmath` by matching the full input row.
 
 ### Pending Todos
 
-- Start Phase 80 with `$gsd-discuss-phase 80` or `$gsd-plan-phase 80`.
+- Start Phase 81 with `$gsd-discuss-phase 81` or `$gsd-plan-phase 81`.
 
 ### Deferred Items
 
@@ -143,4 +145,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-21 after Phase 79 completion*
+*Last updated: 2026-04-21 after Phase 80 completion*
