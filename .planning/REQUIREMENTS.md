@@ -92,4 +92,4 @@ Deferred unless explicitly promoted into the active roadmap.
 
 ---
 *Requirements defined: 2026-04-21*
-*Last updated: 2026-04-21 after v1.14 requirements definition*
+*Last updated: 2026-04-21 after v1.14 roadmap creation*

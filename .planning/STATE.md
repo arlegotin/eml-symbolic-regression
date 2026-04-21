@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.14
 milestone_name: Evidence claim integrity and audit hardening
-current_phase: null
-current_phase_name: None
-status: Defining requirements
-stopped_at: milestone started
+current_phase: 77
+current_phase_name: "Phase 77 pending"
+status: Ready for Phase 77
+stopped_at: roadmap created
 last_updated: "2026-04-21T00:00:00.000Z"
 last_activity: 2026-04-21
 progress:
-  total_phases: 0
+  total_phases: 5
   completed_phases: 0
-  total_plans: 0
+  total_plans: 5
   completed_plans: 0
   percent: 0
 ---
@@ -19,7 +19,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Not started
+**Current phase:** Phase 77 pending
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,15 +31,15 @@ See: `.planning/PROJECT.md` (updated 2026-04-21)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-21 - Milestone v1.14 started
+Phase: 77 - Two-Axis Recovery Accounting and Headline Rebuild
+Plan: Not started
+Status: Ready for Phase 77
+Last activity: 2026-04-21 - Milestone v1.14 requirements and roadmap created
 Progress: [----------] 0% by completed phases
 
 ## Current Milestone
 
-v1.14 Evidence claim integrity and audit hardening is open. The next phase should start at Phase 77.
+v1.14 Evidence claim integrity and audit hardening is open. Start with Phase 77: Two-Axis Recovery Accounting and Headline Rebuild.
 
 ## Artifacts
 
@@ -48,8 +48,8 @@ v1.14 Evidence claim integrity and audit hardening is open. The next phase shoul
 | Project context | `.planning/PROJECT.md` | Updated for v1.14 |
 | Archived v1.12 requirements | `.planning/milestones/v1.12-REQUIREMENTS.md` | Complete |
 | Archived requirements | `.planning/milestones/v1.13-REQUIREMENTS.md` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Pending v1.14 definition |
-| Roadmap | `.planning/ROADMAP.md` | Pending v1.14 roadmap; next phase starts at 77 |
+| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.14 |
+| Roadmap | `.planning/ROADMAP.md` | Created for v1.14; next phase starts at 77 |
 | Research summary | `.planning/research/SUMMARY.md` | Reuse existing context; no new domain research selected |
 | Workflow config | `.planning/config.json` | Complete |
 | Milestone log | `.planning/MILESTONES.md` | Complete through v1.13 |
@@ -86,7 +86,7 @@ v1.14 Evidence claim integrity and audit hardening is open. The next phase shoul
 
 ### Pending Todos
 
-- Define v1.14 requirements and roadmap from the post-v1.13 audit findings.
+- Start Phase 77 with `$gsd-discuss-phase 77` or `$gsd-plan-phase 77`.
 
 ### Deferred Items
 
@@ -137,4 +137,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-21 after v1.14 milestone start*
+*Last updated: 2026-04-21 after v1.14 roadmap creation*
