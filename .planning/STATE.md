@@ -135,6 +135,7 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 | 2026-04-20 | README unverified EML trial plot curves | Complete | `.planning/quick/260420-oth-show-unverified-eml-trial-curves-and-fun/` |
 | 2026-04-20 | README EML status plot restyle | Complete | `.planning/quick/260420-p1b-restyle-readme-plot-gallery-with-status-/` |
 | 2026-04-20 | Hide workflows from main and shorten update commit | Complete | `.planning/quick/260420-p9c-hide-github-workflows-from-generated-mai/` |
+| 2026-04-21 | Remove oversized generated publication artifact from history | Complete | `.planning/quick/260421-g4k-remove-oversized-unused-artifacts-from-g/` |
 
 ### Blockers/Concerns
 
@@ -148,4 +149,4 @@ Stopped at: v1.14 phases complete
 Resume file: None
 
 ---
-*Last updated: 2026-04-21 after Phase 81 completion*
+*Last updated: 2026-04-21 after oversized artifact cleanup*
