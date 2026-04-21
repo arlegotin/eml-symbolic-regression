@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.14
 milestone_name: Evidence claim integrity and audit hardening
-current_phase: 79
-current_phase_name: "Baseline Claim Surface Quarantine"
-status: Ready for Phase 79
-stopped_at: phase 78 complete
+current_phase: 80
+current_phase_name: "Multivariate Verifier Target Matching"
+status: Ready for Phase 80
+stopped_at: phase 79 complete
 last_updated: "2026-04-21T00:00:00.000Z"
 last_activity: 2026-04-21
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 5
-  completed_plans: 2
-  percent: 40
+  completed_plans: 3
+  percent: 60
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 79 - Baseline Claim Surface Quarantine
+**Current phase:** Phase 80 - Multivariate Verifier Target Matching
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,15 +31,15 @@ See: `.planning/PROJECT.md` (updated 2026-04-21)
 
 ## Current Position
 
-Phase: 79 - Baseline Claim Surface Quarantine
+Phase: 80 - Multivariate Verifier Target Matching
 Plan: Not started
-Status: Ready for Phase 79
-Last activity: 2026-04-21 - Phase 78 complete
-Progress: [####------] 40% by completed phases
+Status: Ready for Phase 80
+Last activity: 2026-04-21 - Phase 79 complete
+Progress: [######----] 60% by completed phases
 
 ## Current Milestone
 
-v1.14 Evidence claim integrity and audit hardening is open. Phases 77-78 are complete; continue with Phase 79: Baseline Claim Surface Quarantine.
+v1.14 Evidence claim integrity and audit hardening is open. Phases 77-79 are complete; continue with Phase 80: Multivariate Verifier Target Matching.
 
 ## Artifacts
 
@@ -63,6 +63,7 @@ v1.14 Evidence claim integrity and audit hardening is open. Phases 77-78 are com
 | v1.13 clean-room evidence package | `artifacts/paper/v1.13/` | Complete, audit and release gate passed |
 | Phase 77 artifacts | `.planning/phases/77-two-axis-recovery-accounting-and-headline-rebuild/` | Complete |
 | Phase 78 artifacts | `.planning/phases/78-warm-start-evidence-relabeling/` | Complete |
+| Phase 79 artifacts | `.planning/phases/79-baseline-claim-surface-quarantine/` | Complete |
 
 ## Accumulated Context
 
@@ -87,10 +88,11 @@ v1.14 Evidence claim integrity and audit hardening is open. Phases 77-78 are com
 - v1.14 must repair public claim accounting before manuscript or release work continues: compile-only support, same-AST seed retention, and trained recovery need separate headline surfaces.
 - Phase 77 added separate `verification_outcome`, `evidence_regime`, and `discovery_class` accounting fields. Compile-only verified support is no longer counted as trained exact recovery.
 - Phase 78 added explicit `warm_start_evidence`, `ast_return_status`, and `total_restarts` fields. Zero-perturbation same-AST warm starts are labeled `exact_seed_round_trip`.
+- Phase 79 added baseline launch/quarantine fields and claim-audit checks. Current baseline rows remain diagnostic/future-work context, not public comparator evidence.
 
 ### Pending Todos
 
-- Start Phase 79 with `$gsd-discuss-phase 79` or `$gsd-plan-phase 79`.
+- Start Phase 80 with `$gsd-discuss-phase 80` or `$gsd-plan-phase 80`.
 
 ### Deferred Items
 
@@ -141,4 +143,4 @@ Stopped at: v1.12 archived
 Resume file: None
 
 ---
-*Last updated: 2026-04-21 after Phase 78 completion*
+*Last updated: 2026-04-21 after Phase 79 completion*
