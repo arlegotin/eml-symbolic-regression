@@ -14,7 +14,7 @@ The short version: it is a PyTorch-first, verifier-gated equation discovery pack
 
 The checked-in evidence run covers 12 target formulas under two settings: a basis-only compiler-policy track and a literal-constant warm-start track. It ran 24 configured rows with zero execution failures.
 
-Nine rows passed the verifier. Fifteen were kept as unsupported by the declared compiler, depth, or operator gates. That is the current claim boundary: the project has reproducible evidence for shallow and explicitly seeded EML recovery paths, while broader blind recovery remains an open problem. The detailed campaign tables, manifests, baseline reports, and dataset manifests are checked in under `artifacts/`.
+Nine rows passed the verifier. Fifteen were kept as unsupported by the declared compiler, depth, or operator gates. That is the current claim boundary: the project has reproducible evidence for shallow and explicitly seeded EML recovery paths, while broader blind recovery remains an open problem. The detailed campaign tables, manifests, quarantined baseline context, and dataset manifests are checked in under `artifacts/`.
 
 ## The Trick
 
@@ -149,6 +149,8 @@ Run the matched baseline harness:
 ```bash
 eml-sr baseline-harness --output-dir artifacts/baselines/current --overwrite
 ```
+
+The baseline harness is diagnostic scaffolding. Missing optional adapters and unsupported rows are recorded with dependency and launch status, but they are not public comparison evidence unless a future fixed-budget external run completes under the same target and split contract.
 
 Run tests:
 

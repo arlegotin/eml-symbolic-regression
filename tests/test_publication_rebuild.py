@@ -231,6 +231,69 @@ def test_publication_claim_audit_rejects_compile_only_trained_recovery_promotion
     assert checks["compile_only_excluded_from_trained_recovery"]["details"]["compile_rows_in_trained"] == ["compile-promoted"]
 
 
+def test_publication_claim_audit_rejects_baseline_main_surface_claim_without_eligible_rows(tmp_path):
+    aggregate = tmp_path / "aggregate.json"
+    aggregate.write_text(
+        json.dumps(
+            {
+                "counts": {"failed": 0, "execution_error": 0, "unsupported": 0},
+                "tracks": [{"track": "basis_only"}, {"track": "literal_constants"}],
+                "runs": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    baseline_rows = tmp_path / "baseline-runs.json"
+    baseline_rows.write_text(
+        json.dumps(
+            {
+                "rows": [
+                    {
+                        "row_id": "pysr-missing",
+                        "adapter": "pysr",
+                        "status": "unavailable",
+                        "reason": "missing_optional_dependency",
+                        "dependency": {"import_status": "missing"},
+                        "denominator_policy": "excluded_from_eml_recovery_denominators",
+                        "adapter_launch_status": "not_launched_missing_dependency",
+                        "fixed_budget_launched": False,
+                        "main_surface_eligible": False,
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    baseline_manifest = tmp_path / "baseline-manifest.json"
+    baseline_manifest.write_text(
+        json.dumps(
+            {
+                "denominator_policy": "excluded_from_eml_recovery_denominators",
+                "claim_surface": {
+                    "policy": "quarantined_appendix_or_future_work_only",
+                    "main_surface_comparison_claim": True,
+                },
+                "outputs": {"rows_json": str(baseline_rows)},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    audit = build_publication_claim_audit(
+        {
+            "paper_tracks": {"aggregate_json": str(aggregate)},
+            "baseline_harness": {"manifest_json": str(baseline_manifest)},
+        }
+    )
+
+    checks = {check["id"]: check for check in audit["checks"]}
+    assert audit["status"] == "failed"
+    assert checks["baseline_rows_expose_quarantine_fields"]["status"] == "passed"
+    assert checks["baseline_main_surface_claims_quarantined"]["status"] == "failed"
+    assert checks["baseline_main_surface_claims_quarantined"]["details"]["eligible_external_row_count"] == 0
+    assert audit["baseline_claim_surface"]["main_surface_comparison_claim"] is True
+
+
 def test_publication_validation_rejects_placeholder_metadata(tmp_path):
     paths = write_publication_rebuild(output_dir=tmp_path / "paper", smoke=True, overwrite=True, allow_dirty=True)
     bad_artifact = paths.output_dir / "bad.json"

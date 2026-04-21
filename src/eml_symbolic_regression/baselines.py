@@ -39,6 +39,8 @@ EXTERNAL_BASELINE_MODULES = {
 CONSTANT_POLICIES = ("basis_only", "literal_constants")
 START_CONDITIONS = ("blind", "warm_start")
 DENOMINATOR_POLICY = "excluded_from_eml_recovery_denominators"
+CLAIM_SURFACE_POLICY = "quarantined_appendix_or_future_work_only"
+LOCAL_BASELINE_ADAPTERS = ("eml_reference", "polynomial_least_squares")
 CSV_COLUMNS = (
     "row_id",
     "dataset_id",
@@ -60,6 +62,9 @@ CSV_COLUMNS = (
     "max_abs_error",
     "mse",
     "dependency_status",
+    "adapter_launch_status",
+    "fixed_budget_launched",
+    "main_surface_eligible",
     "denominator_policy",
     "model_expression",
 )
@@ -257,6 +262,11 @@ def build_baseline_manifest(
 ) -> dict[str, Any]:
     status_counts = Counter(str(row.get("status")) for row in rows)
     adapter_counts = Counter(str(row.get("adapter")) for row in rows)
+    launch_counts = Counter(str(row.get("adapter_launch_status") or "unknown") for row in rows)
+    main_surface_eligible = [
+        row for row in rows if bool(row.get("main_surface_eligible")) and str(row.get("denominator_policy") or "") != DENOMINATOR_POLICY
+    ]
+    completed_external = [row for row in rows if _is_completed_external_fixed_budget_row(row)]
     return {
         "schema": "eml.baseline_harness_manifest.v1",
         "generated_at": _now_iso(),
@@ -280,8 +290,18 @@ def build_baseline_manifest(
             "total": len(rows),
             "by_status": dict(sorted(status_counts.items())),
             "by_adapter": dict(sorted(adapter_counts.items())),
+            "by_adapter_launch_status": dict(sorted(launch_counts.items())),
         },
         "denominator_policy": DENOMINATOR_POLICY,
+        "claim_surface": {
+            "policy": CLAIM_SURFACE_POLICY,
+            "main_surface_comparison_claim": False,
+            "main_surface_eligible_rows": len(main_surface_eligible),
+            "completed_external_fixed_budget_rows": len(completed_external),
+            "required_for_main_surface_comparison": (
+                "completed fixed-budget external baseline rows on the same target set and split contract"
+            ),
+        },
         "outputs": paths.as_dict(),
     }
 
@@ -297,6 +317,9 @@ def render_baseline_report(
         f"- Generated: {manifest['generated_at']}",
         f"- Rows: {manifest['counts']['total']}",
         f"- Denominator policy: `{DENOMINATOR_POLICY}`",
+        f"- Claim-surface policy: `{CLAIM_SURFACE_POLICY}`",
+        "",
+        "These rows are diagnostic scaffolding and future-work context. Unavailable, unsupported, local-reference, and denominator-excluded rows are not public comparator evidence.",
         "",
         "## Status Counts",
         "",
@@ -311,15 +334,17 @@ def render_baseline_report(
             "",
             "## Rows",
             "",
-            "| Dataset | Adapter | Start | Constants | Status | Claim | Final confirmation |",
-            "|---------|---------|-------|-----------|--------|-------|--------------------|",
+            "| Dataset | Adapter | Start | Constants | Status | Dependency | Launch | Claim | Final confirmation |",
+            "|---------|---------|-------|-----------|--------|------------|--------|-------|--------------------|",
         ]
     )
     for row in rows:
         final = row.get("final_confirmation") if isinstance(row.get("final_confirmation"), Mapping) else {}
+        dependency = row.get("dependency") if isinstance(row.get("dependency"), Mapping) else {}
         lines.append(
             f"| {row['dataset_id']} | {row['adapter']} | {row['start_condition']} | "
-            f"{row['constants_policy']} | {row['status']} | {row.get('claim_status') or ''} | "
+            f"{row['constants_policy']} | {row['status']} | {dependency.get('import_status') or ''} | "
+            f"{row.get('adapter_launch_status') or ''} | {row.get('claim_status') or ''} | "
             f"{final.get('status') or ''} |"
         )
 
@@ -372,6 +397,9 @@ def _run_baseline_row(
             {
                 "status": "execution_error",
                 "reason": "adapter_execution_error",
+                "adapter_launch_status": "fixed_budget_execution_error",
+                "fixed_budget_launched": True,
+                "main_surface_eligible": False,
                 "error": {"type": type(exc).__name__, "message": str(exc)},
             }
         )
@@ -414,6 +442,10 @@ def _base_row(
         },
         "dependency": dependency,
         "denominator_policy": DENOMINATOR_POLICY,
+        "claim_surface_policy": CLAIM_SURFACE_POLICY,
+        "adapter_launch_status": "pending",
+        "fixed_budget_launched": False,
+        "main_surface_eligible": False,
         "status": "pending",
         "reason": None,
         "claim_status": None,
@@ -496,6 +528,9 @@ def _run_external_adapter_probe(base: Mapping[str, Any], adapter: str) -> dict[s
                 "status": "unavailable",
                 "reason": "missing_optional_dependency",
                 "dependency": dependency,
+                "adapter_launch_status": "not_launched_missing_dependency",
+                "fixed_budget_launched": False,
+                "main_surface_eligible": False,
                 "model": {"source": "not_run"},
             }
         )
@@ -510,6 +545,9 @@ def _completed_row(base: Mapping[str, Any], report: VerificationReport, *, model
             "status": "completed",
             "reason": None,
             "claim_status": report.status,
+            "adapter_launch_status": "fixed_budget_completed",
+            "fixed_budget_launched": True,
+            "main_surface_eligible": False,
             "verification": report.as_dict(),
             "metrics": _metrics_from_report(report),
             "final_confirmation": _final_confirmation_from_report(report),
@@ -521,8 +559,26 @@ def _completed_row(base: Mapping[str, Any], report: VerificationReport, *, model
 
 def _unsupported_row(base: Mapping[str, Any], reason: str, detail: str) -> dict[str, Any]:
     row = dict(base)
-    row.update({"status": "unsupported", "reason": reason, "detail": detail})
+    launch_status = "not_launched_adapter_disabled" if reason == "external_adapter_execution_not_enabled" else "not_launched_unsupported_contract"
+    row.update(
+        {
+            "status": "unsupported",
+            "reason": reason,
+            "detail": detail,
+            "adapter_launch_status": launch_status,
+            "fixed_budget_launched": False,
+            "main_surface_eligible": False,
+        }
+    )
     return row
+
+
+def _is_completed_external_fixed_budget_row(row: Mapping[str, Any]) -> bool:
+    return (
+        str(row.get("status") or "") == "completed"
+        and str(row.get("adapter") or "") not in LOCAL_BASELINE_ADAPTERS
+        and bool(row.get("fixed_budget_launched"))
+    )
 
 
 def _metrics_from_report(report: VerificationReport) -> dict[str, Any]:

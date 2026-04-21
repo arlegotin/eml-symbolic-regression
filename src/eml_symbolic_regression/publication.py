@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from .baselines import DEFAULT_BASELINE_DATASETS, DENOMINATOR_POLICY, write_baseline_harness
+from .baselines import CLAIM_SURFACE_POLICY, DEFAULT_BASELINE_DATASETS, DENOMINATOR_POLICY, write_baseline_harness
 from .campaign import DEFAULT_CAMPAIGN_ROOT, run_campaign
 from .datasets import expanded_dataset_manifest
 
@@ -317,12 +317,36 @@ def build_publication_claim_audit(evidence: Mapping[str, Any], *, smoke: bool = 
     baseline = evidence.get("baseline_harness") if isinstance(evidence.get("baseline_harness"), Mapping) else {}
     baseline_manifest_path = Path(str(baseline.get("manifest_json") or ""))
     baseline_manifest = _read_json(baseline_manifest_path) if baseline_manifest_path.is_file() else {}
+    baseline_rows_path = _baseline_rows_path(baseline, baseline_manifest)
+    baseline_rows = _baseline_rows(baseline_rows_path)
+    baseline_claim_surface = _baseline_claim_surface(baseline_manifest, baseline_rows)
     _check(
         checks,
         "baseline_context_present",
         baseline_manifest_path.is_file() and baseline_manifest.get("denominator_policy") == DENOMINATOR_POLICY,
         "Matched baseline context exists and is excluded from EML recovery denominators.",
         {"baseline_manifest": str(baseline_manifest_path), "denominator_policy": baseline_manifest.get("denominator_policy")},
+    )
+    if baseline_rows_path is not None:
+        required_fields = {"dependency", "denominator_policy", "reason", "adapter_launch_status", "fixed_budget_launched", "main_surface_eligible"}
+        missing_fields = [
+            str(row.get("row_id") or row.get("adapter") or index)
+            for index, row in enumerate(baseline_rows)
+            if not required_fields <= set(row)
+        ]
+        _check(
+            checks,
+            "baseline_rows_expose_quarantine_fields",
+            not missing_fields,
+            "Baseline rows expose dependency, launch, denominator, and claim-surface quarantine fields.",
+            {"rows_json": str(baseline_rows_path), "missing_fields": missing_fields},
+        )
+    _check(
+        checks,
+        "baseline_main_surface_claims_quarantined",
+        (not baseline_claim_surface["main_surface_comparison_claim"]) or bool(baseline_claim_surface["eligible_external_rows"]),
+        "Main-surface baseline comparison claims require completed fixed-budget external rows on the same target and split contract.",
+        baseline_claim_surface,
     )
 
     status = "passed" if all(check["status"] == "passed" for check in checks) else "failed"
@@ -333,6 +357,7 @@ def build_publication_claim_audit(evidence: Mapping[str, Any], *, smoke: bool = 
         "checks": checks,
         "recovered_claims": recovered_claims,
         "compile_only_support_claims": compile_only_support_claims,
+        "baseline_claim_surface": baseline_claim_surface,
         "counts": {
             "paper_track_rows": len(runs),
             "verification_passed_rows": len(verification_passed),
@@ -691,6 +716,58 @@ def _run_compile_only_verified_support(run: Mapping[str, Any]) -> bool:
     return _run_discovery_class(run) == "compile_only_verified_support"
 
 
+def _baseline_rows_path(baseline: Mapping[str, Any], manifest: Mapping[str, Any]) -> Path | None:
+    candidates: list[Any] = [baseline.get("rows_json")]
+    outputs = manifest.get("outputs") if isinstance(manifest.get("outputs"), Mapping) else {}
+    candidates.append(outputs.get("rows_json"))
+    for value in candidates:
+        if value:
+            return Path(str(value))
+    return None
+
+
+def _baseline_rows(path: Path | None) -> list[Mapping[str, Any]]:
+    if path is None or not path.is_file():
+        return []
+    payload = _read_json(path)
+    rows = payload.get("rows") if isinstance(payload.get("rows"), list) else []
+    return [row for row in rows if isinstance(row, Mapping)]
+
+
+def _baseline_claim_surface(manifest: Mapping[str, Any], rows: list[Mapping[str, Any]]) -> dict[str, Any]:
+    claim_surface = manifest.get("claim_surface") if isinstance(manifest.get("claim_surface"), Mapping) else {}
+    main_surface_claim = bool(claim_surface.get("main_surface_comparison_claim") or manifest.get("main_surface_comparison_claim"))
+    eligible = [
+        str(row.get("row_id") or row.get("adapter") or "unknown")
+        for row in rows
+        if _baseline_row_is_main_surface_eligible(row)
+    ]
+    unavailable = sum(1 for row in rows if str(row.get("status") or "") == "unavailable")
+    unsupported = sum(1 for row in rows if str(row.get("status") or "") == "unsupported")
+    denominator_excluded = sum(1 for row in rows if str(row.get("denominator_policy") or "") == DENOMINATOR_POLICY)
+    return {
+        "policy": str(claim_surface.get("policy") or CLAIM_SURFACE_POLICY),
+        "main_surface_comparison_claim": main_surface_claim,
+        "eligible_external_rows": eligible,
+        "eligible_external_row_count": len(eligible),
+        "unavailable_rows": unavailable,
+        "unsupported_rows": unsupported,
+        "denominator_excluded_rows": denominator_excluded,
+        "row_count": len(rows),
+    }
+
+
+def _baseline_row_is_main_surface_eligible(row: Mapping[str, Any]) -> bool:
+    adapter = str(row.get("adapter") or "")
+    return (
+        adapter not in {"", "eml_reference", "polynomial_least_squares"}
+        and str(row.get("status") or "") == "completed"
+        and bool(row.get("fixed_budget_launched"))
+        and bool(row.get("main_surface_eligible"))
+        and str(row.get("denominator_policy") or "") != DENOMINATOR_POLICY
+    )
+
+
 def _is_publication_track_aggregate(aggregate: Mapping[str, Any]) -> bool:
     suite = aggregate.get("suite") if isinstance(aggregate.get("suite"), Mapping) else {}
     if suite.get("id") == "v1.13-paper-tracks":
@@ -783,6 +860,19 @@ def _claim_audit_markdown(audit: Mapping[str, Any]) -> str:
         )
     if not audit.get("compile_only_support_claims"):
         lines.append("- None in this mode.")
+    baseline = audit.get("baseline_claim_surface") if isinstance(audit.get("baseline_claim_surface"), Mapping) else {}
+    lines.extend(
+        [
+            "",
+            "## Baseline Quarantine",
+            "",
+            f"- Policy: `{baseline.get('policy', CLAIM_SURFACE_POLICY)}`",
+            f"- Main-surface comparison claim: `{baseline.get('main_surface_comparison_claim', False)}`",
+            f"- Eligible external rows: `{baseline.get('eligible_external_row_count', 0)}`",
+            f"- Unavailable rows: `{baseline.get('unavailable_rows', 0)}`",
+            f"- Unsupported rows: `{baseline.get('unsupported_rows', 0)}`",
+        ]
+    )
     return "\n".join(lines) + "\n"
 
 
