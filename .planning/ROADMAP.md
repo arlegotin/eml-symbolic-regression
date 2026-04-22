@@ -1,8 +1,8 @@
 # Roadmap: EML Symbolic Regression
 
-**Updated:** 2026-04-21
-**Current milestone:** v1.14 Evidence claim integrity and audit hardening
-**Phase numbering:** Continuing from v1.13 Phase 76.
+**Updated:** 2026-04-22
+**Current milestone:** v1.15 GEML family and i*pi EML exploration
+**Phase numbering:** Continuing from v1.14 Phase 81.
 
 ## Milestones
 
@@ -20,103 +20,120 @@
 - **v1.11 Paper-strength evidence and figure package** - Phases 59-63 complete (completed 2026-04-19; archive: `.planning/milestones/v1.11-ROADMAP.md`)
 - **v1.12 Paper draft skeleton and refreshed shallow evidence** - Phases 64-68 complete (completed 2026-04-19; archive: `.planning/milestones/v1.12-ROADMAP.md`)
 - **v1.13 Publication-grade reproduction and validation** - Phases 69-76 complete (completed 2026-04-20; archives: `.planning/milestones/v1.13-ROADMAP.md`, `.planning/milestones/v1.13-REQUIREMENTS.md`, `.planning/milestones/v1.13-MILESTONE-AUDIT.md`, `.planning/milestones/v1.13-phases/`)
+- **v1.14 Evidence claim integrity and audit hardening** - Phases 77-81 complete (completed 2026-04-21; archives: `.planning/milestones/v1.14-ROADMAP.md`, `.planning/milestones/v1.14-REQUIREMENTS.md`, `.planning/milestones/v1.14-phases/`)
 
 ## Current Status
 
-v1.14 is open. It repairs a post-v1.13 claim-integrity audit finding: compile-only verified support must not count as trained recovery. The same milestone tightens warm-start evidence labels, quarantines weak baseline rows from the main claim surface, fixes a latent multivariate verifier target-matching bug, and regenerates the public evidence package from the corrected contracts.
+v1.15 is open. It reframes the proposed i*pi EML operator as the `a = i*pi` specialization of the broader `GEML_a(x, y) = exp(a*x) - log(y)/a` family. The milestone first builds the exact family semantics and restricted theory, then integrates i*pi EML into the existing training/snap/verification pipeline, then runs matched EML versus i*pi EML comparisons on oscillatory targets and negative controls.
 
 ## Phase Status
 
-- [x] Phase 77: Two-Axis Recovery Accounting and Headline Rebuild
-- [x] Phase 78: Warm-Start Evidence Relabeling
-- [x] Phase 79: Baseline Claim Surface Quarantine
-- [x] Phase 80: Multivariate Verifier Target Matching
-- [x] Phase 81: Corrected Evidence Rebuild and Claim Audit
+- [ ] Phase 82: GEML Family Semantics and Structural Identity
+- [ ] Phase 83: i*pi EML Restricted Theory and Branch Contract
+- [ ] Phase 84: Family-Aware Training and Snapping Integration
+- [ ] Phase 85: Oscillatory Benchmark Pack and Negative Controls
+- [ ] Phase 86: Matched EML versus i*pi EML Campaign Runner
+- [ ] Phase 87: GEML Evidence Package and Claim Boundary
 
 ## Phase Overview
 
 | Phase | Name | Goal | Requirements |
 |-------|------|------|--------------|
-| 77 | Two-Axis Recovery Accounting and Headline Rebuild | Separate verification from discovery regime and make compile-only support impossible to count as trained recovery. | REC-01, REC-02, REC-03, REC-04 |
-| 78 | Warm-Start Evidence Relabeling | Reframe zero-perturbation same-AST warm-start rows as exact seed round-trips unless robustness evidence exists. | WARM-01, WARM-02, WARM-03, WARM-04 |
-| 79 | Baseline Claim Surface Quarantine | Keep unavailable, unsupported, and denominator-excluded baseline rows out of main comparison claims. | BASE-01, BASE-02, BASE-03, BASE-04 |
-| 80 | Multivariate Verifier Target Matching | Fix high-precision target lookup for multivariate splits without changing univariate verifier behavior. | VER-01, VER-02, VER-03, VER-04 |
-| 81 | Corrected Evidence Rebuild and Claim Audit | Regenerate the publication package, README/report surfaces, and release checks from the corrected contracts. | PUB-01, PUB-02, PUB-03, PUB-04 |
+| 82 | GEML Family Semantics and Structural Identity | Add exact `GEML_a` semantics, named EML/i*pi EML specializations, serialization, evaluator support, and the central structural identity. | GEML-01, GEML-02, GEML-03, GEML-04, GEML-05 |
+| 83 | i*pi EML Restricted Theory and Branch Contract | Prove/test the controlled i*pi identities and make branch behavior an explicit operator contract. | THRY-01, THRY-02, THRY-03, THRY-04, THRY-05, BRAN-01, BRAN-02, BRAN-03, BRAN-04 |
+| 84 | Family-Aware Training and Snapping Integration | Thread fixed GEML specializations through master-tree training, snapping, cleanup, metrics, and raw-EML regressions. | TRN-01, TRN-02, TRN-03, TRN-04 |
+| 85 | Oscillatory Benchmark Pack and Negative Controls | Add target suites for i*pi EML's natural bias plus negative controls and matched campaign manifests. | BENCH-01, BENCH-02, BENCH-03, BENCH-04, BENCH-05 |
+| 86 | Matched EML versus i*pi EML Campaign Runner | Execute paired comparison rows and aggregate matched recovery, loss, numerical, branch, and runtime metrics. | EVID-01, EVID-02 |
+| 87 | GEML Evidence Package and Claim Boundary | Package theory, benchmark evidence, tables, and claim-audit checks into a paper-decision artifact. | EVID-03, EVID-04, EVID-05 |
 
 ## Phase Details
 
-### Phase 77: Two-Axis Recovery Accounting and Headline Rebuild
+### Phase 82: GEML Family Semantics and Structural Identity
 
-**Goal:** Evidence rows carry separate verification and discovery labels, and compile-only support cannot inflate trained recovery counts.
+**Goal:** The codebase can represent, evaluate, serialize, and document `GEML_a`, with raw EML and i*pi EML as explicit named specializations.
 
-**Requirements:** REC-01, REC-02, REC-03, REC-04
-
-**Success criteria:**
-1. Run-level and aggregate artifacts expose separate `verification_outcome` and `evidence_regime` or `discovery_class` fields.
-2. `start_mode=compile` rows are classified as compile-only verified support when appropriate, never trained recovery.
-3. Headline package numbers become 8 trained exact recoveries, 1 compile-only verified support row, 15 unsupported rows, and 0 failed rows.
-4. Claim audit and regression tests fail if compile-only rows contribute to trained recovery numerator or headline copy.
-
-### Phase 78: Warm-Start Evidence Relabeling
-
-**Goal:** Publication-track warm starts are labeled by the evidence they actually provide.
-
-**Requirements:** WARM-01, WARM-02, WARM-03, WARM-04
+**Requirements:** GEML-01, GEML-02, GEML-03, GEML-04, GEML-05
 
 **Success criteria:**
-1. Existing zero-perturbation same-AST publication rows are labeled exact seed round-trip or same-AST retention.
-2. Warm-start tables surface perturbation noise, warm steps, warm restarts, total restarts, return kind, and AST-return status.
-3. Robustness or basin language is absent unless backed by nonzero perturbation, multiple seeds, and more than one optimization step.
-4. README, reports, aggregates, and paper-facing text use the new wording consistently.
+1. `GEML_a(x, y) = exp(a*x) - log(y)/a` is implemented for explicit nonzero complex `a` across the exact AST and supported evaluators.
+2. Raw EML resolves to the named `a = 1` specialization and i*pi EML resolves to the named `a = i*pi` specialization.
+3. JSON/SymPy export preserves the family parameter and named specialization metadata without breaking existing EML artifacts.
+4. Tests or theory docs verify `exp(a*GEML_a(u, v)) = exp(a*exp(a*u))/v` for representative cases.
 
-### Phase 79: Baseline Claim Surface Quarantine
+### Phase 83: i*pi EML Restricted Theory and Branch Contract
 
-**Goal:** Baseline scaffolding remains useful internally without carrying unsupported public comparison weight.
+**Goal:** i*pi EML has explicit restricted-domain theorems and branch diagnostics before it enters broader experiments.
 
-**Requirements:** BASE-01, BASE-02, BASE-03, BASE-04
-
-**Success criteria:**
-1. Main README/report/paper surfaces no longer cite unavailable or unsupported baseline rows as comparison evidence.
-2. Baseline artifacts show dependency status, denominator policy, unsupported reasons, and whether an adapter actually launched.
-3. Missing external dependencies are reported as scaffolding or future work, not contextual comparison.
-4. Claim audit blocks main-surface baseline comparison copy unless fixed-budget external rows completed on the same targets and splits.
-
-### Phase 80: Multivariate Verifier Target Matching
-
-**Goal:** High-precision verifier target lookup is correct for multivariate data.
-
-**Requirements:** VER-01, VER-02, VER-03, VER-04
+**Requirements:** THRY-01, THRY-02, THRY-03, THRY-04, THRY-05, BRAN-01, BRAN-02, BRAN-03, BRAN-04
 
 **Success criteria:**
-1. Multivariate splits without `target_mpmath` no longer match scalar targets using only the first input variable.
-2. The verifier either requires `target_mpmath` for multivariate high-precision checks or uses a stable full-row key.
-3. Tests cover repeated first-coordinate rows with different remaining coordinates and target values.
-4. Existing univariate verifier tests and behavior remain unchanged.
+1. The reciprocal and identity constructions are proven or executable-checked on `y > 0`, with branch assumptions stated.
+2. The real-axis derivative and one-step composition magnitude bound are derived in a checked theory artifact.
+3. Closure language is restricted to exactly what the milestone proves or tests.
+4. Training, verification, and reports expose branch convention, branch-cut proximity, branch crossings, invalid-domain skips, and branch-related candidate failures.
+5. Optional branch-safety training guards are manifest-visible and do not change faithful verification semantics.
 
-### Phase 81: Corrected Evidence Rebuild and Claim Audit
+### Phase 84: Family-Aware Training and Snapping Integration
 
-**Goal:** All public package artifacts reflect the corrected accounting, labels, baseline framing, and verifier behavior.
+**Goal:** Fixed GEML specializations can run through the existing differentiable search pipeline without silently borrowing invalid raw-family witnesses.
 
-**Requirements:** PUB-01, PUB-02, PUB-03, PUB-04
+**Requirements:** TRN-01, TRN-02, TRN-03, TRN-04
 
 **Success criteria:**
-1. The publication evidence package is regenerated from source commands after Phases 77-80 land.
-2. README, campaign report, aggregate JSON/Markdown, claim-audit outputs, and paper-facing tables contain no stale 9-row recovered headline.
-3. CI or release-gate checks lock the corrected schema, corrected headline counts, and compile-only exclusion.
-4. Historical v1.13 artifacts remain inspectable, while corrected artifacts have source locks and regeneration commands.
+1. The complete soft master tree accepts a fixed operator specialization while preserving raw EML as the default.
+2. Optimizer, hardening, snapping, exact-candidate pooling, cleanup, and refit paths operate on i*pi EML artifacts.
+3. Candidate artifacts report gradient norms, overflow/NaN counts, branch diagnostics, pre-snap MSE, post-snap MSE, and wall-clock metadata.
+4. Raw EML regression tests and v1.14 claim-accounting tests still pass.
+
+### Phase 85: Oscillatory Benchmark Pack and Negative Controls
+
+**Goal:** The comparison suite tests i*pi EML where it should plausibly help and where it should not.
+
+**Requirements:** BENCH-01, BENCH-02, BENCH-03, BENCH-04, BENCH-05
+
+**Success criteria:**
+1. Periodic, harmonic, damped oscillation, wave/standing-wave, and log-periodic target manifests are registered with normalized safe domains.
+2. Negative controls include `exp`, `log`, polynomial, and rational targets.
+3. Campaign manifests lock matched depths, optimizer settings, initialization budgets, snapping rules, verifier gates, and split policies for both operators.
+4. Suite validation fails closed if an i*pi target crosses an undeclared unsafe branch domain.
+
+### Phase 86: Matched EML versus i*pi EML Campaign Runner
+
+**Goal:** The project can produce paired comparison evidence under a single protocol.
+
+**Requirements:** EVID-01, EVID-02
+
+**Success criteria:**
+1. A campaign runner emits paired EML and i*pi EML rows for every declared target.
+2. Aggregates include blind exact-recovery after snapping, MSE before and after snapping, gradient statistics, overflow/NaN counts, branch counts, wall-clock time, and available resource metadata.
+3. The paired output preserves v1.14 recovery-accounting fields so compile-only or unsupported rows cannot contaminate trained recovery rates.
+
+### Phase 87: GEML Evidence Package and Claim Boundary
+
+**Goal:** The milestone ends with a claim-safe decision package for whether i*pi EML deserves a paper section.
+
+**Requirements:** EVID-03, EVID-04, EVID-05
+
+**Success criteria:**
+1. Reports classify wins, losses, and neutral results by target family, including negative controls.
+2. Claim-audit checks block global-superiority, broad blind-recovery, and full-universality language unless proof/evidence supports it.
+3. The final package includes the theory note, benchmark manifests, aggregate tables, source locks, reproduction commands, and a claim-boundary summary.
+4. The package explicitly states whether i*pi EML is promising, negative, or inconclusive under the matched protocol.
 
 ## Dependency Notes
 
-- Phase 77 comes first because later wording, tables, and claim-audit gates depend on the corrected status model.
-- Phase 78 should follow Phase 77 so warm-start rows use the same discovery-regime vocabulary.
-- Phase 79 can run after Phase 77 and before the final rebuild because baseline wording affects public claim surfaces but not verifier mechanics.
-- Phase 80 can run independently of narrative cleanup, but must finish before Phase 81 so the regenerated package carries the verifier bug fix.
-- Phase 81 is last and verifies the milestone end to end.
+- Phase 82 comes first because all later work depends on exact family semantics and serialization.
+- Phase 83 follows before training campaigns so branch behavior and theory claims are clear before artifacts exist.
+- Phase 84 must precede benchmark execution because the training and snap pipeline needs family-aware metrics and guards.
+- Phase 85 can be planned with Phase 84 context but should run after operator integration is stable.
+- Phase 86 depends on Phase 85 manifests and Phase 84 pipeline support.
+- Phase 87 is last because it packages evidence and claim boundaries from all prior phases.
 
 ## Notes
 
-- v1.14 intentionally chooses relabeling/quarantine over large new experiments. A real perturbation grid and real external baseline runs are tracked as future requirements.
-- Work remains on `dev`; public `main` publication still requires the validated release workflow after corrected evidence passes.
+- No new external domain research was run during initialization; the milestone brief and existing operator-family history are sufficient to scope the first pass.
+- The milestone intentionally avoids learning arbitrary `a` values. Fixed `a = 1` versus `a = i*pi` is the controlled comparison.
+- Positive results should be framed as structural bias on declared oscillatory/phase-log targets, not as global symbolic-regression superiority.
 
 ---
-*Roadmap created for v1.14 on 2026-04-21*
+*Roadmap created for v1.15 on 2026-04-22*

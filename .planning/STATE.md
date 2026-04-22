@@ -1,58 +1,61 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.14
-milestone_name: Evidence claim integrity and audit hardening
-current_phase: 81
-current_phase_name: "Corrected Evidence Rebuild and Claim Audit"
-status: v1.14 phases complete
-stopped_at: phase 81 complete
-last_updated: "2026-04-21T11:45:00.000Z"
-last_activity: 2026-04-21
+milestone: v1.15
+milestone_name: GEML family and i*pi EML exploration
+current_phase: 82
+current_phase_name: "GEML Family Semantics and Structural Identity"
+status: Ready to plan Phase 82
+stopped_at: roadmap created
+last_updated: "2026-04-22T00:00:00.000Z"
+last_activity: 2026-04-22
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 6
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 81 - Corrected Evidence Rebuild and Claim Audit
+**Current phase:** Phase 82 - GEML Family Semantics and Structural Identity
 **Mode:** YOLO
 
 ## Project Reference
 
-See: `.planning/PROJECT.md` (updated 2026-04-21)
+See: `.planning/PROJECT.md` (updated 2026-04-22)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.14 claim-accounting repair and evidence-surface hardening.
+**Current focus:** v1.15 GEML family theory, i*pi EML implementation, and matched EML versus i*pi EML evidence.
 
 ## Current Position
 
-Phase: 81 - Corrected Evidence Rebuild and Claim Audit
-Plan: Complete
-Status: Complete
-Last activity: 2026-04-21 - Phase 81 complete
-Progress: [##########] 100% by completed phases
+Phase: 82 - GEML Family Semantics and Structural Identity
+Plan: -
+Status: Ready to plan
+Last activity: 2026-04-22 - Milestone v1.15 roadmap created
+Progress: [----------] 0% by completed phases
 
 ## Current Milestone
 
-v1.14 Evidence claim integrity and audit hardening phases are complete. Phase 81 regenerated the corrected publication package at `artifacts/paper/v1.14/`, and the claim audit plus release gate passed.
+v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y) = exp(a*x) - log(y)/a`, specialize `a = i*pi` as the flagship oscillatory operator, prove restricted-domain identities, add branch diagnostics, and run matched recovery comparisons against raw EML.
 
 ## Artifacts
 
 | Artifact | Path | Status |
 |----------|------|--------|
-| Project context | `.planning/PROJECT.md` | Updated for v1.14 |
+| Project context | `.planning/PROJECT.md` | Updated for v1.15 |
 | Archived v1.12 requirements | `.planning/milestones/v1.12-REQUIREMENTS.md` | Complete |
-| Archived requirements | `.planning/milestones/v1.13-REQUIREMENTS.md` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.14 |
-| Roadmap | `.planning/ROADMAP.md` | Created for v1.14; next phase starts at 77 |
-| Research summary | `.planning/research/SUMMARY.md` | Reuse existing context; no new domain research selected |
+| Archived v1.13 requirements | `.planning/milestones/v1.13-REQUIREMENTS.md` | Complete |
+| Archived v1.14 requirements | `.planning/milestones/v1.14-REQUIREMENTS.md` | Complete |
+| Archived v1.14 roadmap | `.planning/milestones/v1.14-ROADMAP.md` | Complete |
+| Archived v1.14 phase artifacts | `.planning/milestones/v1.14-phases/` | Complete |
+| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.15 |
+| Roadmap | `.planning/ROADMAP.md` | Created for v1.15; next phase starts at 82 |
+| Research summary | `.planning/research/SUMMARY.md` | Existing context retained; no new domain research selected during initialization |
 | Workflow config | `.planning/config.json` | Complete |
-| Milestone log | `.planning/MILESTONES.md` | Complete through v1.13 |
+| Milestone log | `.planning/MILESTONES.md` | Complete through v1.14 |
 | v1.11 final paper package | `artifacts/paper/v1.11/` | Complete, audit passed |
 | v1.12 draft skeleton | `artifacts/paper/v1.11/draft/` | Phase 64 complete |
 | v1.12 evidence refresh | `artifacts/campaigns/v1.12-evidence-refresh/` | Phase 65 complete |
@@ -61,11 +64,6 @@ v1.14 Evidence claim integrity and audit hardening phases are complete. Phase 81
 | v1.12 supplement | `artifacts/paper/v1.11/v1.12-supplement/` | Phase 68 complete, audit passed |
 | v1.12 training-detail assets | `artifacts/paper/v1.11/draft/training-detail/` | Quick task complete: 4,472 step rows, 232 candidate rows |
 | v1.13 clean-room evidence package | `artifacts/paper/v1.13/` | Complete, audit and release gate passed |
-| Phase 77 artifacts | `.planning/phases/77-two-axis-recovery-accounting-and-headline-rebuild/` | Complete |
-| Phase 78 artifacts | `.planning/phases/78-warm-start-evidence-relabeling/` | Complete |
-| Phase 79 artifacts | `.planning/phases/79-baseline-claim-surface-quarantine/` | Complete |
-| Phase 80 artifacts | `.planning/phases/80-multivariate-verifier-target-matching/` | Complete |
-| Phase 81 artifacts | `.planning/phases/81-corrected-evidence-rebuild-and-claim-audit/` | Complete |
 | v1.14 corrected evidence package | `artifacts/paper/v1.14/` | Complete, claim audit and release gate passed |
 
 ## Accumulated Context
@@ -94,10 +92,14 @@ v1.14 Evidence claim integrity and audit hardening phases are complete. Phase 81
 - Phase 79 added baseline launch/quarantine fields and claim-audit checks. Current baseline rows remain diagnostic/future-work context, not public comparator evidence.
 - Phase 80 fixed high-precision target lookup for multivariate splits without `target_mpmath` by matching the full input row.
 - Phase 81 routed corrected publication output to `artifacts/paper/v1.14/`, preserved historical v1.13 artifacts, regenerated the corrected evidence package, and passed claim-audit/release-gate checks with 8 trained exact recoveries, 1 compile-only verified support row, 15 unsupported rows, and 0 failed rows.
+- v1.15 treats i*pi EML as the `a = i*pi` specialization of the broader `GEML_a` family rather than as an isolated new operator.
+- v1.15 should prove restricted-domain identities and controlled-composition bounds before making empirical or closure claims.
+- EML versus i*pi EML comparisons must be matched by depth, optimizer, initialization budget, snapping rule, verifier gates, and reporting schema.
+- i*pi EML branch management is part of the operator contract, not a nuisance hidden in implementation details.
 
 ### Pending Todos
 
-- Archive or close the v1.14 milestone with `$gsd-complete-milestone` if desired.
+- Plan Phase 82 with `$gsd-plan-phase 82`.
 
 ### Deferred Items
 
@@ -141,12 +143,14 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 
 - External SR baselines may require dependencies or network access. If unavailable locally, record that explicitly instead of blocking the milestone.
 - Extra training runs should stay shallow and cheap; broad new campaigns are out of scope.
+- i*pi EML branch-cut behavior can invalidate naive real-domain identities; branch convention and domain restrictions must be explicit before benchmark claims.
+- Full `GEML_a` universality is not assumed. Restricted theorem statements and empirical evidence should carry the milestone.
 
 ## Session Continuity
 
-Last session: 2026-04-21
-Stopped at: v1.14 phases complete
+Last session: 2026-04-22
+Stopped at: v1.15 milestone initialized
 Resume file: None
 
 ---
-*Last updated: 2026-04-21 after oversized artifact cleanup*
+*Last updated: 2026-04-22 after v1.15 milestone start*

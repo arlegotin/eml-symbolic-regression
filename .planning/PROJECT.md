@@ -10,9 +10,9 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.13 Shipped
+## Current State: v1.14 Shipped
 
-The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, figure-asset, CI, dataset, baseline, and release-gate foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, and source-locked publication packages are all in place and archived through v1.13.
+The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, figure-asset, CI, dataset, baseline, release-gate, and claim-integrity foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, and source-locked publication packages are all in place and archived through v1.14.
 
 The current evidence says raw EML is representationally viable but blind basin finding degrades sharply with depth. Perturbed true-tree recovery remains strong, scaffolded/warm-start regimes are useful when clearly labeled, centered-family evidence is negative under the supplied v1.8 setup, and v1.9 has a verified raw-hybrid paper package that keeps those regimes separate.
 
@@ -24,33 +24,33 @@ v1.12 turns the evidence package into a paper-shaped argument. The repo now has 
 
 v1.13 hardens that paper-shaped evidence into a publication-grade release gate. The repo now has a clean-room `publication-rebuild` path, locked provenance, stronger verifier and split discipline, guarded/faithful semantics controls, CI/public snapshot validation, separated basis-only and literal-constant benchmark tracks, expanded dataset manifests, a matched baseline harness, and a committed v1.13 evidence package with a passing claim audit and release gate.
 
-## Last Completed Milestone: v1.13 Publication-grade reproduction and validation
+v1.14 repaired the public claim surface before further paper work. Compile-only verified support is no longer counted as trained exact recovery, zero-perturbation same-AST warm-start rows are labeled exact seed round-trips, unsupported baseline rows are quarantined from main comparison claims, and multivariate verifier target lookup now uses the full input row when needed. The corrected publication package is under `artifacts/paper/v1.14/`.
 
-**Goal:** Build a clean-room publication path that can regenerate the paper evidence from an empty checkout, strengthen verifier and split discipline, add real CI/test coverage, run dual-track and matched-baseline evidence, and publish the resulting code and artifacts safely through the public snapshot path.
-
-**Shipped features:**
-
-- Clean-room publication rebuild command, lockfile/container provenance, source locks, and placeholder-metadata validation.
-- Layered verifier evidence and split isolation, including fresh dense/adversarial probes and final-confirmation separation.
-- Guarded versus faithful training semantics controls and anomaly/post-snap mismatch diagnostics.
-- CI hardening with algorithmic tests, evidence-regression coverage, and dev/public snapshot validators.
-- Basis-only and literal-constant benchmark tracks with separate denominators.
-- Expanded noisy, parameter-identifiability, multivariable, unit-aware, and real dataset manifests.
-- Matched EML/conventional baseline harness with fail-closed optional adapters.
-- Full v1.13 evidence package under `artifacts/paper/v1.13/` with passing claim audit and release gate.
-
-## Current Milestone: v1.14 Evidence claim integrity and audit hardening
+## Last Completed Milestone: v1.14 Evidence claim integrity and audit hardening
 
 **Goal:** Repair public claim accounting and evidence labels so compile-only support, same-AST seed retention, unsupported baselines, and multivariate verifier behavior cannot be overstated.
 
+**Shipped features:**
+
+- Two-axis recovery accounting separating verification outcome from evidence regime and discovery class.
+- Corrected public evidence numbers: 8 trained exact recoveries, 1 compile-only verified support row, 15 unsupported rows, and 0 failed rows.
+- Warm-start evidence labels that distinguish exact seed round-trips from perturbed-basin robustness.
+- Baseline claim-surface quarantine for unavailable, unsupported, or denominator-excluded external baselines.
+- Multivariate high-precision verifier target matching by full input row when no `target_mpmath` evaluator is present.
+- Corrected v1.14 evidence package under `artifacts/paper/v1.14/` with passing claim audit and release gate.
+
+## Current Milestone: v1.15 GEML family and i*pi EML exploration
+
+**Goal:** Generalize EML into the parameterized `GEML_a` operator family, treat `a = i*pi` as the flagship oscillatory specialization, prove restricted-domain identities, and compare EML against i*pi EML under matched symbolic-regression protocols.
+
 **Target features:**
 
-- A two-axis recovery accounting model that separates verification outcome from evidence regime or discovery class.
-- Regenerated aggregate, claim-audit, paper-table, README, and report outputs where compile-only support cannot increment trained recovery headlines.
-- Corrected public numbers: 8 trained exact recoveries, 1 compile-only verified support row, 15 unsupported rows, and 0 failed rows for the current package-level evidence.
-- Warm-start evidence labels that treat zero-perturbation same-AST returns as exact seed round-trips unless a real perturbation study backs robustness claims.
-- Baseline harness output quarantined from the main claim surface unless fixed-budget external baselines actually run.
-- Multivariate verifier target lookup fixed so high-precision verification cannot silently match targets by only the first input coordinate.
+- `GEML_a(x, y) = exp(a*x) - log(y)/a` semantics, exact AST serialization, and evaluator support for nonzero complex `a`, with EML as `a = 1` and i*pi EML as `a = i*pi`.
+- Theory artifacts centered on the identity `exp(a*GEML_a(u, v)) = exp(a*exp(a*u))/v`, including restricted-domain i*pi EML reciprocal, identity, derivative, and one-step composition results.
+- Branch convention, branch-crossing diagnostics, and safe-domain checks for complex-log behavior under i*pi EML.
+- Family-aware training, snapping, reporting, and benchmark metadata that can run EML and i*pi EML through the same depths, optimizer, initialization budget, and snapping rules.
+- A benchmark pack with periodic, damped-oscillatory, wave/log-periodic targets plus negative controls such as `exp`, `log`, polynomials, and rational functions.
+- A claim-safe comparison package that reports exact-recovery rates, losses, gradients, overflow/NaN counts, wall-clock/runtime metadata, and the boundary of any restricted closure theorem without claiming full universality.
 
 ## Requirements
 
@@ -127,14 +127,19 @@ v1.13 hardens that paper-shaped evidence into a publication-grade release gate. 
 - ✓ Expanded dataset manifests for noisy, identifiability, multivariable, unit-aware, and real data — v1.13 Phase 74
 - ✓ Matched baseline harness with fail-closed optional external adapters — v1.13 Phase 75
 - ✓ Full v1.13 evidence package, claim audit, release gate, and milestone audit — v1.13 Phase 76
+- ✓ Two-axis recovery accounting and corrected trained-recovery headlines excluding compile-only support — v1.14 Phase 77
+- ✓ Warm-start evidence relabeling that distinguishes exact seed round-trips from robustness claims — v1.14 Phase 78
+- ✓ Baseline claim-surface quarantine for unavailable or unsupported external baselines — v1.14 Phase 79
+- ✓ Multivariate high-precision verifier target matching by full input row — v1.14 Phase 80
+- ✓ Corrected v1.14 publication package, source locks, claim audit, and release gate — v1.14 Phase 81
 
 ### Active
 
-- [ ] Fix recovery accounting so `start_mode=compile` rows are compile-only verified support, not trained recovery.
-- [ ] Regenerate public evidence artifacts and narrative text from the corrected two-axis accounting schema.
-- [ ] Relabel zero-perturbation same-AST warm-start rows as exact seed round-trips unless a nonzero perturbation study is added.
-- [ ] Quarantine or clearly demote baseline harness rows from the main claim surface when external adapters are unavailable or unsupported.
-- [ ] Fix multivariate verifier target matching when no `target_mpmath` evaluator is present.
+- [ ] Define and implement the `GEML_a` operator family with EML and i*pi EML as named specializations.
+- [ ] Prove and test restricted-domain i*pi EML identities, sensitivity, and controlled composition bounds without claiming unproved full universality.
+- [ ] Add branch-cut diagnostics and safe-domain handling for i*pi EML training and verification.
+- [ ] Run matched EML versus i*pi EML symbolic-regression experiments under the same protocol and budgets.
+- [ ] Report i*pi EML wins and losses on structurally matched oscillatory targets and negative controls with claim-safe wording.
 
 ### Out of Scope
 
@@ -149,6 +154,9 @@ v1.13 hardens that paper-shaped evidence into a publication-grade release gate. 
 - Broad blind symbolic-regression superiority claims - the publication can claim only what the locked evidence and matched baselines support.
 - Formal theorem-prover equivalence as a release blocker - targeted symbolic equivalence, interval/certificate checks, and strong falsification are in scope; full theorem proving remains future work unless explicitly adopted.
 - Manuscript prose that oversteps the v1.13 claim audit - prose can now proceed, but it must stay inside the verified evidence boundaries.
+- Claiming full `GEML_a` or i*pi EML universality without a constructive proof - v1.15 targets restricted-domain theorems and empirical comparison first.
+- Claiming i*pi EML is globally better than EML - any positive result must be tied to the declared oscillatory/phase-log benchmark class and balanced by negative controls.
+- Treating branch behavior as an implementation detail - for i*pi EML the principal branch convention, cut diagnostics, and safe-domain restrictions are part of the operator contract.
 
 ## Context
 
@@ -165,6 +173,8 @@ v1.8 found no positive centered-family recovery signal under the scoped local se
 The v1.13 audit changed the priority from paper shaping to publication hardening. That work is now complete: a fresh checkout has a publication rebuild entrypoint, verifier evidence is layered and labeled, final confirmation is separated from model selection, training guard mismatch is surfaced in artifacts, and conventional baselines plus broader datasets are reported under standardized manifests and harnesses.
 
 The post-v1.13 public-materials audit found a higher-priority claim-integrity issue: compile-only verified support was still counted inside the recovered headline even though the prose correctly says compiler output is not trained recovery. v1.14 fixes that accounting model before manuscript or release work continues. The same audit also flagged weak warm-start wording, baseline harness overexposure, and a latent multivariate verifier target-matching bug.
+
+v1.15 shifts from claim-surface repair back to operator-family research. The new hypothesis is that `GEML_a(x, y) = exp(a*x) - log(y)/a` is a useful continuous family around EML, with `a = i*pi` creating a phase-log specialization whose real-axis sensitivity is bounded while its second-slot log branch becomes central. The milestone should classify what is exactly true on controlled domains, then measure whether that geometry improves recovery for oscillatory and wave-like targets without hiding negative controls.
 
 ## Constraints
 
@@ -189,6 +199,10 @@ The post-v1.13 public-materials audit found a higher-priority claim-integrity is
 - **Recovery accounting**: Compile-only verification may support representability, but `start_mode=compile` must never increment trained recovery headlines.
 - **Warm-start honesty**: Zero-perturbation, one-step, same-AST warm-start rows are exact seed round-trips unless a nonzero perturbation grid with multiple seeds and enough optimization budget demonstrates basin robustness.
 - **Baseline honesty**: Baseline harness rows with unavailable dependencies, unsupported adapters, or excluded denominators cannot carry main-text comparison claims.
+- **GEML parameter domain**: `GEML_a` requires nonzero complex `a`; `a = 1` and `a = i*pi` must be explicit named cases, not magic constants hidden inside evaluators.
+- **Theorem honesty**: v1.15 may prove restricted-domain identities and closure results, but must not claim the EML paper's full scientific-calculator completeness unless a constructive proof is present.
+- **Matched comparison**: EML and i*pi EML comparisons must use the same depths, optimizer, initialization budget, snap rule, datasets, and verifier gates unless a deviation is recorded.
+- **Branch discipline**: i*pi EML artifacts must state the log branch convention and expose branch-cut proximity/crossing diagnostics.
 
 ## Key Decisions
 
@@ -239,7 +253,10 @@ The post-v1.13 public-materials audit found a higher-priority claim-integrity is
 | Final confirmation is separate from candidate selection | Held-out/extrapolation performance can diagnose candidates, but publication recovery claims need untouched confirmation unless symbolic equivalence is proven. | ✓ Good |
 | `main` updates only after the full rebuild passes | The public branch should receive publication-ready code and artifacts, not intermediate dev-only evidence. | ✓ Good |
 | Direct local force-pushes are not part of release closeout | Phase 76 validates the public snapshot and records readiness for the publish workflow; remote publication remains a workflow action. | ✓ Good |
-| v1.14 prioritizes claim-accounting repair before manuscript polish | Public materials must not mix compile-only support, same-AST seed retention, and trained recovery in one headline. | - Pending |
+| v1.14 prioritizes claim-accounting repair before manuscript polish | Public materials must not mix compile-only support, same-AST seed retention, and trained recovery in one headline. | ✓ Good |
+| v1.15 frames i*pi EML as a `GEML_a` specialization | The family story is stronger than presenting one isolated operator, and it keeps EML as the `a = 1` reference point. | - Pending |
+| v1.15 proves restricted-domain theorems before making broad claims | The original EML paper has a constructive completeness result; this milestone should not imply the same for i*pi EML without proof. | - Pending |
+| v1.15 benchmarks matched structural bias plus negative controls | i*pi EML is expected to help oscillatory/phase-log laws if it helps at all; credible reporting needs both its natural class and cases where EML may remain better. | - Pending |
 
 ## Evolution
 
@@ -259,4 +276,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-21 after v1.14 milestone start*
+*Last updated: 2026-04-22 after v1.15 milestone start*
