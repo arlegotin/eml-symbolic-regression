@@ -76,11 +76,14 @@ from .paper_v116 import (
     write_v116_paper_package,
 )
 from .paper_v117 import (
+    DEFAULT_V116_PACKAGE_DIR,
     DEFAULT_V117_NEIGHBORHOOD_DIR,
+    DEFAULT_V117_PACKAGE_DIR,
     DEFAULT_V117_RANKING_DIR,
     DEFAULT_V117_SANDBOX_DIR,
     DEFAULT_V117_SNAP_DIAGNOSTICS_DIR,
     write_v117_candidate_ranking,
+    write_v117_evidence_package,
     write_v117_neighborhood_candidates,
     write_v117_recovery_sandbox,
     write_v117_snap_diagnostics,
@@ -722,6 +725,25 @@ def geml_v117_sandbox_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def geml_v117_package_command(args: argparse.Namespace) -> int:
+    paths = write_v117_evidence_package(
+        output_dir=Path(args.output_dir),
+        snap_diagnostics_dir=Path(args.snap_diagnostics_dir),
+        neighborhoods_dir=Path(args.neighborhoods_dir),
+        ranking_dir=Path(args.ranking_dir),
+        sandbox_dir=Path(args.sandbox_dir),
+        v116_package_dir=Path(args.v116_package_dir),
+        overwrite=args.overwrite,
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml v1.17 package: manifest -> {paths.manifest_json}; "
+        f"decision -> {manifest['decision']}; "
+        f"audit -> {paths.claim_audit_json} ({manifest['claim_audit_status']})"
+    )
+    return 0 if manifest["claim_audit_status"] == "passed" else 1
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -1237,6 +1259,40 @@ def build_parser() -> argparse.ArgumentParser:
     )
     geml_v117_sandbox.add_argument("--overwrite", action="store_true", help="Allow refreshing existing v1.17 sandbox artifacts.")
     geml_v117_sandbox.set_defaults(func=geml_v117_sandbox_command)
+
+    geml_v117_package = sub.add_parser("geml-v117-package", help="Assemble the final v1.17 evidence package and campaign gate.")
+    geml_v117_package.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V117_PACKAGE_DIR),
+        help="Directory for the final v1.17 evidence package.",
+    )
+    geml_v117_package.add_argument(
+        "--snap-diagnostics-dir",
+        default=str(DEFAULT_V117_SNAP_DIAGNOSTICS_DIR),
+        help="Directory containing v1.17 snap diagnostics.",
+    )
+    geml_v117_package.add_argument(
+        "--neighborhoods-dir",
+        default=str(DEFAULT_V117_NEIGHBORHOOD_DIR),
+        help="Directory containing v1.17 neighborhood candidates.",
+    )
+    geml_v117_package.add_argument(
+        "--ranking-dir",
+        default=str(DEFAULT_V117_RANKING_DIR),
+        help="Directory containing v1.17 ranked candidates.",
+    )
+    geml_v117_package.add_argument(
+        "--sandbox-dir",
+        default=str(DEFAULT_V117_SANDBOX_DIR),
+        help="Directory containing the v1.17 sandbox gate.",
+    )
+    geml_v117_package.add_argument(
+        "--v116-package-dir",
+        default=str(DEFAULT_V116_PACKAGE_DIR),
+        help="Existing v1.16 package directory used as an intact before-state reference.",
+    )
+    geml_v117_package.add_argument("--overwrite", action="store_true", help="Allow refreshing existing v1.17 package artifacts.")
+    geml_v117_package.set_defaults(func=geml_v117_package_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(

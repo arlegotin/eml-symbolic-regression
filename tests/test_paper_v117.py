@@ -4,6 +4,7 @@ import json
 from eml_symbolic_regression.cli import (
     build_parser,
     geml_v117_neighborhoods_command,
+    geml_v117_package_command,
     geml_v117_rank_candidates_command,
     geml_v117_sandbox_command,
     geml_v117_snap_diagnostics_command,
@@ -11,6 +12,7 @@ from eml_symbolic_regression.cli import (
 from eml_symbolic_regression.master_tree import SoftEMLTree
 from eml_symbolic_regression.paper_v117 import (
     write_v117_candidate_ranking,
+    write_v117_evidence_package,
     write_v117_neighborhood_candidates,
     write_v117_recovery_sandbox,
     write_v117_snap_diagnostics,
@@ -98,6 +100,65 @@ def _write_v117_fixture_campaign(campaign_dir):
         writer.writerows(rows)
     _write_json(table_dir / "geml-paired-summary.json", {"schema": "fixture", "paired_rows": 2})
     _write_json(campaign_dir / "campaign-manifest.json", {"schema": "fixture"})
+
+
+def _write_v117_package_inputs(tmp_path, *, exact_signal):
+    v116 = tmp_path / "v116"
+    snap = tmp_path / "snap"
+    neighborhoods = tmp_path / "neighborhoods"
+    ranking = tmp_path / "ranking"
+    sandbox = tmp_path / "sandbox"
+    _write_json(v116 / "manifest.json", {"schema": "eml.v116_final_decision_manifest.v1", "decision": "inconclusive"})
+    _write_json(snap / "manifest.json", {"schema": "eml.v117_snap_diagnostics_manifest.v1", "outputs": {}})
+    _write_json(snap / "snap-diagnostics.json", {"schema": "eml.v117_snap_diagnostics.v1", "rows": [{"diagnostic_id": "d0"}]})
+    _write_json(snap / "snap-neighborhood-seeds.json", {"schema": "eml.v117_snap_neighborhood_seeds.v1", "rows": [{"seed_id": "s0"}]})
+    _write_json(neighborhoods / "manifest.json", {"schema": "eml.v117_neighborhood_manifest.v1", "outputs": {}})
+    _write_json(neighborhoods / "neighborhood-candidates.json", {"schema": "eml.v117_neighborhood_candidates.v1", "rows": [{"candidate_uid": "c0"}]})
+    ranked_rows = [
+        {
+            "candidate_uid": "c0",
+            "candidate_id": "exact" if exact_signal else "loss-only",
+            "target_family": "periodic",
+            "operator_family": "ipi_eml",
+            "evidence_class": "exact_recovery" if exact_signal else "loss_only",
+            "selected": True,
+        }
+    ]
+    _write_json(ranking / "manifest.json", {"schema": "eml.v117_candidate_ranking_manifest.v1", "outputs": {}, "counts": {"total": 1}})
+    _write_json(ranking / "ranked-candidates.json", {"schema": "eml.v117_candidate_ranking.v1", "rows": ranked_rows})
+    sandbox_decision = "exact_signal_found" if exact_signal else "no_exact_signal"
+    sandbox_gate = "allow_next_campaign_planning" if exact_signal else "block_broader_campaigns"
+    natural_exact_count = 1 if exact_signal else 0
+    _write_json(
+        sandbox / "manifest.json",
+        {
+            "schema": "eml.v117_recovery_sandbox_manifest.v1",
+            "decision": sandbox_decision,
+            "exact_signal_found": exact_signal,
+            "broader_campaign_gate": sandbox_gate,
+            "outputs": {},
+        },
+    )
+    _write_json(
+        sandbox / "sandbox-results.json",
+        {
+            "schema": "eml.v117_recovery_sandbox.v1",
+            "decision": sandbox_decision,
+            "exact_signal_found": exact_signal,
+            "broader_campaign_gate": sandbox_gate,
+            "natural_exact_recovery_count": natural_exact_count,
+            "negative_control_exact_recovery_count": 0,
+            "summary_rows": [{"group": "ipi_eml:periodic", "exact_recovery": natural_exact_count}],
+            "selected_exact_candidates": ranked_rows if exact_signal else [],
+        },
+    )
+    return {
+        "v116": v116,
+        "snap": snap,
+        "neighborhoods": neighborhoods,
+        "ranking": ranking,
+        "sandbox": sandbox,
+    }
 
 
 def test_write_v117_snap_diagnostics_emits_low_margin_raw_and_ipi_rows(tmp_path):
@@ -369,3 +430,75 @@ def test_cli_registers_geml_v117_sandbox():
     args = build_parser().parse_args(["geml-v117-sandbox", "--output-dir", "out", "--ranking-dir", "ranking"])
     assert args.func is geml_v117_sandbox_command
     assert args.ranking_dir == "ranking"
+
+
+def test_write_v117_evidence_package_preserves_v116_and_blocks_without_exact_signal(tmp_path):
+    inputs = _write_v117_package_inputs(tmp_path, exact_signal=False)
+
+    paths = write_v117_evidence_package(
+        tmp_path / "package",
+        snap_diagnostics_dir=inputs["snap"],
+        neighborhoods_dir=inputs["neighborhoods"],
+        ranking_dir=inputs["ranking"],
+        sandbox_dir=inputs["sandbox"],
+        v116_package_dir=inputs["v116"],
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    decision = json.loads(paths.final_decision_json.read_text(encoding="utf-8"))
+    audit = json.loads(paths.claim_audit_json.read_text(encoding="utf-8"))
+    locks = json.loads(paths.source_locks_json.read_text(encoding="utf-8"))
+    readme = paths.package_readme_md.read_text(encoding="utf-8")
+
+    assert manifest["schema"] == "eml.v117_evidence_package.v1"
+    assert manifest["decision"] == "still_inconclusive"
+    assert decision["broader_campaign_gate"] == "block_broader_campaigns"
+    assert decision["next_campaign_allowed"] is False
+    assert audit["status"] == "passed"
+    v116_lock = next(row for row in locks["inputs"] if row["source_id"] == "v116_package_manifest")
+    assert v116_lock["status"] == "locked"
+    assert v116_lock["required"] is True
+    assert "v1.16 package remains intact" in readme
+    assert "additive" in readme.lower()
+
+
+def test_write_v117_evidence_package_opens_gate_only_for_exact_signal(tmp_path):
+    inputs = _write_v117_package_inputs(tmp_path, exact_signal=True)
+
+    paths = write_v117_evidence_package(
+        tmp_path / "package",
+        snap_diagnostics_dir=inputs["snap"],
+        neighborhoods_dir=inputs["neighborhoods"],
+        ranking_dir=inputs["ranking"],
+        sandbox_dir=inputs["sandbox"],
+        v116_package_dir=inputs["v116"],
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    decision = json.loads(paths.final_decision_json.read_text(encoding="utf-8"))
+    audit = json.loads(paths.claim_audit_json.read_text(encoding="utf-8"))
+
+    assert manifest["decision"] == "exact_signal_found"
+    assert manifest["broader_campaign_gate"] == "allow_next_campaign_planning"
+    assert decision["next_campaign_allowed"] is True
+    assert audit["status"] == "passed"
+
+
+def test_cli_registers_geml_v117_package():
+    args = build_parser().parse_args(
+        [
+            "geml-v117-package",
+            "--output-dir",
+            "out",
+            "--snap-diagnostics-dir",
+            "snap",
+            "--neighborhoods-dir",
+            "neighborhoods",
+            "--ranking-dir",
+            "ranking",
+            "--sandbox-dir",
+            "sandbox",
+            "--v116-package-dir",
+            "v116",
+        ]
+    )
+    assert args.func is geml_v117_package_command
+    assert args.v116_package_dir == "v116"
