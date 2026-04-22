@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.15
 milestone_name: GEML family and i*pi EML exploration
-current_phase: 82
-current_phase_name: "GEML Family Semantics and Structural Identity"
-status: Ready to plan Phase 82
-stopped_at: roadmap created
+current_phase: 83
+current_phase_name: "i*pi EML Restricted Theory and Branch Contract"
+status: Ready to plan Phase 83
+stopped_at: phase 82 complete
 last_updated: "2026-04-22T00:00:00.000Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 6
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 17
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 82 - GEML Family Semantics and Structural Identity
+**Current phase:** Phase 83 - i*pi EML Restricted Theory and Branch Contract
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 
 ## Current Position
 
-Phase: 82 - GEML Family Semantics and Structural Identity
+Phase: 83 - i*pi EML Restricted Theory and Branch Contract
 Plan: -
 Status: Ready to plan
-Last activity: 2026-04-22 - Milestone v1.15 roadmap created
-Progress: [----------] 0% by completed phases
+Last activity: 2026-04-22 - Phase 82 complete
+Progress: [##--------] 17% by completed phases
 
 ## Current Milestone
 
@@ -65,6 +65,7 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 | v1.12 training-detail assets | `artifacts/paper/v1.11/draft/training-detail/` | Quick task complete: 4,472 step rows, 232 candidate rows |
 | v1.13 clean-room evidence package | `artifacts/paper/v1.13/` | Complete, audit and release gate passed |
 | v1.14 corrected evidence package | `artifacts/paper/v1.14/` | Complete, claim audit and release gate passed |
+| Phase 82 artifacts | `.planning/phases/82-geml-family-semantics-and-structural-identity/` | Complete |
 
 ## Accumulated Context
 
@@ -96,10 +97,11 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 - v1.15 should prove restricted-domain identities and controlled-composition bounds before making empirical or closure claims.
 - EML versus i*pi EML comparisons must be matched by depth, optimizer, initialization budget, snapping rule, verifier gates, and reporting schema.
 - i*pi EML branch management is part of the operator contract, not a nuisance hidden in implementation details.
+- Phase 82 added fixed-parameter `GEML_a` semantics, canonical raw `a = 1` handling, i*pi EML helpers, exact AST JSON/SymPy export, and structural identity tests while preserving legacy raw/centered benchmark artifact compatibility.
 
 ### Pending Todos
 
-- Plan Phase 82 with `$gsd-plan-phase 82`.
+- Plan Phase 83 with `$gsd-plan-phase 83`.
 
 ### Deferred Items
 
@@ -149,8 +151,8 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 ## Session Continuity
 
 Last session: 2026-04-22
-Stopped at: v1.15 milestone initialized
+Stopped at: Phase 82 complete; ready for Phase 83
 Resume file: None
 
 ---
-*Last updated: 2026-04-22 after v1.15 milestone start*
+*Last updated: 2026-04-22 after Phase 82 completion*
