@@ -24,7 +24,7 @@
 
 ## Current Status
 
-v1.15 is open. It reframes the proposed i*pi EML operator as the `a = i*pi` specialization of the broader `GEML_a(x, y) = exp(a*x) - log(y)/a` family. The milestone first builds the exact family semantics and restricted theory, then integrates i*pi EML into the existing training/snap/verification pipeline, then runs matched EML versus i*pi EML comparisons on oscillatory targets and negative controls.
+v1.15 is complete through Phase 87. It reframed the proposed i*pi EML operator as the `a = i*pi` specialization of the broader `GEML_a(x, y) = exp(a*x) - log(y)/a` family, added restricted theory and branch contracts, integrated fixed GEML operators into training/snap/verification, and produced a claim-safe evidence package. The package decision is `inconclusive_smoke_only` until the full matched protocol is run.
 
 ## Phase Status
 
@@ -33,7 +33,7 @@ v1.15 is open. It reframes the proposed i*pi EML operator as the `a = i*pi` spec
 - [x] Phase 84: Family-Aware Training and Snapping Integration
 - [x] Phase 85: Oscillatory Benchmark Pack and Negative Controls
 - [x] Phase 86: Matched EML versus i*pi EML Campaign Runner
-- [ ] Phase 87: GEML Evidence Package and Claim Boundary
+- [x] Phase 87: GEML Evidence Package and Claim Boundary
 
 ## Phase Overview
 
@@ -134,6 +134,7 @@ v1.15 is open. It reframes the proposed i*pi EML operator as the `a = i*pi` spec
 - No new external domain research was run during initialization; the milestone brief and existing operator-family history are sufficient to scope the first pass.
 - The milestone intentionally avoids learning arbitrary `a` values. Fixed `a = 1` versus `a = i*pi` is the controlled comparison.
 - Positive results should be framed as structural bias on declared oscillatory/phase-log targets, not as global symbolic-regression superiority.
+- Phase 87's checked-in package is deliberately inconclusive: the smoke campaign has one periodic loss-only signal for i*pi EML and one negative-control loss-only signal for raw EML, with no verifier-gated exact recovery.
 
 ---
 *Roadmap created for v1.15 on 2026-04-22*
