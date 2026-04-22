@@ -9,7 +9,7 @@ from typing import Any, Callable, Mapping
 import numpy as np
 import torch
 
-from .expression import format_constant_value
+from .expression import Const, Var, format_constant_value, ipi_eml_expr
 from .master_tree import ActiveSlotAlternatives, SnapDecision, SnapResult, SoftEMLTree, constant_label
 from .semantics import AnomalyStats, EmlOperator, TrainingSemanticsConfig, as_complex_tensor, mse_complex_numpy, raw_eml_operator
 from .verify import DataSplit, VerificationReport, selection_candidate_splits, verify_candidate
@@ -46,6 +46,7 @@ class TrainingConfig:
     refit_lr: float = 0.02
     seed: int = 0
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
+    phase_initializers: tuple[str, ...] = ()
     operator_family: EmlOperator = field(default_factory=raw_eml_operator)
     operator_schedule: tuple[EmlOperator, ...] = ()
 
@@ -54,6 +55,9 @@ class TrainingConfig:
         if mode not in {"guarded", "faithful"}:
             raise ValueError("semantics_mode must be 'guarded' or 'faithful'")
         object.__setattr__(self, "semantics_mode", mode)
+        unknown = sorted(set(self.phase_initializers) - set(_PHASE_INITIALIZERS))
+        if unknown:
+            raise ValueError(f"unknown phase initializers: {', '.join(unknown)}")
 
     def semantics_config(self) -> TrainingSemanticsConfig:
         return TrainingSemanticsConfig(
@@ -639,6 +643,8 @@ def fit_eml_tree(
         model.reset_parameters(seed=seed, scale=0.25)
         if initializer is not None:
             initialization_log = initializer(model, restart, seed)
+        elif str(attempt["kind"]).startswith("phase_initializer_"):
+            initialization_log = _apply_phase_initializer(model, attempt)
         elif attempt["kind"].startswith("scaffold_"):
             initialization_log = _apply_scaffold(model, attempt)
         else:
@@ -841,6 +847,19 @@ def fit_eml_tree(
 def _training_attempts(config: TrainingConfig, has_external_initializer: bool) -> list[dict[str, Any]]:
     attempts: list[dict[str, Any]] = []
     if not has_external_initializer:
+        for phase_initializer in config.phase_initializers:
+            if not _phase_initializer_supported(phase_initializer, config.operator_family):
+                continue
+            for variable in config.variables:
+                attempts.append(
+                    {
+                        "kind": f"phase_initializer_{phase_initializer}",
+                        "phase_initializer": phase_initializer,
+                        "variable": variable,
+                        "restart": -1,
+                        "seed": config.seed,
+                    }
+                )
         known_scaffolds = set(known_scaffold_kinds())
         for scaffold in config.scaffold_initializers:
             if scaffold not in known_scaffolds:
@@ -902,9 +921,47 @@ def _training_config_payload(config: TrainingConfig) -> dict[str, Any]:
         if key not in {"operator_family", "operator_schedule", "constants"}
     }
     payload["scaffold_initializers"] = list(config.scaffold_initializers)
+    payload["phase_initializers"] = list(config.phase_initializers)
     payload["constants"] = [format_constant_value(value) for value in config.constants]
     payload.update(config.operator_payload())
     return payload
+
+
+_PHASE_INITIALIZERS = ("ipi_phase_unit", "ipi_log_unit")
+
+
+def known_phase_initializers() -> tuple[str, ...]:
+    """Return generic, non-target-specific initializer names."""
+
+    return _PHASE_INITIALIZERS
+
+
+def _phase_initializer_supported(initializer: str, operator_family: EmlOperator) -> bool:
+    if initializer.startswith("ipi_"):
+        return operator_family.specialization == "ipi_eml"
+    return False
+
+
+def _apply_phase_initializer(model: SoftEMLTree, attempt: Mapping[str, Any]) -> dict[str, Any]:
+    initializer = str(attempt["phase_initializer"])
+    variable = str(attempt["variable"])
+    if initializer == "ipi_phase_unit":
+        expression = ipi_eml_expr(Var(variable), Const(1.0))
+    elif initializer == "ipi_log_unit":
+        expression = ipi_eml_expr(Const(1.0), Var(variable))
+    else:
+        raise ValueError(f"unknown phase initializer {initializer!r}")
+    embedding = model.embed_expr(expression)
+    return {
+        "kind": f"phase_initializer_{initializer}",
+        "phase_initializer": initializer,
+        "variable": variable,
+        "seed": attempt["seed"],
+        "strategy": "generic_ipi_operator_primitive",
+        "formula_leakage": False,
+        "operator_family": model.operator_family.as_dict(),
+        "embedding": embedding.as_dict(),
+    }
 
 
 def _operator_trace(config: TrainingConfig) -> list[dict[str, Any]]:

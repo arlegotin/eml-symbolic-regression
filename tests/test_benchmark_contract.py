@@ -396,6 +396,39 @@ def test_v115_geml_oscillatory_suite_pairs_raw_and_ipi_budgets():
         assert raw_run.dataset.as_dict() == ipi_run.dataset.as_dict()
 
 
+def test_v116_geml_suites_use_generic_ipi_initializers_and_match_raw_budgets():
+    assert {"v1.16-geml-smoke", "v1.16-geml-pilot", "v1.16-geml-full"} <= set(list_builtin_suites())
+    suite = builtin_suite("v1.16-geml-pilot")
+    runs = suite.expanded_runs()
+
+    assert len(runs) == 24
+    assert {run.optimizer.operator_family.label for run in runs} == {"raw_eml", "ipi_eml"}
+    by_formula_seed: dict[tuple[str, int], list] = {}
+    for run in runs:
+        by_formula_seed.setdefault((run.formula, run.seed), []).append(run)
+        assert run.start_mode == "blind"
+        assert run.optimizer.scaffold_initializers == ()
+        if run.optimizer.operator_family.specialization == "ipi_eml":
+            assert run.optimizer.phase_initializers == ("ipi_phase_unit", "ipi_log_unit")
+            assert "branch_safe_search" in run.tags
+            assert set(run.tags).intersection({"branch_safe_domain", "branch_safe_by_construction", "negative_control_domain"})
+        else:
+            assert run.optimizer.phase_initializers == ()
+
+    for pair in by_formula_seed.values():
+        assert {run.optimizer.operator_family.label for run in pair} == {"raw_eml", "ipi_eml"}
+        raw_run = next(run for run in pair if run.optimizer.operator_family.label == "raw_eml")
+        ipi_run = next(run for run in pair if run.optimizer.operator_family.label == "ipi_eml")
+        raw_budget = raw_run.optimizer.as_dict()
+        ipi_budget = ipi_run.optimizer.as_dict()
+        raw_budget.pop("operator_family")
+        ipi_budget.pop("operator_family")
+        raw_budget.pop("phase_initializers")
+        ipi_budget.pop("phase_initializers")
+        assert raw_budget == ipi_budget
+        assert raw_run.dataset.as_dict() == ipi_run.dataset.as_dict()
+
+
 def test_v115_ipi_branch_domain_validation_fails_closed():
     bad_case = BenchmarkCase(
         id="bad-ipi-sin",
@@ -414,6 +447,11 @@ def test_v115_ipi_branch_domain_validation_fails_closed():
 
     with pytest.raises(BenchmarkValidationError, match="branch_safe_domain"):
         suite.validate()
+
+
+def test_phase_initializers_fail_closed_for_raw_operator():
+    with pytest.raises(BenchmarkValidationError, match="phase_initializers"):
+        OptimizerBudget(phase_initializers=("ipi_phase_unit",)).validate("optimizer")
 
 
 def test_basis_only_track_rejects_literal_terminal_constants():

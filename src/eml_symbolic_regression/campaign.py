@@ -230,6 +230,27 @@ _PRESETS = {
         description="v1.15 raw EML versus i*pi EML matched oscillatory and negative-control campaign.",
         budget_guardrail="20 configured rows; 10 targets each paired across raw EML and i*pi EML under matched blind budgets.",
     ),
+    "geml-v116-smoke": CampaignPreset(
+        name="geml-v116-smoke",
+        suite="v1.16-geml-smoke",
+        tier="v1.16-geml",
+        description="Cheap v1.16 smoke campaign with generic i*pi primitive initializers and negative-control visibility.",
+        budget_guardrail="4 configured cases; sin(pi*x) and exp each paired across raw EML and i*pi EML.",
+    ),
+    "geml-v116-pilot": CampaignPreset(
+        name="geml-v116-pilot",
+        suite="v1.16-geml-pilot",
+        tier="v1.16-geml",
+        description="Pilot v1.16 raw EML versus i*pi EML campaign for deciding whether full paper evidence is warranted.",
+        budget_guardrail="12 configured cases across 2 seeds; pilot must show exact recovery signal before full campaign.",
+    ),
+    "geml-v116-full": CampaignPreset(
+        name="geml-v116-full",
+        suite="v1.16-geml-full",
+        tier="v1.16-geml",
+        description="Full v1.16 multi-seed matched raw EML versus i*pi EML paper campaign.",
+        budget_guardrail="20 configured cases across 3 seeds; run only after pilot gate shows exact recovery signal.",
+    ),
 }
 
 

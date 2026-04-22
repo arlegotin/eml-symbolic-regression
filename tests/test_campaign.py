@@ -149,6 +149,9 @@ def test_campaign_presets_map_to_budgeted_suites():
         "paper-tracks",
         "geml-oscillatory-smoke",
         "geml-oscillatory",
+        "geml-v116-smoke",
+        "geml-v116-pilot",
+        "geml-v116-full",
     )
 
     standard = campaign_preset("standard")
@@ -228,6 +231,14 @@ def test_campaign_presets_map_to_budgeted_suites():
     assert geml_full.tier == "v1.15-geml"
     assert len(geml_runs) == 20
     assert {run.optimizer.operator_family.label for run in geml_runs} == {"raw_eml", "ipi_eml"}
+
+    geml_v116_pilot = campaign_preset("geml-v116-pilot")
+    geml_v116_runs = load_suite(geml_v116_pilot.suite).expanded_runs()
+    assert geml_v116_pilot.suite == "v1.16-geml-pilot"
+    assert geml_v116_pilot.tier == "v1.16-geml"
+    assert len(geml_v116_runs) == 24
+    assert any(run.optimizer.phase_initializers for run in geml_v116_runs if run.optimizer.operator_family.label == "ipi_eml")
+    assert {"geml-v116-smoke", "geml-v116-pilot", "geml-v116-full"} <= set(list_campaign_presets())
 
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):

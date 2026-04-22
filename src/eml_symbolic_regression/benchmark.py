@@ -23,7 +23,7 @@ from .basin import fit_perturbed_true_tree
 from .compiler import CompilerConfig, UnsupportedExpression, compile_and_validate, diagnose_compile_expression
 from .datasets import demo_specs, proof_dataset_manifest
 from .expression import ConstantOccurrence, Expr, expr_from_document, format_constant_value, parse_constant_value
-from .optimize import TrainingConfig, fit_eml_tree
+from .optimize import TrainingConfig, fit_eml_tree, known_phase_initializers
 from .proof import (
     EVIDENCE_CLASSES,
     TRAINING_MODES,
@@ -94,6 +94,9 @@ BUILTIN_SUITES = (
     "v1.13-paper-tracks",
     "v1.15-geml-oscillatory-smoke",
     "v1.15-geml-oscillatory",
+    "v1.16-geml-smoke",
+    "v1.16-geml-pilot",
+    "v1.16-geml-full",
 )
 V115_OSCILLATORY_TARGETS = (
     "sin_pi",
@@ -215,6 +218,7 @@ class OptimizerBudget:
     refit_lr: float = 0.02
     scaffold_initializers: tuple[str, ...] = ("exp", "log", "scaled_exp")
     scaffold_exclusions: tuple[str, ...] = ()
+    phase_initializers: tuple[str, ...] = ()
     operator_family: EmlOperator = field(default_factory=raw_eml_operator)
     operator_schedule: tuple[EmlOperator, ...] = ()
 
@@ -268,6 +272,14 @@ class OptimizerBudget:
                 path=f"{path}.scaffold_exclusions",
             )
         values["scaffold_exclusions"] = tuple(str(value) for value in scaffold_exclusions)
+        phase_initializers = values["phase_initializers"]
+        if not isinstance(phase_initializers, (list, tuple)):
+            raise BenchmarkValidationError(
+                "malformed_budget",
+                "phase_initializers must be a list",
+                path=f"{path}.phase_initializers",
+            )
+        values["phase_initializers"] = tuple(str(value) for value in phase_initializers)
         try:
             values["operator_family"] = eml_operator_from_spec(payload.get("operator_family"))
         except (KeyError, TypeError, ValueError) as exc:
@@ -384,6 +396,19 @@ class OptimizerBudget:
                     "operator_schedule entries must be centered-family operators",
                     path=f"{path}.operator_schedule[{index}]",
                 )
+        unknown_phase_initializers = sorted(set(self.phase_initializers) - set(known_phase_initializers()))
+        if unknown_phase_initializers:
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                f"unknown phase initializers: {', '.join(unknown_phase_initializers)}",
+                path=f"{path}.phase_initializers",
+            )
+        if self.phase_initializers and self.operator_family.specialization != "ipi_eml":
+            raise BenchmarkValidationError(
+                "invalid_budget",
+                "phase_initializers are currently restricted to i*pi EML operator rows",
+                path=f"{path}.phase_initializers",
+            )
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -412,6 +437,7 @@ class OptimizerBudget:
             "refit_lr": self.refit_lr,
             "scaffold_initializers": list(self.scaffold_initializers),
             "scaffold_exclusions": list(self.scaffold_exclusions),
+            "phase_initializers": list(self.phase_initializers),
             "operator_family": self.operator_family.as_dict(),
             "operator_schedule": [operator.as_dict() for operator in self.operator_schedule],
         }
@@ -1015,6 +1041,7 @@ def _track_payload(
         "uses_literal_constants": constants_policy == "literal_constants" and bool(literal_catalog),
         "scaffold_initializers": list(scaffold_initializers),
         "scaffold_exclusions": list(optimizer.scaffold_exclusions),
+        "phase_initializers": list(optimizer.phase_initializers),
         "scaffold_status": "enabled" if scaffold_initializers else "disabled",
         "warm_start_or_scaffold_status": _warm_start_or_scaffold_status(scaffold_initializers),
     }
@@ -1162,6 +1189,7 @@ def _case(
     warm_restarts: int = 1,
     max_warm_depth: int = 14,
     scaffold_initializers: Iterable[str] = ("exp", "log", "scaled_exp"),
+    phase_initializers: Iterable[str] = (),
     tags: Iterable[str] = (),
     expect_recovery: bool = False,
     claim_id: str | None = None,
@@ -1190,6 +1218,7 @@ def _case(
             warm_restarts=warm_restarts,
             max_warm_depth=max_warm_depth,
             scaffold_initializers=tuple(scaffold_initializers),
+            phase_initializers=tuple(phase_initializers),
             operator_family=operator_family or raw_eml_operator(),
             operator_schedule=tuple(operator_schedule),
         ),
@@ -1483,6 +1512,50 @@ def _v115_matched_cases(formulas: Iterable[str]) -> tuple[BenchmarkCase, ...]:
                     scaffold_initializers=(),
                     operator_family=operator,
                     tags=(*_v115_target_tags(formula), f"operator:{variant_id}"),
+                    expect_recovery=False,
+                    track="literal_constants",
+                    constants_policy="literal_constants",
+                )
+            )
+    return tuple(cases)
+
+
+def _v116_matched_cases(
+    formulas: Iterable[str],
+    *,
+    seeds: Iterable[int],
+    steps: int,
+    restarts: int,
+) -> tuple[BenchmarkCase, ...]:
+    cases: list[BenchmarkCase] = []
+    variants = (
+        ("raw", raw_eml_operator(), ()),
+        ("ipi", eml_operator_from_spec("ipi_eml"), ("ipi_phase_unit", "ipi_log_unit")),
+    )
+    for formula in formulas:
+        base_tags = tuple(tag for tag in _v115_target_tags(formula) if tag != "v1.15")
+        for variant_id, operator, phase_initializers in variants:
+            cases.append(
+                _case(
+                    f"{_slug(formula)}-{variant_id}-v116-blind",
+                    formula,
+                    "blind",
+                    seeds=tuple(seeds),
+                    points=24,
+                    depth=_v115_depth(formula),
+                    steps=steps,
+                    restarts=restarts,
+                    constants=_literal_track_constants_for_v115(formula),
+                    scaffold_initializers=(),
+                    phase_initializers=phase_initializers,
+                    operator_family=operator,
+                    tags=(
+                        "v1.16",
+                        "geml_paper_strength",
+                        "branch_safe_search",
+                        *base_tags,
+                        f"operator:{variant_id}",
+                    ),
                     expect_recovery=False,
                     track="literal_constants",
                     constants_policy="literal_constants",
@@ -2235,6 +2308,41 @@ def builtin_suite(name: str) -> BenchmarkSuite:
             cases=_v115_matched_cases(V115_GEML_TARGETS),
             artifact_root=CAMPAIGN_ARTIFACT_ROOT,
         )
+    if name == "v1.16-geml-smoke":
+        return BenchmarkSuite(
+            id="v1.16-geml-smoke",
+            description=(
+                "Cheap v1.16 raw EML versus i*pi EML smoke check with generic i*pi primitive initializers "
+                "and matched negative-control visibility."
+            ),
+            cases=_v116_matched_cases(("sin_pi", "exp"), seeds=(0,), steps=28, restarts=1),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
+    if name == "v1.16-geml-pilot":
+        return BenchmarkSuite(
+            id="v1.16-geml-pilot",
+            description=(
+                "v1.16 pilot raw EML versus i*pi EML campaign over natural-bias and negative-control targets; "
+                "used to decide whether the full paper campaign is justified."
+            ),
+            cases=_v116_matched_cases(
+                ("sin_pi", "cos_pi", "harmonic_sum", "log_periodic_oscillation", "exp", "log"),
+                seeds=(0, 1),
+                steps=36,
+                restarts=2,
+            ),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
+    if name == "v1.16-geml-full":
+        return BenchmarkSuite(
+            id="v1.16-geml-full",
+            description=(
+                "Full v1.16 matched raw EML versus i*pi EML paper campaign over declared v1.15 target families "
+                "with multi-seed exact-recovery denominators."
+            ),
+            cases=_v116_matched_cases(V115_GEML_TARGETS, seeds=(0, 1, 2), steps=48, restarts=2),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")
 
 
@@ -2815,6 +2923,7 @@ def _training_config_from_budget(
         refit_steps=run.optimizer.refit_steps,
         refit_lr=run.optimizer.refit_lr,
         scaffold_initializers=run.optimizer.scaffold_initializers if scaffold_initializers is None else scaffold_initializers,
+        phase_initializers=run.optimizer.phase_initializers,
         operator_family=run.optimizer.operator_schedule[0] if run.optimizer.operator_schedule else run.optimizer.operator_family,
         operator_schedule=run.optimizer.operator_schedule,
     )

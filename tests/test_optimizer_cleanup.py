@@ -174,6 +174,41 @@ def test_optimizer_runs_ipi_eml_with_branch_and_snap_metadata():
     assert result.verification.status == "recovered"
 
 
+def test_optimizer_uses_generic_ipi_phase_initializer_without_formula_leakage():
+    x = np.linspace(-0.5, 0.5, 16)
+    target = np.exp(1j * np.pi * x)
+    split = DataSplit(
+        name="heldout",
+        inputs={"x": x},
+        target=target,
+        target_mpmath=lambda context: np.exp(1j * np.pi * context["x"]),
+    )
+
+    result = fit_eml_tree(
+        {"x": x},
+        target,
+        TrainingConfig(
+            depth=1,
+            variables=("x",),
+            steps=1,
+            restarts=0,
+            lr=0.0,
+            seed=0,
+            operator_family=ipi_eml_operator(),
+            phase_initializers=("ipi_phase_unit",),
+        ),
+        verification_splits=[split],
+    )
+
+    initialization = result.manifest["restarts"][0]["initialization"]
+    assert result.verification is not None
+    assert result.verification.status == "recovered"
+    assert result.manifest["config"]["phase_initializers"] == ["ipi_phase_unit"]
+    assert initialization["strategy"] == "generic_ipi_operator_primitive"
+    assert initialization["formula_leakage"] is False
+    assert initialization["embedding"]["round_trip_equal"] is True
+
+
 def test_optimizer_empty_loss_summary_keeps_gradient_keys():
     summary = optimize._loss_summary([])
 
