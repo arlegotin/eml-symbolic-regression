@@ -32,7 +32,7 @@ v1.15 is open. It reframes the proposed i*pi EML operator as the `a = i*pi` spec
 - [x] Phase 83: i*pi EML Restricted Theory and Branch Contract
 - [x] Phase 84: Family-Aware Training and Snapping Integration
 - [x] Phase 85: Oscillatory Benchmark Pack and Negative Controls
-- [ ] Phase 86: Matched EML versus i*pi EML Campaign Runner
+- [x] Phase 86: Matched EML versus i*pi EML Campaign Runner
 - [ ] Phase 87: GEML Evidence Package and Claim Boundary
 
 ## Phase Overview

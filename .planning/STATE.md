@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.15
 milestone_name: GEML family and i*pi EML exploration
-current_phase: 86
-current_phase_name: "Matched EML versus i*pi EML Campaign Runner"
-status: Ready to plan Phase 86
-stopped_at: phase 85 complete
+current_phase: 87
+current_phase_name: "GEML Evidence Package and Claim Boundary"
+status: Ready to plan Phase 87
+stopped_at: phase 86 complete
 last_updated: "2026-04-22T00:00:00.000Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 6
-  completed_phases: 4
-  total_plans: 4
-  completed_plans: 4
-  percent: 67
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 83
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 86 - Matched EML versus i*pi EML Campaign Runner
+**Current phase:** Phase 87 - GEML Evidence Package and Claim Boundary
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 
 ## Current Position
 
-Phase: 86 - Matched EML versus i*pi EML Campaign Runner
+Phase: 87 - GEML Evidence Package and Claim Boundary
 Plan: -
 Status: Ready to plan
-Last activity: 2026-04-22 - Phase 85 complete
-Progress: [#######---] 67% by completed phases
+Last activity: 2026-04-22 - Phase 86 complete
+Progress: [########--] 83% by completed phases
 
 ## Current Milestone
 
@@ -69,6 +69,7 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 | Phase 83 artifacts | `.planning/phases/83-i-pi-eml-restricted-theory-and-branch-contract/` | Complete |
 | Phase 84 artifacts | `.planning/phases/84-family-aware-training-and-snapping-integration/` | Complete |
 | Phase 85 artifacts | `.planning/phases/85-oscillatory-benchmark-pack-and-negative-controls/` | Complete |
+| Phase 86 artifacts | `.planning/phases/86-matched-eml-versus-i-pi-eml-campaign-runner/` | Complete |
 | i*pi restricted theory | `artifacts/theory/v1.15/` | Complete |
 
 ## Accumulated Context
@@ -105,10 +106,11 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 - Phase 83 added principal-log branch diagnostics, verifier branch-failure fields, training-only branch guard metadata, and executable i*pi restricted theory artifacts with explicit non-claims.
 - Phase 84 threaded fixed GEML specializations through optimizer, hardening, snapping, exact-candidate selection, semantics-alignment evidence, and manifest metrics without reusing raw-family scaffold witnesses for i*pi EML.
 - Phase 85 registered normalized oscillatory, log-periodic, and negative-control targets plus matched raw/i*pi benchmark suites and branch-domain fail-closed validation.
+- Phase 86 added paired raw EML versus i*pi EML campaign artifacts, exposed Phase 84 metrics in campaign rows, and preserved v1.14 recovery-accounting fields in paired outputs.
 
 ### Pending Todos
 
-- Plan Phase 86 with `$gsd-plan-phase 86`.
+- Plan Phase 87 with `$gsd-plan-phase 87`.
 
 ### Deferred Items
 
@@ -158,8 +160,8 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 ## Session Continuity
 
 Last session: 2026-04-22
-Stopped at: Phase 85 complete; ready for Phase 86
+Stopped at: Phase 86 complete; ready for Phase 87
 Resume file: None
 
 ---
-*Last updated: 2026-04-22 after Phase 85 completion*
+*Last updated: 2026-04-22 after Phase 86 completion*
