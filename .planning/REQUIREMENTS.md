@@ -9,49 +9,49 @@ This milestone introduces the parameterized `GEML_a` family, specializes `a = i*
 
 ### GEML Family Semantics
 
-- [ ] **GEML-01**: The system can represent `GEML_a(x, y) = exp(a*x) - log(y)/a` for explicit nonzero complex `a`.
-- [ ] **GEML-02**: EML is available as the named `GEML_a` specialization `a = 1`, and i*pi EML is available as the named specialization `a = i*pi`.
-- [ ] **GEML-03**: PyTorch, NumPy, and mpmath evaluators agree on `GEML_a` semantics within their existing training and verification contracts.
-- [ ] **GEML-04**: Exact AST, JSON, and SymPy export preserve the operator family parameter and named specialization metadata.
-- [ ] **GEML-05**: Tests and theory docs center the identity `exp(a*GEML_a(u, v)) = exp(a*exp(a*u))/v` for representative complex `a` values.
+- [x] **GEML-01**: The system can represent `GEML_a(x, y) = exp(a*x) - log(y)/a` for explicit nonzero complex `a`.
+- [x] **GEML-02**: EML is available as the named `GEML_a` specialization `a = 1`, and i*pi EML is available as the named specialization `a = i*pi`.
+- [x] **GEML-03**: PyTorch, NumPy, and mpmath evaluators agree on `GEML_a` semantics within their existing training and verification contracts.
+- [x] **GEML-04**: Exact AST, JSON, and SymPy export preserve the operator family parameter and named specialization metadata.
+- [x] **GEML-05**: Tests and theory docs center the identity `exp(a*GEML_a(u, v)) = exp(a*exp(a*u))/v` for representative complex `a` values.
 
 ### Restricted i*pi EML Theory
 
-- [ ] **THRY-01**: Theory artifacts prove or executable-check `i*pi EML(i*pi EML(1, y), 1) = -1/y` on the declared positive-real domain `y > 0`.
-- [ ] **THRY-02**: Theory artifacts prove or executable-check the nested identity that recovers `y` from the i*pi EML reciprocal construction on `y > 0`, with branch assumptions stated.
-- [ ] **THRY-03**: Theory artifacts derive real-axis sensitivity `d/dx i*pi EML(x, y) = i*pi*exp(i*pi*x)` and `|d/dx| = pi` for real `x`.
-- [ ] **THRY-04**: Theory artifacts derive the one-step composition identity and magnitude bound `exp(-pi)/v <= |i*pi EML(i*pi EML(u, v), 1)| <= exp(pi)/v` for real `u` and `v > 0`.
-- [ ] **THRY-05**: Any closure or completeness language is restricted to the exact class actually proven or tested, and explicitly avoids claiming full scientific-calculator universality.
+- [x] **THRY-01**: Theory artifacts prove or executable-check `i*pi EML(i*pi EML(1, y), 1) = -1/y` on the declared positive-real domain `y > 0`.
+- [x] **THRY-02**: Theory artifacts prove or executable-check the nested identity that recovers `y` from the i*pi EML reciprocal construction on `y > 0`, with branch assumptions stated.
+- [x] **THRY-03**: Theory artifacts derive real-axis sensitivity `d/dx i*pi EML(x, y) = i*pi*exp(i*pi*x)` and `|d/dx| = pi` for real `x`.
+- [x] **THRY-04**: Theory artifacts derive the one-step composition identity and magnitude bound `exp(-pi)/v <= |i*pi EML(i*pi EML(u, v), 1)| <= exp(pi)/v` for real `u` and `v > 0`.
+- [x] **THRY-05**: Any closure or completeness language is restricted to the exact class actually proven or tested, and explicitly avoids claiming full scientific-calculator universality.
 
 ### Branch and Numerics
 
-- [ ] **BRAN-01**: i*pi EML implementation and docs specify the complex-log branch convention used by training, snapping, and verification.
-- [ ] **BRAN-02**: Evaluators record branch-cut proximity and branch-crossing diagnostics for second-slot inputs, especially near the negative real axis.
-- [ ] **BRAN-03**: Training supports an optional branch-safety penalty or guard that discourages invalid second-slot paths without changing faithful verification semantics.
-- [ ] **BRAN-04**: Verification and reports expose branch anomalies, invalid-domain skips, and branch-related candidate failures as first-class artifact fields.
+- [x] **BRAN-01**: i*pi EML implementation and docs specify the complex-log branch convention used by training, snapping, and verification.
+- [x] **BRAN-02**: Evaluators record branch-cut proximity and branch-crossing diagnostics for second-slot inputs, especially near the negative real axis.
+- [x] **BRAN-03**: Training supports an optional branch-safety penalty or guard that discourages invalid second-slot paths without changing faithful verification semantics.
+- [x] **BRAN-04**: Verification and reports expose branch anomalies, invalid-domain skips, and branch-related candidate failures as first-class artifact fields.
 
 ### Training and Snapping Integration
 
-- [ ] **TRN-01**: The complete soft master tree can run with fixed `GEML_a` specializations while preserving the raw EML default behavior.
-- [ ] **TRN-02**: Optimizer, hardening, snapping, exact-candidate pooling, cleanup, and refit paths work for i*pi EML without reusing raw EML-only witnesses silently.
-- [ ] **TRN-03**: Training artifacts include gradient-norm statistics, overflow counts, NaN counts, branch diagnostics, pre-snap MSE, post-snap MSE, and wall-clock metadata.
-- [ ] **TRN-04**: Regression tests prove existing raw EML semantics, raw benchmark contracts, and v1.14 claim-accounting checks remain unchanged.
+- [x] **TRN-01**: The complete soft master tree can run with fixed `GEML_a` specializations while preserving the raw EML default behavior.
+- [x] **TRN-02**: Optimizer, hardening, snapping, exact-candidate pooling, cleanup, and refit paths work for i*pi EML without reusing raw EML-only witnesses silently.
+- [x] **TRN-03**: Training artifacts include gradient-norm statistics, overflow counts, NaN counts, branch diagnostics, pre-snap MSE, post-snap MSE, and wall-clock metadata.
+- [x] **TRN-04**: Regression tests prove existing raw EML semantics, raw benchmark contracts, and v1.14 claim-accounting checks remain unchanged.
 
 ### Benchmark Protocol
 
-- [ ] **BENCH-01**: The benchmark registry includes periodic targets such as `sin(pi*x)`, `cos(pi*x)`, and simple harmonic sums with normalized domains.
-- [ ] **BENCH-02**: The benchmark registry includes damped oscillation, wave, Helmholtz-style, or standing-wave targets that match i*pi EML's phase bias.
-- [ ] **BENCH-03**: The benchmark registry includes log-periodic or amplitude/phase targets such as `x^beta*cos(omega*log(x)+phi)` on safe positive domains.
-- [ ] **BENCH-04**: The benchmark registry includes negative controls such as `exp(x)`, `log(x)`, polynomials, and rational functions.
-- [ ] **BENCH-05**: Campaign manifests lock the same tree depths, optimizer, initialization budget, snapping rule, verifier gates, and split policy for EML and i*pi EML comparisons.
+- [x] **BENCH-01**: The benchmark registry includes periodic targets such as `sin(pi*x)`, `cos(pi*x)`, and simple harmonic sums with normalized domains.
+- [x] **BENCH-02**: The benchmark registry includes damped oscillation, wave, Helmholtz-style, or standing-wave targets that match i*pi EML's phase bias.
+- [x] **BENCH-03**: The benchmark registry includes log-periodic or amplitude/phase targets such as `x^beta*cos(omega*log(x)+phi)` on safe positive domains.
+- [x] **BENCH-04**: The benchmark registry includes negative controls such as `exp(x)`, `log(x)`, polynomials, and rational functions.
+- [x] **BENCH-05**: Campaign manifests lock the same tree depths, optimizer, initialization budget, snapping rule, verifier gates, and split policy for EML and i*pi EML comparisons.
 
 ### Evidence and Claims
 
-- [ ] **EVID-01**: A paired campaign runner emits matched EML and i*pi EML rows for each benchmark target under the same protocol.
-- [ ] **EVID-02**: Aggregate artifacts compute blind exact-recovery rate after snapping, MSE before and after snapping, gradient statistics, overflow/NaN counts, branch counts, wall-clock time, and available resource metadata.
-- [ ] **EVID-03**: Reports classify i*pi EML wins, losses, and neutral results by target family, including natural-bias targets and negative controls.
-- [ ] **EVID-04**: Claim-audit checks reject global superiority, broad blind-recovery, or full-universality language unless backed by the appropriate proof or evidence.
-- [ ] **EVID-05**: The final milestone package includes a theory note, benchmark manifests, aggregate tables, and a claim-boundary summary suitable for deciding whether i*pi EML deserves a paper section.
+- [x] **EVID-01**: A paired campaign runner emits matched EML and i*pi EML rows for each benchmark target under the same protocol.
+- [x] **EVID-02**: Aggregate artifacts compute blind exact-recovery rate after snapping, MSE before and after snapping, gradient statistics, overflow/NaN counts, branch counts, wall-clock time, and available resource metadata.
+- [x] **EVID-03**: Reports classify i*pi EML wins, losses, and neutral results by target family, including natural-bias targets and negative controls.
+- [x] **EVID-04**: Claim-audit checks reject global superiority, broad blind-recovery, or full-universality language unless backed by the appropriate proof or evidence.
+- [x] **EVID-05**: The final milestone package includes a theory note, benchmark manifests, aggregate tables, and a claim-boundary summary suitable for deciding whether i*pi EML deserves a paper section.
 
 ## Future Requirements
 
@@ -78,34 +78,34 @@ Deferred unless explicitly promoted into the active roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| GEML-01 | Phase 82 | Pending |
-| GEML-02 | Phase 82 | Pending |
-| GEML-03 | Phase 82 | Pending |
-| GEML-04 | Phase 82 | Pending |
-| GEML-05 | Phase 82 | Pending |
-| THRY-01 | Phase 83 | Pending |
-| THRY-02 | Phase 83 | Pending |
-| THRY-03 | Phase 83 | Pending |
-| THRY-04 | Phase 83 | Pending |
-| THRY-05 | Phase 83 | Pending |
-| BRAN-01 | Phase 83 | Pending |
-| BRAN-02 | Phase 83 | Pending |
-| BRAN-03 | Phase 83 | Pending |
-| BRAN-04 | Phase 83 | Pending |
-| TRN-01 | Phase 84 | Pending |
-| TRN-02 | Phase 84 | Pending |
-| TRN-03 | Phase 84 | Pending |
-| TRN-04 | Phase 84 | Pending |
-| BENCH-01 | Phase 85 | Pending |
-| BENCH-02 | Phase 85 | Pending |
-| BENCH-03 | Phase 85 | Pending |
-| BENCH-04 | Phase 85 | Pending |
-| BENCH-05 | Phase 85 | Pending |
-| EVID-01 | Phase 86 | Pending |
-| EVID-02 | Phase 86 | Pending |
-| EVID-03 | Phase 87 | Pending |
-| EVID-04 | Phase 87 | Pending |
-| EVID-05 | Phase 87 | Pending |
+| GEML-01 | Phase 82 | Complete |
+| GEML-02 | Phase 82 | Complete |
+| GEML-03 | Phase 82 | Complete |
+| GEML-04 | Phase 82 | Complete |
+| GEML-05 | Phase 82 | Complete |
+| THRY-01 | Phase 83 | Complete |
+| THRY-02 | Phase 83 | Complete |
+| THRY-03 | Phase 83 | Complete |
+| THRY-04 | Phase 83 | Complete |
+| THRY-05 | Phase 83 | Complete |
+| BRAN-01 | Phase 83 | Complete |
+| BRAN-02 | Phase 83 | Complete |
+| BRAN-03 | Phase 83 | Complete |
+| BRAN-04 | Phase 83 | Complete |
+| TRN-01 | Phase 84 | Complete |
+| TRN-02 | Phase 84 | Complete |
+| TRN-03 | Phase 84 | Complete |
+| TRN-04 | Phase 84 | Complete |
+| BENCH-01 | Phase 85 | Complete |
+| BENCH-02 | Phase 85 | Complete |
+| BENCH-03 | Phase 85 | Complete |
+| BENCH-04 | Phase 85 | Complete |
+| BENCH-05 | Phase 85 | Complete |
+| EVID-01 | Phase 86 | Complete |
+| EVID-02 | Phase 86 | Complete |
+| EVID-03 | Phase 87 | Complete |
+| EVID-04 | Phase 87 | Complete |
+| EVID-05 | Phase 87 | Complete |
 
 **Coverage:**
 - v1.15 requirements: 28 total
@@ -114,4 +114,4 @@ Deferred unless explicitly promoted into the active roadmap.
 
 ---
 *Requirements defined: 2026-04-22*
-*Last updated: 2026-04-22 after v1.15 roadmap creation*
+*Last updated: 2026-04-22 after v1.15 milestone audit*

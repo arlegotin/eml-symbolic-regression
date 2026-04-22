@@ -4,9 +4,9 @@ milestone: v1.15
 milestone_name: GEML family and i*pi EML exploration
 current_phase: 87
 current_phase_name: "GEML Evidence Package and Claim Boundary"
-status: Phase 87 complete; v1.15 ready for milestone audit
-stopped_at: phase 87 complete
-last_updated: "2026-04-22T10:20:00.000Z"
+status: v1.15 milestone audit passed; ready for milestone completion
+stopped_at: milestone audit passed
+last_updated: "2026-04-22T10:30:00.000Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 6
@@ -34,7 +34,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 Phase: 87 - GEML Evidence Package and Claim Boundary
 Plan: `.planning/phases/87-geml-evidence-package-and-claim-boundary/87-PLAN.md`
 Status: Complete
-Last activity: 2026-04-22 - Phase 87 complete
+Last activity: 2026-04-22 - v1.15 milestone audit passed
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
@@ -53,6 +53,7 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 | Archived v1.14 phase artifacts | `.planning/milestones/v1.14-phases/` | Complete |
 | Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.15 |
 | Roadmap | `.planning/ROADMAP.md` | Created for v1.15; next phase starts at 82 |
+| v1.15 milestone audit | `.planning/v1.15-MILESTONE-AUDIT.md` | Passed, 28/28 requirements satisfied |
 | Research summary | `.planning/research/SUMMARY.md` | Existing context retained; no new domain research selected during initialization |
 | Workflow config | `.planning/config.json` | Complete |
 | Milestone log | `.planning/MILESTONES.md` | Complete through v1.14 |
@@ -114,7 +115,7 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 
 ### Pending Todos
 
-- Run v1.15 milestone audit and archive completion.
+- Archive and tag v1.15 milestone completion.
 
 ### Deferred Items
 
@@ -164,8 +165,8 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 ## Session Continuity
 
 Last session: 2026-04-22
-Stopped at: Phase 87 complete; ready for v1.15 milestone audit
+Stopped at: v1.15 milestone audit passed; ready for milestone completion/archive
 Resume file: None
 
 ---
-*Last updated: 2026-04-22 after Phase 87 completion*
+*Last updated: 2026-04-22 after v1.15 milestone audit*
