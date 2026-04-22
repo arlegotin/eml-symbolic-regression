@@ -64,6 +64,7 @@ from .paper_v112 import (
     write_v112_supplement,
     write_v112_training_detail_assets,
 )
+from .paper_v116 import DEFAULT_V116_CAMPAIGN_DIR, DEFAULT_V116_PACKAGE_DIR, write_v116_paper_package
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .publication import DEFAULT_PUBLICATION_DIR, write_publication_rebuild
@@ -567,6 +568,23 @@ def geml_package_command(args: argparse.Namespace) -> int:
     return 0 if audit["status"] == "passed" else 1
 
 
+def geml_paper_v116_command(args: argparse.Namespace) -> int:
+    paths = write_v116_paper_package(
+        output_dir=Path(args.output_dir),
+        campaign_dir=Path(args.campaign_dir),
+        overwrite=args.overwrite,
+        min_unique_seeds=args.min_unique_seeds,
+    )
+    audit = json.loads(paths.claim_audit_json.read_text(encoding="utf-8"))
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml v1.16 package: manifest -> {paths.manifest_json}; "
+        f"audit -> {paths.claim_audit_json} ({audit['status']}); "
+        f"decision -> {manifest['decision']}"
+    )
+    return 0 if audit["status"] == "passed" else 1
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -919,6 +937,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     geml_package.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing GEML package manifest.")
     geml_package.set_defaults(func=geml_package_command)
+
+    geml_paper_v116 = sub.add_parser("geml-paper-v116", help="Assemble and audit the v1.16 GEML paper decision package.")
+    geml_paper_v116.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V116_PACKAGE_DIR),
+        help="Directory for v1.16 gate, decision, source locks, and claim audit.",
+    )
+    geml_paper_v116.add_argument(
+        "--campaign-dir",
+        default=str(DEFAULT_V116_CAMPAIGN_DIR),
+        help="Campaign directory containing tables/geml-paired-comparison.csv.",
+    )
+    geml_paper_v116.add_argument(
+        "--min-unique-seeds",
+        type=int,
+        default=3,
+        help="Minimum unique seeds required for a paper-positive decision.",
+    )
+    geml_paper_v116.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing v1.16 package manifest.")
+    geml_paper_v116.set_defaults(func=geml_paper_v116_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(
