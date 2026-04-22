@@ -1,8 +1,9 @@
 import csv
 import json
 
-from eml_symbolic_regression.cli import build_parser, geml_v117_snap_diagnostics_command
-from eml_symbolic_regression.paper_v117 import write_v117_snap_diagnostics
+from eml_symbolic_regression.cli import build_parser, geml_v117_neighborhoods_command, geml_v117_snap_diagnostics_command
+from eml_symbolic_regression.master_tree import SoftEMLTree
+from eml_symbolic_regression.paper_v117 import write_v117_neighborhood_candidates, write_v117_snap_diagnostics
 
 
 def _write_json(path, payload):
@@ -126,3 +127,74 @@ def test_cli_registers_geml_v117_snap_diagnostics():
     args = build_parser().parse_args(["geml-v117-snap-diagnostics", "--output-dir", "out", "--campaign-dir", "campaign"])
     assert args.func is geml_v117_snap_diagnostics_command
     assert args.campaign_dir == "campaign"
+
+
+def test_write_v117_neighborhood_candidates_generates_bounded_deterministic_variants(tmp_path):
+    snap_dir = tmp_path / "snap"
+    artifact = tmp_path / "candidate.json"
+    tree = SoftEMLTree(2, ("x",))
+    tree.set_slot("root", "left", "child", strength=40.0)
+    tree.set_slot("root", "right", "const:1", strength=40.0)
+    tree.set_slot("root.L", "left", "var:x", strength=40.0)
+    tree.set_slot("root.L", "right", "const:1", strength=40.0)
+    tree.root.right_logits.data.copy_(tree.root.right_logits.data.new_tensor([2.0, 1.9, 0.0]))
+    tree.root.left_child.left_logits.data.copy_(tree.root.left_child.left_logits.data.new_tensor([1.8, 2.0]))
+    snap = tree.snap()
+    candidate = {
+        "candidate_id": "raw-selected",
+        "snap": snap.as_dict(),
+        "slot_alternatives": [item.as_dict() for item in tree.active_slot_alternatives(top_k=1, max_slots=2)],
+    }
+    _write_json(
+        artifact,
+        {
+            "trained_eml_candidate": {
+                "config": {
+                    "variables": ["x"],
+                    "constants": ["1"],
+                    "operator_family": tree.operator_family.as_dict(),
+                },
+                "candidates": [candidate],
+                "selected_candidate": candidate,
+            }
+        },
+    )
+    _write_json(
+        snap_dir / "snap-neighborhood-seeds.json",
+        {
+            "schema": "fixture",
+            "rows": [
+                {
+                    "seed_id": "sin_pi:seed0:raw:selected",
+                    "pair_id": "sin_pi:seed0:depth2",
+                    "formula": "sin_pi",
+                    "target_family": "periodic",
+                    "seed": "0",
+                    "operator_family": "raw_eml",
+                    "candidate_id": "raw-selected",
+                    "fallback_candidate_id": "raw-fallback",
+                    "comparison_outcome": "raw_lower_post_snap_mse",
+                    "artifact_path": str(artifact),
+                    "target_formula_leakage": False,
+                }
+            ],
+        },
+    )
+
+    first = write_v117_neighborhood_candidates(tmp_path / "neighborhoods-a", snap_diagnostics_dir=snap_dir, candidate_budget=6)
+    second = write_v117_neighborhood_candidates(tmp_path / "neighborhoods-b", snap_diagnostics_dir=snap_dir, candidate_budget=6)
+
+    first_rows = json.loads(first.neighborhood_candidates_json.read_text(encoding="utf-8"))["rows"]
+    second_rows = json.loads(second.neighborhood_candidates_json.read_text(encoding="utf-8"))["rows"]
+    assert first_rows == second_rows
+    assert [row["provenance"] for row in first_rows[:2]] == ["original_snap", "fallback_snap"]
+    assert any(row["move_count"] == 1 for row in first_rows)
+    assert any(row["move_count"] == 2 for row in first_rows)
+    assert {row["target_formula_leakage"] for row in first_rows} == {False}
+    assert all("target_tree" not in row for row in first_rows)
+
+
+def test_cli_registers_geml_v117_neighborhoods():
+    args = build_parser().parse_args(["geml-v117-neighborhoods", "--output-dir", "out", "--snap-diagnostics-dir", "snap"])
+    assert args.func is geml_v117_neighborhoods_command
+    assert args.snap_diagnostics_dir == "snap"

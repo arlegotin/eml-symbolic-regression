@@ -11,9 +11,21 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+from .expression import expr_from_document, parse_constant_value
+from .master_tree import (
+    ActiveSlotAlternatives,
+    ReplayAssignment,
+    SlotAlternative,
+    SnapDecision,
+    SnapResult,
+    expand_snap_neighborhood,
+)
+from .semantics import eml_operator_from_spec, raw_eml_operator
+
 
 DEFAULT_V117_PACKAGE_DIR = Path("artifacts") / "paper" / "v1.17-geml"
 DEFAULT_V117_SNAP_DIAGNOSTICS_DIR = DEFAULT_V117_PACKAGE_DIR / "snap-diagnostics"
+DEFAULT_V117_NEIGHBORHOOD_DIR = DEFAULT_V117_PACKAGE_DIR / "neighborhoods"
 DEFAULT_V116_CAMPAIGN_DIR = Path("artifacts") / "campaigns" / "v1.16-geml-pilot"
 
 
@@ -35,6 +47,19 @@ class V117SnapDiagnosticPaths:
         return {key: str(value) for key, value in self.__dict__.items()}
 
 
+@dataclass(frozen=True)
+class V117NeighborhoodPaths:
+    output_dir: Path
+    manifest_json: Path
+    neighborhood_candidates_json: Path
+    neighborhood_candidates_csv: Path
+    neighborhood_candidates_md: Path
+    source_locks_json: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
 def v117_snap_diagnostic_paths(output_dir: Path = DEFAULT_V117_SNAP_DIAGNOSTICS_DIR) -> V117SnapDiagnosticPaths:
     output_dir = Path(output_dir)
     return V117SnapDiagnosticPaths(
@@ -44,6 +69,18 @@ def v117_snap_diagnostic_paths(output_dir: Path = DEFAULT_V117_SNAP_DIAGNOSTICS_
         snap_diagnostics_csv=output_dir / "snap-diagnostics.csv",
         snap_diagnostics_md=output_dir / "snap-diagnostics.md",
         snap_neighborhood_seeds_json=output_dir / "snap-neighborhood-seeds.json",
+        source_locks_json=output_dir / "source-locks.json",
+    )
+
+
+def v117_neighborhood_paths(output_dir: Path = DEFAULT_V117_NEIGHBORHOOD_DIR) -> V117NeighborhoodPaths:
+    output_dir = Path(output_dir)
+    return V117NeighborhoodPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "manifest.json",
+        neighborhood_candidates_json=output_dir / "neighborhood-candidates.json",
+        neighborhood_candidates_csv=output_dir / "neighborhood-candidates.csv",
+        neighborhood_candidates_md=output_dir / "neighborhood-candidates.md",
         source_locks_json=output_dir / "source-locks.json",
     )
 
@@ -77,6 +114,28 @@ SNAP_DIAGNOSTIC_COLUMNS = [
     "artifact_path",
     "snap_mismatch_class",
     "neighborhood_seed",
+]
+
+
+NEIGHBORHOOD_COLUMNS = [
+    "candidate_uid",
+    "seed_id",
+    "pair_id",
+    "formula",
+    "target_family",
+    "seed",
+    "operator_family",
+    "candidate_role",
+    "candidate_id",
+    "source_candidate_id",
+    "provenance",
+    "move_count",
+    "heuristic_gap",
+    "moves_json",
+    "ast_json",
+    "target_formula_leakage",
+    "generation_status",
+    "verifier_status",
 ]
 
 
@@ -145,6 +204,92 @@ def write_v117_snap_diagnostics(
         "source_locks": str(paths.source_locks_json),
         "source_locks_ok": all(row["status"] == "locked" for row in locks["inputs"]),
         "claim_boundary": "Snap diagnostics seed target-agnostic neighborhood search; they do not change verifier recovery definitions.",
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def write_v117_neighborhood_candidates(
+    output_dir: Path = DEFAULT_V117_NEIGHBORHOOD_DIR,
+    *,
+    snap_diagnostics_dir: Path = DEFAULT_V117_SNAP_DIAGNOSTICS_DIR,
+    overwrite: bool = False,
+    candidate_budget: int = 32,
+    beam_width: int = 8,
+    max_moves: int = 2,
+    max_slots: int | None = 6,
+) -> V117NeighborhoodPaths:
+    """Write bounded exact-tree neighborhood candidates from Phase 94 seed rows."""
+
+    output_dir = Path(output_dir)
+    snap_diagnostics_dir = Path(snap_diagnostics_dir)
+    paths = v117_neighborhood_paths(output_dir)
+    if paths.manifest_json.exists() and not overwrite:
+        raise V117PackageError(f"{paths.manifest_json} already exists; pass overwrite=True to refresh")
+    paths.output_dir.mkdir(parents=True, exist_ok=True)
+
+    seeds_path = snap_diagnostics_dir / "snap-neighborhood-seeds.json"
+    seeds_payload = _read_json(seeds_path)
+    seed_rows = [dict(row) for row in seeds_payload.get("rows", []) if isinstance(row, Mapping)]
+    candidate_rows: list[dict[str, Any]] = []
+    artifact_paths: set[Path] = set()
+    for seed in sorted(seed_rows, key=_seed_sort_key):
+        artifact_path = Path(str(seed.get("artifact_path") or ""))
+        if artifact_path:
+            artifact_paths.add(artifact_path)
+        candidate_rows.extend(
+            _candidate_rows_for_seed(
+                seed,
+                candidate_budget=candidate_budget,
+                beam_width=beam_width,
+                max_moves=max_moves,
+                max_slots=max_slots,
+            )
+        )
+
+    _write_json(
+        paths.neighborhood_candidates_json,
+        {
+            "schema": "eml.v117_neighborhood_candidates.v1",
+            "source": str(seeds_path),
+            "budget": {
+                "candidate_budget": candidate_budget,
+                "beam_width": beam_width,
+                "max_moves": max_moves,
+                "max_slots": max_slots,
+            },
+            "rows": candidate_rows,
+        },
+    )
+    _write_csv(paths.neighborhood_candidates_csv, candidate_rows, NEIGHBORHOOD_COLUMNS)
+    paths.neighborhood_candidates_md.write_text(_neighborhood_markdown(candidate_rows), encoding="utf-8")
+
+    lock_items = [("snap_neighborhood_seeds", seeds_path, "input")]
+    lock_items.extend((f"candidate_artifact_{index:03d}", path, "input") for index, path in enumerate(sorted(artifact_paths, key=str)))
+    locks = _source_locks_payload(lock_items)
+    locks["outputs"] = _source_locks(
+        [
+            ("neighborhood_candidates_json", paths.neighborhood_candidates_json, "output"),
+            ("neighborhood_candidates_csv", paths.neighborhood_candidates_csv, "output"),
+            ("neighborhood_candidates_md", paths.neighborhood_candidates_md, "output"),
+        ]
+    )
+    _write_json(paths.source_locks_json, locks)
+    manifest = {
+        "schema": "eml.v117_neighborhood_manifest.v1",
+        "generated_at": _now_iso(),
+        "snap_diagnostics_dir": str(snap_diagnostics_dir),
+        "outputs": paths.as_dict(),
+        "counts": {
+            "seed_rows": len(seed_rows),
+            "candidate_rows": len(candidate_rows),
+            "original_rows": sum(1 for row in candidate_rows if row.get("provenance") == "original_snap"),
+            "fallback_rows": sum(1 for row in candidate_rows if row.get("provenance") == "fallback_snap"),
+            "generated_rows": sum(1 for row in candidate_rows if str(row.get("provenance") or "").startswith("snap_neighborhood")),
+        },
+        "source_locks": str(paths.source_locks_json),
+        "source_locks_ok": all(row["status"] == "locked" for row in locks["inputs"]),
+        "claim_boundary": "Neighborhood candidates are target-agnostic exact alternatives; Phase 96 owns verifier-first promotion.",
     }
     _write_json(paths.manifest_json, manifest)
     return paths
@@ -293,6 +438,201 @@ def _snap_diagnostics_markdown(rows: Iterable[Mapping[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _candidate_rows_for_seed(
+    seed: Mapping[str, Any],
+    *,
+    candidate_budget: int,
+    beam_width: int,
+    max_moves: int,
+    max_slots: int | None,
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    seed_id = str(seed.get("seed_id") or "")
+    source_candidate_id = str(seed.get("candidate_id") or "")
+    fallback_candidate_id = str(seed.get("fallback_candidate_id") or "")
+    rows.append(_provenance_candidate_row(seed, candidate_id=source_candidate_id, role="original", provenance="original_snap"))
+    if fallback_candidate_id and fallback_candidate_id != source_candidate_id:
+        rows.append(_provenance_candidate_row(seed, candidate_id=fallback_candidate_id, role="fallback", provenance="fallback_snap"))
+
+    candidate_payload, config = _load_candidate_payload(seed, source_candidate_id)
+    if candidate_payload is None:
+        rows[0]["generation_status"] = "source_candidate_payload_missing"
+        return rows
+
+    try:
+        snap = _snap_from_payload(candidate_payload["snap"])
+        alternatives = _slot_alternatives_from_payload(candidate_payload.get("slot_alternatives") or [])
+        variables = tuple(str(item) for item in config.get("variables") or ["x"])
+        constants = tuple(parse_constant_value(item) for item in config.get("constants") or ["1"])
+        operator_family = eml_operator_from_spec(config.get("operator_family") or raw_eml_operator().as_dict())
+        variants = expand_snap_neighborhood(
+            snap,
+            alternatives,
+            depth=max(int(snap.expression.depth()), 1),
+            variables=variables,
+            constants=constants,
+            operator_family=operator_family,
+            beam_width=beam_width,
+            max_moves=max_moves,
+            max_slots=max_slots,
+        )
+    except Exception as exc:  # noqa: BLE001 - artifact manifests should explain malformed inputs.
+        rows[0]["generation_status"] = f"generation_error:{type(exc).__name__}"
+        return rows
+
+    for index, variant in enumerate(variants[: max(candidate_budget - len(rows), 0)]):
+        move_count = len(variant.moves)
+        rows.append(
+            {
+                **_seed_identity(seed),
+                "candidate_uid": f"{seed_id}:n{index:03d}",
+                "candidate_role": "neighborhood",
+                "candidate_id": f"{source_candidate_id}:n{index:03d}",
+                "source_candidate_id": source_candidate_id,
+                "provenance": f"snap_neighborhood_{move_count}_slot",
+                "move_count": move_count,
+                "heuristic_gap": variant.heuristic_gap,
+                "moves_json": _canonical_json_cell([move.as_dict() for move in variant.moves]),
+                "ast_json": _canonical_json_cell(variant.expression.to_document(source="snap_neighborhood_candidate")),
+                "target_formula_leakage": False,
+                "generation_status": "generated",
+                "verifier_status": "pending",
+            }
+        )
+    return sorted(rows[:candidate_budget], key=_candidate_sort_key)
+
+
+def _provenance_candidate_row(seed: Mapping[str, Any], *, candidate_id: str, role: str, provenance: str) -> dict[str, Any]:
+    return {
+        **_seed_identity(seed),
+        "candidate_uid": f"{seed.get('seed_id')}:{role}",
+        "candidate_role": role,
+        "candidate_id": candidate_id,
+        "source_candidate_id": candidate_id,
+        "provenance": provenance,
+        "move_count": 0,
+        "heuristic_gap": 0.0,
+        "moves_json": "[]",
+        "ast_json": "",
+        "target_formula_leakage": False,
+        "generation_status": "preserved",
+        "verifier_status": "pending",
+    }
+
+
+def _seed_identity(seed: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "seed_id": seed.get("seed_id"),
+        "pair_id": seed.get("pair_id"),
+        "formula": seed.get("formula"),
+        "target_family": seed.get("target_family"),
+        "seed": seed.get("seed"),
+        "operator_family": seed.get("operator_family"),
+    }
+
+
+def _load_candidate_payload(seed: Mapping[str, Any], candidate_id: str) -> tuple[Mapping[str, Any] | None, Mapping[str, Any]]:
+    artifact_path = Path(str(seed.get("artifact_path") or ""))
+    artifact = _read_json(artifact_path)
+    manifest = artifact.get("trained_eml_candidate") if isinstance(artifact.get("trained_eml_candidate"), Mapping) else artifact
+    if not isinstance(manifest, Mapping):
+        return None, {}
+    config = manifest.get("config") if isinstance(manifest.get("config"), Mapping) else {}
+    candidates = manifest.get("candidates") if isinstance(manifest.get("candidates"), list) else []
+    for candidate in candidates:
+        if isinstance(candidate, Mapping) and str(candidate.get("candidate_id") or "") == candidate_id:
+            return candidate, config
+    for key in ("selected_candidate", "fallback_candidate"):
+        candidate = manifest.get(key)
+        if isinstance(candidate, Mapping) and str(candidate.get("candidate_id") or "") == candidate_id:
+            return candidate, config
+    return None, config
+
+
+def _snap_from_payload(payload: Mapping[str, Any]) -> SnapResult:
+    expression = expr_from_document(payload["ast"])
+    decisions = [
+        SnapDecision(
+            path=str(item["path"]),
+            side=str(item["side"]),
+            choice=str(item["choice"]),
+            probability=float(item["probability"]),
+            margin=float(item["margin"]),
+        )
+        for item in payload.get("decisions", [])
+        if isinstance(item, Mapping)
+    ]
+    return SnapResult(
+        expression=expression,
+        decisions=decisions,
+        min_margin=float(payload.get("min_margin", 1.0)),
+        active_node_count=int(payload.get("active_node_count", expression.node_count())),
+    )
+
+
+def _slot_alternatives_from_payload(payload: Iterable[Mapping[str, Any]]) -> tuple[ActiveSlotAlternatives, ...]:
+    groups: list[ActiveSlotAlternatives] = []
+    for item in payload:
+        alternatives: list[SlotAlternative] = []
+        for alt in item.get("alternatives", []):
+            if not isinstance(alt, Mapping):
+                continue
+            alternatives.append(
+                SlotAlternative(
+                    choice=str(alt["choice"]),
+                    probability=float(alt.get("probability", 0.0)),
+                    probability_gap=float(alt.get("probability_gap", 0.0)),
+                    rank=int(alt.get("rank", len(alternatives) + 1)),
+                    descendant_assignments=tuple(
+                        ReplayAssignment(str(assignment["slot"]), str(assignment["choice"]))
+                        for assignment in alt.get("descendant_assignments", [])
+                        if isinstance(assignment, Mapping)
+                    ),
+                    subtree_root=str(alt["subtree_root"]) if alt.get("subtree_root") is not None else None,
+                )
+            )
+        if alternatives:
+            groups.append(
+                ActiveSlotAlternatives(
+                    slot=str(item["slot"]),
+                    current_choice=str(item["current_choice"]),
+                    current_probability=float(item.get("current_probability", 0.0)),
+                    current_margin=float(item.get("current_margin", 1.0)),
+                    alternatives=tuple(alternatives),
+                )
+            )
+    return tuple(groups)
+
+
+def _candidate_sort_key(row: Mapping[str, Any]) -> tuple[Any, ...]:
+    provenance_priority = {"original_snap": 0, "fallback_snap": 1}
+    return (
+        str(row.get("seed_id") or ""),
+        provenance_priority.get(str(row.get("provenance") or ""), 2),
+        int(row.get("move_count") or 0),
+        _as_float(row.get("heuristic_gap"), default=math.inf),
+        str(row.get("candidate_id") or ""),
+    )
+
+
+def _neighborhood_markdown(rows: Iterable[Mapping[str, Any]]) -> str:
+    lines = [
+        "# v1.17 Snap Neighborhood Candidates",
+        "",
+        "Candidate generation is target-agnostic. Verifier-first ranking is handled separately.",
+        "",
+        "| Seed | Candidate | Provenance | Moves | Gap | Status |",
+        "|------|-----------|------------|-------|-----|--------|",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row.get('seed_id')} | {row.get('candidate_id')} | {row.get('provenance')} | "
+            f"{row.get('move_count')} | {row.get('heuristic_gap')} | {row.get('generation_status')} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
 def _canonical_json_cell(value: Any) -> str:
     if value in (None, ""):
         return ""
@@ -324,6 +664,12 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
         return []
     with path.open(encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
+
+
+def _read_json(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def _write_csv(path: Path, rows: Iterable[Mapping[str, Any]], fieldnames: list[str]) -> None:

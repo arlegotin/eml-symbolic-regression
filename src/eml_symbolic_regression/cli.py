@@ -75,7 +75,7 @@ from .paper_v116 import (
     write_v116_final_decision_package,
     write_v116_paper_package,
 )
-from .paper_v117 import DEFAULT_V117_SNAP_DIAGNOSTICS_DIR, write_v117_snap_diagnostics
+from .paper_v117 import DEFAULT_V117_NEIGHBORHOOD_DIR, DEFAULT_V117_SNAP_DIAGNOSTICS_DIR, write_v117_neighborhood_candidates, write_v117_snap_diagnostics
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .publication import DEFAULT_PUBLICATION_DIR, write_publication_rebuild
@@ -664,6 +664,25 @@ def geml_v117_snap_diagnostics_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def geml_v117_neighborhoods_command(args: argparse.Namespace) -> int:
+    paths = write_v117_neighborhood_candidates(
+        output_dir=Path(args.output_dir),
+        snap_diagnostics_dir=Path(args.snap_diagnostics_dir),
+        overwrite=args.overwrite,
+        candidate_budget=args.candidate_budget,
+        beam_width=args.beam_width,
+        max_moves=args.max_moves,
+        max_slots=args.max_slots,
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml v1.17 neighborhoods: manifest -> {paths.manifest_json}; "
+        f"candidates -> {paths.neighborhood_candidates_json}; "
+        f"generated rows -> {manifest['counts']['generated_rows']}"
+    )
+    return 0
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -1133,6 +1152,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     geml_v117_snap.add_argument("--overwrite", action="store_true", help="Allow refreshing existing v1.17 diagnostics.")
     geml_v117_snap.set_defaults(func=geml_v117_snap_diagnostics_command)
+
+    geml_v117_neighborhoods = sub.add_parser("geml-v117-neighborhoods", help="Write bounded v1.17 snap-neighborhood candidate manifests.")
+    geml_v117_neighborhoods.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V117_NEIGHBORHOOD_DIR),
+        help="Directory for v1.17 neighborhood candidate artifacts.",
+    )
+    geml_v117_neighborhoods.add_argument(
+        "--snap-diagnostics-dir",
+        default=str(DEFAULT_V117_SNAP_DIAGNOSTICS_DIR),
+        help="Directory containing snap-neighborhood-seeds.json.",
+    )
+    geml_v117_neighborhoods.add_argument("--candidate-budget", type=int, default=32, help="Maximum candidate rows per seed.")
+    geml_v117_neighborhoods.add_argument("--beam-width", type=int, default=8, help="Beam width for replayed slot moves.")
+    geml_v117_neighborhoods.add_argument("--max-moves", type=int, default=2, help="Maximum slot moves per generated candidate.")
+    geml_v117_neighborhoods.add_argument("--max-slots", type=int, default=6, help="Maximum low-margin slots to consider per seed.")
+    geml_v117_neighborhoods.add_argument("--overwrite", action="store_true", help="Allow refreshing existing v1.17 neighborhood artifacts.")
+    geml_v117_neighborhoods.set_defaults(func=geml_v117_neighborhoods_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(
