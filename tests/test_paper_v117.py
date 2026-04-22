@@ -5,10 +5,16 @@ from eml_symbolic_regression.cli import (
     build_parser,
     geml_v117_neighborhoods_command,
     geml_v117_rank_candidates_command,
+    geml_v117_sandbox_command,
     geml_v117_snap_diagnostics_command,
 )
 from eml_symbolic_regression.master_tree import SoftEMLTree
-from eml_symbolic_regression.paper_v117 import write_v117_candidate_ranking, write_v117_neighborhood_candidates, write_v117_snap_diagnostics
+from eml_symbolic_regression.paper_v117 import (
+    write_v117_candidate_ranking,
+    write_v117_neighborhood_candidates,
+    write_v117_recovery_sandbox,
+    write_v117_snap_diagnostics,
+)
 
 
 def _write_json(path, payload):
@@ -291,3 +297,75 @@ def test_cli_registers_geml_v117_rank_candidates():
     args = build_parser().parse_args(["geml-v117-rank-candidates", "--output-dir", "out", "--neighborhoods-dir", "neighborhoods"])
     assert args.func is geml_v117_rank_candidates_command
     assert args.neighborhoods_dir == "neighborhoods"
+
+
+def test_write_v117_recovery_sandbox_blocks_when_exact_signal_absent(tmp_path):
+    ranking = tmp_path / "ranking"
+    _write_json(
+        ranking / "ranked-candidates.json",
+        {
+            "schema": "fixture",
+            "rows": [
+                {
+                    "candidate_id": "loss-only",
+                    "operator_family": "ipi_eml",
+                    "target_family": "periodic",
+                    "evidence_class": "loss_only",
+                    "selected": True,
+                },
+                {
+                    "candidate_id": "negative-control",
+                    "operator_family": "raw_eml",
+                    "target_family": "negative_control",
+                    "evidence_class": "original_snap",
+                },
+            ],
+        },
+    )
+
+    paths = write_v117_recovery_sandbox(tmp_path / "sandbox", ranking_dir=ranking)
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    results = json.loads(paths.sandbox_results_json.read_text(encoding="utf-8"))
+
+    assert manifest["exact_signal_found"] is False
+    assert manifest["broader_campaign_gate"] == "block_broader_campaigns"
+    assert results["natural_exact_recovery_count"] == 0
+
+
+def test_write_v117_recovery_sandbox_opens_gate_for_natural_exact_signal(tmp_path):
+    ranking = tmp_path / "ranking"
+    _write_json(
+        ranking / "ranked-candidates.json",
+        {
+            "schema": "fixture",
+            "rows": [
+                {
+                    "candidate_id": "exact-natural",
+                    "operator_family": "ipi_eml",
+                    "target_family": "periodic",
+                    "evidence_class": "exact_recovery",
+                    "selected": True,
+                },
+                {
+                    "candidate_id": "raw-loss",
+                    "operator_family": "raw_eml",
+                    "target_family": "periodic",
+                    "evidence_class": "loss_only",
+                },
+            ],
+        },
+    )
+
+    paths = write_v117_recovery_sandbox(tmp_path / "sandbox", ranking_dir=ranking)
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    results = json.loads(paths.sandbox_results_json.read_text(encoding="utf-8"))
+
+    assert manifest["exact_signal_found"] is True
+    assert manifest["broader_campaign_gate"] == "allow_next_campaign_planning"
+    assert results["natural_exact_recovery_count"] == 1
+
+
+def test_cli_registers_geml_v117_sandbox():
+    args = build_parser().parse_args(["geml-v117-sandbox", "--output-dir", "out", "--ranking-dir", "ranking"])
+    assert args.func is geml_v117_sandbox_command
+    assert args.ranking_dir == "ranking"

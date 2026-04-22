@@ -78,9 +78,11 @@ from .paper_v116 import (
 from .paper_v117 import (
     DEFAULT_V117_NEIGHBORHOOD_DIR,
     DEFAULT_V117_RANKING_DIR,
+    DEFAULT_V117_SANDBOX_DIR,
     DEFAULT_V117_SNAP_DIAGNOSTICS_DIR,
     write_v117_candidate_ranking,
     write_v117_neighborhood_candidates,
+    write_v117_recovery_sandbox,
     write_v117_snap_diagnostics,
 )
 from .proof import list_claims
@@ -705,6 +707,21 @@ def geml_v117_rank_candidates_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def geml_v117_sandbox_command(args: argparse.Namespace) -> int:
+    paths = write_v117_recovery_sandbox(
+        output_dir=Path(args.output_dir),
+        ranking_dir=Path(args.ranking_dir),
+        overwrite=args.overwrite,
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml v1.17 sandbox: manifest -> {paths.manifest_json}; "
+        f"results -> {paths.sandbox_results_json}; "
+        f"gate -> {manifest['broader_campaign_gate']}"
+    )
+    return 0
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -1206,6 +1223,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
     geml_v117_rank.add_argument("--overwrite", action="store_true", help="Allow refreshing existing v1.17 ranking artifacts.")
     geml_v117_rank.set_defaults(func=geml_v117_rank_candidates_command)
+
+    geml_v117_sandbox = sub.add_parser("geml-v117-sandbox", help="Write the focused v1.17 exact-signal sandbox gate.")
+    geml_v117_sandbox.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V117_SANDBOX_DIR),
+        help="Directory for v1.17 sandbox artifacts.",
+    )
+    geml_v117_sandbox.add_argument(
+        "--ranking-dir",
+        default=str(DEFAULT_V117_RANKING_DIR),
+        help="Directory containing ranked-candidates.json.",
+    )
+    geml_v117_sandbox.add_argument("--overwrite", action="store_true", help="Allow refreshing existing v1.17 sandbox artifacts.")
+    geml_v117_sandbox.set_defaults(func=geml_v117_sandbox_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(

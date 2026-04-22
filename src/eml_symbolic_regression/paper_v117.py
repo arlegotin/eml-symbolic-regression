@@ -27,6 +27,7 @@ DEFAULT_V117_PACKAGE_DIR = Path("artifacts") / "paper" / "v1.17-geml"
 DEFAULT_V117_SNAP_DIAGNOSTICS_DIR = DEFAULT_V117_PACKAGE_DIR / "snap-diagnostics"
 DEFAULT_V117_NEIGHBORHOOD_DIR = DEFAULT_V117_PACKAGE_DIR / "neighborhoods"
 DEFAULT_V117_RANKING_DIR = DEFAULT_V117_PACKAGE_DIR / "ranking"
+DEFAULT_V117_SANDBOX_DIR = DEFAULT_V117_PACKAGE_DIR / "sandbox"
 DEFAULT_V116_CAMPAIGN_DIR = Path("artifacts") / "campaigns" / "v1.16-geml-pilot"
 
 
@@ -74,6 +75,19 @@ class V117RankingPaths:
         return {key: str(value) for key, value in self.__dict__.items()}
 
 
+@dataclass(frozen=True)
+class V117SandboxPaths:
+    output_dir: Path
+    manifest_json: Path
+    sandbox_results_json: Path
+    sandbox_results_csv: Path
+    sandbox_results_md: Path
+    source_locks_json: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
 def v117_snap_diagnostic_paths(output_dir: Path = DEFAULT_V117_SNAP_DIAGNOSTICS_DIR) -> V117SnapDiagnosticPaths:
     output_dir = Path(output_dir)
     return V117SnapDiagnosticPaths(
@@ -107,6 +121,18 @@ def v117_ranking_paths(output_dir: Path = DEFAULT_V117_RANKING_DIR) -> V117Ranki
         ranked_candidates_json=output_dir / "ranked-candidates.json",
         ranked_candidates_csv=output_dir / "ranked-candidates.csv",
         ranked_candidates_md=output_dir / "ranked-candidates.md",
+        source_locks_json=output_dir / "source-locks.json",
+    )
+
+
+def v117_sandbox_paths(output_dir: Path = DEFAULT_V117_SANDBOX_DIR) -> V117SandboxPaths:
+    output_dir = Path(output_dir)
+    return V117SandboxPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "manifest.json",
+        sandbox_results_json=output_dir / "sandbox-results.json",
+        sandbox_results_csv=output_dir / "sandbox-results.csv",
+        sandbox_results_md=output_dir / "sandbox-results.md",
         source_locks_json=output_dir / "source-locks.json",
     )
 
@@ -187,6 +213,20 @@ RANKING_COLUMNS = [
     "selected",
     "selection_reason",
     "rejection_reason",
+]
+
+
+SANDBOX_COLUMNS = [
+    "group",
+    "operator_family",
+    "target_family",
+    "ranked_rows",
+    "exact_recovery",
+    "verified_equivalence",
+    "loss_only",
+    "fallback",
+    "original_snap",
+    "negative_control_rows",
 ]
 
 
@@ -401,6 +441,76 @@ def write_v117_candidate_ranking(
         "source_locks": str(paths.source_locks_json),
         "source_locks_ok": all(row["status"] == "locked" for row in locks["inputs"]),
         "claim_boundary": "Ranking promotes only verifier-passed candidates; loss-only rows remain diagnostic.",
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def write_v117_recovery_sandbox(
+    output_dir: Path = DEFAULT_V117_SANDBOX_DIR,
+    *,
+    ranking_dir: Path = DEFAULT_V117_RANKING_DIR,
+    overwrite: bool = False,
+) -> V117SandboxPaths:
+    """Write the focused v1.17 exact-signal sandbox gate."""
+
+    output_dir = Path(output_dir)
+    ranking_dir = Path(ranking_dir)
+    paths = v117_sandbox_paths(output_dir)
+    if paths.manifest_json.exists() and not overwrite:
+        raise V117PackageError(f"{paths.manifest_json} already exists; pass overwrite=True to refresh")
+    paths.output_dir.mkdir(parents=True, exist_ok=True)
+
+    ranked_path = ranking_dir / "ranked-candidates.json"
+    payload = _read_json(ranked_path)
+    rows = [dict(row) for row in payload.get("rows", []) if isinstance(row, Mapping)]
+    summary_rows = _sandbox_summary_rows(rows)
+    natural_exact = [row for row in rows if _is_natural(row) and row.get("evidence_class") == "exact_recovery"]
+    negative_control_exact = [row for row in rows if not _is_natural(row) and row.get("evidence_class") == "exact_recovery"]
+    exact_signal_found = bool(natural_exact)
+    broader_campaign_gate = "allow_next_campaign_planning" if exact_signal_found and not negative_control_exact else "block_broader_campaigns"
+    decision = "exact_signal_found" if exact_signal_found and not negative_control_exact else "no_exact_signal"
+    rationale = (
+        "At least one natural-family verifier-gated exact recovery appears in ranked candidates."
+        if exact_signal_found and not negative_control_exact
+        else "No clean natural-family verifier-gated exact recovery signal appears; broader campaigns remain blocked."
+    )
+
+    results = {
+        "schema": "eml.v117_recovery_sandbox.v1",
+        "source": str(ranked_path),
+        "decision": decision,
+        "exact_signal_found": exact_signal_found,
+        "broader_campaign_gate": broader_campaign_gate,
+        "rationale": rationale,
+        "natural_exact_recovery_count": len(natural_exact),
+        "negative_control_exact_recovery_count": len(negative_control_exact),
+        "summary_rows": summary_rows,
+        "selected_exact_candidates": [row for row in rows if row.get("selected") is True and row.get("evidence_class") == "exact_recovery"],
+    }
+    _write_json(paths.sandbox_results_json, results)
+    _write_csv(paths.sandbox_results_csv, summary_rows, SANDBOX_COLUMNS)
+    paths.sandbox_results_md.write_text(_sandbox_markdown(results), encoding="utf-8")
+    locks = _source_locks_payload([("ranked_candidates", ranked_path, "input")])
+    locks["outputs"] = _source_locks(
+        [
+            ("sandbox_results_json", paths.sandbox_results_json, "output"),
+            ("sandbox_results_csv", paths.sandbox_results_csv, "output"),
+            ("sandbox_results_md", paths.sandbox_results_md, "output"),
+        ]
+    )
+    _write_json(paths.source_locks_json, locks)
+    manifest = {
+        "schema": "eml.v117_recovery_sandbox_manifest.v1",
+        "generated_at": _now_iso(),
+        "ranking_dir": str(ranking_dir),
+        "outputs": paths.as_dict(),
+        "decision": decision,
+        "exact_signal_found": exact_signal_found,
+        "broader_campaign_gate": broader_campaign_gate,
+        "source_locks": str(paths.source_locks_json),
+        "source_locks_ok": all(row["status"] == "locked" for row in locks["inputs"]),
+        "claim_boundary": "Broader campaigns are blocked unless this sandbox finds clean verifier-gated natural exact signal.",
     }
     _write_json(paths.manifest_json, manifest)
     return paths
@@ -877,6 +987,58 @@ def _ranking_markdown(rows: Iterable[Mapping[str, Any]], selected: Mapping[str, 
         lines.append(
             f"| {row.get('rank')} | {row.get('candidate_id')} | {row.get('evidence_class')} | "
             f"{row.get('verifier_status')} | {row.get('post_snap_mse')} | {reason} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _sandbox_summary_rows(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[tuple[str, str], list[Mapping[str, Any]]] = {}
+    for row in rows:
+        grouped.setdefault((str(row.get("operator_family") or "unknown"), str(row.get("target_family") or "unknown")), []).append(row)
+    summary: list[dict[str, Any]] = []
+    for (operator_family, target_family), items in sorted(grouped.items()):
+        summary.append(
+            {
+                "group": f"{operator_family}:{target_family}",
+                "operator_family": operator_family,
+                "target_family": target_family,
+                "ranked_rows": len(items),
+                "exact_recovery": sum(1 for row in items if row.get("evidence_class") == "exact_recovery"),
+                "verified_equivalence": sum(1 for row in items if row.get("evidence_class") == "verified_equivalence"),
+                "loss_only": sum(1 for row in items if row.get("evidence_class") == "loss_only"),
+                "fallback": sum(1 for row in items if row.get("evidence_class") == "fallback"),
+                "original_snap": sum(1 for row in items if row.get("evidence_class") == "original_snap"),
+                "negative_control_rows": sum(1 for row in items if not _is_natural(row)),
+            }
+        )
+    return summary
+
+
+def _is_natural(row: Mapping[str, Any]) -> bool:
+    return str(row.get("target_family") or "") != "negative_control"
+
+
+def _sandbox_markdown(results: Mapping[str, Any]) -> str:
+    lines = [
+        "# v1.17 Focused Recovery Sandbox",
+        "",
+        f"Decision: `{results.get('decision')}`",
+        "",
+        str(results.get("rationale") or ""),
+        "",
+        f"Broader campaign gate: `{results.get('broader_campaign_gate')}`",
+        "",
+        "| Group | Rows | Exact | Verified Eq | Loss-Only | Fallback | Original | Negative Controls |",
+        "|-------|------|-------|-------------|-----------|----------|----------|-------------------|",
+    ]
+    for row in results.get("summary_rows", []):
+        if not isinstance(row, Mapping):
+            continue
+        lines.append(
+            f"| {row.get('group')} | {row.get('ranked_rows')} | {row.get('exact_recovery')} | "
+            f"{row.get('verified_equivalence')} | {row.get('loss_only')} | {row.get('fallback')} | "
+            f"{row.get('original_snap')} | {row.get('negative_control_rows')} |"
         )
     lines.append("")
     return "\n".join(lines)
