@@ -26,6 +26,7 @@ from .semantics import eml_operator_from_spec, raw_eml_operator
 DEFAULT_V117_PACKAGE_DIR = Path("artifacts") / "paper" / "v1.17-geml"
 DEFAULT_V117_SNAP_DIAGNOSTICS_DIR = DEFAULT_V117_PACKAGE_DIR / "snap-diagnostics"
 DEFAULT_V117_NEIGHBORHOOD_DIR = DEFAULT_V117_PACKAGE_DIR / "neighborhoods"
+DEFAULT_V117_RANKING_DIR = DEFAULT_V117_PACKAGE_DIR / "ranking"
 DEFAULT_V116_CAMPAIGN_DIR = Path("artifacts") / "campaigns" / "v1.16-geml-pilot"
 
 
@@ -60,6 +61,19 @@ class V117NeighborhoodPaths:
         return {key: str(value) for key, value in self.__dict__.items()}
 
 
+@dataclass(frozen=True)
+class V117RankingPaths:
+    output_dir: Path
+    manifest_json: Path
+    ranked_candidates_json: Path
+    ranked_candidates_csv: Path
+    ranked_candidates_md: Path
+    source_locks_json: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
 def v117_snap_diagnostic_paths(output_dir: Path = DEFAULT_V117_SNAP_DIAGNOSTICS_DIR) -> V117SnapDiagnosticPaths:
     output_dir = Path(output_dir)
     return V117SnapDiagnosticPaths(
@@ -81,6 +95,18 @@ def v117_neighborhood_paths(output_dir: Path = DEFAULT_V117_NEIGHBORHOOD_DIR) ->
         neighborhood_candidates_json=output_dir / "neighborhood-candidates.json",
         neighborhood_candidates_csv=output_dir / "neighborhood-candidates.csv",
         neighborhood_candidates_md=output_dir / "neighborhood-candidates.md",
+        source_locks_json=output_dir / "source-locks.json",
+    )
+
+
+def v117_ranking_paths(output_dir: Path = DEFAULT_V117_RANKING_DIR) -> V117RankingPaths:
+    output_dir = Path(output_dir)
+    return V117RankingPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "manifest.json",
+        ranked_candidates_json=output_dir / "ranked-candidates.json",
+        ranked_candidates_csv=output_dir / "ranked-candidates.csv",
+        ranked_candidates_md=output_dir / "ranked-candidates.md",
         source_locks_json=output_dir / "source-locks.json",
     )
 
@@ -136,6 +162,31 @@ NEIGHBORHOOD_COLUMNS = [
     "target_formula_leakage",
     "generation_status",
     "verifier_status",
+]
+
+
+RANKING_COLUMNS = [
+    "rank",
+    "candidate_uid",
+    "seed_id",
+    "pair_id",
+    "formula",
+    "target_family",
+    "seed",
+    "operator_family",
+    "candidate_id",
+    "provenance",
+    "verifier_status",
+    "evidence_class",
+    "post_snap_mse",
+    "heldout_max_abs_error",
+    "extrapolation_max_abs_error",
+    "high_precision_max_error",
+    "move_count",
+    "heuristic_gap",
+    "selected",
+    "selection_reason",
+    "rejection_reason",
 ]
 
 
@@ -290,6 +341,66 @@ def write_v117_neighborhood_candidates(
         "source_locks": str(paths.source_locks_json),
         "source_locks_ok": all(row["status"] == "locked" for row in locks["inputs"]),
         "claim_boundary": "Neighborhood candidates are target-agnostic exact alternatives; Phase 96 owns verifier-first promotion.",
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def write_v117_candidate_ranking(
+    output_dir: Path = DEFAULT_V117_RANKING_DIR,
+    *,
+    neighborhoods_dir: Path = DEFAULT_V117_NEIGHBORHOOD_DIR,
+    overwrite: bool = False,
+) -> V117RankingPaths:
+    """Rank v1.17 candidates with verifier status before loss."""
+
+    output_dir = Path(output_dir)
+    neighborhoods_dir = Path(neighborhoods_dir)
+    paths = v117_ranking_paths(output_dir)
+    if paths.manifest_json.exists() and not overwrite:
+        raise V117PackageError(f"{paths.manifest_json} already exists; pass overwrite=True to refresh")
+    paths.output_dir.mkdir(parents=True, exist_ok=True)
+
+    candidates_path = neighborhoods_dir / "neighborhood-candidates.json"
+    payload = _read_json(candidates_path)
+    rows = [dict(row) for row in payload.get("rows", []) if isinstance(row, Mapping)]
+    ranked = _rank_candidate_rows(rows)
+    selected = next((row for row in ranked if row["selected"]), None)
+    counts = _ranking_counts(ranked)
+
+    _write_json(
+        paths.ranked_candidates_json,
+        {
+            "schema": "eml.v117_candidate_ranking.v1",
+            "source": str(candidates_path),
+            "verifier_gate": "verifier_status_first_then_error_then_post_snap_loss",
+            "selected_candidate": selected,
+            "counts": counts,
+            "rows": ranked,
+        },
+    )
+    _write_csv(paths.ranked_candidates_csv, ranked, RANKING_COLUMNS)
+    paths.ranked_candidates_md.write_text(_ranking_markdown(ranked, selected), encoding="utf-8")
+    locks = _source_locks_payload([("neighborhood_candidates", candidates_path, "input")])
+    locks["outputs"] = _source_locks(
+        [
+            ("ranked_candidates_json", paths.ranked_candidates_json, "output"),
+            ("ranked_candidates_csv", paths.ranked_candidates_csv, "output"),
+            ("ranked_candidates_md", paths.ranked_candidates_md, "output"),
+        ]
+    )
+    _write_json(paths.source_locks_json, locks)
+    manifest = {
+        "schema": "eml.v117_candidate_ranking_manifest.v1",
+        "generated_at": _now_iso(),
+        "neighborhoods_dir": str(neighborhoods_dir),
+        "outputs": paths.as_dict(),
+        "counts": counts,
+        "selected_candidate_id": selected.get("candidate_id") if selected else None,
+        "selected_evidence_class": selected.get("evidence_class") if selected else "no_verified_candidate",
+        "source_locks": str(paths.source_locks_json),
+        "source_locks_ok": all(row["status"] == "locked" for row in locks["inputs"]),
+        "claim_boundary": "Ranking promotes only verifier-passed candidates; loss-only rows remain diagnostic.",
     }
     _write_json(paths.manifest_json, manifest)
     return paths
@@ -628,6 +739,144 @@ def _neighborhood_markdown(rows: Iterable[Mapping[str, Any]]) -> str:
         lines.append(
             f"| {row.get('seed_id')} | {row.get('candidate_id')} | {row.get('provenance')} | "
             f"{row.get('move_count')} | {row.get('heuristic_gap')} | {row.get('generation_status')} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _rank_candidate_rows(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    classified = [_ranking_row(row) for row in rows]
+    classified.sort(key=_ranking_sort_key)
+    selected_index = next((index for index, row in enumerate(classified) if row["evidence_class"] in {"exact_recovery", "verified_equivalence"}), None)
+    if selected_index is None:
+        selected_index = 0 if classified else None
+    for index, row in enumerate(classified, start=1):
+        row["rank"] = index
+        row["selected"] = selected_index is not None and index - 1 == selected_index
+        row["selection_reason"] = _selection_reason(row) if row["selected"] else ""
+        row["rejection_reason"] = "" if row["selected"] else _rejection_reason(row, classified[selected_index] if selected_index is not None else None)
+    return classified
+
+
+def _ranking_row(row: Mapping[str, Any]) -> dict[str, Any]:
+    evidence_class = _evidence_class(row)
+    return {
+        "rank": 0,
+        "candidate_uid": row.get("candidate_uid"),
+        "seed_id": row.get("seed_id"),
+        "pair_id": row.get("pair_id"),
+        "formula": row.get("formula"),
+        "target_family": row.get("target_family"),
+        "seed": row.get("seed"),
+        "operator_family": row.get("operator_family"),
+        "candidate_id": row.get("candidate_id"),
+        "provenance": row.get("provenance"),
+        "verifier_status": str(row.get("verifier_status") or "pending"),
+        "evidence_class": evidence_class,
+        "post_snap_mse": row.get("post_snap_mse"),
+        "heldout_max_abs_error": row.get("heldout_max_abs_error"),
+        "extrapolation_max_abs_error": row.get("extrapolation_max_abs_error"),
+        "high_precision_max_error": row.get("high_precision_max_error"),
+        "move_count": row.get("move_count"),
+        "heuristic_gap": row.get("heuristic_gap"),
+        "selected": False,
+        "selection_reason": "",
+        "rejection_reason": "",
+    }
+
+
+def _evidence_class(row: Mapping[str, Any]) -> str:
+    explicit = str(row.get("evidence_class") or "")
+    if explicit:
+        return explicit
+    status = str(row.get("verifier_status") or "pending")
+    provenance = str(row.get("provenance") or "")
+    if status == "recovered":
+        return "exact_recovery"
+    if status in {"verified_equivalent", "verified_showcase"}:
+        return "verified_equivalence"
+    if str(row.get("repair_status") or "") in {"repaired", "repaired_candidate"}:
+        return "repair_only"
+    if str(row.get("same_ast") or "").lower() == "true" or provenance == "same_ast":
+        return "same_ast"
+    if provenance == "compile_only":
+        return "compile_only"
+    if provenance == "fallback_snap":
+        return "fallback"
+    if provenance == "original_snap":
+        return "original_snap"
+    if status == "failed" and row.get("post_snap_mse") not in (None, ""):
+        return "loss_only"
+    return "unverified_pending"
+
+
+def _ranking_sort_key(row: Mapping[str, Any]) -> tuple[Any, ...]:
+    return (
+        {
+            "exact_recovery": 0,
+            "verified_equivalence": 1,
+            "repair_only": 2,
+            "loss_only": 3,
+            "same_ast": 4,
+            "compile_only": 5,
+            "fallback": 6,
+            "original_snap": 7,
+            "unverified_pending": 8,
+        }.get(str(row.get("evidence_class")), 9),
+        _as_float(row.get("high_precision_max_error"), default=math.inf),
+        _as_float(row.get("extrapolation_max_abs_error"), default=math.inf),
+        _as_float(row.get("heldout_max_abs_error"), default=math.inf),
+        _as_float(row.get("post_snap_mse"), default=math.inf),
+        int(float(row.get("move_count") or 0)),
+        _as_float(row.get("heuristic_gap"), default=math.inf),
+        str(row.get("candidate_uid") or ""),
+    )
+
+
+def _selection_reason(row: Mapping[str, Any]) -> str:
+    if row.get("evidence_class") == "exact_recovery":
+        return "Selected because verifier_status=recovered outranks loss-only and pending candidates."
+    if row.get("evidence_class") == "verified_equivalence":
+        return "Selected because verified equivalence is the strongest available verifier-owned evidence."
+    return "No verifier-passed candidate exists; top row is reported for diagnostics only."
+
+
+def _rejection_reason(row: Mapping[str, Any], selected: Mapping[str, Any] | None) -> str:
+    if selected is None:
+        return "No selected row available."
+    if row.get("evidence_class") == "loss_only":
+        return "Rejected for promotion: lower post-snap loss is diagnostic without verifier recovery."
+    if row.get("evidence_class") in {"fallback", "original_snap"}:
+        return "Preserved for provenance but not promoted over verifier-passed candidates."
+    if row.get("verifier_status") in {"failed", "pending"}:
+        return f"Rejected for promotion: verifier_status={row.get('verifier_status')}."
+    return f"Ranked below selected {selected.get('candidate_id')} by verifier-first ordering."
+
+
+def _ranking_counts(rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
+    counts: dict[str, int] = {}
+    total = 0
+    for row in rows:
+        total += 1
+        key = str(row.get("evidence_class") or "unknown")
+        counts[key] = counts.get(key, 0) + 1
+    return {"total": total, "by_evidence_class": dict(sorted(counts.items()))}
+
+
+def _ranking_markdown(rows: Iterable[Mapping[str, Any]], selected: Mapping[str, Any] | None) -> str:
+    lines = [
+        "# v1.17 Verifier-First Candidate Ranking",
+        "",
+        f"Selected candidate: `{selected.get('candidate_id') if selected else 'none'}`",
+        "",
+        "| Rank | Candidate | Class | Verifier | Post Snap MSE | Reason |",
+        "|------|-----------|-------|----------|---------------|--------|",
+    ]
+    for row in rows:
+        reason = row.get("selection_reason") or row.get("rejection_reason")
+        lines.append(
+            f"| {row.get('rank')} | {row.get('candidate_id')} | {row.get('evidence_class')} | "
+            f"{row.get('verifier_status')} | {row.get('post_snap_mse')} | {reason} |"
         )
     lines.append("")
     return "\n".join(lines)

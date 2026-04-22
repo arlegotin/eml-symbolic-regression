@@ -75,7 +75,14 @@ from .paper_v116 import (
     write_v116_final_decision_package,
     write_v116_paper_package,
 )
-from .paper_v117 import DEFAULT_V117_NEIGHBORHOOD_DIR, DEFAULT_V117_SNAP_DIAGNOSTICS_DIR, write_v117_neighborhood_candidates, write_v117_snap_diagnostics
+from .paper_v117 import (
+    DEFAULT_V117_NEIGHBORHOOD_DIR,
+    DEFAULT_V117_RANKING_DIR,
+    DEFAULT_V117_SNAP_DIAGNOSTICS_DIR,
+    write_v117_candidate_ranking,
+    write_v117_neighborhood_candidates,
+    write_v117_snap_diagnostics,
+)
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .publication import DEFAULT_PUBLICATION_DIR, write_publication_rebuild
@@ -683,6 +690,21 @@ def geml_v117_neighborhoods_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def geml_v117_rank_candidates_command(args: argparse.Namespace) -> int:
+    paths = write_v117_candidate_ranking(
+        output_dir=Path(args.output_dir),
+        neighborhoods_dir=Path(args.neighborhoods_dir),
+        overwrite=args.overwrite,
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml v1.17 ranking: manifest -> {paths.manifest_json}; "
+        f"ranked -> {paths.ranked_candidates_json}; "
+        f"selected -> {manifest['selected_candidate_id']}"
+    )
+    return 0
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -1170,6 +1192,20 @@ def build_parser() -> argparse.ArgumentParser:
     geml_v117_neighborhoods.add_argument("--max-slots", type=int, default=6, help="Maximum low-margin slots to consider per seed.")
     geml_v117_neighborhoods.add_argument("--overwrite", action="store_true", help="Allow refreshing existing v1.17 neighborhood artifacts.")
     geml_v117_neighborhoods.set_defaults(func=geml_v117_neighborhoods_command)
+
+    geml_v117_rank = sub.add_parser("geml-v117-rank-candidates", help="Rank v1.17 neighborhood candidates with verifier-first ordering.")
+    geml_v117_rank.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V117_RANKING_DIR),
+        help="Directory for v1.17 ranked candidate artifacts.",
+    )
+    geml_v117_rank.add_argument(
+        "--neighborhoods-dir",
+        default=str(DEFAULT_V117_NEIGHBORHOOD_DIR),
+        help="Directory containing neighborhood-candidates.json.",
+    )
+    geml_v117_rank.add_argument("--overwrite", action="store_true", help="Allow refreshing existing v1.17 ranking artifacts.")
+    geml_v117_rank.set_defaults(func=geml_v117_rank_candidates_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(

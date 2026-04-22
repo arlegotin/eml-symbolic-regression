@@ -1,9 +1,14 @@
 import csv
 import json
 
-from eml_symbolic_regression.cli import build_parser, geml_v117_neighborhoods_command, geml_v117_snap_diagnostics_command
+from eml_symbolic_regression.cli import (
+    build_parser,
+    geml_v117_neighborhoods_command,
+    geml_v117_rank_candidates_command,
+    geml_v117_snap_diagnostics_command,
+)
 from eml_symbolic_regression.master_tree import SoftEMLTree
-from eml_symbolic_regression.paper_v117 import write_v117_neighborhood_candidates, write_v117_snap_diagnostics
+from eml_symbolic_regression.paper_v117 import write_v117_candidate_ranking, write_v117_neighborhood_candidates, write_v117_snap_diagnostics
 
 
 def _write_json(path, payload):
@@ -198,3 +203,91 @@ def test_cli_registers_geml_v117_neighborhoods():
     args = build_parser().parse_args(["geml-v117-neighborhoods", "--output-dir", "out", "--snap-diagnostics-dir", "snap"])
     assert args.func is geml_v117_neighborhoods_command
     assert args.snap_diagnostics_dir == "snap"
+
+
+def test_write_v117_candidate_ranking_promotes_verifier_status_before_loss(tmp_path):
+    neighborhoods = tmp_path / "neighborhoods"
+    _write_json(
+        neighborhoods / "neighborhood-candidates.json",
+        {
+            "schema": "fixture",
+            "rows": [
+                {
+                    "candidate_uid": "seed:failed-low-loss",
+                    "seed_id": "seed",
+                    "pair_id": "pair",
+                    "formula": "sin_pi",
+                    "target_family": "periodic",
+                    "seed": "0",
+                    "operator_family": "ipi_eml",
+                    "candidate_id": "failed-low-loss",
+                    "provenance": "snap_neighborhood_1_slot",
+                    "verifier_status": "failed",
+                    "post_snap_mse": 1e-9,
+                    "move_count": 1,
+                    "heuristic_gap": 0.01,
+                },
+                {
+                    "candidate_uid": "seed:recovered-higher-loss",
+                    "seed_id": "seed",
+                    "pair_id": "pair",
+                    "formula": "sin_pi",
+                    "target_family": "periodic",
+                    "seed": "0",
+                    "operator_family": "ipi_eml",
+                    "candidate_id": "recovered-higher-loss",
+                    "provenance": "snap_neighborhood_2_slot",
+                    "verifier_status": "recovered",
+                    "post_snap_mse": 0.1,
+                    "high_precision_max_error": 1e-12,
+                    "move_count": 2,
+                    "heuristic_gap": 0.2,
+                },
+                {
+                    "candidate_uid": "seed:original",
+                    "seed_id": "seed",
+                    "pair_id": "pair",
+                    "formula": "sin_pi",
+                    "target_family": "periodic",
+                    "seed": "0",
+                    "operator_family": "ipi_eml",
+                    "candidate_id": "original",
+                    "provenance": "original_snap",
+                    "verifier_status": "failed",
+                    "post_snap_mse": 0.2,
+                },
+                {
+                    "candidate_uid": "seed:fallback",
+                    "seed_id": "seed",
+                    "pair_id": "pair",
+                    "formula": "sin_pi",
+                    "target_family": "periodic",
+                    "seed": "0",
+                    "operator_family": "ipi_eml",
+                    "candidate_id": "fallback",
+                    "provenance": "fallback_snap",
+                    "verifier_status": "pending",
+                },
+            ],
+        },
+    )
+
+    paths = write_v117_candidate_ranking(tmp_path / "ranking", neighborhoods_dir=neighborhoods)
+    payload = json.loads(paths.ranked_candidates_json.read_text(encoding="utf-8"))
+    rows = payload["rows"]
+
+    assert payload["selected_candidate"]["candidate_id"] == "recovered-higher-loss"
+    assert rows[0]["candidate_id"] == "recovered-higher-loss"
+    failed = next(row for row in rows if row["candidate_id"] == "failed-low-loss")
+    assert failed["evidence_class"] == "loss_only"
+    assert "lower post-snap loss is diagnostic" in failed["rejection_reason"]
+    assert payload["counts"]["by_evidence_class"]["exact_recovery"] == 1
+    assert payload["counts"]["by_evidence_class"]["fallback"] == 1
+    assert payload["counts"]["by_evidence_class"]["original_snap"] == 1
+    assert payload["counts"]["by_evidence_class"]["loss_only"] == 1
+
+
+def test_cli_registers_geml_v117_rank_candidates():
+    args = build_parser().parse_args(["geml-v117-rank-candidates", "--output-dir", "out", "--neighborhoods-dir", "neighborhoods"])
+    assert args.func is geml_v117_rank_candidates_command
+    assert args.neighborhoods_dir == "neighborhoods"
