@@ -578,6 +578,7 @@ def geml_paper_v116_command(args: argparse.Namespace) -> int:
     paths = write_v116_paper_package(
         output_dir=Path(args.output_dir),
         campaign_dir=Path(args.campaign_dir),
+        budget_ladder_dir=Path(args.budget_ladder_dir) if args.budget_ladder_dir else None,
         overwrite=args.overwrite,
         min_unique_seeds=args.min_unique_seeds,
     )
@@ -970,6 +971,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--campaign-dir",
         default=str(DEFAULT_V116_CAMPAIGN_DIR),
         help="Campaign directory containing tables/geml-paired-comparison.csv.",
+    )
+    geml_paper_v116.add_argument(
+        "--budget-ladder-dir",
+        default=str(DEFAULT_V116_LADDER_DIR),
+        help="Optional budget ladder directory to source-lock into the package.",
     )
     geml_paper_v116.add_argument(
         "--min-unique-seeds",

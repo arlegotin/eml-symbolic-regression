@@ -326,6 +326,7 @@ def write_v116_paper_package(
     output_dir: Path = DEFAULT_V116_PACKAGE_DIR,
     *,
     campaign_dir: Path = DEFAULT_V116_CAMPAIGN_DIR,
+    budget_ladder_dir: Path | None = None,
     overwrite: bool = False,
     min_unique_seeds: int = 3,
 ) -> V116PackagePaths:
@@ -342,15 +343,26 @@ def write_v116_paper_package(
     paired_rows = _read_paired_rows(Path(campaign_dir))
     paired_summary = _read_json(Path(campaign_dir) / "tables" / "geml-paired-summary.json") if (Path(campaign_dir) / "tables" / "geml-paired-summary.json").is_file() else _summary_from_rows(paired_rows)
     classification = _classification_from_rows(paired_rows)
-    locks = _source_locks_payload(
-        [
-            ("roadmap", Path(".planning/ROADMAP.md"), "input"),
-            ("requirements", Path(".planning/REQUIREMENTS.md"), "input"),
-            ("campaign_manifest", Path(campaign_dir) / "campaign-manifest.json", "input"),
-            ("geml_paired_summary", Path(campaign_dir) / "tables" / "geml-paired-summary.json", "input"),
-            ("geml_paired_comparison", Path(campaign_dir) / "tables" / "geml-paired-comparison.csv", "input"),
-        ]
-    )
+    lock_items = [
+        ("roadmap", Path(".planning/ROADMAP.md"), "input"),
+        ("requirements", Path(".planning/REQUIREMENTS.md"), "input"),
+        ("campaign_manifest", Path(campaign_dir) / "campaign-manifest.json", "input"),
+        ("geml_paired_summary", Path(campaign_dir) / "tables" / "geml-paired-summary.json", "input"),
+        ("geml_paired_comparison", Path(campaign_dir) / "tables" / "geml-paired-comparison.csv", "input"),
+    ]
+    ladder_manifest: dict[str, Any] | None = None
+    if budget_ladder_dir is not None:
+        ladder_dir = Path(budget_ladder_dir)
+        lock_items.extend(
+            [
+                ("budget_ladder_manifest", ladder_dir / "manifest.json", "input"),
+                ("budget_ladder_json", ladder_dir / "budget-ladder.json", "input"),
+                ("failure_taxonomy_json", ladder_dir / "failure-taxonomy.json", "input"),
+            ]
+        )
+        if (ladder_dir / "manifest.json").is_file():
+            ladder_manifest = _read_json(ladder_dir / "manifest.json")
+    locks = _source_locks_payload(lock_items)
     source_locks_ok = all(item["status"] == "locked" for item in locks["inputs"])
     evaluation = evaluate_v116_gate(
         paired_summary,
@@ -388,6 +400,11 @@ def write_v116_paper_package(
         "decision": evaluation["decision"],
         "rationale": evaluation["rationale"],
         "campaign_dir": str(campaign_dir),
+        "budget_ladder": {
+            "dir": str(budget_ladder_dir) if budget_ladder_dir is not None else None,
+            "decision": ladder_manifest.get("decision") if ladder_manifest is not None else None,
+            "rationale": ladder_manifest.get("rationale") if ladder_manifest is not None else None,
+        },
         "gate_config": str(paths.gate_config_json),
         "campaign_contract": str(paths.campaign_contract_json),
         "gate_evaluation": str(paths.gate_evaluation_json),

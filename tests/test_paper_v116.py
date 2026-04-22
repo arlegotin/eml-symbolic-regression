@@ -115,7 +115,13 @@ def test_write_v116_paper_package_writes_fail_closed_artifacts(tmp_path):
     ]
     _write_paired_campaign(campaign_dir, rows)
 
-    paths = write_v116_paper_package(tmp_path / "package", campaign_dir=campaign_dir, min_unique_seeds=1)
+    ladder_paths = write_v116_budget_ladder(tmp_path / "ladder", smoke_campaign_dir=campaign_dir, pilot_campaign_dir=campaign_dir)
+    paths = write_v116_paper_package(
+        tmp_path / "package",
+        campaign_dir=campaign_dir,
+        budget_ladder_dir=ladder_paths.output_dir,
+        min_unique_seeds=1,
+    )
 
     manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
     audit = json.loads(paths.claim_audit_json.read_text(encoding="utf-8"))
@@ -124,6 +130,7 @@ def test_write_v116_paper_package_writes_fail_closed_artifacts(tmp_path):
     assert manifest["schema"] == "eml.v116_paper_decision_package.v1"
     assert evaluation["decision"] == "inconclusive"
     assert manifest["decision"] == "inconclusive"
+    assert manifest["budget_ladder"]["decision"] == "stop_full_campaign_fail_closed"
     assert audit["status"] == "passed"
     assert "Loss-only improvements are diagnostics" in paths.decision_md.read_text(encoding="utf-8")
 
@@ -176,8 +183,9 @@ def test_write_v116_budget_ladder_recommends_full_for_clean_exact_signal(tmp_pat
 
 
 def test_cli_registers_geml_paper_v116():
-    args = build_parser().parse_args(["geml-paper-v116", "--output-dir", "out", "--campaign-dir", "campaign"])
+    args = build_parser().parse_args(["geml-paper-v116", "--output-dir", "out", "--campaign-dir", "campaign", "--budget-ladder-dir", "ladder"])
     assert args.func is geml_paper_v116_command
+    assert args.budget_ladder_dir == "ladder"
 
 
 def test_cli_registers_geml_v116_ladder():
