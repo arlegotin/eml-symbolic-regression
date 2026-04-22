@@ -67,12 +67,12 @@ No active milestone. v1.15 is archived; start the next milestone with `$gsd-new-
 | v1.12 training-detail assets | `artifacts/paper/v1.11/draft/training-detail/` | Quick task complete: 4,472 step rows, 232 candidate rows |
 | v1.13 clean-room evidence package | `artifacts/paper/v1.13/` | Complete, audit and release gate passed |
 | v1.14 corrected evidence package | `artifacts/paper/v1.14/` | Complete, claim audit and release gate passed |
-| Phase 82 artifacts | `.planning/phases/82-geml-family-semantics-and-structural-identity/` | Complete |
-| Phase 83 artifacts | `.planning/phases/83-i-pi-eml-restricted-theory-and-branch-contract/` | Complete |
-| Phase 84 artifacts | `.planning/phases/84-family-aware-training-and-snapping-integration/` | Complete |
-| Phase 85 artifacts | `.planning/phases/85-oscillatory-benchmark-pack-and-negative-controls/` | Complete |
-| Phase 86 artifacts | `.planning/phases/86-matched-eml-versus-i-pi-eml-campaign-runner/` | Complete |
-| Phase 87 artifacts | `.planning/phases/87-geml-evidence-package-and-claim-boundary/` | Complete |
+| Phase 82 artifacts | `.planning/milestones/v1.15-phases/82-geml-family-semantics-and-structural-identity/` | Archived |
+| Phase 83 artifacts | `.planning/milestones/v1.15-phases/83-i-pi-eml-restricted-theory-and-branch-contract/` | Archived |
+| Phase 84 artifacts | `.planning/milestones/v1.15-phases/84-family-aware-training-and-snapping-integration/` | Archived |
+| Phase 85 artifacts | `.planning/milestones/v1.15-phases/85-oscillatory-benchmark-pack-and-negative-controls/` | Archived |
+| Phase 86 artifacts | `.planning/milestones/v1.15-phases/86-matched-eml-versus-i-pi-eml-campaign-runner/` | Archived |
+| Phase 87 artifacts | `.planning/milestones/v1.15-phases/87-geml-evidence-package-and-claim-boundary/` | Archived |
 | i*pi restricted theory | `artifacts/theory/v1.15/` | Complete |
 | v1.15 GEML smoke campaign | `artifacts/campaigns/v1.15-geml-oscillatory-smoke/` | Complete |
 | v1.15 GEML evidence package | `artifacts/paper/v1.15-geml/` | Complete, audit passed, decision `inconclusive_smoke_only` |
