@@ -18,6 +18,7 @@ Assemble a source-locked v1.17 evidence package and final next-campaign gate wit
 - Final decisions are constrained and gate-controlled: verified by blocked no-signal and allowed exact-signal fixture tests.
 - CLI command is registered with output, upstream artifact, v1.16 package, and overwrite options: verified by `test_cli_registers_geml_v117_package`.
 - Existing v1.17 campaign table diagnostics remain compatible: verified by the targeted campaign test.
+- Committed package artifacts exist under `artifacts/paper/v1.17-geml/` with decision `still_inconclusive`, source locks OK, and claim audit `passed`.
 
 ## Automated Checks
 
@@ -26,6 +27,16 @@ python -m pytest tests/test_paper_v117.py tests/test_campaign.py::test_campaign_
 ```
 
 Result: `14 passed`.
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli geml-v117-snap-diagnostics --overwrite
+PYTHONPATH=src python -m eml_symbolic_regression.cli geml-v117-neighborhoods --overwrite
+PYTHONPATH=src python -m eml_symbolic_regression.cli geml-v117-rank-candidates --overwrite
+PYTHONPATH=src python -m eml_symbolic_regression.cli geml-v117-sandbox --overwrite
+PYTHONPATH=src python -m eml_symbolic_regression.cli geml-v117-package --overwrite
+```
+
+Result: final package decision `still_inconclusive`; broader campaign gate `block_broader_campaigns`; claim audit `passed`.
 
 ## Human Verification
 

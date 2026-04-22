@@ -2,6 +2,7 @@
 
 **Milestone:** v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search
 **Created:** 2026-04-22
+**Status:** Complete on 2026-04-22; final package decision `still_inconclusive`
 **Source context:** v1.16 final decision `inconclusive`, with 12 loss-only paired pilot rows and 0 verifier-gated exact recoveries
 
 ## Goal

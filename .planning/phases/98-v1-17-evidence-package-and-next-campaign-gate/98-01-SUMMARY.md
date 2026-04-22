@@ -23,6 +23,7 @@ Implemented the final v1.17 evidence package and next-campaign gate.
 - Locked the existing v1.16 package manifest as the required before-state reference while treating all v1.17 outputs as additive.
 - Enforced final decisions as `exact_signal_found`, `still_inconclusive`, or `negative`.
 - Registered the `geml-v117-package` CLI command.
+- Generated the committed package at `artifacts/paper/v1.17-geml/`; final decision is `still_inconclusive`, audit status is `passed`, and broader campaigns remain blocked.
 
 ## Verification
 
@@ -31,6 +32,12 @@ python -m pytest tests/test_paper_v117.py tests/test_campaign.py::test_campaign_
 ```
 
 Result: `14 passed`.
+
+```bash
+PYTHONPATH=src python -m eml_symbolic_regression.cli geml-v117-package --overwrite
+```
+
+Result: package manifest written with decision `still_inconclusive` and claim audit `passed`.
 
 ## Deviations from Plan
 

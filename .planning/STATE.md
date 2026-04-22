@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.17
 milestone_name: Natural-Bias Recovery Sandbox
-current_phase: 97
-status: planning
-stopped_at: v1.17 milestone initialized; ready for Phase 94 planning
-last_updated: "2026-04-22T12:33:46.303Z"
+current_phase: 98
+status: complete
+stopped_at: v1.17 milestone complete; ready for milestone audit and closeout
+last_updated: "2026-04-22T12:42:37.054Z"
 last_activity: 2026-04-22
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 4
-  completed_plans: 4
+  total_phases: 5
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
   percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 97
+**Current phase:** 98
 **Mode:** YOLO
 
 ## Project Reference
@@ -30,15 +30,15 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 
 ## Current Position
 
-Phase: 94 - Snap-Mismatch Diagnostics and Low-Margin Inventory
-Plan: Not started
-Status: v1.17 milestone initialized; ready for Phase 94 planning
+Phase: 98 - v1.17 Evidence Package and Next-Campaign Gate
+Plan: 98-01 complete
+Status: v1.17 phases 94-98 complete; final package decision `still_inconclusive`
 Last activity: 2026-04-22
-Progress: [----------] 0% by completed phases
+Progress: [##########] 100% by completed phases
 
 ## Current Milestone
 
-v1.17 is active. The milestone starts from the v1.16 final package decision `inconclusive`: 12 paired pilot rows, 0 exact recoveries for raw or i*pi EML, 12 loss-only outcomes, and a fail-closed stop before the full campaign. The work now targets the snap/candidate bottleneck before any larger i*pi/GEML campaign is reopened.
+v1.17 is complete. The milestone started from the v1.16 final package decision `inconclusive`: 12 paired pilot rows, 0 exact recoveries for raw or i*pi EML, 12 loss-only outcomes, and a fail-closed stop before the full campaign. The final v1.17 package remains `still_inconclusive` and keeps broader i*pi/GEML campaigns blocked.
 
 ## Artifacts
 
@@ -47,6 +47,7 @@ v1.17 is active. The milestone starts from the v1.16 final package decision `inc
 | Project context | `.planning/PROJECT.md` | Updated for v1.17 |
 | Requirements | `.planning/REQUIREMENTS.md` | Complete for v1.17 |
 | Roadmap | `.planning/ROADMAP.md` | Complete for v1.17; phases 94-98 |
+| v1.17 evidence package | `artifacts/paper/v1.17-geml/` | Complete, audit passed, decision `still_inconclusive` |
 | Archived v1.16 requirements | `.planning/milestones/v1.16-REQUIREMENTS.md` | Complete |
 | Archived v1.16 roadmap | `.planning/milestones/v1.16-ROADMAP.md` | Complete |
 | Archived v1.16 milestone audit | `.planning/milestones/v1.16-MILESTONE-AUDIT.md` | Passed as inconclusive, fail-closed package |
@@ -74,7 +75,7 @@ v1.17 is active. The milestone starts from the v1.16 final package decision `inc
 
 ### Pending Todos
 
-- Plan Phase 94.
+- None for v1.17. Run milestone audit and closeout next.
 
 ### Deferred Items
 
@@ -96,16 +97,16 @@ Historical quick-task records remain in prior state and milestone artifacts. No 
 
 ### Blockers/Concerns
 
-- Larger raw/i*pi campaigns should remain blocked until Phase 97 produces at least one exact-recovery signal.
-- Snap-neighborhood search could explode combinatorially; Phase 95 needs deterministic budget caps.
+- Larger raw/i*pi campaigns remain blocked by the v1.17 final gate.
+- The committed v1.17 package generated no exact-recovery signal from the current v1.16 pilot artifacts.
 - Local repair can easily become claim-contaminating if provenance is vague. Promotion must stay verifier-owned and accounting-separated.
 - Branch behavior remains part of the i*pi operator contract, not an implementation detail.
 
 ## Session Continuity
 
 Last session: 2026-04-22
-Stopped at: v1.17 milestone initialized; ready for Phase 94 planning
+Stopped at: v1.17 milestone complete; ready for milestone audit and closeout
 Resume file: None
 
 ---
-*Last updated: 2026-04-22 after v1.17 milestone start*
+*Last updated: 2026-04-22 after v1.17 package completion*

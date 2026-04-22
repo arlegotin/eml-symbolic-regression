@@ -23,13 +23,13 @@
 - **v1.14 Evidence claim integrity and audit hardening** - Phases 77-81 complete (completed 2026-04-21; archives: `.planning/milestones/v1.14-ROADMAP.md`, `.planning/milestones/v1.14-REQUIREMENTS.md`, `.planning/milestones/v1.14-phases/`)
 - **v1.15 GEML family and i*pi EML exploration** - Phases 82-87 complete (completed 2026-04-22; archives: `.planning/milestones/v1.15-ROADMAP.md`, `.planning/milestones/v1.15-REQUIREMENTS.md`, `.planning/milestones/v1.15-MILESTONE-AUDIT.md`, `.planning/milestones/v1.15-phases/`)
 - **v1.16 Paper-Strength GEML Recovery Evidence** - Phases 88-93 complete (completed 2026-04-22; archives: `.planning/milestones/v1.16-ROADMAP.md`, `.planning/milestones/v1.16-REQUIREMENTS.md`, `.planning/milestones/v1.16-MILESTONE-AUDIT.md`, `.planning/milestones/v1.16-phases/`)
-- **v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search** - Phases 94-98 active
+- **v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search** - Phases 94-98 complete (completed 2026-04-22)
 
 ## Current Status
 
-v1.17 starts from the v1.16 final decision: `artifacts/paper/v1.16-geml/` is source-locked, claim-audited, and inconclusive. The pilot evidence has 12 paired rows across 2 unique seeds, 0 raw exact recoveries, 0 i*pi exact recoveries, and 12 loss-only outcomes. The full matched campaign was blocked fail-closed.
+v1.17 completed from the v1.16 final decision: `artifacts/paper/v1.16-geml/` is source-locked, claim-audited, and inconclusive. The pilot evidence has 12 paired rows across 2 unique seeds, 0 raw exact recoveries, 0 i*pi exact recoveries, and 12 loss-only outcomes. The full matched campaign was blocked fail-closed.
 
-The next bottleneck is the hard candidate boundary. Before spending more compute on broad raw/i*pi campaigns, v1.17 will inspect snap margins, generate bounded exact-tree neighborhoods around near-miss snapped candidates, rank candidates by verifier status first, and run a tiny natural-bias recovery sandbox.
+The final v1.17 package is `still_inconclusive`: snap-first diagnostics, bounded neighborhoods, verifier-first ranking, and the natural-bias sandbox did not produce a verifier-gated exact-recovery signal from the current pilot artifacts. Broader raw/i*pi campaigns remain blocked.
 
 ## Phase Status
 
@@ -37,17 +37,17 @@ The next bottleneck is the hard candidate boundary. Before spending more compute
 - [x] Phase 95: Bounded Exact Neighborhood Generator (completed 2026-04-22)
 - [x] Phase 96: Verifier-First Candidate Ranking and Promotion (completed 2026-04-22)
 - [x] Phase 97: Focused v1.17 Natural-Bias Recovery Sandbox (completed 2026-04-22)
-- [ ] Phase 98: v1.17 Evidence Package and Next-Campaign Gate
+- [x] Phase 98: v1.17 Evidence Package and Next-Campaign Gate (completed 2026-04-22)
 
 ## Phase Overview
 
-| Phase | Name | Goal | Requirements |
-|-------|------|------|--------------|
-| 94 | 1/1 | Complete    | 2026-04-22 |
-| 95 | 1/1 | Complete    | 2026-04-22 |
-| 96 | 1/1 | Complete    | 2026-04-22 |
-| 97 | 1/1 | Complete    | 2026-04-22 |
-| 98 | v1.17 Evidence Package and Next-Campaign Gate | Package the result and decide whether broader campaigns are justified. | PACK-01, PACK-02, PACK-03 |
+| Phase | Name | Status | Completed |
+|-------|------|--------|-----------|
+| 94 | Snap-Mismatch Diagnostics and Low-Margin Inventory | Complete | 2026-04-22 |
+| 95 | Bounded Exact Neighborhood Generator | Complete | 2026-04-22 |
+| 96 | Verifier-First Candidate Ranking and Promotion | Complete | 2026-04-22 |
+| 97 | Focused v1.17 Natural-Bias Recovery Sandbox | Complete | 2026-04-22 |
+| 98 | v1.17 Evidence Package and Next-Campaign Gate | Complete | 2026-04-22 |
 
 ## Phase Details
 
@@ -137,9 +137,9 @@ The next bottleneck is the hard candidate boundary. Before spending more compute
 ## Notes
 
 - No new external domain research was run during initialization; v1.17 is scoped from the v1.16 final package and current project evidence.
-- Larger matched raw/i*pi campaigns remain blocked until the tiny v1.17 sandbox produces verifier-gated exact signal.
+- Larger matched raw/i*pi campaigns remain blocked because the v1.17 final package is `still_inconclusive`.
 - Loss-only improvements remain diagnostics. The recovery definition remains exact-candidate and verifier-owned.
 - A still-inconclusive or negative v1.17 result is acceptable if it cleanly identifies the blocker and preserves the claim boundary.
 
 ---
-*Roadmap created for v1.17 on 2026-04-22*
+*Roadmap created for v1.17 on 2026-04-22; completed 2026-04-22*
