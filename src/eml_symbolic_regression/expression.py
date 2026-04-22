@@ -20,6 +20,10 @@ from .semantics import (
     centered_eml_torch,
     eml_numpy,
     eml_torch,
+    geml_numpy,
+    geml_operator,
+    geml_torch,
+    ipi_eml_operator,
     zeml_s_operator,
 )
 
@@ -96,6 +100,9 @@ class Expr:
     def semantics_document(self) -> dict[str, Any]:
         return {
             "operator": "exp(x)-log(y)",
+            "operator_family": EmlOperator().as_dict(),
+            "geml_parameter": format_constant_value(1.0 + 0.0j),
+            "named_specialization": "eml",
             "log_branch": "principal",
             "constant_basis": [format_constant_value(value) for value in sorted(self.constants(), key=lambda item: (item.real, item.imag))],
             "verification_mode": "canonical",
@@ -347,7 +354,7 @@ class CenteredEml(Expr):
     operator: EmlOperator
 
     def __post_init__(self) -> None:
-        if self.operator.is_raw:
+        if not self.operator.is_centered:
             raise ValueError("CenteredEml requires a centered operator family")
 
     def evaluate_numpy(self, context: Mapping[str, Any]) -> np.ndarray:
@@ -452,6 +459,133 @@ class CenteredEml(Expr):
         )
 
 
+@dataclass(frozen=True)
+class Geml(Expr):
+    left: Expr
+    right: Expr
+    operator: EmlOperator
+
+    def __post_init__(self) -> None:
+        if not self.operator.is_geml:
+            raise ValueError("Geml requires a GEML operator family")
+
+    def evaluate_numpy(self, context: Mapping[str, Any]) -> np.ndarray:
+        return geml_numpy(
+            self.left.evaluate_numpy(context),
+            self.right.evaluate_numpy(context),
+            operator=self.operator,
+        )
+
+    def evaluate_torch(
+        self,
+        context: Mapping[str, torch.Tensor],
+        *,
+        training: bool = False,
+        stats: AnomalyStats | None = None,
+        semantics: TrainingSemanticsConfig | None = None,
+        constant_overrides: Mapping[str, torch.Tensor] | None = None,
+        node: str = "root",
+    ) -> torch.Tensor:
+        return geml_torch(
+            self.left.evaluate_torch(
+                context,
+                training=training,
+                stats=stats,
+                semantics=semantics,
+                constant_overrides=constant_overrides,
+                node=f"{node}.L",
+            ),
+            self.right.evaluate_torch(
+                context,
+                training=training,
+                stats=stats,
+                semantics=semantics,
+                constant_overrides=constant_overrides,
+                node=f"{node}.R",
+            ),
+            operator=self.operator,
+            training=training,
+            semantics=semantics,
+            stats=stats,
+            node=node,
+        )
+
+    def evaluate_mpmath(self, context: Mapping[str, Any]) -> mp.mpc:
+        a = _mpmath_operator_parameter(self.operator)
+        left = self.left.evaluate_mpmath(context)
+        right = self.right.evaluate_mpmath(context)
+        return mp.e ** (a * left) - mp.log(right) / a
+
+    def to_sympy(self) -> sp.Expr:
+        a = _sympy_complex(self.operator.a)
+        return sp.exp(a * self.left.to_sympy()) - sp.log(self.right.to_sympy()) / a
+
+    def to_node(self) -> dict[str, Any]:
+        return {
+            "kind": "geml",
+            "operator": self.operator.as_dict(),
+            "left": self.left.to_node(),
+            "right": self.right.to_node(),
+        }
+
+    def semantics_document(self) -> dict[str, Any]:
+        constants = sorted(self.constants(), key=lambda value: (value.real, value.imag))
+        return {
+            "operator": "exp(a*x)-log(y)/a",
+            "operator_family": self.operator.as_dict(),
+            "log_branch": "principal",
+            "constant_basis": [format_constant_value(value) for value in constants],
+            "verification_mode": "canonical_geml",
+        }
+
+    def node_count(self) -> int:
+        return 1 + self.left.node_count() + self.right.node_count()
+
+    def depth(self) -> int:
+        return 1 + max(self.left.depth(), self.right.depth())
+
+    def variables(self) -> set[str]:
+        return self.left.variables() | self.right.variables()
+
+    def constants(self) -> set[complex]:
+        return self.left.constants() | self.right.constants()
+
+    def constant_occurrences(
+        self,
+        *,
+        path: str = "root",
+        fixed_basis: tuple[complex, ...] = (1.0 + 0.0j,),
+    ) -> tuple[ConstantOccurrence, ...]:
+        return (
+            *self.left.constant_occurrences(path=f"{path}.L", fixed_basis=fixed_basis),
+            *self.right.constant_occurrences(path=f"{path}.R", fixed_basis=fixed_basis),
+        )
+
+    def with_constant_updates(self, updates: Mapping[str, complex], *, path: str = "root") -> "Expr":
+        return Geml(
+            self.left.with_constant_updates(updates, path=f"{path}.L"),
+            self.right.with_constant_updates(updates, path=f"{path}.R"),
+            self.operator,
+        )
+
+
+def _sympy_complex(value: complex) -> sp.Expr:
+    value = complex(value)
+    if abs(value.imag) < 1e-15:
+        return sp.Integer(int(value.real)) if value.real.is_integer() else sp.Float(value.real)
+    if abs(value.real) < 1e-15 and abs(value.imag - np.pi) <= 1e-12:
+        return sp.I * sp.pi
+    real = sp.Integer(0) if abs(value.real) < 1e-15 else sp.Float(value.real)
+    imag = sp.Integer(0) if abs(value.imag) < 1e-15 else sp.Float(value.imag)
+    return real + sp.I * imag
+
+
+def _mpmath_operator_parameter(operator: EmlOperator) -> mp.mpc:
+    if operator.specialization == "ipi_eml":
+        return mp.j * mp.pi
+    return mp.mpc(operator.a)
+
+
 def expr_from_node(node: Mapping[str, Any]) -> Expr:
     kind = node["kind"]
     if kind == "const":
@@ -463,6 +597,12 @@ def expr_from_node(node: Mapping[str, Any]) -> Expr:
         return Eml(expr_from_node(node["left"]), expr_from_node(node["right"]))
     if kind == "centered_eml":
         return CenteredEml(
+            expr_from_node(node["left"]),
+            expr_from_node(node["right"]),
+            EmlOperator.from_mapping(dict(node["operator"])),
+        )
+    if kind == "geml":
+        return Geml(
             expr_from_node(node["left"]),
             expr_from_node(node["right"]),
             EmlOperator.from_mapping(dict(node["operator"])),
@@ -504,6 +644,19 @@ def ceml_expr(left: Expr, right: Expr, *, s: float, t: complex = 1.0 + 0.0j) -> 
     """Exact centered/scaled EML node."""
 
     return CenteredEml(left, right, ceml_operator(s, t))
+
+
+def geml_expr(left: Expr, right: Expr, *, a: complex) -> Expr:
+    """Exact fixed-parameter GEML node."""
+
+    operator = geml_operator(a)
+    return Eml(left, right) if operator.specialization == "eml" else Geml(left, right, operator)
+
+
+def ipi_eml_expr(left: Expr, right: Expr) -> Expr:
+    """Exact i*pi EML node."""
+
+    return Geml(left, right, ipi_eml_operator())
 
 
 def ceml_s_expr(left: Expr, right: Expr, *, s: float) -> Expr:

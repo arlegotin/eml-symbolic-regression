@@ -8,7 +8,7 @@ from typing import Any, Mapping, Sequence
 
 import torch
 
-from .expression import CenteredEml, Const, Eml, Expr, Var
+from .expression import CenteredEml, Const, Eml, Expr, Geml, Var
 from .semantics import AnomalyStats, EmlOperator, TrainingSemanticsConfig, as_complex_tensor, centered_eml_torch, raw_eml_operator
 from .witnesses import CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING, scaffold_witness_for
 
@@ -54,6 +54,12 @@ def expressions_equal(left: Expr, right: Expr, *, constant_tolerance: float = 1e
             left.right, right.right, constant_tolerance=constant_tolerance
         )
     if isinstance(left, CenteredEml) and isinstance(right, CenteredEml):
+        return left.operator == right.operator and expressions_equal(
+            left.left,
+            right.left,
+            constant_tolerance=constant_tolerance,
+        ) and expressions_equal(left.right, right.right, constant_tolerance=constant_tolerance)
+    if isinstance(left, Geml) and isinstance(right, Geml):
         return left.operator == right.operator and expressions_equal(
             left.left,
             right.left,
@@ -383,7 +389,11 @@ class _SoftNode(torch.nn.Module):
     def _snap(self, decisions: list[SnapDecision]) -> Expr:
         left = self._snap_slot("left", decisions)
         right = self._snap_slot("right", decisions)
-        return Eml(left, right) if self.operator_family.is_raw else CenteredEml(left, right, self.operator_family)
+        if self.operator_family.is_raw:
+            return Eml(left, right)
+        if self.operator_family.is_geml:
+            return Geml(left, right, self.operator_family)
+        return CenteredEml(left, right, self.operator_family)
 
     def _subtree_assignments(self) -> tuple[ReplayAssignment, ...]:
         decisions: list[SnapDecision] = []
@@ -607,11 +617,13 @@ def _operator_for_expression(expression: Expr) -> EmlOperator:
         return raw_eml_operator()
     if isinstance(expression, CenteredEml):
         return expression.operator
+    if isinstance(expression, Geml):
+        return expression.operator
     raise EmbeddingError("incompatible_tree", f"expected operator node, got {type(expression).__name__}")
 
 
 def _operator_children(expression: Expr) -> tuple[Expr, Expr]:
-    if isinstance(expression, (Eml, CenteredEml)):
+    if isinstance(expression, (Eml, CenteredEml, Geml)):
         return expression.left, expression.right
     raise EmbeddingError("incompatible_tree", f"expected operator node, got {type(expression).__name__}")
 
@@ -625,7 +637,7 @@ def _embed_slot(
     assignments: list[EmbeddingAssignment],
 ) -> None:
     slot = f"{node.path}.{side}"
-    if isinstance(expression, (Eml, CenteredEml)):
+    if isinstance(expression, (Eml, CenteredEml, Geml)):
         expression_operator = _operator_for_expression(expression)
         if expression_operator != tree.operator_family:
             raise EmbeddingError(

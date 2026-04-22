@@ -11,16 +11,26 @@ import torch
 
 @dataclass(frozen=True)
 class EmlOperator:
-    """Operator-family metadata for raw and centered EML nodes."""
+    """Operator-family metadata for raw, centered, and GEML nodes."""
 
     family: str = "raw_eml"
     s: float = 1.0
     t: complex = 1.0 + 0.0j
     terminal: str = "one"
+    a: complex = 1.0 + 0.0j
+    specialization: str = ""
 
     def __post_init__(self) -> None:
         family = str(self.family)
-        if family not in {"raw_eml", "ceml_s_t", "ceml_s", "zeml_s"}:
+        if family in {"eml", "raw"}:
+            family = "raw_eml"
+        if family in {"geml", "geml_a"}:
+            family = "geml_a"
+        if family in {"ipi_eml", "i*pi_eml", "ipieml"}:
+            family = "geml_a"
+            object.__setattr__(self, "a", 1j * np.pi)
+            object.__setattr__(self, "specialization", "ipi_eml")
+        if family not in {"raw_eml", "ceml_s_t", "ceml_s", "zeml_s", "geml_a"}:
             raise ValueError(f"unknown EML operator family: {family!r}")
         s = float(self.s)
         if not np.isfinite(s) or s <= 0:
@@ -28,27 +38,71 @@ class EmlOperator:
         t = complex(self.t)
         if not (np.isfinite(t.real) and np.isfinite(t.imag)):
             raise ValueError("centered EML shift t must be finite")
+        a = complex(self.a)
+        if not (np.isfinite(a.real) and np.isfinite(a.imag)):
+            raise ValueError("GEML parameter a must be finite")
+        if abs(a) <= 0.0:
+            raise ValueError("GEML parameter a must be nonzero")
         terminal = str(self.terminal)
+        specialization = str(self.specialization)
         if family == "raw_eml":
             s = 1.0
             t = 1.0 + 0.0j
             terminal = "one"
+            a = 1.0 + 0.0j
+            specialization = "eml"
         elif family == "ceml_s":
             t = 1.0 + 0.0j
             terminal = "one"
+            a = 1.0 + 0.0j
+            specialization = ""
         elif family == "zeml_s":
             t = 0.0 + 0.0j
             terminal = "zero"
-        else:
+            a = 1.0 + 0.0j
+            specialization = ""
+        elif family == "ceml_s_t":
             terminal = terminal or "shifted"
+            a = 1.0 + 0.0j
+            specialization = ""
+        elif family == "geml_a":
+            if specialization == "ipi_eml" and abs(a - 1j * np.pi) > 1e-12:
+                raise ValueError("i*pi EML specialization requires a = i*pi")
+            if specialization == "eml" and abs(a - 1.0) > 1e-15:
+                raise ValueError("EML specialization requires a = 1")
+            if abs(a - 1.0) <= 1e-15 and specialization in {"", "eml", "custom"}:
+                family = "raw_eml"
+                s = 1.0
+                t = 1.0 + 0.0j
+                terminal = "one"
+                a = 1.0 + 0.0j
+                specialization = "eml"
+            else:
+                s = 1.0
+                t = 1.0 + 0.0j
+                terminal = "one"
+                if abs(a - 1j * np.pi) <= 1e-12:
+                    specialization = "ipi_eml"
+                elif not specialization:
+                    specialization = "custom"
         object.__setattr__(self, "family", family)
         object.__setattr__(self, "s", s)
         object.__setattr__(self, "t", t)
         object.__setattr__(self, "terminal", terminal)
+        object.__setattr__(self, "a", a)
+        object.__setattr__(self, "specialization", specialization)
 
     @property
     def is_raw(self) -> bool:
         return self.family == "raw_eml"
+
+    @property
+    def is_centered(self) -> bool:
+        return self.family in {"ceml_s_t", "ceml_s", "zeml_s"}
+
+    @property
+    def is_geml(self) -> bool:
+        return self.family == "geml_a"
 
     @property
     def label(self) -> str:
@@ -58,6 +112,12 @@ class EmlOperator:
             return f"CEML_{_format_number(self.s)}"
         if self.family == "zeml_s":
             return f"ZEML_{_format_number(self.s)}"
+        if self.family == "geml_a":
+            if self.specialization == "ipi_eml":
+                return "ipi_eml"
+            if self.specialization == "eml":
+                return "GEML_1"
+            return f"GEML_{_format_complex(self.a)}"
         return f"cEML_s{_format_number(self.s)}_t{_format_complex(self.t)}"
 
     @property
@@ -75,7 +135,11 @@ class EmlOperator:
             payload["t"] = {"real": repr(float(self.t.real)), "imag": repr(float(self.t.imag))}
         else:
             payload["t"] = float(self.t.real)
-        if not self.is_raw:
+        if self.is_geml:
+            payload["a"] = _complex_payload(self.a)
+            payload["geml_parameter"] = _complex_payload(self.a)
+            payload["named_specialization"] = self.specialization
+        if self.is_centered:
             payload["singularity"] = (
                 {"real": repr(float(self.singularity.real)), "imag": repr(float(self.singularity.imag))}
                 if self.singularity.imag
@@ -88,15 +152,15 @@ class EmlOperator:
         if payload is None:
             return raw_eml_operator()
         t_payload = payload.get("t", 1.0)
-        if isinstance(t_payload, dict):
-            t = complex(float(t_payload["real"]), float(t_payload["imag"]))
-        else:
-            t = complex(float(t_payload), 0.0)
+        t = _complex_from_payload(t_payload)
+        a_payload = payload.get("a", payload.get("geml_parameter", 1.0))
         return cls(
             family=str(payload.get("family", payload.get("name", "raw_eml"))),
             s=float(payload.get("s", 1.0)),
             t=t,
             terminal=str(payload.get("terminal", "")),
+            a=_complex_from_payload(a_payload),
+            specialization=str(payload.get("named_specialization", payload.get("specialization", ""))),
         )
 
 
@@ -109,11 +173,49 @@ def _format_complex(value: complex) -> str:
     value = complex(value)
     if abs(value.imag) < 1e-15:
         return _format_number(value.real)
+    if abs(value.real) < 1e-15 and abs(value.imag - np.pi) <= 1e-12:
+        return "i*pi"
     return repr(value)
+
+
+def _complex_payload(value: complex) -> str | float | dict[str, str]:
+    value = complex(value)
+    if abs(value.imag) < 1e-15:
+        return float(value.real)
+    return {"real": repr(float(value.real)), "imag": repr(float(value.imag))}
+
+
+def _complex_from_payload(value: Any) -> complex:
+    if isinstance(value, dict):
+        return complex(float(value["real"]), float(value["imag"]))
+    if isinstance(value, complex):
+        return value
+    if isinstance(value, str):
+        return _complex_from_spec(value)
+    return complex(float(value), 0.0)
+
+
+def _complex_from_spec(text: str) -> complex:
+    normalized = text.strip().lower().replace(" ", "")
+    if normalized in {"i*pi", "ipi", "pi*i", "1j*pi", "j*pi"}:
+        return 1j * np.pi
+    if normalized in {"-i*pi", "-ipi", "-pi*i", "-1j*pi", "-j*pi"}:
+        return -1j * np.pi
+    return complex(normalized.replace("i", "j"))
 
 
 def raw_eml_operator() -> EmlOperator:
     return EmlOperator("raw_eml")
+
+
+def geml_operator(a: complex, *, specialization: str = "") -> EmlOperator:
+    if abs(complex(a) - 1.0) <= 1e-15 and specialization in {"", "eml", "custom"}:
+        return raw_eml_operator()
+    return EmlOperator("geml_a", a=complex(a), specialization=specialization)
+
+
+def ipi_eml_operator() -> EmlOperator:
+    return geml_operator(1j * np.pi, specialization="ipi_eml")
 
 
 def ceml_operator(s: float, t: complex = 1.0 + 0.0j) -> EmlOperator:
@@ -141,6 +243,10 @@ def eml_operator_from_spec(value: Any) -> EmlOperator:
     lower = text.lower()
     if lower in {"raw", "raw_eml", "eml"}:
         return raw_eml_operator()
+    if lower in {"ipi", "i*pi", "ipi_eml", "i*pi_eml", "geml:ipi", "geml:i*pi", "geml_a:i*pi"}:
+        return ipi_eml_operator()
+    if lower.startswith("geml:") or lower.startswith("geml_a:"):
+        return geml_operator(_complex_from_spec(text.split(":", 1)[1]))
     if lower.startswith("ceml_s:"):
         return ceml_s_operator(float(text.split(":", 1)[1]))
     if lower.startswith("zeml_s:"):
@@ -408,6 +514,19 @@ def centered_eml_torch(
             stats=stats,
             node=node,
         )
+    if operator.is_geml:
+        return geml_torch(
+            x,
+            y,
+            operator=operator,
+            training=training,
+            clamp_exp_real=clamp_exp_real,
+            semantics=semantics,
+            stats=stats,
+            node=node,
+        )
+    if not operator.is_centered:
+        raise ValueError(f"centered EML evaluator cannot handle operator family {operator.family!r}")
 
     x = as_complex_tensor(x)
     y = as_complex_tensor(y, device=x.device)
@@ -478,6 +597,91 @@ def centered_eml_torch(
     return out
 
 
+def geml_torch(
+    x: torch.Tensor,
+    y: torch.Tensor,
+    *,
+    operator: EmlOperator,
+    training: bool = False,
+    clamp_exp_real: float = 40.0,
+    semantics: TrainingSemanticsConfig | None = None,
+    stats: AnomalyStats | None = None,
+    node: str | None = None,
+) -> torch.Tensor:
+    """Evaluate fixed-parameter GEML in PyTorch."""
+
+    if operator.is_raw:
+        return eml_torch(
+            x,
+            y,
+            training=training,
+            clamp_exp_real=clamp_exp_real,
+            semantics=semantics,
+            stats=stats,
+            node=node,
+        )
+    if not operator.is_geml:
+        raise ValueError(f"GEML evaluator cannot handle operator family {operator.family!r}")
+
+    x = as_complex_tensor(x)
+    y = as_complex_tensor(y, device=x.device)
+    semantics = semantics or TrainingSemanticsConfig(clamp_exp_real=clamp_exp_real)
+    a = torch.tensor(operator.a, dtype=torch.complex128, device=x.device)
+    exp_arg = a * x
+    clamp_count = 0
+    exp_overflow_count = 0
+
+    use_training_guards = training and semantics.uses_training_guards
+    if use_training_guards:
+        real = torch.clamp(exp_arg.real, min=-semantics.clamp_exp_real, max=semantics.clamp_exp_real)
+        clamp_count = int((real != exp_arg.real).sum().detach().item())
+        exp_overflow_count = int((exp_arg.detach().real > semantics.clamp_exp_real).sum().item())
+        exp_arg = torch.complex(real, exp_arg.imag)
+    else:
+        exp_overflow_threshold = float(np.log(np.finfo(np.float64).max))
+        exp_overflow_count = int((exp_arg.detach().real > exp_overflow_threshold).sum().item())
+
+    log_arg = y.detach()
+    log_abs = torch.nan_to_num(torch.abs(log_arg), nan=float("inf"), posinf=float("inf"), neginf=float("inf"))
+    log_small_magnitude_count = int((log_abs < semantics.log_domain_epsilon).sum().item())
+    log_non_positive_real_count = int((log_arg.real <= 0).sum().item())
+    log_branch_cut_count = int(
+        ((torch.abs(log_arg.imag) <= semantics.log_domain_epsilon) & (log_arg.real <= 0)).sum().item()
+    )
+    log_non_finite_input_count = int(
+        torch.isnan(log_arg.real).sum().item()
+        + torch.isnan(log_arg.imag).sum().item()
+        + torch.isinf(log_arg.real).sum().item()
+        + torch.isinf(log_arg.imag).sum().item()
+    )
+
+    log_safety_penalty = None
+    if use_training_guards and semantics.log_safety_weight > 0:
+        safe_margin = max(float(semantics.log_safety_margin), float(semantics.log_domain_epsilon))
+        imag_tolerance = max(float(semantics.log_safety_imag_tolerance), float(semantics.log_domain_epsilon))
+        real_pressure = torch.relu(safe_margin - y.real)
+        axis_proximity = torch.relu(imag_tolerance - torch.abs(y.imag)) / imag_tolerance
+        magnitude_pressure = torch.relu(safe_margin - torch.abs(y))
+        log_safety_penalty = semantics.log_safety_weight * torch.mean(real_pressure * axis_proximity + magnitude_pressure)
+
+    out = torch.exp(exp_arg) - torch.log(y) / a
+    if stats is not None:
+        stats.update_torch(
+            out,
+            exp_arg=exp_arg,
+            log_arg=log_arg,
+            node=node,
+            clamp_count=clamp_count,
+            exp_overflow_count=exp_overflow_count,
+            log_small_magnitude_count=log_small_magnitude_count,
+            log_non_positive_real_count=log_non_positive_real_count,
+            log_branch_cut_count=log_branch_cut_count,
+            log_non_finite_input_count=log_non_finite_input_count,
+            log_safety_penalty=log_safety_penalty,
+        )
+    return out
+
+
 def eml_numpy(x: Any, y: Any) -> np.ndarray:
     """Evaluate canonical EML with NumPy complex128 arrays."""
 
@@ -491,11 +695,28 @@ def centered_eml_numpy(x: Any, y: Any, *, operator: EmlOperator) -> np.ndarray:
 
     if operator.is_raw:
         return eml_numpy(x, y)
+    if operator.is_geml:
+        return geml_numpy(x, y, operator=operator)
+    if not operator.is_centered:
+        raise ValueError(f"centered EML evaluator cannot handle operator family {operator.family!r}")
     x_arr = np.asarray(x, dtype=np.complex128)
     y_arr = np.asarray(y, dtype=np.complex128)
     s = np.complex128(operator.s)
     t = np.complex128(operator.t)
     return s * np.expm1(x_arr / s) - s * np.log1p((y_arr - t) / s)
+
+
+def geml_numpy(x: Any, y: Any, *, operator: EmlOperator) -> np.ndarray:
+    """Evaluate fixed-parameter GEML with NumPy complex128 arrays."""
+
+    if operator.is_raw:
+        return eml_numpy(x, y)
+    if not operator.is_geml:
+        raise ValueError(f"GEML evaluator cannot handle operator family {operator.family!r}")
+    x_arr = np.asarray(x, dtype=np.complex128)
+    y_arr = np.asarray(y, dtype=np.complex128)
+    a = np.complex128(operator.a)
+    return np.exp(a * x_arr) - np.log(y_arr) / a
 
 
 def mse_complex_numpy(a: Any, b: Any) -> float:

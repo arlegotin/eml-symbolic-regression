@@ -18,6 +18,20 @@ The package follows the roadmap in `.planning/ROADMAP.md`:
 12. `campaign.py` defines campaign presets, guarded output folders, CSV exports, SVG figures, and `report.md` assembly.
 13. `datasets.py` and `cli.py` expose the demo ladder from `sources/FOR_DEMO.md`.
 
+## GEML Family Contract
+
+Raw EML is the `a = 1` named specialization of the fixed-parameter family
+`GEML_a(x, y) = exp(a*x) - log(y)/a`. The package represents operator metadata with
+`EmlOperator`; raw EML keeps the legacy `raw_eml` family label for backward-compatible
+artifacts, while non-raw fixed GEML specializations use family `geml_a`.
+
+The first named non-raw specialization is i*pi EML, serialized with label `ipi_eml` and
+`a = i*pi`. NumPy, PyTorch, exact AST mpmath evaluation, JSON export, and SymPy export all
+use the same principal-log convention. Phase 82 only establishes the family semantics and
+the structural identity
+`exp(a*GEML_a(u, v)) = exp(a*exp(a*u))/v`; branch restrictions and i*pi-specific theorem
+contracts are handled separately by the v1.15 theory phases.
+
 ## Recovery Contract
 
 Training loss is not enough. The optimizer now emits a retained exact-candidate pool across restarts plus late hardening checkpoints, but a candidate is only `recovered` when:

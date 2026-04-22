@@ -1,9 +1,10 @@
 import json
 
+import mpmath as mp
 import numpy as np
 import torch
 
-from eml_symbolic_regression.expression import Const, Eml, Var, ceml_s_expr, expr_from_document, exp_expr, log_expr, zeml_s_expr
+from eml_symbolic_regression.expression import Const, Eml, Geml, Var, ceml_s_expr, expr_from_document, exp_expr, geml_expr, ipi_eml_expr, log_expr, zeml_s_expr
 from eml_symbolic_regression.semantics import (
     AnomalyStats,
     TrainingSemanticsConfig,
@@ -11,7 +12,12 @@ from eml_symbolic_regression.semantics import (
     centered_eml_numpy,
     centered_eml_torch,
     eml_numpy,
+    eml_operator_from_spec,
     eml_torch,
+    geml_numpy,
+    geml_operator,
+    geml_torch,
+    ipi_eml_operator,
     zeml_s_operator,
 )
 
@@ -42,6 +48,86 @@ def test_ast_json_round_trip():
     rebuilt = expr_from_document(decoded)
     x = np.linspace(0.5, 2.0, 8)
     np.testing.assert_allclose(rebuilt.evaluate_numpy({"x": x}), expr.evaluate_numpy({"x": x}))
+    assert document["semantics"]["named_specialization"] == "eml"
+
+
+def test_geml_numpy_and_torch_match_definition():
+    x = np.array([0.0, 0.25, -0.5], dtype=np.complex128)
+    y = np.array([1.0 + 0.2j, 1.5 + 0.4j, 2.0 + 0.1j], dtype=np.complex128)
+    operator = geml_operator(2.0)
+
+    np.testing.assert_allclose(geml_numpy(x, y, operator=operator), np.exp(2.0 * x) - np.log(y) / 2.0)
+
+    torch_actual = geml_torch(torch.as_tensor(x), torch.as_tensor(y), operator=operator, training=False)
+    torch.testing.assert_close(torch_actual, torch.as_tensor(np.exp(2.0 * x) - np.log(y) / 2.0))
+
+
+def test_geml_operator_parses_named_specializations():
+    raw = eml_operator_from_spec("eml")
+    geml_one = eml_operator_from_spec("geml:1")
+    ipi = eml_operator_from_spec("ipi_eml")
+    generic = eml_operator_from_spec("geml:2")
+
+    assert raw.is_raw
+    assert geml_one.is_raw
+    assert ipi.is_geml
+    assert ipi.label == "ipi_eml"
+    assert abs(ipi.a - 1j * np.pi) < 1e-12
+    assert generic.is_geml
+    assert generic.label == "GEML_2"
+
+
+def test_geml_named_specializations_validate_parameter():
+    try:
+        geml_operator(2.0, specialization="ipi_eml")
+    except ValueError as exc:
+        assert "i*pi" in str(exc)
+    else:
+        raise AssertionError("i*pi specialization must require a = i*pi")
+
+
+def test_geml_exact_ast_round_trip_backends_and_sympy():
+    expr = ipi_eml_expr(Var("x"), Var("y"))
+    document = expr.to_document(variables=["x", "y"], source="test")
+    encoded = json.dumps(document, sort_keys=True)
+    rebuilt = expr_from_document(json.loads(encoded))
+    x = np.linspace(-0.5, 0.5, 8)
+    y = np.linspace(1.1, 2.0, 8)
+
+    assert isinstance(rebuilt, Geml)
+    assert rebuilt.to_node()["operator"]["label"] == "ipi_eml"
+    assert rebuilt.to_document()["semantics"]["operator_family"]["named_specialization"] == "ipi_eml"
+    np.testing.assert_allclose(
+        rebuilt.evaluate_numpy({"x": x, "y": y}),
+        np.exp(1j * np.pi * x) - np.log(y) / (1j * np.pi),
+        atol=1e-12,
+    )
+    assert abs(complex(rebuilt.evaluate_mpmath({"x": 0.25, "y": 1.75})) - complex(np.exp(1j * np.pi * 0.25) - np.log(1.75) / (1j * np.pi))) < 1e-12
+    assert "pi" in str(rebuilt.to_sympy())
+
+
+def test_ipi_eml_mpmath_uses_high_precision_pi():
+    previous_dps = mp.mp.dps
+    try:
+        mp.mp.dps = 80
+        expr = ipi_eml_expr(Var("x"), Var("y"))
+        actual = expr.evaluate_mpmath({"x": mp.mpf("0.125"), "y": mp.mpf("1.75")})
+        expected = mp.e ** (mp.j * mp.pi * mp.mpf("0.125")) - mp.log(mp.mpf("1.75")) / (mp.j * mp.pi)
+        assert abs(actual - expected) < mp.mpf("1e-70")
+    finally:
+        mp.mp.dps = previous_dps
+
+
+def test_geml_structural_identity():
+    u = np.array([-0.4, 0.0, 0.5], dtype=np.complex128)
+    v = np.array([1.2 + 0.1j, 1.7 + 0.2j, 2.2 + 0.3j], dtype=np.complex128)
+
+    for operator in (geml_operator(1.0), geml_operator(2.0), ipi_eml_operator()):
+        a = np.complex128(operator.a)
+        node = geml_expr(Var("u"), Var("v"), a=a)
+        actual = np.exp(a * node.evaluate_numpy({"u": u, "v": v}))
+        expected = np.exp(a * np.exp(a * u)) / v
+        np.testing.assert_allclose(actual, expected, atol=1e-12)
 
 
 def test_centered_eml_numpy_matches_definition():

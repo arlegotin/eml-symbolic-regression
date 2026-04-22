@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 import torch
 
-from eml_symbolic_regression.expression import ceml_s_expr
-from eml_symbolic_regression.master_tree import EmbeddingError, SoftEMLTree, expand_snap_neighborhood
-from eml_symbolic_regression.semantics import ceml_s_operator, zeml_s_operator
+from eml_symbolic_regression.expression import Geml, Var, ceml_s_expr, ipi_eml_expr
+from eml_symbolic_regression.master_tree import EmbeddingConfig, EmbeddingError, SoftEMLTree, embed_expr_into_tree, expand_snap_neighborhood
+from eml_symbolic_regression.semantics import ceml_s_operator, geml_operator, ipi_eml_operator, zeml_s_operator
 
 
 def test_univariate_parameter_count_matches_paper():
@@ -52,6 +52,28 @@ def test_centered_embedding_requires_matching_operator_family():
 
     with pytest.raises(EmbeddingError, match="operator_family_mismatch"):
         tree.embed_expr(ceml_s_expr(tree.snap().expression.left, tree.snap().expression.right, s=2.0))
+
+
+def test_geml_one_canonicalizes_to_raw_master_tree():
+    tree = SoftEMLTree(1, ("x",), operator_family=geml_operator(1.0))
+    snap = tree.snap()
+
+    assert tree.operator_family.is_raw
+    assert snap.expression.to_node()["kind"] == "eml"
+
+
+def test_ipi_eml_tree_snaps_and_embeds_same_family_expression():
+    tree = SoftEMLTree(1, ("x", "y"), operator_family=ipi_eml_operator())
+    expression = ipi_eml_expr(Var("x"), Var("y"))
+
+    result = embed_expr_into_tree(tree, expression, config=EmbeddingConfig(strength=40.0))
+    snap = tree.snap()
+
+    assert result.success
+    assert result.round_trip_equal
+    assert isinstance(snap.expression, Geml)
+    assert snap.expression.operator.label == "ipi_eml"
+    assert snap.expression.to_node()["operator"]["named_specialization"] == "ipi_eml"
 
 
 def test_force_log_snaps_to_paper_identity():
