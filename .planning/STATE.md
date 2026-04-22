@@ -1,25 +1,24 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.16
-milestone_name: Paper-Strength GEML Recovery Evidence
-current_phase: 88
-current_phase_name: Paper-Strength Success Gate and Campaign Contract
-status: Milestone v1.16 initialized; ready for Phase 88 planning
-stopped_at: milestone v1.16 initialized; ready for Phase 88 planning
-last_updated: "2026-04-22T11:20:00.000Z"
+milestone_name: Paper Decision Package and Claim Audit
+current_phase: 89
+status: planning
+stopped_at: v1.16 milestone initialized; ready for Phase 88 planning
+last_updated: "2026-04-22T11:00:28.586Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 6
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 88 - Paper-Strength Success Gate and Campaign Contract
+**Current phase:** 89
 **Mode:** YOLO
 
 ## Project Reference
@@ -32,9 +31,9 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 ## Current Position
 
 Phase: 88 - Paper-Strength Success Gate and Campaign Contract
-Plan: -
+Plan: Not started
 Status: v1.16 milestone initialized; ready for Phase 88 planning
-Last activity: 2026-04-22 - v1.16 milestone start
+Last activity: 2026-04-22
 Progress: [----------] 0% by completed phases
 
 ## Current Milestone
