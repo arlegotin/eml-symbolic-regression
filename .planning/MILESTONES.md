@@ -1,5 +1,22 @@
 # Milestones
 
+## v1.14 Evidence claim integrity and audit hardening (Shipped: 2026-04-21)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added two-axis recovery accounting so compile-only verified support cannot increment trained exact-recovery headlines.
+- Regenerated public evidence surfaces with corrected package-level numbers: 8 trained exact recoveries, 1 compile-only verified support row, 15 unsupported rows, and 0 failed rows.
+- Relabeled zero-perturbation same-AST warm-start positives as exact seed round-trips unless real perturbation evidence exists.
+- Quarantined unavailable, unsupported, and denominator-excluded baseline rows from main comparison claims.
+- Fixed multivariate high-precision verifier target matching by using full input-row keys when no `target_mpmath` evaluator is present.
+- Regenerated `artifacts/paper/v1.14/` with source locks, passing claim audit, and release-gate checks.
+
+**Known deferred items at close:** Real perturbation-grid robustness evidence and fixed-budget external baseline runs remain future work; v1.15 starts from the archived v1.14 planning artifacts.
+
+---
+
 ## v1.13 Publication-grade reproduction and validation (Shipped: 2026-04-20)
 
 **Phases completed:** 8 phases, 8 plans, 0 tasks
