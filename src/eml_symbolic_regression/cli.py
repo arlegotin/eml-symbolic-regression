@@ -65,9 +65,11 @@ from .paper_v112 import (
     write_v112_training_detail_assets,
 )
 from .paper_v116 import (
+    DEFAULT_V116_ABLATION_DIR,
     DEFAULT_V116_CAMPAIGN_DIR,
     DEFAULT_V116_LADDER_DIR,
     DEFAULT_V116_PACKAGE_DIR,
+    write_v116_ablation_assets,
     write_v116_budget_ladder,
     write_v116_paper_package,
 )
@@ -608,6 +610,23 @@ def geml_v116_ladder_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def geml_v116_ablations_command(args: argparse.Namespace) -> int:
+    paths = write_v116_ablation_assets(
+        output_dir=Path(args.output_dir),
+        campaign_dir=Path(args.campaign_dir),
+        budget_ladder_dir=Path(args.budget_ladder_dir),
+        package_dir=Path(args.package_dir),
+        overwrite=args.overwrite,
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml v1.16 ablations: manifest -> {paths.manifest_json}; "
+        f"figures -> {paths.figures_dir}; "
+        f"decision -> {manifest['decision']}"
+    )
+    return 0
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -1004,6 +1023,30 @@ def build_parser() -> argparse.ArgumentParser:
     )
     geml_v116_ladder.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing ladder manifest.")
     geml_v116_ladder.set_defaults(func=geml_v116_ladder_command)
+
+    geml_v116_ablations = sub.add_parser("geml-v116-ablations", help="Write v1.16 ablation tables and paper figures.")
+    geml_v116_ablations.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V116_ABLATION_DIR),
+        help="Directory for v1.16 ablation tables, figures, source locks, and manifest.",
+    )
+    geml_v116_ablations.add_argument(
+        "--campaign-dir",
+        default=str(DEFAULT_V116_CAMPAIGN_DIR),
+        help="Pilot or full campaign directory containing paired comparison and run tables.",
+    )
+    geml_v116_ablations.add_argument(
+        "--budget-ladder-dir",
+        default=str(DEFAULT_V116_LADDER_DIR),
+        help="Budget ladder directory containing failure-taxonomy.json.",
+    )
+    geml_v116_ablations.add_argument(
+        "--package-dir",
+        default=str(DEFAULT_V116_PACKAGE_DIR),
+        help="v1.16 paper package directory containing manifest and gate-evaluation JSON.",
+    )
+    geml_v116_ablations.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing ablation manifest.")
+    geml_v116_ablations.set_defaults(func=geml_v116_ablations_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(

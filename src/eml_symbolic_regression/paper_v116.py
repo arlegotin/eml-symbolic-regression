@@ -5,8 +5,10 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import math
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from html import escape
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -16,6 +18,7 @@ from .benchmark import V115_GEML_TARGETS, V115_NEGATIVE_CONTROL_TARGETS, V115_OS
 DEFAULT_V116_PACKAGE_DIR = Path("artifacts") / "paper" / "v1.16-geml"
 DEFAULT_V116_CAMPAIGN_DIR = Path("artifacts") / "campaigns" / "v1.16-geml-pilot"
 DEFAULT_V116_LADDER_DIR = Path("artifacts") / "campaigns" / "v1.16-geml-budget-ladder"
+DEFAULT_V116_ABLATION_DIR = DEFAULT_V116_PACKAGE_DIR / "ablations"
 
 
 class V116PackageError(RuntimeError):
@@ -54,6 +57,29 @@ class V116BudgetLadderPaths:
         return {key: str(value) for key, value in self.__dict__.items()}
 
 
+@dataclass(frozen=True)
+class V116AblationPaths:
+    output_dir: Path
+    manifest_json: Path
+    ablation_table_json: Path
+    ablation_table_csv: Path
+    ablation_table_md: Path
+    failure_examples_json: Path
+    failure_examples_csv: Path
+    failure_examples_md: Path
+    figure_metadata_json: Path
+    source_locks_json: Path
+    figures_dir: Path
+    family_recovery_svg: Path
+    loss_snap_svg: Path
+    branch_anomalies_svg: Path
+    runtime_svg: Path
+    representative_curves_svg: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
 def v116_package_paths(output_dir: Path = DEFAULT_V116_PACKAGE_DIR) -> V116PackagePaths:
     output_dir = Path(output_dir)
     return V116PackagePaths(
@@ -81,6 +107,29 @@ def v116_budget_ladder_paths(output_dir: Path = DEFAULT_V116_LADDER_DIR) -> V116
         failure_taxonomy_csv=output_dir / "failure-taxonomy.csv",
         failure_taxonomy_md=output_dir / "failure-taxonomy.md",
         source_locks_json=output_dir / "source-locks.json",
+    )
+
+
+def v116_ablation_paths(output_dir: Path = DEFAULT_V116_ABLATION_DIR) -> V116AblationPaths:
+    output_dir = Path(output_dir)
+    figures_dir = output_dir / "figures"
+    return V116AblationPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "manifest.json",
+        ablation_table_json=output_dir / "ablation-table.json",
+        ablation_table_csv=output_dir / "ablation-table.csv",
+        ablation_table_md=output_dir / "ablation-table.md",
+        failure_examples_json=output_dir / "failure-examples.json",
+        failure_examples_csv=output_dir / "failure-examples.csv",
+        failure_examples_md=output_dir / "failure-examples.md",
+        figure_metadata_json=output_dir / "figure-metadata.json",
+        source_locks_json=output_dir / "source-locks.json",
+        figures_dir=figures_dir,
+        family_recovery_svg=figures_dir / "family-recovery.svg",
+        loss_snap_svg=figures_dir / "loss-before-after-snap.svg",
+        branch_anomalies_svg=figures_dir / "branch-anomalies.svg",
+        runtime_svg=figures_dir / "runtime.svg",
+        representative_curves_svg=figures_dir / "representative-curves.svg",
     )
 
 
@@ -531,6 +580,484 @@ def write_v116_budget_ladder(
     return paths
 
 
+_ABLATION_COLUMNS = [
+    "dimension",
+    "variant",
+    "status",
+    "operator_family",
+    "paired_rows",
+    "run_rows",
+    "exact_recovery_count",
+    "verified_equivalent_count",
+    "repaired_candidate_count",
+    "same_ast_count",
+    "compile_only_count",
+    "loss_only_count",
+    "branch_pathology_count",
+    "numerical_instability_count",
+    "median_post_snap_mse",
+    "median_runtime_seconds",
+    "candidate_pool_median",
+    "observed_effect",
+    "next_step",
+]
+
+_FAILURE_EXAMPLE_COLUMNS = [
+    "failure_class",
+    "status",
+    "count",
+    "representative_pair_id",
+    "formula",
+    "target_family",
+    "seed",
+    "comparison_outcome",
+    "actionable_next_step",
+]
+
+_CANONICAL_FAILURE_CLASSES = [
+    "loss_only_signal",
+    "optimization_or_snap_miss",
+    "snap_mismatch",
+    "branch_pathology",
+    "verifier_mismatch",
+    "unsupported_or_over_depth",
+    "numerical_instability",
+]
+
+
+def write_v116_ablation_assets(
+    output_dir: Path = DEFAULT_V116_ABLATION_DIR,
+    *,
+    campaign_dir: Path = DEFAULT_V116_CAMPAIGN_DIR,
+    budget_ladder_dir: Path = DEFAULT_V116_LADDER_DIR,
+    package_dir: Path = DEFAULT_V116_PACKAGE_DIR,
+    overwrite: bool = False,
+) -> V116AblationPaths:
+    """Write deterministic v1.16 ablation tables, failure examples, and figures."""
+
+    output_dir = Path(output_dir)
+    paths = v116_ablation_paths(output_dir)
+    if paths.manifest_json.exists() and not overwrite:
+        raise V116PackageError(f"{paths.manifest_json} already exists; pass overwrite=True to refresh")
+    paths.output_dir.mkdir(parents=True, exist_ok=True)
+    paths.figures_dir.mkdir(parents=True, exist_ok=True)
+
+    campaign_dir = Path(campaign_dir)
+    budget_ladder_dir = Path(budget_ladder_dir)
+    package_dir = Path(package_dir)
+    paired_rows = _read_paired_rows(campaign_dir)
+    run_rows = _read_csv(campaign_dir / "tables" / "runs.csv")
+    taxonomy_path = budget_ladder_dir / "failure-taxonomy.json"
+    taxonomy_payload = _read_json(taxonomy_path) if taxonomy_path.is_file() else {"rows": _failure_taxonomy_rows(paired_rows)}
+    taxonomy_rows = [dict(row) for row in taxonomy_payload.get("rows", [])]
+    package_manifest = _read_json(package_dir / "manifest.json") if (package_dir / "manifest.json").is_file() else {}
+    gate_evaluation = _read_json(package_dir / "gate-evaluation.json") if (package_dir / "gate-evaluation.json").is_file() else {}
+    decision = str(gate_evaluation.get("decision") or package_manifest.get("decision") or "inconclusive")
+
+    ablation_rows = _v116_ablation_rows(paired_rows, run_rows, taxonomy_rows, gate_evaluation)
+    failure_examples = _v116_failure_examples(taxonomy_rows)
+    classification = _classification_from_rows(paired_rows)
+    figure_metadata = {
+        "schema": "eml.v116_figure_metadata.v1",
+        "figures": [
+            {
+                "id": "family_recovery",
+                "path": str(paths.family_recovery_svg),
+                "source": str(campaign_dir / "tables" / "geml-paired-comparison.csv"),
+                "claim_boundary": "Exact recovery bars are zero unless verifier-gated recovery rows exist.",
+            },
+            {
+                "id": "loss_before_after_snap",
+                "path": str(paths.loss_snap_svg),
+                "source": str(campaign_dir / "tables" / "geml-paired-comparison.csv"),
+                "claim_boundary": "Loss improvements are diagnostic only and do not count as recovery.",
+            },
+            {
+                "id": "branch_anomalies",
+                "path": str(paths.branch_anomalies_svg),
+                "source": str(campaign_dir / "tables" / "geml-paired-comparison.csv"),
+                "claim_boundary": "Branch anomalies are shown as blockers or diagnostics, not as hidden exclusions.",
+            },
+            {
+                "id": "runtime",
+                "path": str(paths.runtime_svg),
+                "source": str(campaign_dir / "tables" / "geml-paired-comparison.csv"),
+                "claim_boundary": "Runtime is reported for resource context and does not affect recovery classification.",
+            },
+            {
+                "id": "representative_curves",
+                "path": str(paths.representative_curves_svg),
+                "source": str(campaign_dir / "runs"),
+                "claim_boundary": "Representative panels label failed verification honestly.",
+            },
+        ],
+    }
+
+    _write_json(paths.ablation_table_json, {"schema": "eml.v116_ablation_table.v1", "rows": ablation_rows})
+    _write_csv(paths.ablation_table_csv, ablation_rows, _ABLATION_COLUMNS)
+    paths.ablation_table_md.write_text(_v116_ablation_markdown(ablation_rows), encoding="utf-8")
+    _write_json(paths.failure_examples_json, {"schema": "eml.v116_failure_examples.v1", "rows": failure_examples})
+    _write_csv(paths.failure_examples_csv, failure_examples, _FAILURE_EXAMPLE_COLUMNS)
+    paths.failure_examples_md.write_text(_v116_failure_examples_markdown(failure_examples), encoding="utf-8")
+    _write_json(paths.figure_metadata_json, figure_metadata)
+    paths.family_recovery_svg.write_text(_v116_family_recovery_svg(classification), encoding="utf-8")
+    paths.loss_snap_svg.write_text(_v116_loss_snap_svg(paired_rows), encoding="utf-8")
+    paths.branch_anomalies_svg.write_text(_v116_branch_anomalies_svg(paired_rows), encoding="utf-8")
+    paths.runtime_svg.write_text(_v116_runtime_svg(paired_rows), encoding="utf-8")
+    paths.representative_curves_svg.write_text(_v116_representative_curves_svg(paired_rows), encoding="utf-8")
+
+    locks = _source_locks_payload(
+        [
+            ("campaign_manifest", campaign_dir / "campaign-manifest.json", "input"),
+            ("geml_paired_summary", campaign_dir / "tables" / "geml-paired-summary.json", "input"),
+            ("geml_paired_comparison", campaign_dir / "tables" / "geml-paired-comparison.csv", "input"),
+            ("runs_table", campaign_dir / "tables" / "runs.csv", "input"),
+            ("budget_ladder_manifest", budget_ladder_dir / "manifest.json", "input"),
+            ("failure_taxonomy", taxonomy_path, "input"),
+            ("paper_package_manifest", package_dir / "manifest.json", "input"),
+            ("paper_gate_evaluation", package_dir / "gate-evaluation.json", "input"),
+        ]
+    )
+    locks["outputs"] = _source_locks(
+        [
+            ("ablation_table_json", paths.ablation_table_json),
+            ("ablation_table_csv", paths.ablation_table_csv),
+            ("ablation_table_md", paths.ablation_table_md),
+            ("failure_examples_json", paths.failure_examples_json),
+            ("failure_examples_csv", paths.failure_examples_csv),
+            ("failure_examples_md", paths.failure_examples_md),
+            ("figure_metadata", paths.figure_metadata_json),
+            ("family_recovery_svg", paths.family_recovery_svg),
+            ("loss_snap_svg", paths.loss_snap_svg),
+            ("branch_anomalies_svg", paths.branch_anomalies_svg),
+            ("runtime_svg", paths.runtime_svg),
+            ("representative_curves_svg", paths.representative_curves_svg),
+        ],
+        role="output",
+    )
+    _write_json(paths.source_locks_json, locks)
+    source_locks_ok = all(item["status"] == "locked" for item in locks["inputs"])
+    manifest = {
+        "schema": "eml.v116_ablation_assets_manifest.v1",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "decision": decision,
+        "paper_claim_allowed": decision == "paper_positive",
+        "campaign_dir": str(campaign_dir),
+        "budget_ladder_dir": str(budget_ladder_dir),
+        "package_dir": str(package_dir),
+        "ablation_table": str(paths.ablation_table_json),
+        "failure_examples": str(paths.failure_examples_json),
+        "figure_metadata": str(paths.figure_metadata_json),
+        "source_locks": str(paths.source_locks_json),
+        "source_locks_ok": source_locks_ok,
+        "row_counts": {
+            "paired_rows": len(paired_rows),
+            "run_rows": len(run_rows),
+            "ablation_rows": len(ablation_rows),
+            "failure_example_rows": len(failure_examples),
+        },
+        "claim_boundary": "Phase 92 assets explain an inconclusive/negative result unless the Phase 88 gate is paper_positive.",
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def _v116_ablation_rows(
+    paired_rows: Iterable[Mapping[str, Any]],
+    run_rows: Iterable[Mapping[str, Any]],
+    taxonomy_rows: Iterable[Mapping[str, Any]],
+    gate_evaluation: Mapping[str, Any],
+) -> list[dict[str, Any]]:
+    paired = [dict(row) for row in paired_rows]
+    runs = [dict(row) for row in run_rows]
+    taxonomy = [dict(row) for row in taxonomy_rows]
+    gate_metrics = gate_evaluation.get("metrics") if isinstance(gate_evaluation.get("metrics"), Mapping) else {}
+    rows: list[dict[str, Any]] = []
+    for operator in ("raw", "ipi"):
+        run_stats = _operator_run_stats(runs, f"{operator}_eml")
+        prefix = "raw" if operator == "raw" else "ipi"
+        rows.append(
+            _ablation_row(
+                dimension="initialization",
+                variant="raw random restarts" if operator == "raw" else "generic i*pi phase initializers",
+                status="measured_pilot",
+                operator_family=f"{operator}_eml",
+                paired_rows=len(paired),
+                run_rows=run_stats["run_rows"],
+                exact_recovery_count=_paired_exact_wins(paired, prefix),
+                loss_only_count=_paired_loss_only_wins(paired, prefix),
+                branch_pathology_count=_failure_count(taxonomy, "branch_pathology", operator=prefix),
+                numerical_instability_count=_failure_count(taxonomy, "numerical_instability", operator=prefix),
+                median_post_snap_mse=run_stats["median_post_snap_mse"],
+                median_runtime_seconds=run_stats["median_runtime_seconds"],
+                candidate_pool_median=run_stats["candidate_pool_median"],
+                observed_effect=(
+                    "No verifier-gated exact recovery; raw won more loss-only rows."
+                    if operator == "raw"
+                    else "Generic phase initialization produced loss-only signals but no exact recovery."
+                ),
+                next_step="Do not promote loss-only results; inspect snap margins and branch diagnostics before increasing budget.",
+                verified_equivalent_count=run_stats["verified_equivalent_count"],
+                repaired_candidate_count=run_stats["repaired_candidate_count"],
+                same_ast_count=run_stats["same_ast_count"],
+                compile_only_count=run_stats["compile_only_count"],
+            )
+        )
+
+    branch_count = sum(1 for row in taxonomy if str(row.get("failure_class")) == "branch_pathology")
+    rows.append(
+        _ablation_row(
+            dimension="branch_guards",
+            variant="guarded training with faithful verification",
+            status="measured_pilot",
+            operator_family="matched",
+            paired_rows=len(paired),
+            run_rows=len(runs),
+            exact_recovery_count=int(gate_metrics.get("natural_ipi_recovery_wins") or 0) + int(gate_metrics.get("natural_raw_recovery_wins") or 0),
+            loss_only_count=sum(1 for row in paired if str(row.get("comparison_outcome") or "").endswith("lower_post_snap_mse")),
+            branch_pathology_count=branch_count,
+            numerical_instability_count=_failure_count(taxonomy, "numerical_instability"),
+            median_post_snap_mse=_median_numeric([_numeric(row.get("raw_post_snap_mse")) for row in paired] + [_numeric(row.get("ipi_post_snap_mse")) for row in paired]),
+            median_runtime_seconds=_median_numeric([_numeric(row.get("raw_runtime_seconds")) for row in paired] + [_numeric(row.get("ipi_runtime_seconds")) for row in paired]),
+            candidate_pool_median=_median_numeric(_numeric(row.get("optimizer_candidate_count")) for row in runs),
+            observed_effect="Branch diagnostics remained visible; branch-related rows did not become verified recoveries.",
+            next_step="Compare faithful and guarded traces on the same candidates before adding stronger branch penalties.",
+        )
+    )
+    rows.append(
+        _ablation_row(
+            dimension="constants",
+            variant="literal constants including pi",
+            status="measured_pilot",
+            operator_family="matched",
+            paired_rows=len(paired),
+            run_rows=len(runs),
+            exact_recovery_count=int(gate_metrics.get("natural_ipi_recovery_wins") or 0) + int(gate_metrics.get("natural_raw_recovery_wins") or 0),
+            loss_only_count=sum(1 for row in paired if str(row.get("comparison_outcome") or "").endswith("lower_post_snap_mse")),
+            observed_effect="Literal pi support was present, so failure is not explained by missing pi alone.",
+            next_step="Only test reduced constant catalogs as a controlled ablation after exact recovery appears.",
+        )
+    )
+    for depth in sorted({str(row.get("depth") or "") for row in paired if row.get("depth") not in {None, ""}}):
+        depth_rows = [row for row in paired if str(row.get("depth") or "") == depth]
+        rows.append(
+            _ablation_row(
+                dimension="depth",
+                variant=f"depth {depth}",
+                status="measured_pilot",
+                operator_family="matched",
+                paired_rows=len(depth_rows),
+                run_rows=sum(1 for row in runs if str(row.get("depth") or "") == depth),
+                exact_recovery_count=sum(1 for row in depth_rows if str(row.get("comparison_outcome") or "") in {"ipi_recovery_win", "raw_recovery_win", "both_recovered"}),
+                loss_only_count=sum(1 for row in depth_rows if str(row.get("comparison_outcome") or "").endswith("lower_post_snap_mse")),
+                median_post_snap_mse=_median_numeric([_numeric(row.get("raw_post_snap_mse")) for row in depth_rows] + [_numeric(row.get("ipi_post_snap_mse")) for row in depth_rows]),
+                median_runtime_seconds=_median_numeric([_numeric(row.get("raw_runtime_seconds")) for row in depth_rows] + [_numeric(row.get("ipi_runtime_seconds")) for row in depth_rows]),
+                observed_effect="Depth remained within the pilot budget; no depth bucket produced exact recovery.",
+                next_step="Increase depth only with a paired budget increase and exact-recovery denominator intact.",
+            )
+        )
+    rows.append(
+        _ablation_row(
+            dimension="budget",
+            variant="pilot steps/restarts",
+            status="measured_pilot",
+            operator_family="matched",
+            paired_rows=len(paired),
+            run_rows=len(runs),
+            exact_recovery_count=sum(1 for row in paired if str(row.get("comparison_outcome") or "") in {"ipi_recovery_win", "raw_recovery_win", "both_recovered"}),
+            loss_only_count=sum(1 for row in paired if str(row.get("comparison_outcome") or "").endswith("lower_post_snap_mse")),
+            median_post_snap_mse=_median_numeric([_numeric(row.get("raw_post_snap_mse")) for row in paired] + [_numeric(row.get("ipi_post_snap_mse")) for row in paired]),
+            median_runtime_seconds=_median_numeric([_numeric(row.get("raw_optimizer_wall_clock_seconds")) for row in paired] + [_numeric(row.get("ipi_optimizer_wall_clock_seconds")) for row in paired]),
+            candidate_pool_median=_median_numeric(_numeric(row.get("optimizer_candidate_count")) for row in runs),
+            observed_effect="Pilot budget produced only diagnostic loss-only differences.",
+            next_step="Full or larger budgets stay blocked until a smaller pilot shows exact-recovery signal.",
+        )
+    )
+    rows.append(
+        _ablation_row(
+            dimension="candidate_pooling",
+            variant="verifier-gated hardening candidate pool",
+            status="measured_pilot",
+            operator_family="matched",
+            paired_rows=len(paired),
+            run_rows=len(runs),
+            exact_recovery_count=sum(1 for row in paired if str(row.get("comparison_outcome") or "") in {"ipi_recovery_win", "raw_recovery_win", "both_recovered"}),
+            loss_only_count=sum(1 for row in paired if str(row.get("comparison_outcome") or "").endswith("lower_post_snap_mse")),
+            median_post_snap_mse=_median_numeric(_numeric(row.get("post_snap_mse")) for row in runs),
+            median_runtime_seconds=_median_numeric(_numeric(row.get("runtime_seconds")) for row in runs),
+            candidate_pool_median=_median_numeric(_numeric(row.get("optimizer_candidate_count")) for row in runs),
+            observed_effect="Candidate pooling selected snapped candidates but none passed the verifier.",
+            next_step="Inspect low-margin slots and add neighborhood candidates before increasing campaign size.",
+        )
+    )
+    blocked_status = "not_run_blocked_by_pilot_gate"
+    for dimension, variant, next_step in [
+        ("branch_guards", "unguarded faithful-only training", "Run only as a controlled diagnostic after a measured exact-recovery signal appears."),
+        ("constants", "no-pi literal catalog", "Use to test constant dependence once the current pi-enabled denominator has a positive signal."),
+        ("budget", "full multi-seed campaign budget", "Blocked by the Phase 90 ladder because the pilot had no exact i*pi recovery."),
+        ("candidate_pooling", "expanded local snap-neighborhood pool", "Prioritize if future pilot rows show near-miss snap margins."),
+    ]:
+        rows.append(
+            _ablation_row(
+                dimension=dimension,
+                variant=variant,
+                status=blocked_status,
+                operator_family="matched",
+                observed_effect="Not measured in v1.16 because the pilot gate failed closed.",
+                next_step=next_step,
+            )
+        )
+    return rows
+
+
+def _ablation_row(**values: Any) -> dict[str, Any]:
+    row = {column: "" for column in _ABLATION_COLUMNS}
+    row.update(values)
+    return row
+
+
+def _operator_run_stats(rows: Iterable[Mapping[str, Any]], operator_family: str) -> dict[str, Any]:
+    selected = [row for row in rows if str(row.get("operator_family") or "") == operator_family]
+    return {
+        "run_rows": len(selected),
+        "median_post_snap_mse": _median_numeric(_numeric(row.get("post_snap_mse") or row.get("post_snap_loss")) for row in selected),
+        "median_runtime_seconds": _median_numeric(_numeric(row.get("runtime_seconds") or row.get("optimizer_wall_clock_seconds")) for row in selected),
+        "candidate_pool_median": _median_numeric(_numeric(row.get("optimizer_candidate_count")) for row in selected),
+        "verified_equivalent_count": _run_class_count(selected, ("verified_equivalent_ast", "verified_equivalent")),
+        "repaired_candidate_count": _run_class_count(selected, ("repaired_candidate",)),
+        "same_ast_count": _run_class_count(selected, ("same_ast", "same_ast_return", "same_ast_warm_start_return")),
+        "compile_only_count": _run_class_count(selected, ("compile_only_verified_support",)),
+    }
+
+
+def _run_class_count(rows: Iterable[Mapping[str, Any]], needles: Iterable[str]) -> int:
+    wanted = set(needles)
+    count = 0
+    for row in rows:
+        values = {
+            str(row.get("recovery_class") or ""),
+            str(row.get("evidence_class") or ""),
+            str(row.get("discovery_class") or ""),
+            str(row.get("return_kind") or ""),
+            str(row.get("warm_start_evidence") or ""),
+        }
+        if values & wanted:
+            count += 1
+    return count
+
+
+def _paired_exact_wins(rows: Iterable[Mapping[str, Any]], operator: str) -> int:
+    if operator == "ipi":
+        return sum(1 for row in rows if str(row.get("comparison_outcome") or "") in {"ipi_recovery_win", "both_recovered"})
+    return sum(1 for row in rows if str(row.get("comparison_outcome") or "") in {"raw_recovery_win", "both_recovered"})
+
+
+def _paired_loss_only_wins(rows: Iterable[Mapping[str, Any]], operator: str) -> int:
+    return sum(1 for row in rows if str(row.get("comparison_outcome") or "") == f"{operator}_lower_post_snap_mse")
+
+
+def _failure_count(rows: Iterable[Mapping[str, Any]], failure_class: str, *, operator: str | None = None) -> int:
+    count = 0
+    for row in rows:
+        if str(row.get("failure_class") or "") != failure_class:
+            continue
+        if operator is not None and not str(row.get("comparison_outcome") or "").startswith(operator):
+            continue
+        count += 1
+    return count
+
+
+def _v116_failure_examples(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[str, list[Mapping[str, Any]]] = {}
+    for row in rows:
+        failure_class = str(row.get("failure_class") or "verifier_mismatch")
+        grouped.setdefault(failure_class, []).append(row)
+    result: list[dict[str, Any]] = []
+    for failure_class in _CANONICAL_FAILURE_CLASSES:
+        examples = sorted(
+            grouped.get(failure_class, []),
+            key=lambda row: (str(row.get("formula") or ""), str(row.get("seed") or ""), str(row.get("pair_id") or "")),
+        )
+        if not examples:
+            result.append(
+                {
+                    "failure_class": failure_class,
+                    "status": "not_observed",
+                    "count": 0,
+                    "representative_pair_id": "",
+                    "formula": "",
+                    "target_family": "",
+                    "seed": "",
+                    "comparison_outcome": "",
+                    "actionable_next_step": _default_next_step_for_failure(failure_class),
+                }
+            )
+            continue
+        example = examples[0]
+        result.append(
+            {
+                "failure_class": failure_class,
+                "status": "observed",
+                "count": len(examples),
+                "representative_pair_id": str(example.get("pair_id") or ""),
+                "formula": str(example.get("formula") or ""),
+                "target_family": str(example.get("target_family") or ""),
+                "seed": str(example.get("seed") or ""),
+                "comparison_outcome": str(example.get("comparison_outcome") or ""),
+                "actionable_next_step": str(example.get("actionable_next_step") or _default_next_step_for_failure(failure_class)),
+            }
+        )
+    return result
+
+
+def _default_next_step_for_failure(failure_class: str) -> str:
+    defaults = {
+        "loss_only_signal": "Inspect snap mismatch; keep the row diagnostic until exact verification passes.",
+        "optimization_or_snap_miss": "Increase candidate-pool or hardening budget only after checking snap margins.",
+        "snap_mismatch": "Compare soft candidate behavior with snapped AST alternatives near low-margin slots.",
+        "branch_pathology": "Inspect branch-domain construction and guarded-versus-faithful mismatch diagnostics.",
+        "verifier_mismatch": "Inspect split-level verifier evidence and high-precision status.",
+        "unsupported_or_over_depth": "Check target depth, literal constants, and suite support gates before rerunning.",
+        "numerical_instability": "Reduce guard pressure or inspect anomaly traces before increasing budget.",
+    }
+    return defaults.get(failure_class, "Inspect the row manually before treating it as evidence.")
+
+
+def _v116_ablation_markdown(rows: Iterable[Mapping[str, Any]]) -> str:
+    lines = [
+        "# v1.16 Ablation Table",
+        "",
+        "Loss-only rows are diagnostics and never count as recovery.",
+        "",
+        "| Dimension | Variant | Status | Operator | Pairs | Exact | Loss-Only | Effect | Next Step |",
+        "|-----------|---------|--------|----------|-------|-------|-----------|--------|-----------|",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row.get('dimension')} | {row.get('variant')} | {row.get('status')} | {row.get('operator_family')} | "
+            f"{row.get('paired_rows')} | {row.get('exact_recovery_count')} | {row.get('loss_only_count')} | "
+            f"{row.get('observed_effect')} | {row.get('next_step')} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _v116_failure_examples_markdown(rows: Iterable[Mapping[str, Any]]) -> str:
+    lines = [
+        "# v1.16 Failure Examples",
+        "",
+        "| Failure Class | Status | Count | Example | Formula | Outcome | Next Step |",
+        "|---------------|--------|-------|---------|---------|---------|-----------|",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row.get('failure_class')} | {row.get('status')} | {row.get('count')} | {row.get('representative_pair_id')} | "
+            f"{row.get('formula')} | {row.get('comparison_outcome')} | {row.get('actionable_next_step')} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
 def _classification_from_rows(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
     grouped: dict[str, list[Mapping[str, Any]]] = {}
     for row in rows:
@@ -658,6 +1185,44 @@ def _numeric(value: Any) -> float:
         return 0.0
 
 
+def _finite_numeric_values(values: Iterable[Any]) -> list[float]:
+    result: list[float] = []
+    for value in values:
+        numeric = _numeric(value)
+        if math.isfinite(numeric):
+            result.append(numeric)
+    return result
+
+
+def _median_numeric(values: Iterable[Any]) -> float | str:
+    numeric = sorted(_finite_numeric_values(values))
+    if not numeric:
+        return ""
+    midpoint = len(numeric) // 2
+    if len(numeric) % 2:
+        return numeric[midpoint]
+    return (numeric[midpoint - 1] + numeric[midpoint]) / 2
+
+
+def _mean_numeric(values: Iterable[Any]) -> float:
+    numeric = _finite_numeric_values(values)
+    return sum(numeric) / len(numeric) if numeric else 0.0
+
+
+def _sum_numeric(values: Iterable[Any]) -> float:
+    return sum(_finite_numeric_values(values))
+
+
+def _format_number(value: float, *, suffix: str = "") -> str:
+    if abs(value) >= 100:
+        body = f"{value:.0f}"
+    elif abs(value) >= 10:
+        body = f"{value:.1f}"
+    else:
+        body = f"{value:.3g}"
+    return f"{body}{suffix}"
+
+
 def _budget_ladder_markdown(ladder: Mapping[str, Any]) -> str:
     lines = [
         "# v1.16 GEML Budget Ladder",
@@ -700,6 +1265,278 @@ def _failure_taxonomy_markdown(rows: Iterable[Mapping[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _v116_family_recovery_svg(classification: Iterable[Mapping[str, Any]]) -> str:
+    bars: list[dict[str, Any]] = []
+    for row in classification:
+        family = str(row.get("target_family") or "unknown")
+        if int(row.get("paired_rows") or 0) == 0 and int(row.get("declared_targets") or 0) == 0:
+            continue
+        exact = int(row.get("ipi_recovery_wins") or 0) + int(row.get("raw_recovery_wins") or 0) + int(row.get("both_recovered") or 0)
+        loss_only = int(row.get("loss_only_outcomes") or 0)
+        bars.append({"label": f"{family} exact", "value": exact, "color": "#1b998b", "display": str(exact)})
+        bars.append({"label": f"{family} loss-only", "value": loss_only, "color": "#e9c46a", "display": str(loss_only)})
+    return _bar_svg(
+        "Family Recovery Outcomes",
+        "Exact recovery is verifier-gated. Loss-only bars are diagnostic and cannot support recovery claims.",
+        bars,
+    )
+
+
+def _v116_loss_snap_svg(rows: Iterable[Mapping[str, Any]]) -> str:
+    paired = [dict(row) for row in rows]
+    bars = [
+        {"label": "raw pre-snap", "value": _mean_numeric(_numeric(row.get("raw_pre_snap_mse")) for row in paired), "color": "#457b9d"},
+        {"label": "raw post-snap", "value": _mean_numeric(_numeric(row.get("raw_post_snap_mse")) for row in paired), "color": "#1d3557"},
+        {"label": "i*pi pre-snap", "value": _mean_numeric(_numeric(row.get("ipi_pre_snap_mse")) for row in paired), "color": "#f4a261"},
+        {"label": "i*pi post-snap", "value": _mean_numeric(_numeric(row.get("ipi_post_snap_mse")) for row in paired), "color": "#e76f51"},
+    ]
+    return _bar_svg(
+        "Loss Before and After Snap",
+        "Mean MSE across paired pilot rows. These values are diagnostics, not recovery evidence.",
+        bars,
+    )
+
+
+def _v116_branch_anomalies_svg(rows: Iterable[Mapping[str, Any]]) -> str:
+    paired = [dict(row) for row in rows]
+    bars = [
+        {"label": "raw branch cuts", "value": _sum_numeric(row.get("raw_branch_cut_count") for row in paired), "color": "#457b9d"},
+        {"label": "raw proximity", "value": _sum_numeric(row.get("raw_branch_cut_proximity_count") for row in paired), "color": "#a8dadc"},
+        {"label": "raw crossings", "value": _sum_numeric(row.get("raw_branch_cut_crossing_count") for row in paired), "color": "#1d3557"},
+        {"label": "i*pi branch cuts", "value": _sum_numeric(row.get("ipi_branch_cut_count") for row in paired), "color": "#f4a261"},
+        {"label": "i*pi proximity", "value": _sum_numeric(row.get("ipi_branch_cut_proximity_count") for row in paired), "color": "#e9c46a"},
+        {"label": "i*pi crossings", "value": _sum_numeric(row.get("ipi_branch_cut_crossing_count") for row in paired), "color": "#e76f51"},
+    ]
+    return _bar_svg(
+        "Branch Diagnostics",
+        "Counts remain visible even when they weaken the i*pi interpretation.",
+        bars,
+    )
+
+
+def _v116_runtime_svg(rows: Iterable[Mapping[str, Any]]) -> str:
+    paired = [dict(row) for row in rows]
+    bars = [
+        {"label": "raw optimizer", "value": _median_numeric(_numeric(row.get("raw_optimizer_wall_clock_seconds")) for row in paired), "color": "#457b9d", "display_suffix": "s"},
+        {"label": "raw total", "value": _median_numeric(_numeric(row.get("raw_runtime_seconds")) for row in paired), "color": "#1d3557", "display_suffix": "s"},
+        {"label": "i*pi optimizer", "value": _median_numeric(_numeric(row.get("ipi_optimizer_wall_clock_seconds")) for row in paired), "color": "#f4a261", "display_suffix": "s"},
+        {"label": "i*pi total", "value": _median_numeric(_numeric(row.get("ipi_runtime_seconds")) for row in paired), "color": "#e76f51", "display_suffix": "s"},
+    ]
+    return _bar_svg("Runtime and Resource Context", "Median seconds across pilot pairs.", bars)
+
+
+def _v116_representative_curves_svg(rows: Iterable[Mapping[str, Any]]) -> str:
+    selected = _representative_curve_rows(rows)
+    if not selected:
+        return _empty_svg("Representative Fits and Failures", "No paired rows available.", width=1080, height=560)
+    width = 1080
+    panel_h = 170
+    height = 90 + panel_h * len(selected)
+    parts = [
+        _svg_header(width, height),
+        '<style>.title{font:700 22px Arial,sans-serif;fill:#17202a}.note{font:12px Arial,sans-serif;fill:#34495e}.label{font:11px Arial,sans-serif;fill:#34495e}.axis{stroke:#d8dee4;stroke-width:1}.target{fill:none;stroke:#1b998b;stroke-width:2}.candidate{fill:none;stroke:#e76f51;stroke-width:2;stroke-dasharray:5 4}.panel{fill:#ffffff;stroke:#d8dee4;stroke-width:1}</style>',
+        '<text x="34" y="36" class="title">Representative Fits and Failures</text>',
+        '<text x="34" y="58" class="note">Panels show target curves and selected snapped candidates when artifacts are available; all selected pilot examples failed verification.</text>',
+    ]
+    for index, row in enumerate(selected):
+        y0 = 82 + index * panel_h
+        side = "ipi" if str(row.get("comparison_outcome") or "").startswith("ipi") else "raw"
+        curve = _curve_payload(row, side)
+        parts.append(f'<rect x="32" y="{y0}" width="{width - 64}" height="{panel_h - 16}" rx="4" class="panel"/>')
+        title = f"{row.get('formula', '')} seed {row.get('seed', '')} {side} {row.get('comparison_outcome', '')}"
+        parts.append(f'<text x="50" y="{y0 + 24}" class="label">{escape(title)}</text>')
+        plot_x = 54
+        plot_y = y0 + 40
+        plot_w = width - 130
+        plot_h = panel_h - 76
+        parts.append(f'<line x1="{plot_x}" y1="{plot_y + plot_h}" x2="{plot_x + plot_w}" y2="{plot_y + plot_h}" class="axis"/>')
+        target_points = _polyline_points(curve.get("x", []), curve.get("target", []), plot_x, plot_y, plot_w, plot_h, curve.get("y_min"), curve.get("y_max"))
+        candidate_points = _polyline_points(curve.get("x", []), curve.get("candidate", []), plot_x, plot_y, plot_w, plot_h, curve.get("y_min"), curve.get("y_max"))
+        if target_points:
+            parts.append(f'<polyline points="{target_points}" class="target"/>')
+        if candidate_points:
+            parts.append(f'<polyline points="{candidate_points}" class="candidate"/>')
+        parts.append(f'<text x="{plot_x}" y="{y0 + panel_h - 26}" class="label">target</text>')
+        parts.append(f'<text x="{plot_x + 54}" y="{y0 + panel_h - 26}" class="label" fill="#e76f51">candidate: {escape(str(curve.get("candidate_expression") or "unavailable"))}</text>')
+        parts.append(f'<text x="{plot_x + plot_w - 250}" y="{y0 + panel_h - 26}" class="label">verifier: {escape(str(curve.get("verifier_status") or "failed"))}</text>')
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
+def _bar_svg(title: str, subtitle: str, bars: Iterable[Mapping[str, Any]], *, width: int = 960, height: int = 520) -> str:
+    bar_rows = [dict(row) for row in bars]
+    if not bar_rows:
+        return _empty_svg(title, "No rows available.", width=width, height=height)
+    max_value = max((_numeric(row.get("value")) for row in bar_rows), default=0.0)
+    scale_max = max(max_value, 1.0)
+    left = 220
+    top = 86
+    row_h = max(24, min(42, int((height - top - 40) / max(len(bar_rows), 1))))
+    plot_w = width - left - 80
+    parts = [
+        _svg_header(width, height),
+        '<style>.title{font:700 22px Arial,sans-serif;fill:#17202a}.note{font:12px Arial,sans-serif;fill:#34495e}.label{font:11px Arial,sans-serif;fill:#34495e}.grid{stroke:#edf2f4;stroke-width:1}.bar{opacity:.92}</style>',
+        f'<text x="34" y="36" class="title">{escape(title)}</text>',
+        f'<text x="34" y="58" class="note">{escape(subtitle)}</text>',
+    ]
+    for tick in range(5):
+        x = left + plot_w * tick / 4
+        parts.append(f'<line x1="{x:.1f}" y1="{top - 12}" x2="{x:.1f}" y2="{height - 34}" class="grid"/>')
+    for index, row in enumerate(bar_rows):
+        value = _numeric(row.get("value"))
+        y = top + index * row_h
+        bar_w = plot_w * value / scale_max
+        color = str(row.get("color") or "#457b9d")
+        display = str(row.get("display") or _format_number(value, suffix=str(row.get("display_suffix") or "")))
+        parts.append(f'<text x="34" y="{y + 15}" class="label">{escape(str(row.get("label") or ""))}</text>')
+        parts.append(f'<rect x="{left}" y="{y}" width="{bar_w:.1f}" height="{max(row_h - 8, 8)}" class="bar" fill="{escape(color)}"/>')
+        parts.append(f'<text x="{left + bar_w + 8:.1f}" y="{y + 15}" class="label">{escape(display)}</text>')
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
+def _empty_svg(title: str, message: str, *, width: int = 960, height: int = 520) -> str:
+    return "\n".join(
+        [
+            _svg_header(width, height),
+            '<style>.title{font:700 22px Arial,sans-serif;fill:#17202a}.note{font:13px Arial,sans-serif;fill:#34495e}</style>',
+            f'<text x="34" y="38" class="title">{escape(title)}</text>',
+            f'<text x="34" y="68" class="note">{escape(message)}</text>',
+            "</svg>",
+        ]
+    )
+
+
+def _svg_header(width: int, height: int) -> str:
+    return f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">'
+
+
+def _representative_curve_rows(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    ranked = sorted(
+        [dict(row) for row in rows],
+        key=lambda row: (
+            0 if str(row.get("comparison_outcome") or "").startswith("ipi") else 1,
+            str(row.get("target_family") or ""),
+            str(row.get("formula") or ""),
+            str(row.get("seed") or ""),
+        ),
+    )
+    return ranked[:3]
+
+
+def _curve_payload(row: Mapping[str, Any], side: str) -> dict[str, Any]:
+    formula = str(row.get("formula") or "")
+    seed = int(_numeric(row.get("seed")))
+    candidate_expression = None
+    verifier_status = row.get(f"{side}_verification_outcome") or row.get(f"{side}_status") or "failed"
+    artifact_path = Path(str(row.get(f"{side}_artifact_path") or ""))
+    if artifact_path.is_file():
+        artifact = _read_json(artifact_path)
+        candidate_expression = _selected_symbolic_expression(artifact)
+        verifier_status = artifact.get("verification_outcome") or artifact.get("claim_status") or verifier_status
+    x_values, target_values = _target_curve_values(formula, seed)
+    candidate_values = _evaluate_candidate_expression(candidate_expression, x_values)
+    finite_values = [value for value in [*target_values, *candidate_values] if value is not None and math.isfinite(value)]
+    y_min = min(finite_values) if finite_values else -1.0
+    y_max = max(finite_values) if finite_values else 1.0
+    if abs(y_max - y_min) < 1e-12:
+        y_min -= 1.0
+        y_max += 1.0
+    return {
+        "x": x_values,
+        "target": target_values,
+        "candidate": candidate_values,
+        "candidate_expression": candidate_expression,
+        "verifier_status": verifier_status,
+        "y_min": y_min,
+        "y_max": y_max,
+    }
+
+
+def _selected_symbolic_expression(artifact: Mapping[str, Any]) -> str | None:
+    refit = artifact.get("refit")
+    if isinstance(refit, Mapping):
+        selected = str(refit.get("selected_candidate") or "pre_refit")
+        candidate = refit.get(f"{selected}_candidate")
+        if isinstance(candidate, Mapping) and candidate.get("symbolic_expression"):
+            return str(candidate["symbolic_expression"])
+        for key in ("pre_refit_candidate", "post_refit_candidate"):
+            candidate = refit.get(key)
+            if isinstance(candidate, Mapping) and candidate.get("symbolic_expression"):
+                return str(candidate["symbolic_expression"])
+    for key in ("selected_candidate", "trained_eml_candidate"):
+        value = artifact.get(key)
+        if isinstance(value, Mapping) and value.get("symbolic_expression"):
+            return str(value["symbolic_expression"])
+    return None
+
+
+def _target_curve_values(formula: str, seed: int) -> tuple[list[float], list[float]]:
+    try:
+        from .datasets import get_demo
+
+        spec = get_demo(formula)
+        split = spec.make_splits(points=32, seed=seed)[0]
+        variable = spec.variable
+        x_values = [float(value) for value in split.inputs[variable]]
+        target = [float(complex(value).real) for value in split.target]
+        return x_values, target
+    except Exception:
+        x_values = [index / 31 * 2 - 1 for index in range(32)]
+        return x_values, [0.0 for _ in x_values]
+
+
+def _evaluate_candidate_expression(expression: str | None, x_values: Iterable[float]) -> list[float | None]:
+    if not expression:
+        return []
+    try:
+        import numpy as np
+        import sympy as sp
+
+        x_list = list(x_values)
+        x = sp.Symbol("x")
+        expr = sp.sympify(expression, locals={"E": sp.E, "pi": sp.pi})
+        fn = sp.lambdify(x, expr, modules=["numpy"])
+        values = np.asarray(fn(np.asarray(x_list, dtype=float)), dtype=np.complex128).reshape(-1)
+        if values.size == 1 and len(x_list) > 1:
+            values = np.repeat(values, len(x_list))
+        return [float(value.real) if np.isfinite(value.real) and abs(value.imag) < 1e-8 else None for value in values]
+    except Exception:
+        return []
+
+
+def _polyline_points(
+    x_values: Iterable[float],
+    y_values: Iterable[float | None],
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+    y_min: Any,
+    y_max: Any,
+) -> str:
+    xs = list(x_values)
+    ys = list(y_values)
+    if not xs or not ys:
+        return ""
+    x_min = min(xs)
+    x_max = max(xs)
+    if abs(x_max - x_min) < 1e-12:
+        x_max = x_min + 1.0
+    ymin = _numeric(y_min)
+    ymax = _numeric(y_max)
+    if abs(ymax - ymin) < 1e-12:
+        ymax = ymin + 1.0
+    points: list[str] = []
+    for xv, yv in zip(xs, ys):
+        if yv is None or not math.isfinite(float(yv)):
+            continue
+        px = x + (float(xv) - x_min) / (x_max - x_min) * width
+        py = y + height - (float(yv) - ymin) / (ymax - ymin) * height
+        points.append(f"{px:.1f},{py:.1f}")
+    return " ".join(points)
+
+
 def _summary_from_rows(rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
     rows = [dict(row) for row in rows]
     outcomes = _count_by_key(rows, "comparison_outcome")
@@ -739,6 +1576,13 @@ def _family_for_tags(tags: Iterable[Any]) -> str:
 
 def _read_paired_rows(campaign_dir: Path) -> list[dict[str, Any]]:
     path = campaign_dir / "tables" / "geml-paired-comparison.csv"
+    if not path.is_file():
+        return []
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        return [dict(row) for row in csv.DictReader(handle)]
+
+
+def _read_csv(path: Path) -> list[dict[str, Any]]:
     if not path.is_file():
         return []
     with path.open("r", encoding="utf-8", newline="") as handle:
