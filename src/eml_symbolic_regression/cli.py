@@ -67,10 +67,12 @@ from .paper_v112 import (
 from .paper_v116 import (
     DEFAULT_V116_ABLATION_DIR,
     DEFAULT_V116_CAMPAIGN_DIR,
+    DEFAULT_V116_FINAL_DIR,
     DEFAULT_V116_LADDER_DIR,
     DEFAULT_V116_PACKAGE_DIR,
     write_v116_ablation_assets,
     write_v116_budget_ladder,
+    write_v116_final_decision_package,
     write_v116_paper_package,
 )
 from .proof import list_claims
@@ -627,6 +629,24 @@ def geml_v116_ablations_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def geml_v116_final_command(args: argparse.Namespace) -> int:
+    paths = write_v116_final_decision_package(
+        output_dir=Path(args.output_dir),
+        package_dir=Path(args.package_dir),
+        ablation_dir=Path(args.ablation_dir),
+        budget_ladder_dir=Path(args.budget_ladder_dir),
+        campaign_dir=Path(args.campaign_dir),
+        overwrite=args.overwrite,
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml v1.16 final: manifest -> {paths.manifest_json}; "
+        f"audit -> {paths.final_claim_audit_json} ({manifest['claim_audit_status']}); "
+        f"decision -> {manifest['decision']}"
+    )
+    return 0 if manifest["claim_audit_status"] == "passed" else 1
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -1047,6 +1067,35 @@ def build_parser() -> argparse.ArgumentParser:
     )
     geml_v116_ablations.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing ablation manifest.")
     geml_v116_ablations.set_defaults(func=geml_v116_ablations_command)
+
+    geml_v116_final = sub.add_parser("geml-v116-final", help="Write the final v1.16 paper decision package and README.")
+    geml_v116_final.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V116_FINAL_DIR),
+        help="Directory for final v1.16 decision, final claim audit, and source locks.",
+    )
+    geml_v116_final.add_argument(
+        "--package-dir",
+        default=str(DEFAULT_V116_PACKAGE_DIR),
+        help="v1.16 paper package directory.",
+    )
+    geml_v116_final.add_argument(
+        "--ablation-dir",
+        default=str(DEFAULT_V116_ABLATION_DIR),
+        help="v1.16 ablation assets directory.",
+    )
+    geml_v116_final.add_argument(
+        "--budget-ladder-dir",
+        default=str(DEFAULT_V116_LADDER_DIR),
+        help="v1.16 budget ladder directory.",
+    )
+    geml_v116_final.add_argument(
+        "--campaign-dir",
+        default=str(DEFAULT_V116_CAMPAIGN_DIR),
+        help="Campaign directory used by the final package.",
+    )
+    geml_v116_final.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing final manifest.")
+    geml_v116_final.set_defaults(func=geml_v116_final_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(

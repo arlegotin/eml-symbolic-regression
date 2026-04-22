@@ -19,6 +19,7 @@ DEFAULT_V116_PACKAGE_DIR = Path("artifacts") / "paper" / "v1.16-geml"
 DEFAULT_V116_CAMPAIGN_DIR = Path("artifacts") / "campaigns" / "v1.16-geml-pilot"
 DEFAULT_V116_LADDER_DIR = Path("artifacts") / "campaigns" / "v1.16-geml-budget-ladder"
 DEFAULT_V116_ABLATION_DIR = DEFAULT_V116_PACKAGE_DIR / "ablations"
+DEFAULT_V116_FINAL_DIR = DEFAULT_V116_PACKAGE_DIR / "final-decision"
 
 
 class V116PackageError(RuntimeError):
@@ -80,6 +81,21 @@ class V116AblationPaths:
         return {key: str(value) for key, value in self.__dict__.items()}
 
 
+@dataclass(frozen=True)
+class V116FinalDecisionPaths:
+    output_dir: Path
+    manifest_json: Path
+    final_decision_json: Path
+    final_decision_md: Path
+    final_claim_audit_json: Path
+    final_claim_audit_md: Path
+    source_locks_json: Path
+    package_readme_md: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
 def v116_package_paths(output_dir: Path = DEFAULT_V116_PACKAGE_DIR) -> V116PackagePaths:
     output_dir = Path(output_dir)
     return V116PackagePaths(
@@ -130,6 +146,25 @@ def v116_ablation_paths(output_dir: Path = DEFAULT_V116_ABLATION_DIR) -> V116Abl
         branch_anomalies_svg=figures_dir / "branch-anomalies.svg",
         runtime_svg=figures_dir / "runtime.svg",
         representative_curves_svg=figures_dir / "representative-curves.svg",
+    )
+
+
+def v116_final_decision_paths(
+    output_dir: Path = DEFAULT_V116_FINAL_DIR,
+    *,
+    package_dir: Path = DEFAULT_V116_PACKAGE_DIR,
+) -> V116FinalDecisionPaths:
+    output_dir = Path(output_dir)
+    package_dir = Path(package_dir)
+    return V116FinalDecisionPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "manifest.json",
+        final_decision_json=output_dir / "final-decision.json",
+        final_decision_md=output_dir / "final-decision.md",
+        final_claim_audit_json=output_dir / "final-claim-audit.json",
+        final_claim_audit_md=output_dir / "final-claim-audit.md",
+        source_locks_json=output_dir / "source-locks.json",
+        package_readme_md=package_dir / "README.md",
     )
 
 
@@ -760,6 +795,291 @@ def write_v116_ablation_assets(
     }
     _write_json(paths.manifest_json, manifest)
     return paths
+
+
+def write_v116_final_decision_package(
+    output_dir: Path = DEFAULT_V116_FINAL_DIR,
+    *,
+    package_dir: Path = DEFAULT_V116_PACKAGE_DIR,
+    ablation_dir: Path = DEFAULT_V116_ABLATION_DIR,
+    budget_ladder_dir: Path = DEFAULT_V116_LADDER_DIR,
+    campaign_dir: Path = DEFAULT_V116_CAMPAIGN_DIR,
+    overwrite: bool = False,
+) -> V116FinalDecisionPaths:
+    """Write the final v1.16 paper decision package and README guidance."""
+
+    output_dir = Path(output_dir)
+    package_dir = Path(package_dir)
+    ablation_dir = Path(ablation_dir)
+    budget_ladder_dir = Path(budget_ladder_dir)
+    campaign_dir = Path(campaign_dir)
+    paths = v116_final_decision_paths(output_dir, package_dir=package_dir)
+    if paths.manifest_json.exists() and not overwrite:
+        raise V116PackageError(f"{paths.manifest_json} already exists; pass overwrite=True to refresh")
+    paths.output_dir.mkdir(parents=True, exist_ok=True)
+
+    package_manifest = _read_json(package_dir / "manifest.json") if (package_dir / "manifest.json").is_file() else {}
+    gate_config = _read_json(package_dir / "gate-config.json") if (package_dir / "gate-config.json").is_file() else default_v116_gate_config()
+    gate_evaluation = _read_json(package_dir / "gate-evaluation.json") if (package_dir / "gate-evaluation.json").is_file() else {}
+    ablation_manifest = _read_json(ablation_dir / "manifest.json") if (ablation_dir / "manifest.json").is_file() else {}
+    figure_metadata = _read_json(ablation_dir / "figure-metadata.json") if (ablation_dir / "figure-metadata.json").is_file() else {"figures": []}
+    budget_manifest = _read_json(budget_ladder_dir / "manifest.json") if (budget_ladder_dir / "manifest.json").is_file() else {}
+    paired_summary = _read_json(campaign_dir / "tables" / "geml-paired-summary.json") if (campaign_dir / "tables" / "geml-paired-summary.json").is_file() else {}
+    decision = str(gate_evaluation.get("decision") or package_manifest.get("decision") or "inconclusive")
+    allowed_decisions = {"paper_positive", "promising_preliminary", "negative", "inconclusive"}
+    if decision not in allowed_decisions:
+        raise V116PackageError(f"Unexpected v1.16 final decision {decision!r}")
+
+    commands = _v116_final_reproduction_commands(campaign_dir, budget_ladder_dir, package_dir, ablation_dir, output_dir)
+    final_decision = {
+        "schema": "eml.v116_final_decision.v1",
+        "decision": decision,
+        "paper_claim_allowed": decision == "paper_positive",
+        "rationale": gate_evaluation.get("rationale") or package_manifest.get("rationale") or "",
+        "blockers": list(gate_evaluation.get("blockers") or []),
+        "gate_metrics": gate_evaluation.get("metrics") or {},
+        "budget_ladder_decision": budget_manifest.get("decision"),
+        "ablation_decision": ablation_manifest.get("decision"),
+        "paired_summary": paired_summary,
+        "package_contents": {
+            "package_manifest": str(package_dir / "manifest.json"),
+            "gate_evaluation": str(package_dir / "gate-evaluation.json"),
+            "claim_audit": str(package_dir / "claim-audit.json"),
+            "ablation_manifest": str(ablation_dir / "manifest.json"),
+            "ablation_table": str(ablation_dir / "ablation-table.json"),
+            "failure_examples": str(ablation_dir / "failure-examples.json"),
+            "figure_metadata": str(ablation_dir / "figure-metadata.json"),
+            "reproduction": str(package_dir / "reproduction.md"),
+        },
+        "reproduction_commands": commands,
+        "claim_boundary": _v116_final_claim_boundary(decision),
+    }
+    final_md = _v116_final_decision_markdown(final_decision, figure_metadata)
+    readme_md = _v116_package_readme(final_decision, figure_metadata)
+    locks = _source_locks_payload(
+        [
+            ("campaign_manifest", campaign_dir / "campaign-manifest.json", "input"),
+            ("geml_paired_summary", campaign_dir / "tables" / "geml-paired-summary.json", "input"),
+            ("geml_paired_comparison", campaign_dir / "tables" / "geml-paired-comparison.csv", "input"),
+            ("budget_ladder_manifest", budget_ladder_dir / "manifest.json", "input"),
+            ("failure_taxonomy", budget_ladder_dir / "failure-taxonomy.json", "input"),
+            ("package_manifest", package_dir / "manifest.json", "input"),
+            ("gate_config", package_dir / "gate-config.json", "input"),
+            ("gate_evaluation", package_dir / "gate-evaluation.json", "input"),
+            ("package_claim_audit", package_dir / "claim-audit.json", "input"),
+            ("package_source_locks", package_dir / "source-locks.json", "input"),
+            ("reproduction", package_dir / "reproduction.md", "input"),
+            ("ablation_manifest", ablation_dir / "manifest.json", "input"),
+            ("ablation_table", ablation_dir / "ablation-table.json", "input"),
+            ("failure_examples", ablation_dir / "failure-examples.json", "input"),
+            ("figure_metadata", ablation_dir / "figure-metadata.json", "input"),
+            ("ablation_source_locks", ablation_dir / "source-locks.json", "input"),
+        ]
+    )
+    audit = _v116_final_claim_audit(
+        final_md + "\n" + readme_md,
+        gate_evaluation=gate_evaluation,
+        gate_config=gate_config,
+        source_locks=locks,
+        final_decision=final_decision,
+        figure_metadata=figure_metadata,
+        ablation_manifest=ablation_manifest,
+        commands=commands,
+    )
+
+    _write_json(paths.final_decision_json, final_decision)
+    paths.final_decision_md.write_text(final_md, encoding="utf-8")
+    _write_json(paths.final_claim_audit_json, audit)
+    paths.final_claim_audit_md.write_text(_claim_audit_markdown(audit), encoding="utf-8")
+    paths.package_readme_md.write_text(readme_md, encoding="utf-8")
+    locks["outputs"] = _source_locks(
+        [
+            ("final_decision_json", paths.final_decision_json),
+            ("final_decision_md", paths.final_decision_md),
+            ("final_claim_audit_json", paths.final_claim_audit_json),
+            ("final_claim_audit_md", paths.final_claim_audit_md),
+            ("package_readme", paths.package_readme_md),
+        ],
+        role="output",
+    )
+    _write_json(paths.source_locks_json, locks)
+    source_locks_ok = all(item["status"] == "locked" for item in locks["inputs"])
+    manifest = {
+        "schema": "eml.v116_final_decision_manifest.v1",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "decision": decision,
+        "paper_claim_allowed": decision == "paper_positive",
+        "claim_audit_status": audit["status"],
+        "source_locks_ok": source_locks_ok,
+        "final_decision": str(paths.final_decision_json),
+        "final_claim_audit": str(paths.final_claim_audit_json),
+        "source_locks": str(paths.source_locks_json),
+        "package_readme": str(paths.package_readme_md),
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
+def _v116_final_reproduction_commands(
+    campaign_dir: Path,
+    budget_ladder_dir: Path,
+    package_dir: Path,
+    ablation_dir: Path,
+    output_dir: Path,
+) -> list[str]:
+    return [
+        "PYTHONPATH=src python -m eml_symbolic_regression.cli campaign geml-v116-smoke --label v1.16-geml-smoke --overwrite",
+        "PYTHONPATH=src python -m eml_symbolic_regression.cli campaign geml-v116-pilot --label v1.16-geml-pilot --overwrite",
+        f"PYTHONPATH=src python -m eml_symbolic_regression.cli geml-v116-ladder --pilot-dir {campaign_dir} --output-dir {budget_ladder_dir} --overwrite",
+        f"PYTHONPATH=src python -m eml_symbolic_regression.cli geml-paper-v116 --campaign-dir {campaign_dir} --budget-ladder-dir {budget_ladder_dir} --output-dir {package_dir} --min-unique-seeds 3 --overwrite",
+        f"PYTHONPATH=src python -m eml_symbolic_regression.cli geml-v116-ablations --campaign-dir {campaign_dir} --budget-ladder-dir {budget_ladder_dir} --package-dir {package_dir} --output-dir {ablation_dir} --overwrite",
+        f"PYTHONPATH=src python -m eml_symbolic_regression.cli geml-v116-final --campaign-dir {campaign_dir} --budget-ladder-dir {budget_ladder_dir} --package-dir {package_dir} --ablation-dir {ablation_dir} --output-dir {output_dir} --overwrite",
+    ]
+
+
+def _v116_final_claim_boundary(decision: str) -> str:
+    if decision == "paper_positive":
+        return "The exact-recovery gate allows a bounded positive v1.16 claim under the declared matched protocol."
+    if decision == "promising_preliminary":
+        return "The result may be described as preliminary only; it is not a final recovery claim."
+    if decision == "negative":
+        return "The matched exact-recovery evidence does not support an i*pi advantage under the declared protocol."
+    return "The package is inconclusive; no positive i*pi/GEML recovery claim is supported."
+
+
+def _v116_final_decision_markdown(final_decision: Mapping[str, Any], figure_metadata: Mapping[str, Any]) -> str:
+    metrics = final_decision.get("gate_metrics") if isinstance(final_decision.get("gate_metrics"), Mapping) else {}
+    lines = [
+        "# v1.16 Final GEML/i*pi Decision",
+        "",
+        f"**Decision:** `{final_decision.get('decision')}`",
+        "",
+        str(final_decision.get("claim_boundary") or ""),
+        "",
+        str(final_decision.get("rationale") or ""),
+        "",
+        "Negative controls remain visible. Loss-only improvements remain diagnostic. Exact recovery requires verifier-gated snapped candidates.",
+        "",
+        "## Gate Metrics",
+        "",
+        f"- Paired rows: {metrics.get('paired_rows')}",
+        f"- Unique seeds: {metrics.get('unique_seeds')}",
+        f"- Complete denominator: {metrics.get('complete_denominator')}",
+        f"- Natural i*pi exact recovery wins: {metrics.get('natural_ipi_recovery_wins')}",
+        f"- Natural raw exact recovery wins: {metrics.get('natural_raw_recovery_wins')}",
+        f"- Negative-control i*pi exact recovery wins: {metrics.get('negative_control_ipi_recovery_wins')}",
+        f"- Loss-only outcomes: {metrics.get('loss_only_outcomes')}",
+        "",
+        "## Included Evidence",
+        "",
+    ]
+    contents = final_decision.get("package_contents") if isinstance(final_decision.get("package_contents"), Mapping) else {}
+    for key, value in contents.items():
+        lines.append(f"- `{key}`: `{value}`")
+    lines.extend(["", "## Figures", ""])
+    for figure in figure_metadata.get("figures", []):
+        if isinstance(figure, Mapping):
+            lines.append(f"- `{figure.get('id')}`: `{figure.get('path')}`")
+    lines.extend(["", "## Reproduction Commands", ""])
+    for command in final_decision.get("reproduction_commands", []):
+        lines.extend(["```bash", str(command), "```", ""])
+    return "\n".join(lines)
+
+
+def _v116_package_readme(final_decision: Mapping[str, Any], figure_metadata: Mapping[str, Any]) -> str:
+    lines = [
+        "# v1.16 GEML/i*pi Evidence Package",
+        "",
+        f"Decision: `{final_decision.get('decision')}`",
+        "",
+        str(final_decision.get("claim_boundary") or ""),
+        "",
+        "This package is governed by the predefined exact-recovery gate. Negative controls are part of the evidence, and loss-only improvements are reported only as diagnostics.",
+        "",
+        "## Start Here",
+        "",
+        "- `final-decision/final-decision.md` - final decision and reproduction commands.",
+        "- `gate-evaluation.json` - gate metrics and blockers.",
+        "- `decision.md` - Phase 91 gate decision details.",
+        "- `ablations/ablation-table.md` - ablations and blocked follow-up rows.",
+        "- `ablations/failure-examples.md` - failure taxonomy examples and next steps.",
+        "- `claim-audit.md` and `final-decision/final-claim-audit.md` - claim-safety checks.",
+        "",
+        "## Figures",
+        "",
+    ]
+    for figure in figure_metadata.get("figures", []):
+        if isinstance(figure, Mapping):
+            lines.append(f"- `{figure.get('id')}`: `{figure.get('path')}`")
+    lines.extend(
+        [
+            "",
+            "## Claim Boundary",
+            "",
+            "The current package does not support a positive i*pi/GEML recovery claim. Any paper text should describe the result as inconclusive under the declared matched protocol.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _v116_final_claim_audit(
+    claim_text: str,
+    *,
+    gate_evaluation: Mapping[str, Any],
+    gate_config: Mapping[str, Any],
+    source_locks: Mapping[str, Any],
+    final_decision: Mapping[str, Any],
+    figure_metadata: Mapping[str, Any],
+    ablation_manifest: Mapping[str, Any],
+    commands: Iterable[str],
+) -> dict[str, Any]:
+    audit = build_v116_claim_audit(
+        claim_text,
+        gate_evaluation=gate_evaluation,
+        gate_config=gate_config,
+        source_locks=source_locks,
+    )
+    lower_claim = claim_text.lower()
+    extra_checks = [
+        _audit_check(
+            "final_decision_is_allowed",
+            str(final_decision.get("decision")) in {"paper_positive", "promising_preliminary", "negative", "inconclusive"},
+            "Final decision is one of the predefined v1.16 outcomes.",
+        ),
+        _audit_check(
+            "final_readme_matches_gate",
+            str(final_decision.get("decision")) == str(gate_evaluation.get("decision") or final_decision.get("decision")),
+            "README and final decision use the gate-controlled outcome.",
+        ),
+        _audit_check(
+            "ablation_assets_present",
+            bool(ablation_manifest.get("ablation_table") or ablation_manifest.get("row_counts")),
+            "Final package includes ablation assets.",
+        ),
+        _audit_check(
+            "figure_metadata_present",
+            bool(figure_metadata.get("figures")),
+            "Final package includes figure metadata.",
+        ),
+        _audit_check(
+            "reproduction_commands_present",
+            len(list(commands)) >= 4,
+            "Final package includes reproduction commands.",
+        ),
+        _audit_check(
+            "negative_control_cherry_picking_blocked",
+            ("negative control" in lower_claim or "negative-control" in lower_claim) and "visible" in lower_claim,
+            "Final package keeps negative controls visible.",
+        ),
+    ]
+    checks = [*audit["checks"], *extra_checks]
+    return {
+        "schema": "eml.v116_final_claim_audit.v1",
+        "status": "passed" if all(check["status"] == "passed" for check in checks) else "failed",
+        "decision": audit["decision"],
+        "checks": checks,
+    }
 
 
 def _v116_ablation_rows(

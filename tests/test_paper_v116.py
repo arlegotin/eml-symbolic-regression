@@ -1,13 +1,14 @@
 import csv
 import json
 
-from eml_symbolic_regression.cli import build_parser, geml_paper_v116_command, geml_v116_ablations_command, geml_v116_ladder_command
+from eml_symbolic_regression.cli import build_parser, geml_paper_v116_command, geml_v116_ablations_command, geml_v116_final_command, geml_v116_ladder_command
 from eml_symbolic_regression.paper_v116 import (
     build_v116_claim_audit,
     default_v116_gate_config,
     evaluate_v116_gate,
     write_v116_ablation_assets,
     write_v116_budget_ladder,
+    write_v116_final_decision_package,
     write_v116_paper_package,
 )
 
@@ -219,6 +220,51 @@ def test_write_v116_ablation_assets_writes_tables_figures_and_source_locks(tmp_p
     assert any(lock["source_id"] == "failure_taxonomy" and lock["status"] == "locked" for lock in locks["inputs"])
 
 
+def test_write_v116_final_decision_package_writes_safe_readme_and_audit(tmp_path):
+    campaign_dir = tmp_path / "campaign"
+    rows = [
+        {"formula": "sin_pi", "target_family": "periodic", "seed": "0", "comparison_outcome": "ipi_lower_post_snap_mse"},
+        {"formula": "exp", "target_family": "negative_control", "seed": "0", "comparison_outcome": "raw_lower_post_snap_mse"},
+    ]
+    _write_paired_campaign(campaign_dir, rows)
+    ladder_paths = write_v116_budget_ladder(tmp_path / "ladder", smoke_campaign_dir=campaign_dir, pilot_campaign_dir=campaign_dir)
+    package_paths = write_v116_paper_package(
+        tmp_path / "package",
+        campaign_dir=campaign_dir,
+        budget_ladder_dir=ladder_paths.output_dir,
+        min_unique_seeds=1,
+    )
+    ablation_paths = write_v116_ablation_assets(
+        tmp_path / "package" / "ablations",
+        campaign_dir=campaign_dir,
+        budget_ladder_dir=ladder_paths.output_dir,
+        package_dir=package_paths.output_dir,
+    )
+
+    paths = write_v116_final_decision_package(
+        tmp_path / "package" / "final-decision",
+        package_dir=package_paths.output_dir,
+        ablation_dir=ablation_paths.output_dir,
+        budget_ladder_dir=ladder_paths.output_dir,
+        campaign_dir=campaign_dir,
+    )
+
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    audit = json.loads(paths.final_claim_audit_json.read_text(encoding="utf-8"))
+    decision = json.loads(paths.final_decision_json.read_text(encoding="utf-8"))
+    readme = paths.package_readme_md.read_text(encoding="utf-8").lower()
+    locks = json.loads(paths.source_locks_json.read_text(encoding="utf-8"))
+
+    assert manifest["decision"] == "inconclusive"
+    assert manifest["claim_audit_status"] == "passed"
+    assert decision["paper_claim_allowed"] is False
+    assert audit["status"] == "passed"
+    assert "decision: `inconclusive`" in readme
+    assert "global superiority" not in readme
+    assert "all elementary functions" not in readme
+    assert any(lock["source_id"] == "ablation_table" and lock["status"] == "locked" for lock in locks["inputs"])
+
+
 def test_cli_registers_geml_paper_v116():
     args = build_parser().parse_args(["geml-paper-v116", "--output-dir", "out", "--campaign-dir", "campaign", "--budget-ladder-dir", "ladder"])
     assert args.func is geml_paper_v116_command
@@ -233,3 +279,8 @@ def test_cli_registers_geml_v116_ladder():
 def test_cli_registers_geml_v116_ablations():
     args = build_parser().parse_args(["geml-v116-ablations", "--output-dir", "out", "--campaign-dir", "campaign"])
     assert args.func is geml_v116_ablations_command
+
+
+def test_cli_registers_geml_v116_final():
+    args = build_parser().parse_args(["geml-v116-final", "--output-dir", "out", "--package-dir", "package"])
+    assert args.func is geml_v116_final_command
