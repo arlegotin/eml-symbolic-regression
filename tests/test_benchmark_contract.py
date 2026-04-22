@@ -174,7 +174,7 @@ def test_arrhenius_evidence_suite_contains_exact_warm_start_case():
     assert demo.train_domain == (0.5, 3.0)
     assert demo.heldout_domain == (0.6, 2.7)
     assert demo.extrap_domain == (3.1, 4.2)
-    assert run.run_id == "v1-9-arrhenius-evidence-arrhenius-warm-75f6e9c1764d"
+    assert run.run_id == "v1-9-arrhenius-evidence-arrhenius-warm-8dd4270da159"
     assert run.run_id == suite.expanded_runs()[0].run_id
 
 
@@ -208,7 +208,7 @@ def test_michaelis_evidence_suite_contains_exact_warm_start_case():
     assert demo.train_domain == (0.05, 5.0)
     assert demo.heldout_domain == (0.08, 4.5)
     assert demo.extrap_domain == (5.1, 7.0)
-    assert run.run_id == "v1-9-michaelis-evidence-michaelis-warm-a67d8ccfb108"
+    assert run.run_id == "v1-9-michaelis-evidence-michaelis-warm-bd8c78778caf"
 
 
 def test_logistic_v110_evidence_suite_contains_compile_diagnostic_only():
