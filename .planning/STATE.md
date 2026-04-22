@@ -1,25 +1,25 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.15
-milestone_name: GEML family and i*pi EML exploration
-current_phase: null
-current_phase_name: null
-status: v1.15 archived; ready for next milestone
-stopped_at: v1.15 archived
-last_updated: "2026-04-22T10:40:00.000Z"
+milestone: v1.16
+milestone_name: Paper-Strength GEML Recovery Evidence
+current_phase: 88
+current_phase_name: Paper-Strength Success Gate and Campaign Contract
+status: Milestone v1.16 initialized; ready for Phase 88 planning
+stopped_at: milestone v1.16 initialized; ready for Phase 88 planning
+last_updated: "2026-04-22T11:20:00.000Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 6
-  completed_phases: 6
-  total_plans: 6
-  completed_plans: 6
-  percent: 100
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** None
+**Current phase:** 88 - Paper-Strength Success Gate and Campaign Contract
 **Mode:** YOLO
 
 ## Project Reference
@@ -27,25 +27,25 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-22)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** Planning the next milestone after v1.15 GEML evidence package completion.
+**Current focus:** v1.16 Paper-Strength GEML Recovery Evidence.
 
 ## Current Position
 
-Phase: None
+Phase: 88 - Paper-Strength Success Gate and Campaign Contract
 Plan: -
-Status: v1.15 archived
-Last activity: 2026-04-22 - v1.15 milestone archived
-Progress: [##########] 100% by completed phases
+Status: v1.16 milestone initialized; ready for Phase 88 planning
+Last activity: 2026-04-22 - v1.16 milestone start
+Progress: [----------] 0% by completed phases
 
 ## Current Milestone
 
-No active milestone. v1.15 is archived; start the next milestone with `$gsd-new-milestone`.
+v1.16 Paper-Strength GEML Recovery Evidence is active. The milestone converts v1.15's inconclusive GEML/i*pi result into either verifier-gated paper-strength evidence or a defensible negative/inconclusive result with ablations, diagnostics, and claim audit.
 
 ## Artifacts
 
 | Artifact | Path | Status |
 |----------|------|--------|
-| Project context | `.planning/PROJECT.md` | Updated for v1.15 |
+| Project context | `.planning/PROJECT.md` | Updated for v1.16 |
 | Archived v1.12 requirements | `.planning/milestones/v1.12-REQUIREMENTS.md` | Complete |
 | Archived v1.13 requirements | `.planning/milestones/v1.13-REQUIREMENTS.md` | Complete |
 | Archived v1.14 requirements | `.planning/milestones/v1.14-REQUIREMENTS.md` | Complete |
@@ -54,7 +54,8 @@ No active milestone. v1.15 is archived; start the next milestone with `$gsd-new-
 | Archived v1.15 requirements | `.planning/milestones/v1.15-REQUIREMENTS.md` | Complete |
 | Archived v1.15 roadmap | `.planning/milestones/v1.15-ROADMAP.md` | Complete |
 | Archived v1.15 milestone audit | `.planning/milestones/v1.15-MILESTONE-AUDIT.md` | Passed, 28/28 requirements satisfied |
-| Roadmap | `.planning/ROADMAP.md` | Archived for v1.15; next phase starts at 88 |
+| Requirements | `.planning/REQUIREMENTS.md` | Complete for v1.16 |
+| Roadmap | `.planning/ROADMAP.md` | Complete for v1.16; phases 88-93 |
 | Research summary | `.planning/research/SUMMARY.md` | Existing context retained; no new domain research selected during initialization |
 | Workflow config | `.planning/config.json` | Complete |
 | Milestone log | `.planning/MILESTONES.md` | Complete through v1.15 |
@@ -113,10 +114,12 @@ No active milestone. v1.15 is archived; start the next milestone with `$gsd-new-
 - Phase 85 registered normalized oscillatory, log-periodic, and negative-control targets plus matched raw/i*pi benchmark suites and branch-domain fail-closed validation.
 - Phase 86 added paired raw EML versus i*pi EML campaign artifacts, exposed Phase 84 metrics in campaign rows, and preserved v1.14 recovery-accounting fields in paired outputs.
 - Phase 87 produced a claim-safe v1.15 GEML evidence package. The checked-in smoke campaign has 2 paired rows, no verifier-gated exact recovery, a periodic i*pi loss-only signal, a negative-control raw loss-only signal, and an `inconclusive_smoke_only` package decision.
+- v1.16 is evidence-gated: positive i*pi/GEML paper claims require verifier-gated exact recovery under matched raw/i*pi protocols, with negative controls and branch diagnostics retained.
+- v1.16 should prefer a strong negative or inconclusive package over a relaxed positive claim if exact recovery does not materialize.
 
 ### Pending Todos
 
-- Start the next milestone with `$gsd-new-milestone`.
+- Plan Phase 88.
 
 ### Deferred Items
 
@@ -166,8 +169,8 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 ## Session Continuity
 
 Last session: 2026-04-22
-Stopped at: v1.15 archived; ready for next milestone
+Stopped at: v1.16 milestone initialized; ready for Phase 88 planning
 Resume file: None
 
 ---
-*Last updated: 2026-04-22 after v1.15 archival*
+*Last updated: 2026-04-22 after v1.16 milestone start*
