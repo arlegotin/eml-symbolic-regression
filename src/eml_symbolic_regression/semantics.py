@@ -8,6 +8,8 @@ from typing import Any
 import numpy as np
 import torch
 
+from .branch import principal_log_branch_diagnostics
+
 
 @dataclass(frozen=True)
 class EmlOperator:
@@ -296,7 +298,12 @@ class AnomalyStats:
     log_small_magnitude_count: int = 0
     log_non_positive_real_count: int = 0
     log_branch_cut_count: int = 0
+    branch_input_count: int = 0
+    log_branch_cut_proximity_count: int = 0
+    log_branch_cut_crossing_count: int = 0
+    log_branch_cut_min_distance: float | None = None
     log_non_finite_input_count: int = 0
+    invalid_domain_skip_count: int = 0
     expm1_overflow_count: int = 0
     log1p_branch_cut_count: int = 0
     shifted_singularity_near_count: int = 0
@@ -316,7 +323,12 @@ class AnomalyStats:
         log_small_magnitude_count: int = 0,
         log_non_positive_real_count: int = 0,
         log_branch_cut_count: int = 0,
+        branch_input_count: int = 0,
+        log_branch_cut_proximity_count: int = 0,
+        log_branch_cut_crossing_count: int = 0,
+        log_branch_cut_min_distance: float | None = None,
         log_non_finite_input_count: int = 0,
+        invalid_domain_skip_count: int = 0,
         expm1_overflow_count: int = 0,
         log1p_branch_cut_count: int = 0,
         shifted_singularity_near_count: int = 0,
@@ -341,7 +353,16 @@ class AnomalyStats:
         self.log_small_magnitude_count += log_small_magnitude_count
         self.log_non_positive_real_count += log_non_positive_real_count
         self.log_branch_cut_count += log_branch_cut_count
+        self.branch_input_count += branch_input_count
+        self.log_branch_cut_proximity_count += log_branch_cut_proximity_count
+        self.log_branch_cut_crossing_count += log_branch_cut_crossing_count
+        if log_branch_cut_min_distance is not None and np.isfinite(log_branch_cut_min_distance):
+            if self.log_branch_cut_min_distance is None:
+                self.log_branch_cut_min_distance = float(log_branch_cut_min_distance)
+            else:
+                self.log_branch_cut_min_distance = min(self.log_branch_cut_min_distance, float(log_branch_cut_min_distance))
         self.log_non_finite_input_count += log_non_finite_input_count
+        self.invalid_domain_skip_count += invalid_domain_skip_count
         self.expm1_overflow_count += expm1_overflow_count
         self.log1p_branch_cut_count += log1p_branch_cut_count
         self.shifted_singularity_near_count += shifted_singularity_near_count
@@ -374,7 +395,12 @@ class AnomalyStats:
                 "log_small_magnitude_count": log_small_magnitude_count,
                 "log_non_positive_real_count": log_non_positive_real_count,
                 "log_branch_cut_count": log_branch_cut_count,
+                "branch_input_count": branch_input_count,
+                "log_branch_cut_proximity_count": log_branch_cut_proximity_count,
+                "log_branch_cut_crossing_count": log_branch_cut_crossing_count,
+                "log_branch_cut_min_distance": log_branch_cut_min_distance,
                 "log_non_finite_input_count": log_non_finite_input_count,
+                "invalid_domain_skip_count": invalid_domain_skip_count,
                 "expm1_overflow_count": expm1_overflow_count,
                 "log1p_branch_cut_count": log1p_branch_cut_count,
                 "shifted_singularity_near_count": shifted_singularity_near_count,
@@ -393,7 +419,12 @@ class AnomalyStats:
             "log_small_magnitude_count": self.log_small_magnitude_count,
             "log_non_positive_real_count": self.log_non_positive_real_count,
             "log_branch_cut_count": self.log_branch_cut_count,
+            "branch_input_count": self.branch_input_count,
+            "log_branch_cut_proximity_count": self.log_branch_cut_proximity_count,
+            "log_branch_cut_crossing_count": self.log_branch_cut_crossing_count,
+            "log_branch_cut_min_distance": self.log_branch_cut_min_distance,
             "log_non_finite_input_count": self.log_non_finite_input_count,
+            "invalid_domain_skip_count": self.invalid_domain_skip_count,
             "expm1_overflow_count": self.expm1_overflow_count,
             "log1p_branch_cut_count": self.log1p_branch_cut_count,
             "shifted_singularity_near_count": self.shifted_singularity_near_count,
@@ -415,6 +446,14 @@ def as_complex_tensor(value: Any, *, device: torch.device | None = None) -> torc
         tensor = value.to(dtype=torch.complex128)
         return tensor.to(device=device) if device is not None else tensor
     return torch.as_tensor(value, dtype=torch.complex128, device=device)
+
+
+def _torch_branch_diagnostics(log_arg: torch.Tensor, semantics: TrainingSemanticsConfig) -> dict[str, Any]:
+    return principal_log_branch_diagnostics(
+        log_arg.detach().cpu().numpy(),
+        proximity_tolerance=max(float(semantics.log_safety_imag_tolerance), float(semantics.log_domain_epsilon)),
+        zero_tolerance=float(semantics.log_domain_epsilon),
+    ).as_dict()
 
 
 def eml_torch(
@@ -463,6 +502,7 @@ def eml_torch(
         + torch.isinf(log_arg.real).sum().item()
         + torch.isinf(log_arg.imag).sum().item()
     )
+    branch_diagnostics = _torch_branch_diagnostics(log_arg, semantics)
 
     log_safety_penalty = None
     if use_training_guards and semantics.log_safety_weight > 0:
@@ -485,7 +525,12 @@ def eml_torch(
             log_small_magnitude_count=log_small_magnitude_count,
             log_non_positive_real_count=log_non_positive_real_count,
             log_branch_cut_count=log_branch_cut_count,
+            branch_input_count=int(branch_diagnostics["input_count"]),
+            log_branch_cut_proximity_count=int(branch_diagnostics["branch_cut_proximity_count"]),
+            log_branch_cut_crossing_count=int(branch_diagnostics["branch_cut_crossing_count"]),
+            log_branch_cut_min_distance=branch_diagnostics["min_branch_cut_distance"],
             log_non_finite_input_count=log_non_finite_input_count,
+            invalid_domain_skip_count=int(branch_diagnostics["invalid_domain_skip_count"]),
             log_safety_penalty=log_safety_penalty,
         )
     return out
@@ -562,6 +607,7 @@ def centered_eml_torch(
         + torch.isinf(log_arg.real).sum().item()
         + torch.isinf(log_arg.imag).sum().item()
     )
+    branch_diagnostics = _torch_branch_diagnostics(log_arg, semantics)
     singularity = t - s
     shifted_distance = torch.nan_to_num(torch.abs(y.detach() - singularity), nan=float("inf"), posinf=float("inf"), neginf=float("inf"))
     shifted_singularity_near_count = int((shifted_distance < semantics.log_domain_epsilon).sum().item())
@@ -588,8 +634,13 @@ def centered_eml_torch(
             log_small_magnitude_count=log_small_magnitude_count,
             log_non_positive_real_count=log_non_positive_real_count,
             log_branch_cut_count=log_branch_cut_count,
+            branch_input_count=int(branch_diagnostics["input_count"]),
+            log_branch_cut_proximity_count=int(branch_diagnostics["branch_cut_proximity_count"]),
+            log_branch_cut_crossing_count=int(branch_diagnostics["branch_cut_crossing_count"]),
+            log_branch_cut_min_distance=branch_diagnostics["min_branch_cut_distance"],
             log1p_branch_cut_count=log_branch_cut_count,
             log_non_finite_input_count=log_non_finite_input_count,
+            invalid_domain_skip_count=int(branch_diagnostics["invalid_domain_skip_count"]),
             shifted_singularity_near_count=shifted_singularity_near_count,
             shifted_singularity_min_distance=shifted_singularity_min_distance,
             log_safety_penalty=log_safety_penalty,
@@ -654,6 +705,7 @@ def geml_torch(
         + torch.isinf(log_arg.real).sum().item()
         + torch.isinf(log_arg.imag).sum().item()
     )
+    branch_diagnostics = _torch_branch_diagnostics(log_arg, semantics)
 
     log_safety_penalty = None
     if use_training_guards and semantics.log_safety_weight > 0:
@@ -676,7 +728,12 @@ def geml_torch(
             log_small_magnitude_count=log_small_magnitude_count,
             log_non_positive_real_count=log_non_positive_real_count,
             log_branch_cut_count=log_branch_cut_count,
+            branch_input_count=int(branch_diagnostics["input_count"]),
+            log_branch_cut_proximity_count=int(branch_diagnostics["branch_cut_proximity_count"]),
+            log_branch_cut_crossing_count=int(branch_diagnostics["branch_cut_crossing_count"]),
+            log_branch_cut_min_distance=branch_diagnostics["min_branch_cut_distance"],
             log_non_finite_input_count=log_non_finite_input_count,
+            invalid_domain_skip_count=int(branch_diagnostics["invalid_domain_skip_count"]),
             log_safety_penalty=log_safety_penalty,
         )
     return out

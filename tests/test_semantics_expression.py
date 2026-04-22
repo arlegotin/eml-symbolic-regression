@@ -197,9 +197,14 @@ def test_eml_torch_reports_log_domain_anomalies_and_penalty():
     assert stats.log_small_magnitude_count == 1
     assert stats.log_non_positive_real_count == 1
     assert stats.log_branch_cut_count == 1
+    assert stats.branch_input_count == 2
+    assert stats.log_branch_cut_proximity_count == 1
+    assert stats.log_branch_cut_crossing_count == 0
+    assert stats.invalid_domain_skip_count == 1
     assert stats.log_safety_penalty > 0.0
     assert float(stats.training_penalty().item()) > 0.0
     assert stats.by_node["root"]["log_branch_cut_count"] == 1
+    assert stats.by_node["root"]["branch_input_count"] == 2
 
 
 def test_eml_torch_faithful_training_bypasses_training_guards():

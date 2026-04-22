@@ -1,7 +1,9 @@
 """Hybrid symbolic regression over complete EML trees."""
 
+from .branch import BranchDiagnostics, principal_log_branch_diagnostics
 from .compiler import CompilerConfig, CompileResult, UnsupportedExpression, compile_and_validate, compile_sympy_expression
 from .expression import CenteredEml, Const, Eml, Expr, Geml, SympyCandidate, Var, ceml_expr, ceml_s_expr, exp_expr, geml_expr, ipi_eml_expr, log_expr, zeml_s_expr
+from .geml_theory import build_ipi_restricted_theory, ipi_eml_value, write_ipi_restricted_theory
 from .master_tree import EmbeddingConfig, SoftEMLTree, embed_expr_into_tree
 from .semantics import (
     EmlOperator,
@@ -32,6 +34,7 @@ from .witnesses import (
 
 __all__ = [
     "CENTERED_FAMILY_SAME_FAMILY_WITNESS_MISSING",
+    "BranchDiagnostics",
     "Const",
     "CenteredEml",
     "CompilerConfig",
@@ -48,6 +51,7 @@ __all__ = [
     "UnsupportedExpression",
     "Var",
     "VerificationReport",
+    "build_ipi_restricted_theory",
     "ceml_expr",
     "ceml_operator",
     "ceml_s_expr",
@@ -67,13 +71,16 @@ __all__ = [
     "geml_torch",
     "ipi_eml_expr",
     "ipi_eml_operator",
+    "ipi_eml_value",
     "known_scaffold_kinds",
     "list_scaffold_witnesses",
     "log_expr",
+    "principal_log_branch_diagnostics",
     "raw_eml_operator",
     "resolve_scaffold_plan",
     "scaffold_witness_for",
     "verify_candidate",
+    "write_ipi_restricted_theory",
     "zeml_s_expr",
     "zeml_s_operator",
 ]

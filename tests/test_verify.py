@@ -4,6 +4,7 @@ import sympy as sp
 from types import SimpleNamespace
 
 import eml_symbolic_regression.optimize as optimize
+from eml_symbolic_regression.expression import Const, Eml
 from eml_symbolic_regression.optimize import ExactCandidate
 from eml_symbolic_regression.verify import DataSplit, VerificationReport, selection_candidate_splits, split_role, verify_candidate
 
@@ -181,6 +182,30 @@ def test_verify_candidate_labels_unsupported_layers_when_no_target_metadata():
     assert report.dense_random_status == "unsupported_no_target_evaluator"
     assert report.adversarial_status == "unsupported_no_target_evaluator"
     assert report.certificate_status == "unsupported_interval_certificate"
+
+
+def test_verify_candidate_exposes_branch_diagnostics_for_exact_ast():
+    candidate = Eml(Const(0.0), Const(-1.0))
+    split = DataSplit(
+        name="heldout",
+        inputs={"x": np.asarray([0.0, 1.0], dtype=np.float64)},
+        target=np.asarray([0.0, 0.0], dtype=np.complex128),
+    )
+
+    report = verify_candidate(candidate, [split], tolerance=1e-8, dense_random_points=0, adversarial_points=0)
+    branch = report.as_dict()["branch_diagnostics"]
+
+    assert report.status == "failed"
+    assert branch["status"] == "performed"
+    assert branch["branch_convention"] == "principal_complex_log_cut_negative_real_axis"
+    assert branch["non_finite_count"] == branch["log_non_finite_input_count"]
+    assert branch["near_zero_count"] == branch["log_small_magnitude_count"]
+    assert branch["branch_cut_hit_count"] == branch["log_branch_cut_count"]
+    assert branch["min_branch_cut_distance"] == branch["log_branch_cut_min_distance"]
+    assert branch["log_branch_cut_count"] > 0
+    assert branch["branch_related"] is True
+    assert branch["candidate_failure_class"] == "branch_related"
+    assert branch["branch_safety_guard"]["faithful_verification_unchanged"] is True
 
 
 def test_selection_candidate_splits_excludes_final_confirmation():

@@ -32,6 +32,18 @@ the structural identity
 `exp(a*GEML_a(u, v)) = exp(a*exp(a*u))/v`; branch restrictions and i*pi-specific theorem
 contracts are handled separately by the v1.15 theory phases.
 
+Phase 83 makes that theory boundary executable. The i*pi EML restricted theory artifact
+checks the reciprocal construction, positive-real recovery, real-axis derivative, and
+one-step composition magnitude bound under explicit `y > 0`, `v > 0`, and real-axis
+assumptions. It also records non-claims: these checks are not full universality, global
+closure, or permission to ignore branch-safe domains.
+
+All EML variants use the principal complex log with the branch cut on the negative real
+axis. Branch diagnostics report proximity to that cut, hits/crossings, near-zero and
+non-finite second-slot inputs, invalid-domain skip counts, and whether a failed verifier
+candidate is branch-related. Training may use the existing log-safety guard fields, but
+faithful verification semantics remain unclamped and canonical.
+
 ## Recovery Contract
 
 Training loss is not enough. The optimizer now emits a retained exact-candidate pool across restarts plus late hardening checkpoints, but a candidate is only `recovered` when:

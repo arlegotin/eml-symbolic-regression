@@ -8,8 +8,11 @@ from typing import Any, Callable, Mapping
 import mpmath as mp
 import numpy as np
 import sympy as sp
+import torch
 
+from .branch import BRANCH_DIAGNOSTIC_SCHEMA, PRINCIPAL_LOG_BRANCH
 from .expression import Candidate
+from .semantics import AnomalyStats, TrainingSemanticsConfig
 
 
 @dataclass(frozen=True)
@@ -58,6 +61,7 @@ class VerificationReport:
     metric_roles: dict[str, int] | None = None
     dense_random_max_error: float | None = None
     adversarial_max_error: float | None = None
+    branch_diagnostics: dict[str, Any] | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -72,6 +76,7 @@ class VerificationReport:
             "dense_random_max_error": self.dense_random_max_error,
             "adversarial_status": self.adversarial_status,
             "adversarial_max_error": self.adversarial_max_error,
+            "branch_diagnostics": dict(self.branch_diagnostics or {}),
             "certificate_status": self.certificate_status,
             "evidence_level": self.evidence_level,
             "metric_roles": dict(self.metric_roles or {}),
@@ -315,6 +320,7 @@ def verify_candidate(
     )
     certificate_status = "symbolic_equivalence" if symbolic_status == "passed" else "unsupported_interval_certificate"
     evidence_level = _evidence_level(status, symbolic_status, dense_random_status, adversarial_status)
+    branch_diagnostics = _candidate_branch_diagnostics(candidate, splits, candidate_status=status)
 
     return VerificationReport(
         status=status,
@@ -332,4 +338,79 @@ def verify_candidate(
         certificate_status=certificate_status,
         evidence_level=evidence_level,
         metric_roles=metric_role_counts(splits),
+        branch_diagnostics=branch_diagnostics,
     )
+
+
+def _candidate_branch_diagnostics(
+    candidate: Candidate,
+    splits: list[DataSplit],
+    *,
+    candidate_status: str,
+) -> dict[str, Any]:
+    if not hasattr(candidate, "evaluate_torch"):
+        return {
+            "schema": BRANCH_DIAGNOSTIC_SCHEMA,
+            "status": "unsupported_candidate_no_torch_eval",
+            "branch_convention": PRINCIPAL_LOG_BRANCH,
+            "candidate_failure_class": "not_failed" if candidate_status != "failed" else "unknown_no_branch_probe",
+            "branch_safety_guard": _branch_safety_guard_contract(),
+        }
+
+    stats = AnomalyStats()
+    semantics = TrainingSemanticsConfig(mode="faithful")
+    try:
+        for split in splits:
+            tensor_inputs = {name: torch.as_tensor(values, dtype=torch.complex128) for name, values in split.inputs.items()}
+            candidate.evaluate_torch(tensor_inputs, training=False, stats=stats, semantics=semantics)  # type: ignore[attr-defined]
+    except Exception as exc:  # noqa: BLE001 - branch probe must not mask verifier result.
+        return {
+            "schema": BRANCH_DIAGNOSTIC_SCHEMA,
+            "status": "failed_during_branch_probe",
+            "branch_convention": PRINCIPAL_LOG_BRANCH,
+            "error": type(exc).__name__,
+            "candidate_failure_class": "branch_probe_failed" if candidate_status == "failed" else "not_failed",
+            "branch_safety_guard": _branch_safety_guard_contract(),
+        }
+
+    summary = stats.as_dict()
+    branch_related = bool(
+        summary["invalid_domain_skip_count"]
+        or summary["log_branch_cut_count"]
+        or summary["log_branch_cut_proximity_count"]
+        or summary["log_branch_cut_crossing_count"]
+    )
+    return {
+        "schema": BRANCH_DIAGNOSTIC_SCHEMA,
+        "status": "performed",
+        "branch_convention": PRINCIPAL_LOG_BRANCH,
+        "input_count": summary["branch_input_count"],
+        "non_finite_count": summary["log_non_finite_input_count"],
+        "near_zero_count": summary["log_small_magnitude_count"],
+        "branch_cut_hit_count": summary["log_branch_cut_count"],
+        "branch_cut_proximity_count": summary["log_branch_cut_proximity_count"],
+        "branch_cut_crossing_count": summary["log_branch_cut_crossing_count"],
+        "min_branch_cut_distance": summary["log_branch_cut_min_distance"],
+        "log_small_magnitude_count": summary["log_small_magnitude_count"],
+        "log_non_positive_real_count": summary["log_non_positive_real_count"],
+        "log_branch_cut_count": summary["log_branch_cut_count"],
+        "log_branch_cut_proximity_count": summary["log_branch_cut_proximity_count"],
+        "log_branch_cut_crossing_count": summary["log_branch_cut_crossing_count"],
+        "log_branch_cut_min_distance": summary["log_branch_cut_min_distance"],
+        "log_non_finite_input_count": summary["log_non_finite_input_count"],
+        "invalid_domain_skip_count": summary["invalid_domain_skip_count"],
+        "branch_related": branch_related,
+        "candidate_failure_class": (
+            "branch_related" if candidate_status == "failed" and branch_related else "not_branch_related" if candidate_status == "failed" else "not_failed"
+        ),
+        "branch_safety_guard": _branch_safety_guard_contract(),
+    }
+
+
+def _branch_safety_guard_contract() -> dict[str, Any]:
+    return {
+        "available": True,
+        "training_only": True,
+        "faithful_verification_unchanged": True,
+        "config_fields": ["log_safety_weight", "log_safety_margin", "log_safety_imag_tolerance"],
+    }
