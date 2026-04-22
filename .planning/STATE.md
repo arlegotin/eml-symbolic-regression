@@ -1,24 +1,24 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.17
-milestone_name: Snap-First Exact Recovery and Candidate Neighborhood Search
-current_phase: 94
+milestone_name: Natural-Bias Recovery Sandbox
+current_phase: 95
 status: planning
 stopped_at: v1.17 milestone initialized; ready for Phase 94 planning
-last_updated: "2026-04-22T12:09:41Z"
+last_updated: "2026-04-22T12:24:10.668Z"
 last_activity: 2026-04-22
 progress:
-  total_phases: 5
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 4
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
+  percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 94
+**Current phase:** 95
 **Mode:** YOLO
 
 ## Project Reference
