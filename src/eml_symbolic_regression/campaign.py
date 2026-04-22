@@ -216,6 +216,20 @@ _PRESETS = {
             "track and once in the literal-constant warm-start track."
         ),
     ),
+    "geml-oscillatory-smoke": CampaignPreset(
+        name="geml-oscillatory-smoke",
+        suite="v1.15-geml-oscillatory-smoke",
+        tier="v1.15-geml",
+        description="Cheap v1.15 raw EML versus i*pi EML smoke campaign for branch-safe matched manifests.",
+        budget_guardrail="4 configured rows; sin(pi*x) and exp each paired across raw EML and i*pi EML.",
+    ),
+    "geml-oscillatory": CampaignPreset(
+        name="geml-oscillatory",
+        suite="v1.15-geml-oscillatory",
+        tier="v1.15-geml",
+        description="v1.15 raw EML versus i*pi EML matched oscillatory and negative-control campaign.",
+        budget_guardrail="20 configured rows; 10 targets each paired across raw EML and i*pi EML under matched blind budgets.",
+    ),
 }
 
 

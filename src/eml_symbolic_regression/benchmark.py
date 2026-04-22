@@ -92,7 +92,26 @@ BUILTIN_SUITES = (
     "v1.13-paper-basis-only",
     "v1.13-paper-literal-constants",
     "v1.13-paper-tracks",
+    "v1.15-geml-oscillatory-smoke",
+    "v1.15-geml-oscillatory",
 )
+V115_OSCILLATORY_TARGETS = (
+    "sin_pi",
+    "cos_pi",
+    "harmonic_sum",
+    "damped_oscillator",
+    "standing_wave_snapshot",
+    "log_periodic_oscillation",
+)
+V115_NEGATIVE_CONTROL_TARGETS = (
+    "exp",
+    "log",
+    "quadratic_polynomial",
+    "rational_decay",
+)
+V115_GEML_TARGETS = (*V115_OSCILLATORY_TARGETS, *V115_NEGATIVE_CONTROL_TARGETS)
+V115_POSITIVE_DOMAIN_TARGETS = ("log", "log_periodic_oscillation", "rational_decay")
+V115_BRANCH_DECLARATION_TAGS = ("branch_safe_domain", "branch_safe_by_construction", "negative_control_domain")
 DEFAULT_ARTIFACT_ROOT = Path("artifacts") / "benchmarks"
 CAMPAIGN_ARTIFACT_ROOT = Path("artifacts") / "campaigns"
 STABLE_EVIDENCE_SNAPSHOT_GENERATED_AT = "1970-01-01T00:00:00+00:00"
@@ -254,7 +273,7 @@ class OptimizerBudget:
         except (KeyError, TypeError, ValueError) as exc:
             raise BenchmarkValidationError(
                 "invalid_budget",
-                "operator_family must identify raw_eml, CEML_s, ZEML_s, or cEML_s_t",
+                "operator_family must identify raw_eml, GEML_a/i*pi EML, CEML_s, ZEML_s, or cEML_s_t",
                 path=f"{path}.operator_family",
             ) from exc
         operator_schedule = payload.get("operator_schedule", ())
@@ -506,6 +525,7 @@ class BenchmarkCase:
             self.optimizer.constants,
             path=path,
         )
+        _validate_ipi_branch_domain_contract(self, path)
         if self.repair is not None:
             self.repair.validate(f"{path}.repair")
 
@@ -1041,6 +1061,47 @@ def _validate_track_contract(track: str, constants_policy: str, constants: Itera
         )
 
 
+def _validate_ipi_branch_domain_contract(case: BenchmarkCase, path: str) -> None:
+    if case.formula not in V115_GEML_TARGETS or not _budget_uses_ipi(case.optimizer):
+        return
+
+    tags = set(case.tags)
+    if not tags.intersection(V115_BRANCH_DECLARATION_TAGS):
+        raise BenchmarkValidationError(
+            "unsafe_ipi_branch_domain",
+            "i*pi EML v1.15 rows must declare branch_safe_domain, branch_safe_by_construction, or negative_control_domain",
+            path=f"{path}.tags",
+        )
+
+    spec = demo_specs()[case.formula]
+    domains = (spec.train_domain, spec.heldout_domain, spec.extrap_domain)
+    for index, domain in enumerate(domains):
+        low, high = domain
+        if not (np.isfinite(low) and np.isfinite(high)):
+            raise BenchmarkValidationError(
+                "unsafe_ipi_branch_domain",
+                "i*pi EML v1.15 rows require finite train, heldout, and extrapolation domains",
+                path=f"{path}.formula",
+            )
+        if high <= low:
+            raise BenchmarkValidationError(
+                "unsafe_ipi_branch_domain",
+                "i*pi EML v1.15 rows require increasing train, heldout, and extrapolation domains",
+                path=f"{path}.formula",
+            )
+        if case.formula in V115_POSITIVE_DOMAIN_TARGETS and low < 0.0:
+            raise BenchmarkValidationError(
+                "unsafe_ipi_branch_domain",
+                "positive-domain i*pi EML targets must not cross zero or the negative real axis",
+                path=f"{path}.formula.domain[{index}]",
+            )
+
+
+def _budget_uses_ipi(budget: OptimizerBudget) -> bool:
+    operators = (budget.operator_family, *budget.operator_schedule)
+    return any(operator.specialization == "ipi_eml" for operator in operators)
+
+
 def _default_training_mode(start_mode: str) -> str:
     modes = {
         "catalog": TRAINING_MODES["catalog_verification"],
@@ -1355,6 +1416,88 @@ def _publication_track_cases(track: str) -> tuple[BenchmarkCase, ...]:
             for formula in PUBLICATION_BENCHMARK_TARGETS
         )
     raise BenchmarkValidationError("invalid_track", f"unknown publication track {track!r}", path="track")
+
+
+def _v115_literal_catalog(formula: str) -> tuple[complex, ...]:
+    catalogs: dict[str, tuple[complex, ...]] = {
+        "sin_pi": (np.pi,),
+        "cos_pi": (np.pi,),
+        "harmonic_sum": (0.5, 2.0, np.pi),
+        "damped_oscillator": (-0.15, 2.5, 0.2),
+        "standing_wave_snapshot": (np.pi,),
+        "log_periodic_oscillation": (0.5, 2.0, 0.3),
+        "exp": (),
+        "log": (),
+        "quadratic_polynomial": (0.5,),
+        "rational_decay": (),
+    }
+    return catalogs[formula]
+
+
+def _v115_depth(formula: str) -> int:
+    if formula in {"exp", "log", "quadratic_polynomial", "rational_decay"}:
+        return 2
+    if formula == "damped_oscillator":
+        return 4
+    return 3
+
+
+def _v115_target_tags(formula: str) -> tuple[str, ...]:
+    families: dict[str, tuple[str, ...]] = {
+        "sin_pi": ("oscillatory_target", "periodic"),
+        "cos_pi": ("oscillatory_target", "periodic"),
+        "harmonic_sum": ("oscillatory_target", "harmonic"),
+        "damped_oscillator": ("oscillatory_target", "damped_oscillation"),
+        "standing_wave_snapshot": ("oscillatory_target", "standing_wave"),
+        "log_periodic_oscillation": ("oscillatory_target", "log_periodic", "branch_safe_domain"),
+        "exp": ("negative_control", "negative_control_domain"),
+        "log": ("negative_control", "branch_safe_domain"),
+        "quadratic_polynomial": ("negative_control", "negative_control_domain"),
+        "rational_decay": ("negative_control", "negative_control_domain"),
+    }
+    tags = families[formula]
+    if not set(tags).intersection(V115_BRANCH_DECLARATION_TAGS):
+        tags = (*tags, "branch_safe_by_construction")
+    return ("v1.15", "geml_oscillatory", *tags)
+
+
+def _v115_matched_cases(formulas: Iterable[str]) -> tuple[BenchmarkCase, ...]:
+    cases: list[BenchmarkCase] = []
+    variants = (
+        ("raw", raw_eml_operator()),
+        ("ipi", eml_operator_from_spec("ipi_eml")),
+    )
+    for formula in formulas:
+        for variant_id, operator in variants:
+            cases.append(
+                _case(
+                    f"{_slug(formula)}-{variant_id}-blind",
+                    formula,
+                    "blind",
+                    seeds=(0,),
+                    points=24,
+                    depth=_v115_depth(formula),
+                    steps=24,
+                    restarts=1,
+                    constants=_literal_track_constants_for_v115(formula),
+                    scaffold_initializers=(),
+                    operator_family=operator,
+                    tags=(*_v115_target_tags(formula), f"operator:{variant_id}"),
+                    expect_recovery=False,
+                    track="literal_constants",
+                    constants_policy="literal_constants",
+                )
+            )
+    return tuple(cases)
+
+
+def _literal_track_constants_for_v115(formula: str) -> tuple[complex, ...]:
+    constants: list[complex] = [1.0 + 0.0j]
+    for value in _v115_literal_catalog(formula):
+        scalar = complex(value)
+        if scalar not in constants:
+            constants.append(scalar)
+    return tuple(constants)
 
 
 def builtin_suite(name: str) -> BenchmarkSuite:
@@ -2070,6 +2213,26 @@ def builtin_suite(name: str) -> BenchmarkSuite:
                 "separate aggregate denominators."
             ),
             cases=(*_publication_track_cases("basis_only"), *_publication_track_cases("literal_constants")),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
+    if name == "v1.15-geml-oscillatory-smoke":
+        return BenchmarkSuite(
+            id="v1.15-geml-oscillatory-smoke",
+            description=(
+                "Cheap v1.15 raw EML versus i*pi EML smoke subset over one natural oscillatory target "
+                "and one negative control with matched blind-training budgets."
+            ),
+            cases=_v115_matched_cases(("sin_pi", "exp")),
+            artifact_root=CAMPAIGN_ARTIFACT_ROOT,
+        )
+    if name == "v1.15-geml-oscillatory":
+        return BenchmarkSuite(
+            id="v1.15-geml-oscillatory",
+            description=(
+                "v1.15 matched raw EML versus i*pi EML protocol over oscillatory natural-bias targets "
+                "and exp/log/polynomial/rational negative controls."
+            ),
+            cases=_v115_matched_cases(V115_GEML_TARGETS),
             artifact_root=CAMPAIGN_ARTIFACT_ROOT,
         )
     raise BenchmarkValidationError("unknown_suite", f"{name!r} is not one of: {', '.join(BUILTIN_SUITES)}")

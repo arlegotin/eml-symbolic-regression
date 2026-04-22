@@ -94,6 +94,8 @@ def test_campaign_presets_map_to_budgeted_suites():
         "paper-training",
         "paper-probes",
         "paper-tracks",
+        "geml-oscillatory-smoke",
+        "geml-oscillatory",
     )
 
     standard = campaign_preset("standard")
@@ -162,6 +164,17 @@ def test_campaign_presets_map_to_budgeted_suites():
     assert paper_tracks.tier == "v1.13-paper"
     assert {run.track for run in paper_track_runs} == {"basis_only", "literal_constants"}
     assert len(paper_track_runs) == 24
+
+    geml_smoke = campaign_preset("geml-oscillatory-smoke")
+    assert geml_smoke.suite == "v1.15-geml-oscillatory-smoke"
+    assert len(load_suite(geml_smoke.suite).expanded_runs()) == 4
+
+    geml_full = campaign_preset("geml-oscillatory")
+    geml_runs = load_suite(geml_full.suite).expanded_runs()
+    assert geml_full.suite == "v1.15-geml-oscillatory"
+    assert geml_full.tier == "v1.15-geml"
+    assert len(geml_runs) == 20
+    assert {run.optimizer.operator_family.label for run in geml_runs} == {"raw_eml", "ipi_eml"}
 
 
 def test_campaign_writes_manifest_suite_result_and_aggregate(tmp_path):

@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 from eml_symbolic_regression.benchmark import (
@@ -12,6 +13,9 @@ from eml_symbolic_regression.benchmark import (
     DatasetConfig,
     OptimizerBudget,
     PUBLICATION_BENCHMARK_TARGETS,
+    V115_GEML_TARGETS,
+    V115_NEGATIVE_CONTROL_TARGETS,
+    V115_OSCILLATORY_TARGETS,
     builtin_suite,
     list_builtin_suites,
     load_suite,
@@ -20,6 +24,7 @@ from eml_symbolic_regression.benchmark import (
 from eml_symbolic_regression.cli import build_parser
 from eml_symbolic_regression.datasets import get_demo
 from eml_symbolic_regression.proof import paper_claim
+from eml_symbolic_regression.semantics import eml_operator_from_spec
 
 
 EXPECTED_CENTERED_SCAFFOLD_EXCLUSIONS = (
@@ -127,6 +132,8 @@ def test_builtin_suite_registry_expands_stable_run_ids():
         "v1.13-paper-basis-only",
         "v1.13-paper-literal-constants",
         "v1.13-paper-tracks",
+        "v1.15-geml-oscillatory-smoke",
+        "v1.15-geml-oscillatory",
     } <= set(list_builtin_suites())
     suite = builtin_suite("smoke")
     runs = suite.expanded_runs()
@@ -342,6 +349,71 @@ def test_v113_publication_track_suites_cover_every_target_with_separate_policies
     assert set(by_formula["logistic"].as_dict()["benchmark_track"]["literal_catalog"]) == {"2", "-1.3"}
     assert set(by_formula["michaelis_menten"].as_dict()["benchmark_track"]["literal_catalog"]) == {"0.5", "2"}
     assert set(by_formula["planck"].as_dict()["benchmark_track"]["literal_catalog"]) == {"2.718281828459045", "3"}
+
+
+def test_v115_oscillatory_targets_have_safe_deterministic_splits():
+    for formula in V115_GEML_TARGETS:
+        spec = get_demo(formula)
+        splits = spec.make_splits(points=12, seed=0)
+
+        assert spec.normalized_dimensionless is True
+        assert len(splits) == 3
+        for split in splits:
+            assert np.all(np.isfinite(np.asarray(split.target, dtype=np.complex128)))
+            for values in split.inputs.values():
+                assert np.all(np.isfinite(values))
+                if formula in {"log", "log_periodic_oscillation"}:
+                    assert float(np.min(values)) > 0.0
+
+
+def test_v115_geml_oscillatory_suite_pairs_raw_and_ipi_budgets():
+    suite = builtin_suite("v1.15-geml-oscillatory")
+    runs = suite.expanded_runs()
+
+    assert tuple(sorted({run.formula for run in runs})) == tuple(sorted(V115_GEML_TARGETS))
+    assert len(runs) == len(V115_GEML_TARGETS) * 2
+    assert V115_OSCILLATORY_TARGETS
+    assert V115_NEGATIVE_CONTROL_TARGETS
+
+    by_formula: dict[str, list] = {}
+    for run in runs:
+        by_formula.setdefault(run.formula, []).append(run)
+        assert run.start_mode == "blind"
+        assert run.optimizer.scaffold_initializers == ()
+        assert run.training_mode == "blind_training"
+        if run.optimizer.operator_family.specialization == "ipi_eml":
+            assert set(run.tags).intersection({"branch_safe_domain", "branch_safe_by_construction", "negative_control_domain"})
+
+    for formula, pair in by_formula.items():
+        assert {run.optimizer.operator_family.label for run in pair} == {"raw_eml", "ipi_eml"}
+        raw_run = next(run for run in pair if run.optimizer.operator_family.label == "raw_eml")
+        ipi_run = next(run for run in pair if run.optimizer.operator_family.label == "ipi_eml")
+        raw_budget = raw_run.optimizer.as_dict()
+        ipi_budget = ipi_run.optimizer.as_dict()
+        raw_budget.pop("operator_family")
+        ipi_budget.pop("operator_family")
+        assert raw_budget == ipi_budget
+        assert raw_run.dataset.as_dict() == ipi_run.dataset.as_dict()
+
+
+def test_v115_ipi_branch_domain_validation_fails_closed():
+    bad_case = BenchmarkCase(
+        id="bad-ipi-sin",
+        formula="sin_pi",
+        start_mode="blind",
+        optimizer=OptimizerBudget(
+            depth=3,
+            steps=1,
+            restarts=1,
+            scaffold_initializers=(),
+            operator_family=eml_operator_from_spec("ipi_eml"),
+        ),
+        tags=("v1.15", "geml_oscillatory"),
+    )
+    suite = BenchmarkSuite("bad-v115", "bad branch declaration", (bad_case,))
+
+    with pytest.raises(BenchmarkValidationError, match="branch_safe_domain"):
+        suite.validate()
 
 
 def test_basis_only_track_rejects_literal_terminal_constants():
