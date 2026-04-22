@@ -328,6 +328,9 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
         "operator_family_diagnostics_csv": output_dir / "operator-family-diagnostics.csv",
         "operator_family_comparison_md": output_dir / "operator-family-comparison.md",
         "operator_family_locks_json": output_dir / "operator-family-locks.json",
+        "geml_paired_comparison_csv": output_dir / "geml-paired-comparison.csv",
+        "geml_paired_summary_json": output_dir / "geml-paired-summary.json",
+        "geml_paired_comparison_md": output_dir / "geml-paired-comparison.md",
         "headline_json": output_dir / "headline-metrics.json",
         "headline_csv": output_dir / "headline-metrics.csv",
         "failures_csv": output_dir / "failures.csv",
@@ -354,6 +357,14 @@ def write_campaign_tables(aggregate: Mapping[str, Any], output_dir: Path) -> dic
         encoding="utf-8",
     )
     _write_json(paths["operator_family_locks_json"], _operator_family_lock_payload(runs))
+    geml_paired_rows = _geml_paired_rows(runs)
+    _write_csv(paths["geml_paired_comparison_csv"], geml_paired_rows, _GEML_PAIRED_COLUMNS)
+    geml_paired_summary = _geml_paired_summary(geml_paired_rows)
+    _write_json(paths["geml_paired_summary_json"], geml_paired_summary)
+    paths["geml_paired_comparison_md"].write_text(
+        _geml_paired_markdown(geml_paired_rows, geml_paired_summary),
+        encoding="utf-8",
+    )
 
     headline = _headline_metrics(runs)
     _write_json(paths["headline_json"], headline)
@@ -462,6 +473,7 @@ def write_campaign_report(
     lines.extend(_proof_contract_section(runs, aggregate))
     lines.extend(_depth_curve_report_section(aggregate))
     lines.extend(_operator_family_report_section(runs, campaign_dir, table_paths))
+    lines.extend(_geml_paired_report_section(campaign_dir, table_paths))
     lines.extend(
         [
             "## Figures",
@@ -630,7 +642,11 @@ _RUN_COLUMNS = [
     "operator_family",
     "operator_schedule",
     "best_loss",
+    "pre_snap_mse",
     "post_snap_loss",
+    "post_snap_mse",
+    "gradient_l2_norm_max",
+    "gradient_max_abs_max",
     "snap_min_margin",
     "verifier_status",
     "recovery_class",
@@ -658,6 +674,18 @@ _RUN_COLUMNS = [
     "provenance_source",
     "provenance_expression",
     "runtime_seconds",
+    "optimizer_wall_clock_seconds",
+    "optimizer_attempt_count",
+    "optimizer_candidate_count",
+    "anomaly_nan_count",
+    "anomaly_inf_count",
+    "anomaly_exp_overflow_count",
+    "anomaly_log_branch_cut_count",
+    "anomaly_log_branch_cut_proximity_count",
+    "anomaly_log_branch_cut_crossing_count",
+    "anomaly_branch_input_count",
+    "branch_diagnostics_status",
+    "branch_failure_class",
     "active_slot_count",
     "changed_slot_count",
     "warm_start_mechanism",
@@ -746,12 +774,77 @@ _OPERATOR_FAMILY_DIAGNOSTIC_COLUMNS = [
     "anomaly_exp_overflow_count_total",
     "anomaly_expm1_overflow_count_total",
     "anomaly_log_branch_cut_count_total",
+    "anomaly_log_branch_cut_proximity_count_total",
+    "anomaly_log_branch_cut_crossing_count_total",
+    "anomaly_branch_input_count_total",
     "anomaly_log1p_branch_cut_count_total",
     "anomaly_shifted_singularity_near_count_total",
     "shifted_singularity_min_distance_min",
+    "gradient_l2_norm_max_median",
+    "gradient_max_abs_max_median",
+    "optimizer_wall_clock_seconds_median",
     "median_active_node_count",
     "median_candidate_complexity",
     "median_post_snap_loss",
+]
+
+_GEML_PAIRED_COLUMNS = [
+    "pair_id",
+    "formula",
+    "target_family",
+    "seed",
+    "start_mode",
+    "training_mode",
+    "depth",
+    "constants_policy",
+    "raw_case_id",
+    "ipi_case_id",
+    "raw_status",
+    "ipi_status",
+    "raw_verification_outcome",
+    "ipi_verification_outcome",
+    "raw_evidence_regime",
+    "ipi_evidence_regime",
+    "raw_discovery_class",
+    "ipi_discovery_class",
+    "raw_warm_start_evidence",
+    "ipi_warm_start_evidence",
+    "raw_ast_return_status",
+    "ipi_ast_return_status",
+    "raw_trained_exact_recovery",
+    "ipi_trained_exact_recovery",
+    "comparison_outcome",
+    "raw_pre_snap_mse",
+    "ipi_pre_snap_mse",
+    "raw_post_snap_mse",
+    "ipi_post_snap_mse",
+    "post_snap_mse_delta_ipi_minus_raw",
+    "raw_best_loss",
+    "ipi_best_loss",
+    "raw_gradient_l2_norm_max",
+    "ipi_gradient_l2_norm_max",
+    "raw_gradient_max_abs_max",
+    "ipi_gradient_max_abs_max",
+    "raw_exp_overflow_count",
+    "ipi_exp_overflow_count",
+    "raw_nan_count",
+    "ipi_nan_count",
+    "raw_inf_count",
+    "ipi_inf_count",
+    "raw_branch_input_count",
+    "ipi_branch_input_count",
+    "raw_branch_cut_count",
+    "ipi_branch_cut_count",
+    "raw_branch_cut_proximity_count",
+    "ipi_branch_cut_proximity_count",
+    "raw_branch_cut_crossing_count",
+    "ipi_branch_cut_crossing_count",
+    "raw_optimizer_wall_clock_seconds",
+    "ipi_optimizer_wall_clock_seconds",
+    "raw_runtime_seconds",
+    "ipi_runtime_seconds",
+    "raw_artifact_path",
+    "ipi_artifact_path",
 ]
 
 _FAILURE_COLUMNS = [
@@ -797,7 +890,11 @@ def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
         "operator_family": metrics.get("operator_family"),
         "operator_schedule": metrics.get("operator_schedule"),
         "best_loss": metrics.get("best_loss"),
+        "pre_snap_mse": metrics.get("pre_snap_mse"),
         "post_snap_loss": metrics.get("post_snap_loss"),
+        "post_snap_mse": metrics.get("post_snap_mse"),
+        "gradient_l2_norm_max": metrics.get("gradient_l2_norm_max"),
+        "gradient_max_abs_max": metrics.get("gradient_max_abs_max"),
         "snap_min_margin": metrics.get("snap_min_margin"),
         "verifier_status": metrics.get("verifier_status"),
         "recovery_class": run.get("classification"),
@@ -826,6 +923,18 @@ def _run_csv_row(run: Mapping[str, Any]) -> dict[str, Any]:
         "provenance_source": provenance.get("source_document"),
         "provenance_expression": provenance.get("symbolic_expression"),
         "runtime_seconds": _runtime_seconds(run),
+        "optimizer_wall_clock_seconds": metrics.get("optimizer_wall_clock_seconds"),
+        "optimizer_attempt_count": metrics.get("optimizer_attempt_count"),
+        "optimizer_candidate_count": metrics.get("optimizer_candidate_count"),
+        "anomaly_nan_count": metrics.get("anomaly_nan_count"),
+        "anomaly_inf_count": metrics.get("anomaly_inf_count"),
+        "anomaly_exp_overflow_count": metrics.get("anomaly_exp_overflow_count"),
+        "anomaly_log_branch_cut_count": metrics.get("anomaly_log_branch_cut_count"),
+        "anomaly_log_branch_cut_proximity_count": metrics.get("anomaly_log_branch_cut_proximity_count"),
+        "anomaly_log_branch_cut_crossing_count": metrics.get("anomaly_log_branch_cut_crossing_count"),
+        "anomaly_branch_input_count": metrics.get("anomaly_branch_input_count"),
+        "branch_diagnostics_status": metrics.get("branch_diagnostics_status"),
+        "branch_failure_class": metrics.get("branch_failure_class"),
         "active_slot_count": metrics.get("active_slot_count"),
         "changed_slot_count": metrics.get("changed_slot_count"),
         "warm_start_mechanism": metrics.get("warm_start_mechanism"),
@@ -948,15 +1057,232 @@ def _operator_family_diagnostic_rows(runs: list[Mapping[str, Any]]) -> list[dict
                 "anomaly_exp_overflow_count_total": _metric_sum(items, "anomaly_exp_overflow_count"),
                 "anomaly_expm1_overflow_count_total": _metric_sum(items, "anomaly_expm1_overflow_count"),
                 "anomaly_log_branch_cut_count_total": _metric_sum(items, "anomaly_log_branch_cut_count"),
+                "anomaly_log_branch_cut_proximity_count_total": _metric_sum(items, "anomaly_log_branch_cut_proximity_count"),
+                "anomaly_log_branch_cut_crossing_count_total": _metric_sum(items, "anomaly_log_branch_cut_crossing_count"),
+                "anomaly_branch_input_count_total": _metric_sum(items, "anomaly_branch_input_count"),
                 "anomaly_log1p_branch_cut_count_total": _metric_sum(items, "anomaly_log1p_branch_cut_count"),
                 "anomaly_shifted_singularity_near_count_total": _metric_sum(items, "anomaly_shifted_singularity_near_count"),
                 "shifted_singularity_min_distance_min": _metric_min(items, "anomaly_shifted_singularity_min_distance"),
+                "gradient_l2_norm_max_median": _median(_metric(run, "gradient_l2_norm_max") for run in items),
+                "gradient_max_abs_max_median": _median(_metric(run, "gradient_max_abs_max") for run in items),
+                "optimizer_wall_clock_seconds_median": _median(_metric(run, "optimizer_wall_clock_seconds") for run in items),
                 "median_active_node_count": _median(_metric(run, "snap_active_node_count") for run in items),
                 "median_candidate_complexity": _median(_metric(run, "candidate_complexity") for run in items),
                 "median_post_snap_loss": _median(_metric(run, "post_snap_loss") for run in items),
             }
         )
     return rows
+
+
+def _geml_pair_key(run: Mapping[str, Any]) -> tuple[str, str, str, str, str, str]:
+    optimizer = run.get("optimizer") if isinstance(run.get("optimizer"), Mapping) else {}
+    return (
+        str(run.get("formula") or ""),
+        str(run.get("seed") if run.get("seed") is not None else ""),
+        str(run.get("start_mode") or ""),
+        str(run.get("training_mode") or ""),
+        str(optimizer.get("depth") or ""),
+        str(run.get("constants_policy") or ""),
+    )
+
+
+def _geml_paired_rows(runs: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    grouped: dict[tuple[str, str, str, str, str, str], dict[str, Mapping[str, Any]]] = {}
+    for run in runs:
+        label = _operator_family_label(run)
+        if label not in {"raw_eml", "ipi_eml"}:
+            continue
+        grouped.setdefault(_geml_pair_key(run), {})[label] = run
+
+    rows: list[dict[str, Any]] = []
+    for (formula, seed, start_mode, training_mode, depth, constants_policy), pair in sorted(grouped.items()):
+        raw = pair.get("raw_eml")
+        ipi = pair.get("ipi_eml")
+        if raw is None or ipi is None:
+            continue
+        raw_recovered = _trained_exact_recovery(raw)
+        ipi_recovered = _trained_exact_recovery(ipi)
+        raw_post = _metric(raw, "post_snap_mse")
+        if raw_post is None:
+            raw_post = _metric(raw, "post_snap_loss")
+        ipi_post = _metric(ipi, "post_snap_mse")
+        if ipi_post is None:
+            ipi_post = _metric(ipi, "post_snap_loss")
+        rows.append(
+            {
+                "pair_id": f"{formula}:seed{seed}:depth{depth}",
+                "formula": formula,
+                "target_family": _geml_target_family(raw, ipi),
+                "seed": seed,
+                "start_mode": start_mode,
+                "training_mode": training_mode,
+                "depth": depth,
+                "constants_policy": constants_policy,
+                "raw_case_id": raw.get("case_id"),
+                "ipi_case_id": ipi.get("case_id"),
+                "raw_status": raw.get("status"),
+                "ipi_status": ipi.get("status"),
+                "raw_verification_outcome": raw.get("verification_outcome"),
+                "ipi_verification_outcome": ipi.get("verification_outcome"),
+                "raw_evidence_regime": raw.get("evidence_regime"),
+                "ipi_evidence_regime": ipi.get("evidence_regime"),
+                "raw_discovery_class": raw.get("discovery_class"),
+                "ipi_discovery_class": ipi.get("discovery_class"),
+                "raw_warm_start_evidence": raw.get("warm_start_evidence"),
+                "ipi_warm_start_evidence": ipi.get("warm_start_evidence"),
+                "raw_ast_return_status": raw.get("ast_return_status"),
+                "ipi_ast_return_status": ipi.get("ast_return_status"),
+                "raw_trained_exact_recovery": raw_recovered,
+                "ipi_trained_exact_recovery": ipi_recovered,
+                "comparison_outcome": _geml_comparison_outcome(raw_recovered, ipi_recovered, raw_post, ipi_post),
+                "raw_pre_snap_mse": _metric(raw, "pre_snap_mse"),
+                "ipi_pre_snap_mse": _metric(ipi, "pre_snap_mse"),
+                "raw_post_snap_mse": raw_post,
+                "ipi_post_snap_mse": ipi_post,
+                "post_snap_mse_delta_ipi_minus_raw": _number_delta(ipi_post, raw_post),
+                "raw_best_loss": _metric(raw, "best_loss"),
+                "ipi_best_loss": _metric(ipi, "best_loss"),
+                "raw_gradient_l2_norm_max": _metric(raw, "gradient_l2_norm_max"),
+                "ipi_gradient_l2_norm_max": _metric(ipi, "gradient_l2_norm_max"),
+                "raw_gradient_max_abs_max": _metric(raw, "gradient_max_abs_max"),
+                "ipi_gradient_max_abs_max": _metric(ipi, "gradient_max_abs_max"),
+                "raw_exp_overflow_count": _metric(raw, "anomaly_exp_overflow_count"),
+                "ipi_exp_overflow_count": _metric(ipi, "anomaly_exp_overflow_count"),
+                "raw_nan_count": _metric(raw, "anomaly_nan_count"),
+                "ipi_nan_count": _metric(ipi, "anomaly_nan_count"),
+                "raw_inf_count": _metric(raw, "anomaly_inf_count"),
+                "ipi_inf_count": _metric(ipi, "anomaly_inf_count"),
+                "raw_branch_input_count": _metric(raw, "anomaly_branch_input_count"),
+                "ipi_branch_input_count": _metric(ipi, "anomaly_branch_input_count"),
+                "raw_branch_cut_count": _metric(raw, "anomaly_log_branch_cut_count"),
+                "ipi_branch_cut_count": _metric(ipi, "anomaly_log_branch_cut_count"),
+                "raw_branch_cut_proximity_count": _metric(raw, "anomaly_log_branch_cut_proximity_count"),
+                "ipi_branch_cut_proximity_count": _metric(ipi, "anomaly_log_branch_cut_proximity_count"),
+                "raw_branch_cut_crossing_count": _metric(raw, "anomaly_log_branch_cut_crossing_count"),
+                "ipi_branch_cut_crossing_count": _metric(ipi, "anomaly_log_branch_cut_crossing_count"),
+                "raw_optimizer_wall_clock_seconds": _metric(raw, "optimizer_wall_clock_seconds"),
+                "ipi_optimizer_wall_clock_seconds": _metric(ipi, "optimizer_wall_clock_seconds"),
+                "raw_runtime_seconds": _runtime_seconds(raw),
+                "ipi_runtime_seconds": _runtime_seconds(ipi),
+                "raw_artifact_path": raw.get("artifact_path"),
+                "ipi_artifact_path": ipi.get("artifact_path"),
+            }
+        )
+    return rows
+
+
+def _geml_target_family(raw: Mapping[str, Any], ipi: Mapping[str, Any]) -> str:
+    tags: set[str] = set()
+    for run in (raw, ipi):
+        values = run.get("tags") if isinstance(run.get("tags"), (list, tuple)) else ()
+        tags.update(str(tag) for tag in values if tag is not None)
+    if "negative_control" in tags:
+        return "negative_control"
+    if "log_periodic" in tags:
+        return "log_periodic"
+    if "damped_oscillation" in tags:
+        return "damped_oscillation"
+    if "standing_wave" in tags:
+        return "standing_wave"
+    if "harmonic" in tags:
+        return "harmonic"
+    if "periodic" in tags:
+        return "periodic"
+    return "unknown"
+
+
+def _geml_comparison_outcome(
+    raw_recovered: bool,
+    ipi_recovered: bool,
+    raw_post_snap_mse: float | None,
+    ipi_post_snap_mse: float | None,
+) -> str:
+    if ipi_recovered and not raw_recovered:
+        return "ipi_recovery_win"
+    if raw_recovered and not ipi_recovered:
+        return "raw_recovery_win"
+    if ipi_recovered and raw_recovered:
+        return "both_recovered"
+    if raw_post_snap_mse is not None and ipi_post_snap_mse is not None:
+        if ipi_post_snap_mse < raw_post_snap_mse:
+            return "ipi_lower_post_snap_mse"
+        if raw_post_snap_mse < ipi_post_snap_mse:
+            return "raw_lower_post_snap_mse"
+    return "neutral_no_recovery"
+
+
+def _number_delta(left: float | None, right: float | None) -> float | None:
+    if left is None or right is None:
+        return None
+    return float(left - right)
+
+
+def _geml_paired_summary(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
+    total = len(rows)
+    ipi_wins = sum(1 for row in rows if row.get("comparison_outcome") == "ipi_recovery_win")
+    raw_wins = sum(1 for row in rows if row.get("comparison_outcome") == "raw_recovery_win")
+    both = sum(1 for row in rows if row.get("comparison_outcome") == "both_recovered")
+    neither = sum(1 for row in rows if row.get("comparison_outcome") == "neutral_no_recovery")
+    ipi_recovered = sum(1 for row in rows if row.get("ipi_trained_exact_recovery") is True)
+    raw_recovered = sum(1 for row in rows if row.get("raw_trained_exact_recovery") is True)
+    return {
+        "schema": "eml.geml_paired_summary.v1",
+        "paired_rows": total,
+        "raw_trained_exact_recovery": raw_recovered,
+        "ipi_trained_exact_recovery": ipi_recovered,
+        "raw_trained_exact_recovery_rate": _rate(raw_recovered, total),
+        "ipi_trained_exact_recovery_rate": _rate(ipi_recovered, total),
+        "ipi_recovery_wins": ipi_wins,
+        "raw_recovery_wins": raw_wins,
+        "both_recovered": both,
+        "neither_recovered": neither,
+        "negative_control_pairs": sum(1 for row in rows if row.get("target_family") == "negative_control"),
+        "target_families": _count_by_value(row.get("target_family") for row in rows),
+        "comparison_outcomes": _count_by_value(row.get("comparison_outcome") for row in rows),
+    }
+
+
+def _count_by_value(values: Any) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for value in values:
+        key = str(value or "unknown")
+        counts[key] = counts.get(key, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _geml_paired_markdown(rows: list[Mapping[str, Any]], summary: Mapping[str, Any]) -> str:
+    lines = [
+        "# GEML Paired Comparison",
+        "",
+        "| Metric | Value |",
+        "|--------|-------|",
+        f"| paired_rows | {summary.get('paired_rows', 0)} |",
+        f"| raw_trained_exact_recovery_rate | {summary.get('raw_trained_exact_recovery_rate', 0.0):.3f} |",
+        f"| ipi_trained_exact_recovery_rate | {summary.get('ipi_trained_exact_recovery_rate', 0.0):.3f} |",
+        f"| raw_recovery_wins | {summary.get('raw_recovery_wins', 0)} |",
+        f"| ipi_recovery_wins | {summary.get('ipi_recovery_wins', 0)} |",
+        f"| both_recovered | {summary.get('both_recovered', 0)} |",
+        f"| neither_recovered | {summary.get('neither_recovered', 0)} |",
+        "",
+        "## Pairs",
+        "",
+        "| Formula | Family | Raw Recovery | i*pi Recovery | Outcome | Raw Post MSE | i*pi Post MSE |",
+        "|---------|--------|--------------|---------------|---------|--------------|---------------|",
+    ]
+    for row in rows:
+        lines.append(
+            "| {formula} | {family} | {raw} | {ipi} | {outcome} | {raw_mse} | {ipi_mse} |".format(
+                formula=row.get("formula", ""),
+                family=row.get("target_family", ""),
+                raw=row.get("raw_trained_exact_recovery", False),
+                ipi=row.get("ipi_trained_exact_recovery", False),
+                outcome=row.get("comparison_outcome", ""),
+                raw_mse=_format_optional(row.get("raw_post_snap_mse")),
+                ipi_mse=_format_optional(row.get("ipi_post_snap_mse")),
+            )
+        )
+    lines.append("")
+    return "\n".join(lines)
 
 
 def _operator_family_lock_payload(runs: list[Mapping[str, Any]]) -> dict[str, Any]:
@@ -1410,6 +1736,39 @@ def _operator_family_report_section(
         ("recovery CSV", "operator_family_recovery_csv"),
         ("diagnostics CSV", "operator_family_diagnostics_csv"),
         ("regression locks JSON", "operator_family_locks_json"),
+    ):
+        path = table_paths.get(key)
+        if path is not None:
+            rel = _relative_link(path, campaign_dir)
+            lines.append(f"- [{label}]({rel})")
+    lines.append("")
+    return lines
+
+
+def _geml_paired_report_section(campaign_dir: Path, table_paths: Mapping[str, Path]) -> list[str]:
+    summary_path = table_paths.get("geml_paired_summary_json")
+    if summary_path is None or not Path(summary_path).exists():
+        return []
+    try:
+        summary = json.loads(Path(summary_path).read_text(encoding="utf-8"))
+    except OSError:
+        return []
+    if int(summary.get("paired_rows") or 0) == 0:
+        return []
+
+    lines = [
+        "## GEML Paired Comparison",
+        "",
+        "Rows compare matched raw EML and i*pi EML runs using verifier-gated trained recovery, not loss alone.",
+        "",
+        f"- Paired rows: {summary.get('paired_rows', 0)}",
+        f"- Raw trained exact recovery rate: {float(summary.get('raw_trained_exact_recovery_rate') or 0.0):.1%}",
+        f"- i*pi trained exact recovery rate: {float(summary.get('ipi_trained_exact_recovery_rate') or 0.0):.1%}",
+    ]
+    for label, key in (
+        ("paired markdown", "geml_paired_comparison_md"),
+        ("paired CSV", "geml_paired_comparison_csv"),
+        ("paired summary JSON", "geml_paired_summary_json"),
     ):
         path = table_paths.get(key)
         if path is not None:

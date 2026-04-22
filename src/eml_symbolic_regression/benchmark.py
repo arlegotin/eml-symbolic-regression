@@ -3245,8 +3245,11 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     changed_slots = None
     initialization: Mapping[str, Any] = {}
     if isinstance(candidate, Mapping):
-        initialization = candidate.get("best_restart", {}).get("initialization") or {}
-        anomalies = candidate.get("best_restart", {}).get("final_anomalies") or {}
+        best_restart = candidate.get("best_restart", {}) if isinstance(candidate.get("best_restart"), Mapping) else {}
+        initialization = best_restart.get("initialization") or {}
+        anomalies = best_restart.get("final_anomalies") or {}
+        loss_summary = best_restart.get("loss_summary") if isinstance(best_restart.get("loss_summary"), Mapping) else {}
+        candidate_timing = candidate.get("timing") if isinstance(candidate.get("timing"), Mapping) else {}
         perturbation = initialization.get("perturbation") or {}
         changes = perturbation.get("active_slot_changes")
         if isinstance(changes, list):
@@ -3254,6 +3257,8 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
             changed_slots = sum(1 for item in changes if item.get("changed"))
     else:
         anomalies = {}
+        loss_summary = {}
+        candidate_timing = {}
 
     refit = payload.get("refit") if isinstance(payload.get("refit"), Mapping) else {}
     post_refit = refit.get("post_refit_candidate") if isinstance(refit.get("post_refit_candidate"), Mapping) else {}
@@ -3262,6 +3267,13 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
     run = payload.get("run") if isinstance(payload.get("run"), Mapping) else {}
     optimizer = run.get("optimizer") if isinstance(run.get("optimizer"), Mapping) else {}
     start_mode = str(run.get("start_mode") or "")
+    anomaly_summary = semantics_alignment.get("anomaly_summary") if isinstance(semantics_alignment.get("anomaly_summary"), Mapping) else {}
+    trace_anomalies = anomaly_summary.get("trace_totals") if isinstance(anomaly_summary.get("trace_totals"), Mapping) else {}
+    branch_diagnostics = {}
+    if isinstance(selected, Mapping) and isinstance(selected.get("branch_diagnostics"), Mapping):
+        branch_diagnostics = selected.get("branch_diagnostics") or {}
+    elif isinstance(verification, Mapping) and isinstance(verification.get("branch_diagnostics"), Mapping):
+        branch_diagnostics = verification.get("branch_diagnostics") or {}
 
     return {
         "operator_family": candidate_operator.get("label") or budget_operator.get("label"),
@@ -3280,6 +3292,13 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
             if isinstance(candidate, Mapping)
             else None
         ),
+        "pre_snap_mse": (
+            selected.get("pre_snap_mse")
+            if isinstance(selected, Mapping)
+            else semantics_alignment.get("post_snap_mismatch", {}).get("pre_snap_mse")
+            if isinstance(semantics_alignment.get("post_snap_mismatch"), Mapping)
+            else None
+        ),
         "legacy_best_loss": candidate.get("legacy_best_loss") if isinstance(candidate, Mapping) else None,
         "post_snap_loss": (
             selected.get("post_snap_loss")
@@ -3288,6 +3307,18 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
             if isinstance(candidate, Mapping)
             else None
         ),
+        "post_snap_mse": (
+            selected.get("post_snap_mse")
+            if isinstance(selected, Mapping)
+            else semantics_alignment.get("post_snap_mismatch", {}).get("post_snap_mse")
+            if isinstance(semantics_alignment.get("post_snap_mismatch"), Mapping)
+            else None
+        ),
+        "gradient_l2_norm_max": loss_summary.get("gradient_l2_norm_max"),
+        "gradient_max_abs_max": loss_summary.get("gradient_max_abs_max"),
+        "optimizer_wall_clock_seconds": candidate_timing.get("wall_clock_seconds"),
+        "optimizer_attempt_count": candidate_timing.get("attempt_count"),
+        "optimizer_candidate_count": candidate_timing.get("candidate_count"),
         "fallback_post_snap_loss": fallback.get("post_snap_loss") if isinstance(fallback, Mapping) else None,
         "snap_min_margin": (
             selected.get("snap", {}).get("min_margin")
@@ -3352,11 +3383,33 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "refit_post_snap_loss": post_refit.get("post_snap_loss") if isinstance(post_refit, Mapping) else None,
         "refit_verifier_status": post_refit_verification.get("status") if isinstance(post_refit_verification, Mapping) else None,
         "refit_constant_count": len(refit_constants) if isinstance(refit_constants, list) else 0,
+        "anomaly_nan_count": anomalies.get("nan_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_inf_count": anomalies.get("inf_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_clamp_count": anomalies.get("clamp_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_exp_overflow_count": anomalies.get("exp_overflow_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_log_small_magnitude_count": anomalies.get("log_small_magnitude_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_log_non_positive_real_count": anomalies.get("log_non_positive_real_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_log_branch_cut_count": anomalies.get("log_branch_cut_count") if isinstance(anomalies, Mapping) else None,
+        "anomaly_branch_input_count": (
+            anomalies.get("branch_input_count")
+            if isinstance(anomalies, Mapping) and anomalies.get("branch_input_count") is not None
+            else trace_anomalies.get("branch_input_count")
+        ),
+        "anomaly_log_branch_cut_proximity_count": (
+            anomalies.get("log_branch_cut_proximity_count")
+            if isinstance(anomalies, Mapping) and anomalies.get("log_branch_cut_proximity_count") is not None
+            else trace_anomalies.get("log_branch_cut_proximity_count")
+        ),
+        "anomaly_log_branch_cut_crossing_count": (
+            anomalies.get("log_branch_cut_crossing_count")
+            if isinstance(anomalies, Mapping) and anomalies.get("log_branch_cut_crossing_count") is not None
+            else trace_anomalies.get("log_branch_cut_crossing_count")
+        ),
+        "anomaly_log_branch_cut_min_distance": (
+            anomalies.get("log_branch_cut_min_distance")
+            if isinstance(anomalies, Mapping) and anomalies.get("log_branch_cut_min_distance") is not None
+            else trace_anomalies.get("log_branch_cut_min_distance")
+        ),
         "anomaly_log_non_finite_input_count": anomalies.get("log_non_finite_input_count") if isinstance(anomalies, Mapping) else None,
         "anomaly_log_safety_penalty": anomalies.get("log_safety_penalty") if isinstance(anomalies, Mapping) else None,
         "anomaly_expm1_overflow_count": anomalies.get("expm1_overflow_count") if isinstance(anomalies, Mapping) else None,
@@ -3365,6 +3418,8 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "anomaly_shifted_singularity_min_distance": (
             anomalies.get("shifted_singularity_min_distance") if isinstance(anomalies, Mapping) else None
         ),
+        "branch_diagnostics_status": branch_diagnostics.get("status"),
+        "branch_failure_class": branch_diagnostics.get("candidate_failure_class"),
     }
 
 

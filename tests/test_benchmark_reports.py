@@ -12,6 +12,7 @@ from eml_symbolic_regression.benchmark import (
     DatasetConfig,
     OptimizerBudget,
     RunFilter,
+    _extract_run_metrics,
     aggregate_evidence,
     builtin_suite,
     render_aggregate_markdown,
@@ -79,6 +80,53 @@ def _synthetic_result(
         "stage_statuses": {},
     }
     return BenchmarkRunResult(run, status, run.artifact_path, payload)
+
+
+def test_run_metric_extraction_exposes_phase84_geml_fields():
+    metrics = _extract_run_metrics(
+        {
+            "run": {"start_mode": "blind", "optimizer": {"restarts": 1}},
+            "budget": {"operator_family": {"label": "ipi_eml"}, "semantics_mode": "guarded"},
+            "trained_eml_candidate": {
+                "config": {"operator_family": {"label": "ipi_eml"}, "semantics_mode": "guarded"},
+                "best_restart": {
+                    "loss_summary": {"gradient_l2_norm_max": 1.5, "gradient_max_abs_max": 0.75},
+                    "final_anomalies": {
+                        "nan_count": 1,
+                        "inf_count": 2,
+                        "exp_overflow_count": 3,
+                        "log_branch_cut_count": 4,
+                        "log_branch_cut_proximity_count": 5,
+                        "log_branch_cut_crossing_count": 6,
+                        "branch_input_count": 7,
+                    },
+                },
+                "selected_candidate": {
+                    "best_fit_loss": 0.2,
+                    "pre_snap_mse": 0.3,
+                    "post_snap_loss": 0.4,
+                    "post_snap_mse": 0.4,
+                    "branch_diagnostics": {"status": "performed", "candidate_failure_class": "not_failed"},
+                },
+                "timing": {"wall_clock_seconds": 1.25, "attempt_count": 1, "candidate_count": 2},
+            },
+            "trained_eml_verification": {"status": "recovered"},
+        }
+    )
+
+    assert metrics["operator_family"] == "ipi_eml"
+    assert metrics["pre_snap_mse"] == 0.3
+    assert metrics["post_snap_mse"] == 0.4
+    assert metrics["gradient_l2_norm_max"] == 1.5
+    assert metrics["gradient_max_abs_max"] == 0.75
+    assert metrics["optimizer_wall_clock_seconds"] == 1.25
+    assert metrics["optimizer_candidate_count"] == 2
+    assert metrics["anomaly_nan_count"] == 1
+    assert metrics["anomaly_log_branch_cut_proximity_count"] == 5
+    assert metrics["anomaly_log_branch_cut_crossing_count"] == 6
+    assert metrics["anomaly_branch_input_count"] == 7
+    assert metrics["branch_diagnostics_status"] == "performed"
+    assert metrics["branch_failure_class"] == "not_failed"
 
 
 def test_aggregate_evidence_separates_unsupported_and_same_ast(tmp_path):

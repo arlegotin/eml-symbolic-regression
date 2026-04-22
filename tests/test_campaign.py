@@ -73,6 +73,59 @@ def _proof_basin_run(
     }
 
 
+def _geml_pair_run(
+    *,
+    operator_family: str,
+    formula: str = "sin_pi",
+    recovered: bool = False,
+    post_snap_mse: float = 0.1,
+) -> dict:
+    discovery_class = "trained_exact_recovery" if recovered else "failed_training_attempt"
+    return {
+        "run_id": f"{formula}-{operator_family}-seed0",
+        "artifact_path": "",
+        "suite_id": "v1.15-geml-oscillatory",
+        "case_id": f"{formula}-{operator_family}-blind",
+        "formula": formula,
+        "start_mode": "blind",
+        "seed": 0,
+        "perturbation_noise": 0.0,
+        "optimizer": {"depth": 3, "steps": 24, "warm_depth": 0, "warm_steps": 8, "restarts": 1, "warm_restarts": 1},
+        "dataset": {"points": 24},
+        "training_mode": "blind_training",
+        "status": "recovered" if recovered else "snapped_but_failed",
+        "claim_status": "recovered" if recovered else "failed",
+        "classification": "verified_exact" if recovered else "snapped_but_failed",
+        "verification_outcome": "recovered" if recovered else "failed",
+        "evidence_regime": "trained",
+        "discovery_class": discovery_class,
+        "warm_start_evidence": "not_warm_start",
+        "ast_return_status": "not_warm_start",
+        "evidence_class": "trained_exact" if recovered else "failed",
+        "constants_policy": "literal_constants",
+        "tags": ["v1.15", "geml_oscillatory", "periodic", "branch_safe_by_construction"],
+        "metrics": {
+            "operator_family": "raw_eml" if operator_family == "raw" else "ipi_eml",
+            "best_loss": post_snap_mse / 2,
+            "pre_snap_mse": post_snap_mse / 3,
+            "post_snap_loss": post_snap_mse,
+            "post_snap_mse": post_snap_mse,
+            "gradient_l2_norm_max": 1.0,
+            "gradient_max_abs_max": 0.5,
+            "anomaly_exp_overflow_count": 2,
+            "anomaly_nan_count": 0,
+            "anomaly_inf_count": 0,
+            "anomaly_branch_input_count": 8,
+            "anomaly_log_branch_cut_count": 0,
+            "anomaly_log_branch_cut_proximity_count": 1,
+            "anomaly_log_branch_cut_crossing_count": 0,
+            "optimizer_wall_clock_seconds": 0.25,
+            "verifier_status": "recovered" if recovered else "failed",
+        },
+        "stage_statuses": {},
+    }
+
+
 def test_campaign_presets_map_to_budgeted_suites():
     assert list_campaign_presets() == (
         "smoke",
@@ -322,6 +375,9 @@ def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
     assert result.table_paths["headline_json"].exists()
     assert result.table_paths["headline_csv"].exists()
     assert result.table_paths["failures_csv"].exists()
+    assert result.table_paths["geml_paired_comparison_csv"].exists()
+    assert result.table_paths["geml_paired_summary_json"].exists()
+    assert result.table_paths["geml_paired_comparison_md"].exists()
 
     run_rows = list(csv.DictReader(result.table_paths["runs_csv"].open(encoding="utf-8")))
     assert len(run_rows) == 2
@@ -333,10 +389,18 @@ def test_campaign_writes_tidy_csvs_and_headline_metrics(tmp_path):
         "steps",
         "perturbation_noise",
         "best_loss",
+        "pre_snap_mse",
         "post_snap_loss",
+        "post_snap_mse",
+        "gradient_l2_norm_max",
+        "gradient_max_abs_max",
         "verifier_status",
         "recovery_class",
         "runtime_seconds",
+        "optimizer_wall_clock_seconds",
+        "anomaly_log_branch_cut_proximity_count",
+        "anomaly_log_branch_cut_crossing_count",
+        "branch_diagnostics_status",
         "changed_slot_count",
         "warm_start_mechanism",
         "warm_start_evidence",
@@ -433,6 +497,40 @@ def test_campaign_tables_preserve_perturbed_repair_status_columns(tmp_path):
     assert failures[0]["repair_candidate_root_count"] == "2"
     assert failures[0]["repair_deduped_variant_count"] == "7"
     assert failures[0]["repair_accepted_candidate_root_source"] == "fallback"
+
+
+def test_campaign_tables_emit_geml_paired_comparison(tmp_path):
+    aggregate = {
+        "runs": [
+            _geml_pair_run(operator_family="raw", recovered=False, post_snap_mse=0.2),
+            _geml_pair_run(operator_family="ipi", recovered=True, post_snap_mse=0.01),
+        ],
+        "counts": {"total": 2, "verifier_recovered": 1, "evidence_classes": {}},
+        "thresholds": [],
+    }
+
+    paths = write_campaign_tables(aggregate, tmp_path / "tables")
+
+    rows = list(csv.DictReader(paths["geml_paired_comparison_csv"].open(encoding="utf-8")))
+    summary = json.loads(paths["geml_paired_summary_json"].read_text(encoding="utf-8"))
+    markdown = paths["geml_paired_comparison_md"].read_text(encoding="utf-8")
+
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["formula"] == "sin_pi"
+    assert row["raw_discovery_class"] == "failed_training_attempt"
+    assert row["ipi_discovery_class"] == "trained_exact_recovery"
+    assert row["comparison_outcome"] == "ipi_recovery_win"
+    assert row["raw_post_snap_mse"] == "0.2"
+    assert row["ipi_post_snap_mse"] == "0.01"
+    assert row["ipi_branch_cut_proximity_count"] == "1.0"
+    assert row["ipi_optimizer_wall_clock_seconds"] == "0.25"
+    assert summary["schema"] == "eml.geml_paired_summary.v1"
+    assert summary["paired_rows"] == 1
+    assert summary["ipi_recovery_wins"] == 1
+    assert summary["ipi_trained_exact_recovery_rate"] == 1.0
+    assert "GEML Paired Comparison" in markdown
+    assert "ipi_recovery_win" in markdown
 
 
 def test_proof_campaign_tables_and_manifest_preserve_claim_metadata(tmp_path):
