@@ -15,6 +15,7 @@ from .benchmark import V115_GEML_TARGETS, V115_NEGATIVE_CONTROL_TARGETS, V115_OS
 
 DEFAULT_V116_PACKAGE_DIR = Path("artifacts") / "paper" / "v1.16-geml"
 DEFAULT_V116_CAMPAIGN_DIR = Path("artifacts") / "campaigns" / "v1.16-geml-pilot"
+DEFAULT_V116_LADDER_DIR = Path("artifacts") / "campaigns" / "v1.16-geml-budget-ladder"
 
 
 class V116PackageError(RuntimeError):
@@ -38,6 +39,21 @@ class V116PackagePaths:
         return {key: str(value) for key, value in self.__dict__.items()}
 
 
+@dataclass(frozen=True)
+class V116BudgetLadderPaths:
+    output_dir: Path
+    manifest_json: Path
+    budget_ladder_json: Path
+    budget_ladder_md: Path
+    failure_taxonomy_json: Path
+    failure_taxonomy_csv: Path
+    failure_taxonomy_md: Path
+    source_locks_json: Path
+
+    def as_dict(self) -> dict[str, str]:
+        return {key: str(value) for key, value in self.__dict__.items()}
+
+
 def v116_package_paths(output_dir: Path = DEFAULT_V116_PACKAGE_DIR) -> V116PackagePaths:
     output_dir = Path(output_dir)
     return V116PackagePaths(
@@ -51,6 +67,20 @@ def v116_package_paths(output_dir: Path = DEFAULT_V116_PACKAGE_DIR) -> V116Packa
         claim_audit_md=output_dir / "claim-audit.md",
         source_locks_json=output_dir / "source-locks.json",
         reproduction_md=output_dir / "reproduction.md",
+    )
+
+
+def v116_budget_ladder_paths(output_dir: Path = DEFAULT_V116_LADDER_DIR) -> V116BudgetLadderPaths:
+    output_dir = Path(output_dir)
+    return V116BudgetLadderPaths(
+        output_dir=output_dir,
+        manifest_json=output_dir / "manifest.json",
+        budget_ladder_json=output_dir / "budget-ladder.json",
+        budget_ladder_md=output_dir / "budget-ladder.md",
+        failure_taxonomy_json=output_dir / "failure-taxonomy.json",
+        failure_taxonomy_csv=output_dir / "failure-taxonomy.csv",
+        failure_taxonomy_md=output_dir / "failure-taxonomy.md",
+        source_locks_json=output_dir / "source-locks.json",
     )
 
 
@@ -369,6 +399,121 @@ def write_v116_paper_package(
     return paths
 
 
+def write_v116_budget_ladder(
+    output_dir: Path = DEFAULT_V116_LADDER_DIR,
+    *,
+    smoke_campaign_dir: Path = Path("artifacts") / "campaigns" / "v1.16-geml-smoke",
+    pilot_campaign_dir: Path = DEFAULT_V116_CAMPAIGN_DIR,
+    overwrite: bool = False,
+) -> V116BudgetLadderPaths:
+    """Write smoke/pilot/full routing artifacts for v1.16 GEML campaigns."""
+
+    output_dir = Path(output_dir)
+    paths = v116_budget_ladder_paths(output_dir)
+    if paths.manifest_json.exists() and not overwrite:
+        raise V116PackageError(f"{paths.manifest_json} already exists; pass overwrite=True to refresh")
+    paths.output_dir.mkdir(parents=True, exist_ok=True)
+
+    smoke = _campaign_evidence("smoke", Path(smoke_campaign_dir))
+    pilot = _campaign_evidence("pilot", Path(pilot_campaign_dir))
+    pilot_evaluation = evaluate_v116_gate(
+        pilot["summary"],
+        _classification_from_rows(pilot["rows"]),
+        paired_rows=pilot["rows"],
+        gate_config=default_v116_gate_config(min_unique_seeds=1),
+        source_locks_ok=pilot["source_locks_ok"],
+    )
+    metrics = pilot_evaluation["metrics"]
+    pilot_has_exact_signal = (
+        int(metrics["natural_ipi_recovery_wins"]) > 0
+        and int(metrics["natural_ipi_minus_raw_recovery_wins"]) > 0
+        and int(metrics["negative_control_ipi_recovery_wins"]) == 0
+    )
+    if not pilot["rows"]:
+        full_decision = "pilot_not_performed"
+        rationale = "No pilot paired rows were found; full campaign is blocked."
+    elif pilot_has_exact_signal:
+        full_decision = "run_full_campaign"
+        rationale = "Pilot has verifier-gated natural-family i*pi exact recovery signal and clean negative controls."
+    else:
+        full_decision = "stop_full_campaign_fail_closed"
+        rationale = "Pilot did not show clean verifier-gated i*pi exact recovery signal; full campaign should not run."
+
+    taxonomy_rows = _failure_taxonomy_rows([*smoke["rows"], *pilot["rows"]])
+    if not taxonomy_rows:
+        taxonomy_rows = [
+            {
+                "tier": "pilot",
+                "pair_id": "not_performed",
+                "formula": "",
+                "target_family": "",
+                "seed": "",
+                "comparison_outcome": "not_performed",
+                "failure_class": "not_performed",
+                "actionable_next_step": "Run geml-v116-smoke and geml-v116-pilot before evaluating the full campaign gate.",
+            }
+        ]
+
+    ladder = {
+        "schema": "eml.v116_budget_ladder.v1",
+        "decision": full_decision,
+        "rationale": rationale,
+        "tiers": [
+            _ladder_tier("smoke", smoke, "PYTHONPATH=src python -m eml_symbolic_regression.cli campaign geml-v116-smoke --label v1.16-geml-smoke --overwrite"),
+            _ladder_tier("pilot", pilot, "PYTHONPATH=src python -m eml_symbolic_regression.cli campaign geml-v116-pilot --label v1.16-geml-pilot --overwrite"),
+            {
+                "name": "full",
+                "status": "recommended" if full_decision == "run_full_campaign" else "blocked",
+                "command": "PYTHONPATH=src python -m eml_symbolic_regression.cli campaign geml-v116-full --label v1.16-geml-full --overwrite",
+                "gate": "run only after pilot has clean verifier-gated exact i*pi recovery signal",
+            },
+        ],
+        "pilot_gate_evaluation": pilot_evaluation,
+    }
+
+    _write_json(paths.budget_ladder_json, ladder)
+    paths.budget_ladder_md.write_text(_budget_ladder_markdown(ladder), encoding="utf-8")
+    taxonomy_payload = {"schema": "eml.v116_failure_taxonomy.v1", "rows": taxonomy_rows}
+    _write_json(paths.failure_taxonomy_json, taxonomy_payload)
+    _write_csv(paths.failure_taxonomy_csv, taxonomy_rows, _FAILURE_TAXONOMY_COLUMNS)
+    paths.failure_taxonomy_md.write_text(_failure_taxonomy_markdown(taxonomy_rows), encoding="utf-8")
+
+    locks = _source_locks_payload(
+        [
+            ("smoke_manifest", Path(smoke_campaign_dir) / "campaign-manifest.json", "input"),
+            ("smoke_paired_summary", Path(smoke_campaign_dir) / "tables" / "geml-paired-summary.json", "input"),
+            ("smoke_paired_comparison", Path(smoke_campaign_dir) / "tables" / "geml-paired-comparison.csv", "input"),
+            ("pilot_manifest", Path(pilot_campaign_dir) / "campaign-manifest.json", "input"),
+            ("pilot_paired_summary", Path(pilot_campaign_dir) / "tables" / "geml-paired-summary.json", "input"),
+            ("pilot_paired_comparison", Path(pilot_campaign_dir) / "tables" / "geml-paired-comparison.csv", "input"),
+        ]
+    )
+    locks["outputs"] = _source_locks(
+        [
+            ("budget_ladder_json", paths.budget_ladder_json),
+            ("budget_ladder_md", paths.budget_ladder_md),
+            ("failure_taxonomy_json", paths.failure_taxonomy_json),
+            ("failure_taxonomy_csv", paths.failure_taxonomy_csv),
+            ("failure_taxonomy_md", paths.failure_taxonomy_md),
+        ],
+        role="output",
+    )
+    _write_json(paths.source_locks_json, locks)
+    manifest = {
+        "schema": "eml.v116_budget_ladder_manifest.v1",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "decision": full_decision,
+        "rationale": rationale,
+        "smoke_campaign_dir": str(smoke_campaign_dir),
+        "pilot_campaign_dir": str(pilot_campaign_dir),
+        "budget_ladder": str(paths.budget_ladder_json),
+        "failure_taxonomy": str(paths.failure_taxonomy_json),
+        "source_locks": str(paths.source_locks_json),
+    }
+    _write_json(paths.manifest_json, manifest)
+    return paths
+
+
 def _classification_from_rows(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
     grouped: dict[str, list[Mapping[str, Any]]] = {}
     for row in rows:
@@ -395,6 +540,147 @@ def _classification_from_rows(rows: Iterable[Mapping[str, Any]]) -> list[dict[st
             }
         )
     return result
+
+
+_FAILURE_TAXONOMY_COLUMNS = [
+    "tier",
+    "pair_id",
+    "formula",
+    "target_family",
+    "seed",
+    "comparison_outcome",
+    "failure_class",
+    "actionable_next_step",
+]
+
+
+def _campaign_evidence(tier: str, campaign_dir: Path) -> dict[str, Any]:
+    rows = [{**row, "tier": tier} for row in _read_paired_rows(campaign_dir)]
+    summary_path = campaign_dir / "tables" / "geml-paired-summary.json"
+    summary = _read_json(summary_path) if summary_path.is_file() else _summary_from_rows(rows)
+    locks = _source_locks(
+        [
+            ("campaign_manifest", campaign_dir / "campaign-manifest.json"),
+            ("geml_paired_summary", summary_path),
+            ("geml_paired_comparison", campaign_dir / "tables" / "geml-paired-comparison.csv"),
+        ],
+        role="input",
+    )
+    return {
+        "tier": tier,
+        "campaign_dir": str(campaign_dir),
+        "rows": rows,
+        "summary": summary,
+        "source_locks": locks,
+        "source_locks_ok": all(lock["status"] == "locked" for lock in locks),
+    }
+
+
+def _ladder_tier(name: str, evidence: Mapping[str, Any], command: str) -> dict[str, Any]:
+    summary = evidence.get("summary") if isinstance(evidence.get("summary"), Mapping) else {}
+    return {
+        "name": name,
+        "status": "performed" if evidence.get("rows") else "not_performed",
+        "paired_rows": int(summary.get("paired_rows") or 0),
+        "ipi_recovery_wins": int(summary.get("ipi_recovery_wins") or 0),
+        "raw_recovery_wins": int(summary.get("raw_recovery_wins") or 0),
+        "loss_only_outcomes": int(summary.get("loss_only_outcomes") or 0),
+        "source_locks_ok": bool(evidence.get("source_locks_ok")),
+        "command": command,
+    }
+
+
+def _failure_taxonomy_rows(rows: Iterable[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    result: list[dict[str, Any]] = []
+    for row in rows:
+        outcome = str(row.get("comparison_outcome") or "")
+        failure_class, next_step = _failure_class_for_pair(row, outcome)
+        result.append(
+            {
+                "tier": str(row.get("tier") or _tier_from_case_id(str(row.get("raw_case_id") or row.get("ipi_case_id") or ""))),
+                "pair_id": str(row.get("pair_id") or ""),
+                "formula": str(row.get("formula") or ""),
+                "target_family": str(row.get("target_family") or ""),
+                "seed": str(row.get("seed") or ""),
+                "comparison_outcome": outcome or "unknown",
+                "failure_class": failure_class,
+                "actionable_next_step": next_step,
+            }
+        )
+    return result
+
+
+def _failure_class_for_pair(row: Mapping[str, Any], outcome: str) -> tuple[str, str]:
+    if outcome in {"ipi_recovery_win", "raw_recovery_win", "both_recovered"}:
+        return "exact_recovery_signal", "Keep this row in exact-recovery denominators and compare seed stability."
+    if outcome in {"ipi_lower_post_snap_mse", "raw_lower_post_snap_mse"}:
+        return "loss_only_signal", "Inspect snap mismatch and candidate-pool alternatives; do not count as recovery."
+    if _numeric(row.get("ipi_branch_cut_crossing_count")) > 0 or _numeric(row.get("raw_branch_cut_crossing_count")) > 0:
+        return "branch_pathology", "Inspect branch-domain construction and guarded-versus-faithful mismatch diagnostics."
+    if "unsupported" in str(row.get("raw_status") or "").lower() or "unsupported" in str(row.get("ipi_status") or "").lower():
+        return "unsupported_or_over_depth", "Check target depth, literal constants, and suite support gates before rerunning."
+    if _numeric(row.get("raw_nan_count")) > 0 or _numeric(row.get("ipi_nan_count")) > 0 or _numeric(row.get("raw_inf_count")) > 0 or _numeric(row.get("ipi_inf_count")) > 0:
+        return "numerical_instability", "Reduce guard pressure or inspect anomaly traces before increasing budget."
+    if outcome == "neutral_no_recovery":
+        return "optimization_or_snap_miss", "Increase candidate-pool or hardening budget only after checking snap margins."
+    return "verifier_mismatch", "Inspect verifier evidence and exact-candidate selection fields."
+
+
+def _tier_from_case_id(case_id: str) -> str:
+    if "smoke" in case_id:
+        return "smoke"
+    if "pilot" in case_id:
+        return "pilot"
+    return "unknown"
+
+
+def _numeric(value: Any) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _budget_ladder_markdown(ladder: Mapping[str, Any]) -> str:
+    lines = [
+        "# v1.16 GEML Budget Ladder",
+        "",
+        f"Decision: `{ladder.get('decision')}`",
+        "",
+        str(ladder.get("rationale") or ""),
+        "",
+        "| Tier | Status | Pairs | i*pi Wins | Raw Wins | Loss-Only | Source Locks |",
+        "|------|--------|-------|-----------|----------|-----------|--------------|",
+    ]
+    for tier in ladder.get("tiers", []):
+        if not isinstance(tier, Mapping):
+            continue
+        lines.append(
+            f"| {tier.get('name')} | {tier.get('status')} | {tier.get('paired_rows', '')} | "
+            f"{tier.get('ipi_recovery_wins', '')} | {tier.get('raw_recovery_wins', '')} | "
+            f"{tier.get('loss_only_outcomes', '')} | {tier.get('source_locks_ok', '')} |"
+        )
+    lines.extend(["", "## Commands", ""])
+    for tier in ladder.get("tiers", []):
+        if isinstance(tier, Mapping) and tier.get("command"):
+            lines.extend([f"### {tier.get('name')}", "", "```bash", str(tier["command"]), "```", ""])
+    return "\n".join(lines)
+
+
+def _failure_taxonomy_markdown(rows: Iterable[Mapping[str, Any]]) -> str:
+    lines = [
+        "# v1.16 GEML Failure Taxonomy",
+        "",
+        "| Tier | Pair | Formula | Family | Outcome | Failure Class | Next Step |",
+        "|------|------|---------|--------|---------|---------------|-----------|",
+    ]
+    for row in rows:
+        lines.append(
+            f"| {row.get('tier')} | {row.get('pair_id')} | {row.get('formula')} | {row.get('target_family')} | "
+            f"{row.get('comparison_outcome')} | {row.get('failure_class')} | {row.get('actionable_next_step')} |"
+        )
+    lines.append("")
+    return "\n".join(lines)
 
 
 def _summary_from_rows(rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
@@ -578,3 +864,12 @@ def _read_json(path: Path) -> dict[str, Any]:
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _write_csv(path: Path, rows: Iterable[Mapping[str, Any]], fieldnames: list[str]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            writer.writerow({field: row.get(field, "") for field in fieldnames})

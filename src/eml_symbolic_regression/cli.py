@@ -64,7 +64,13 @@ from .paper_v112 import (
     write_v112_supplement,
     write_v112_training_detail_assets,
 )
-from .paper_v116 import DEFAULT_V116_CAMPAIGN_DIR, DEFAULT_V116_PACKAGE_DIR, write_v116_paper_package
+from .paper_v116 import (
+    DEFAULT_V116_CAMPAIGN_DIR,
+    DEFAULT_V116_LADDER_DIR,
+    DEFAULT_V116_PACKAGE_DIR,
+    write_v116_budget_ladder,
+    write_v116_paper_package,
+)
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .publication import DEFAULT_PUBLICATION_DIR, write_publication_rebuild
@@ -585,6 +591,22 @@ def geml_paper_v116_command(args: argparse.Namespace) -> int:
     return 0 if audit["status"] == "passed" else 1
 
 
+def geml_v116_ladder_command(args: argparse.Namespace) -> int:
+    paths = write_v116_budget_ladder(
+        output_dir=Path(args.output_dir),
+        smoke_campaign_dir=Path(args.smoke_dir),
+        pilot_campaign_dir=Path(args.pilot_dir),
+        overwrite=args.overwrite,
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml v1.16 ladder: manifest -> {paths.manifest_json}; "
+        f"taxonomy -> {paths.failure_taxonomy_json}; "
+        f"decision -> {manifest['decision']}"
+    )
+    return 0
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -957,6 +979,25 @@ def build_parser() -> argparse.ArgumentParser:
     )
     geml_paper_v116.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing v1.16 package manifest.")
     geml_paper_v116.set_defaults(func=geml_paper_v116_command)
+
+    geml_v116_ladder = sub.add_parser("geml-v116-ladder", help="Write the v1.16 smoke/pilot/full budget ladder gate.")
+    geml_v116_ladder.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V116_LADDER_DIR),
+        help="Directory for ladder, failure taxonomy, and source-lock artifacts.",
+    )
+    geml_v116_ladder.add_argument(
+        "--smoke-dir",
+        default="artifacts/campaigns/v1.16-geml-smoke",
+        help="Smoke campaign directory.",
+    )
+    geml_v116_ladder.add_argument(
+        "--pilot-dir",
+        default=str(DEFAULT_V116_CAMPAIGN_DIR),
+        help="Pilot campaign directory.",
+    )
+    geml_v116_ladder.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing ladder manifest.")
+    geml_v116_ladder.set_defaults(func=geml_v116_ladder_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(

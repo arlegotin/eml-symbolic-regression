@@ -1,11 +1,12 @@
 import csv
 import json
 
-from eml_symbolic_regression.cli import build_parser, geml_paper_v116_command
+from eml_symbolic_regression.cli import build_parser, geml_paper_v116_command, geml_v116_ladder_command
 from eml_symbolic_regression.paper_v116 import (
     build_v116_claim_audit,
     default_v116_gate_config,
     evaluate_v116_gate,
+    write_v116_budget_ladder,
     write_v116_paper_package,
 )
 
@@ -127,6 +128,58 @@ def test_write_v116_paper_package_writes_fail_closed_artifacts(tmp_path):
     assert "Loss-only improvements are diagnostics" in paths.decision_md.read_text(encoding="utf-8")
 
 
+def test_write_v116_budget_ladder_blocks_full_without_pilot_exact_signal(tmp_path):
+    smoke_dir = tmp_path / "smoke"
+    pilot_dir = tmp_path / "pilot"
+    _write_paired_campaign(
+        smoke_dir,
+        [
+            {"formula": "sin_pi", "target_family": "periodic", "seed": "0", "comparison_outcome": "ipi_lower_post_snap_mse"},
+            {"formula": "exp", "target_family": "negative_control", "seed": "0", "comparison_outcome": "raw_lower_post_snap_mse"},
+        ],
+    )
+    _write_paired_campaign(
+        pilot_dir,
+        [
+            {"formula": "sin_pi", "target_family": "periodic", "seed": "0", "comparison_outcome": "ipi_lower_post_snap_mse"},
+            {"formula": "cos_pi", "target_family": "periodic", "seed": "0", "comparison_outcome": "neutral_no_recovery"},
+            {"formula": "exp", "target_family": "negative_control", "seed": "0", "comparison_outcome": "raw_lower_post_snap_mse"},
+        ],
+    )
+
+    paths = write_v116_budget_ladder(tmp_path / "ladder", smoke_campaign_dir=smoke_dir, pilot_campaign_dir=pilot_dir)
+
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    taxonomy = json.loads(paths.failure_taxonomy_json.read_text(encoding="utf-8"))["rows"]
+    ladder = json.loads(paths.budget_ladder_json.read_text(encoding="utf-8"))
+
+    assert manifest["decision"] == "stop_full_campaign_fail_closed"
+    assert ladder["tiers"][2]["status"] == "blocked"
+    assert {row["failure_class"] for row in taxonomy} >= {"loss_only_signal", "optimization_or_snap_miss"}
+    assert "failure_class" in paths.failure_taxonomy_csv.read_text(encoding="utf-8")
+
+
+def test_write_v116_budget_ladder_recommends_full_for_clean_exact_signal(tmp_path):
+    pilot_dir = tmp_path / "pilot"
+    rows = [
+        {"formula": "sin_pi", "target_family": "periodic", "seed": "0", "comparison_outcome": "ipi_recovery_win"},
+        {"formula": "exp", "target_family": "negative_control", "seed": "0", "comparison_outcome": "raw_lower_post_snap_mse"},
+    ]
+    _write_paired_campaign(pilot_dir, rows)
+
+    paths = write_v116_budget_ladder(tmp_path / "ladder", smoke_campaign_dir=pilot_dir, pilot_campaign_dir=pilot_dir)
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    ladder = json.loads(paths.budget_ladder_json.read_text(encoding="utf-8"))
+
+    assert manifest["decision"] == "run_full_campaign"
+    assert ladder["tiers"][2]["status"] == "recommended"
+
+
 def test_cli_registers_geml_paper_v116():
     args = build_parser().parse_args(["geml-paper-v116", "--output-dir", "out", "--campaign-dir", "campaign"])
     assert args.func is geml_paper_v116_command
+
+
+def test_cli_registers_geml_v116_ladder():
+    args = build_parser().parse_args(["geml-v116-ladder", "--output-dir", "out", "--pilot-dir", "campaign"])
+    assert args.func is geml_v116_ladder_command
