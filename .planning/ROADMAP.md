@@ -37,7 +37,7 @@ The v1.16 objective is intentionally evidence-gated. The milestone should produc
 - [x] Phase 90: Budget Ladder and Pilot Recovery Runs (completed 2026-04-22)
 - [x] Phase 91: Full Matched GEML Paper Campaign (completed 2026-04-22)
 - [x] Phase 92: Ablations, Failure Taxonomy, and Paper Figures (completed 2026-04-22)
-- [ ] Phase 93: v1.16 Paper Decision Package and Claim Audit
+- [x] Phase 93: v1.16 Paper Decision Package and Claim Audit (completed 2026-04-22)
 
 ## Phase Overview
 
@@ -48,7 +48,7 @@ The v1.16 objective is intentionally evidence-gated. The milestone should produc
 | 90 | 1/1 | Complete    | 2026-04-22 |
 | 91 | 1/1 | Complete    | 2026-04-22 |
 | 92 | 1/1 | Complete    | 2026-04-22 |
-| 93 | v1.16 Paper Decision Package and Claim Audit | Assemble final paper-strength evidence package and decide whether i*pi/GEML deserves a positive paper section. | STRG-04, PAPER-02, PAPER-03, PAPER-04 |
+| 93 | 1/1 | Complete    | 2026-04-22 |
 
 ## Phase Details
 
