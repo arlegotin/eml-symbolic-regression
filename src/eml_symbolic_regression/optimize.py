@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field, replace
 from typing import Any, Callable, Mapping
 
@@ -84,6 +85,7 @@ class ExactCandidate:
     global_step: int
     temperature: float
     best_fit_loss: float
+    pre_snap_loss: float
     post_snap_loss: float
     snap: SnapResult
     slot_alternatives: tuple[ActiveSlotAlternatives, ...] = ()
@@ -104,13 +106,16 @@ class ExactCandidate:
             "global_step": self.global_step,
             "temperature": self.temperature,
             "best_fit_loss": self.best_fit_loss,
+            "pre_snap_mse": self.pre_snap_loss,
             "post_snap_loss": self.post_snap_loss,
+            "post_snap_mse": self.post_snap_loss,
             "active_slot_count": len(self.snap.decisions),
             "low_margin_slot_count": sum(1 for item in self.snap.decisions if item.margin < 0.1),
             "lowest_margin_slots": [_decision_payload(item) for item in low_margin],
             "snap": self.snap.as_dict(),
             "slot_alternatives": [item.as_dict() for item in self.slot_alternatives],
             "verification": self.verification.as_dict() if self.verification is not None else None,
+            "branch_diagnostics": self.verification.branch_diagnostics if self.verification is not None else None,
             "selection_metrics": dict(self.selection_metrics or {}),
         }
 
@@ -190,16 +195,32 @@ def _train_step(
     if not torch.isfinite(loss):
         return None, stats
     loss.backward()
+    gradient_l2_norm, gradient_max_abs = _gradient_metrics(model)
     optimizer.step()
     return {
         "fit_loss": float(fit_loss.detach().item()),
+        "pre_snap_mse": float(fit_loss.detach().item()),
         "objective_loss": float(loss.detach().item()),
         "entropy": float(entropy.detach().item()),
         "entropy_loss": float(entropy_loss.detach().item()),
         "expected_child_use": float(size.detach().item()),
         "size_loss": float(size_loss.detach().item()),
         "anomaly_penalty": float(anomaly_penalty.detach().item()),
+        "gradient_l2_norm": gradient_l2_norm,
+        "gradient_max_abs": gradient_max_abs,
     }, stats
+
+
+def _gradient_metrics(model: SoftEMLTree) -> tuple[float, float]:
+    squared = 0.0
+    max_abs = 0.0
+    for parameter in model.parameters():
+        if parameter.grad is None:
+            continue
+        grad = parameter.grad.detach()
+        squared += float(torch.sum(torch.abs(grad) ** 2).item())
+        max_abs = max(max_abs, float(torch.max(torch.abs(grad)).item()) if grad.numel() else 0.0)
+    return float(np.sqrt(squared)), max_abs
 
 
 def _trace_entry(
@@ -220,7 +241,10 @@ def _trace_entry(
         "temperature": temperature,
         "operator_family": operator_family.label,
         "fit_loss": metrics["fit_loss"],
+        "pre_snap_mse": metrics["pre_snap_mse"],
         "objective_loss": metrics["objective_loss"],
+        "gradient_l2_norm": metrics["gradient_l2_norm"],
+        "gradient_max_abs": metrics["gradient_max_abs"],
         "entropy": metrics["entropy"],
         "entropy_loss": metrics["entropy_loss"],
         "expected_child_use": metrics["expected_child_use"],
@@ -235,7 +259,12 @@ def _trace_entry(
         "log_small_magnitude_count": anomaly["log_small_magnitude_count"],
         "log_non_positive_real_count": anomaly["log_non_positive_real_count"],
         "log_branch_cut_count": anomaly["log_branch_cut_count"],
+        "branch_input_count": anomaly["branch_input_count"],
+        "log_branch_cut_proximity_count": anomaly["log_branch_cut_proximity_count"],
+        "log_branch_cut_crossing_count": anomaly["log_branch_cut_crossing_count"],
+        "log_branch_cut_min_distance": anomaly["log_branch_cut_min_distance"],
         "log_non_finite_input_count": anomaly["log_non_finite_input_count"],
+        "invalid_domain_skip_count": anomaly["invalid_domain_skip_count"],
         "expm1_overflow_count": anomaly["expm1_overflow_count"],
         "log1p_branch_cut_count": anomaly["log1p_branch_cut_count"],
         "shifted_singularity_near_count": anomaly["shifted_singularity_near_count"],
@@ -257,6 +286,8 @@ def _loss_summary(trace: list[Mapping[str, Any]]) -> dict[str, Any]:
             "best_global_step": None,
             "loss_reduction": None,
             "loss_reduction_ratio": None,
+            "gradient_l2_norm_max": 0.0,
+            "gradient_max_abs_max": 0.0,
         }
     fit_values = [float(row["fit_loss"]) for row in trace if row.get("phase") == "fit" and np.isfinite(float(row["fit_loss"]))]
     all_values = [float(row["fit_loss"]) for row in trace if np.isfinite(float(row["fit_loss"]))]
@@ -280,6 +311,8 @@ def _loss_summary(trace: list[Mapping[str, Any]]) -> dict[str, Any]:
         "best_global_step": best_row.get("global_step") if best_row is not None else None,
         "loss_reduction": reduction,
         "loss_reduction_ratio": ratio,
+        "gradient_l2_norm_max": max((_numeric(row.get("gradient_l2_norm")) for row in trace), default=0.0),
+        "gradient_max_abs_max": max((_numeric(row.get("gradient_max_abs")) for row in trace), default=0.0),
     }
 
 
@@ -304,7 +337,11 @@ _ANOMALY_COUNT_FIELDS = (
     "log_small_magnitude_count",
     "log_non_positive_real_count",
     "log_branch_cut_count",
+    "branch_input_count",
+    "log_branch_cut_proximity_count",
+    "log_branch_cut_crossing_count",
     "log_non_finite_input_count",
+    "invalid_domain_skip_count",
     "expm1_overflow_count",
     "log1p_branch_cut_count",
     "shifted_singularity_near_count",
@@ -335,12 +372,18 @@ def _anomaly_summary(restart_logs: list[Mapping[str, Any]]) -> dict[str, Any]:
             for row in rows
             if row.get("shifted_singularity_min_distance") is not None
         ]
+        branch_distance_values = [
+            _numeric(row.get("log_branch_cut_min_distance"), default=float("inf"))
+            for row in rows
+            if row.get("log_branch_cut_min_distance") is not None
+        ]
         payload = {field: int(sum(_numeric(row.get(field)) for row in rows)) for field in _ANOMALY_COUNT_FIELDS}
         payload.update(
             {
                 "log_safety_penalty": float(sum(_numeric(row.get("log_safety_penalty")) for row in rows)),
                 "max_abs": max(max_abs_values) if max_abs_values else 0.0,
                 "max_exp_real": max(max_exp_values) if max_exp_values else 0.0,
+                "log_branch_cut_min_distance": min(branch_distance_values) if branch_distance_values else None,
                 "shifted_singularity_min_distance": min(singularity_values) if singularity_values else None,
             }
         )
@@ -362,6 +405,11 @@ def _semantics_alignment_payload(
     post_snap_delta = (
         selected_candidate.post_snap_loss - selected_candidate.best_fit_loss
         if np.isfinite(selected_candidate.post_snap_loss) and np.isfinite(selected_candidate.best_fit_loss)
+        else None
+    )
+    post_snap_pre_delta = (
+        selected_candidate.post_snap_loss - selected_candidate.pre_snap_loss
+        if np.isfinite(selected_candidate.post_snap_loss) and np.isfinite(selected_candidate.pre_snap_loss)
         else None
     )
     return {
@@ -393,8 +441,11 @@ def _semantics_alignment_payload(
         "post_snap_mismatch": {
             "selected_candidate_id": selected_candidate.candidate_id,
             "soft_best_fit_loss": selected_candidate.best_fit_loss,
+            "pre_snap_mse": selected_candidate.pre_snap_loss,
             "post_snap_loss": selected_candidate.post_snap_loss,
+            "post_snap_mse": selected_candidate.post_snap_loss,
             "post_snap_minus_soft_best": post_snap_delta,
+            "post_snap_minus_pre_snap": post_snap_pre_delta,
             "verifier_status": verification.status if verification is not None else None,
             "high_precision_max_error": verification.high_precision_max_error if verification is not None else None,
             "split_max_abs_error": max(split_errors) if split_errors else None,
@@ -406,6 +457,7 @@ def _semantics_alignment_payload(
             "certificate_status": verification.certificate_status if verification is not None else None,
             "evidence_level": verification.evidence_level if verification is not None else None,
             "metric_roles": verification.metric_roles if verification is not None else None,
+            "branch_diagnostics": verification.branch_diagnostics if verification is not None else None,
         },
     }
 
@@ -426,9 +478,11 @@ def _emit_candidate(
     global_step: int,
     temperature: float,
     best_fit_loss: float,
+    config: TrainingConfig,
 ) -> ExactCandidate:
     snap = model.snap()
     slot_alternatives = model.active_slot_alternatives(top_k=2)
+    pre_snap_loss = _soft_checkpoint_loss(model, inputs, target, temperature=temperature, config=config)
     snapped_pred = snap.expression.evaluate_numpy({name: np.asarray(value) for name, value in inputs.items()})
     post_snap_loss = mse_complex_numpy(snapped_pred, target)
     return ExactCandidate(
@@ -443,10 +497,31 @@ def _emit_candidate(
         global_step=global_step,
         temperature=temperature,
         best_fit_loss=best_fit_loss,
+        pre_snap_loss=pre_snap_loss,
         post_snap_loss=post_snap_loss,
         snap=snap,
         slot_alternatives=slot_alternatives,
     )
+
+
+def _soft_checkpoint_loss(
+    model: SoftEMLTree,
+    inputs: Mapping[str, Any],
+    target: Any,
+    *,
+    temperature: float,
+    config: TrainingConfig,
+) -> float:
+    with torch.no_grad():
+        tensor_inputs = {name: as_complex_tensor(value) for name, value in inputs.items()}
+        target_tensor = as_complex_tensor(target)
+        pred = model(
+            tensor_inputs,
+            temperature=temperature,
+            training_semantics=True,
+            semantics=config.semantics_config(),
+        )
+        return float(torch.mean(torch.abs(pred - target_tensor) ** 2).item())
 
 
 def _report_group_error(report: VerificationReport | None, predicate: Callable[[str], bool]) -> float:
@@ -539,6 +614,7 @@ def fit_eml_tree(
     """Fit a soft EML tree and retain a verifier-rankable exact-candidate pool."""
 
     target_tensor = as_complex_tensor(target)
+    wall_start = time.perf_counter()
     tensor_inputs = {name: as_complex_tensor(value) for name, value in inputs.items()}
 
     best: tuple[float, dict[str, Any]] | None = None
@@ -633,6 +709,7 @@ def fit_eml_tree(
             global_step=max(len(losses) - 1, 0),
             temperature=_temperature(effective_config, max(len(losses) - 1, 0)),
             best_fit_loss=attempt_best_loss,
+            config=effective_config,
         )
         candidates.append(legacy_candidate)
         log["candidate_ids"].append(legacy_candidate.candidate_id)
@@ -682,6 +759,7 @@ def fit_eml_tree(
                     global_step=effective_config.steps + hardening_step,
                     temperature=temp,
                     best_fit_loss=attempt_best_loss,
+                    config=effective_config,
                 )
                 candidates.append(candidate)
                 log["candidate_ids"].append(candidate.candidate_id)
@@ -740,6 +818,11 @@ def fit_eml_tree(
         "best_loss": selected_candidate.best_fit_loss,
         "legacy_best_loss": legacy_best_loss,
         "post_snap_loss": selected_candidate.post_snap_loss,
+        "timing": {
+            "wall_clock_seconds": time.perf_counter() - wall_start,
+            "attempt_count": len(restart_logs),
+            "candidate_count": len(candidates),
+        },
         "status": status,
     }
     return FitResult(

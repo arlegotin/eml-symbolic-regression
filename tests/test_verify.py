@@ -251,6 +251,7 @@ def test_exact_candidate_ranking_ignores_final_confirmation_split(monkeypatch):
             global_step=0,
             temperature=0.0,
             best_fit_loss=0.0,
+            pre_snap_loss=0.0,
             post_snap_loss=0.0,
             snap=SimpleNamespace(expression=candidate_id, active_node_count=1, decisions=()),
         )

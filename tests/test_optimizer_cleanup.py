@@ -1,10 +1,12 @@
 import numpy as np
 
+import eml_symbolic_regression.optimize as optimize
 from eml_symbolic_regression.cleanup import cleanup_candidate
 from eml_symbolic_regression.datasets import get_demo
+from eml_symbolic_regression.expression import Const, Var, ipi_eml_expr
 from eml_symbolic_regression.optimize import TrainingConfig, fit_eml_tree
-from eml_symbolic_regression.semantics import ceml_s_operator, zeml_s_operator
-from eml_symbolic_regression.verify import verify_candidate
+from eml_symbolic_regression.semantics import ceml_s_operator, ipi_eml_operator, zeml_s_operator
+from eml_symbolic_regression.verify import DataSplit, verify_candidate
 
 
 EXPECTED_CENTERED_SCAFFOLD_EXCLUSIONS = [
@@ -118,6 +120,65 @@ def test_optimizer_preserves_centered_schedule_metadata():
     assert result.manifest["operator_trace"][-1]["phase"] == "hardening"
     assert result.manifest["operator_trace"][-1]["operator"]["label"] == "ZEML_4"
     assert result.snap.expression.to_node()["operator"]["label"] == "ZEML_4"
+
+
+def test_optimizer_runs_ipi_eml_with_branch_and_snap_metadata():
+    x = np.linspace(-0.5, 0.5, 16)
+    target = np.exp(1j * np.pi * x)
+    split = DataSplit(
+        name="heldout",
+        inputs={"x": x},
+        target=target,
+        target_mpmath=lambda context: np.exp(1j * np.pi * context["x"]),
+    )
+
+    def initializer(model, restart, seed):
+        embedding = model.embed_expr(ipi_eml_expr(Var("x"), Const(1.0)))
+        return {"kind": "ipi_exact_seed", "restart": restart, "seed": seed, "embedding": embedding.as_dict()}
+
+    result = fit_eml_tree(
+        {"x": x},
+        target,
+        TrainingConfig(
+            depth=1,
+            variables=("x",),
+            steps=1,
+            restarts=1,
+            lr=0.0,
+            seed=0,
+            operator_family=ipi_eml_operator(),
+        ),
+        initializer=initializer,
+        verification_splits=[split],
+    )
+
+    selected = result.manifest["selected_candidate"]
+    trace_row = result.manifest["restarts"][0]["trace"][0]
+    trace_totals = result.manifest["semantics_alignment"]["anomaly_summary"]["trace_totals"]
+
+    assert result.snap.expression.to_node()["operator"]["label"] == "ipi_eml"
+    assert result.manifest["config"]["operator_family"]["label"] == "ipi_eml"
+    assert result.manifest["config"]["scaffold_initializers"] == []
+    assert result.manifest["scaffold_exclusions"] == EXPECTED_CENTERED_SCAFFOLD_EXCLUSIONS
+    assert selected["best_fit_loss"] >= 0.0
+    assert selected["pre_snap_mse"] >= 0.0
+    assert selected["post_snap_mse"] == selected["post_snap_loss"]
+    assert selected["verification"]["branch_diagnostics"]["status"] == "performed"
+    assert result.manifest["semantics_alignment"]["verifier_evidence"]["branch_diagnostics"]["status"] == "performed"
+    assert trace_row["gradient_l2_norm"] >= 0.0
+    assert trace_row["gradient_max_abs"] >= 0.0
+    assert "log_branch_cut_proximity_count" in trace_row
+    assert "log_branch_cut_crossing_count" in trace_totals
+    assert result.manifest["timing"]["wall_clock_seconds"] >= 0.0
+    assert result.verification is not None
+    assert result.verification.status == "recovered"
+
+
+def test_optimizer_empty_loss_summary_keeps_gradient_keys():
+    summary = optimize._loss_summary([])
+
+    assert summary["gradient_l2_norm_max"] == 0.0
+    assert summary["gradient_max_abs_max"] == 0.0
 
 
 def test_optimizer_custom_initializer_does_not_add_scaffold_provenance():
