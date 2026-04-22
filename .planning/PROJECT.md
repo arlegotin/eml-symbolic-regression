@@ -10,9 +10,9 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.16 Active
+## Current State: v1.17 Active
 
-The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, figure-asset, CI, dataset, baseline, release-gate, and claim-integrity foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, and source-locked publication packages are all in place and archived through v1.14.
+The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, figure-asset, CI, dataset, baseline, release-gate, claim-integrity, GEML-family, and i*pi evidence foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, proof bundles, centered/scaled/GEML operator-family experiments, paper-decision artifacts, and source-locked publication packages are all in place and archived through v1.16.
 
 The current evidence says raw EML is representationally viable but blind basin finding degrades sharply with depth. Perturbed true-tree recovery remains strong, scaffolded/warm-start regimes are useful when clearly labeled, centered-family evidence is negative under the supplied v1.8 setup, and v1.9 has a verified raw-hybrid paper package that keeps those regimes separate.
 
@@ -28,34 +28,35 @@ v1.14 repaired the public claim surface before further paper work. Compile-only 
 
 v1.15 added the parameterized `GEML_a(x, y) = exp(a*x) - log(y)/a` family with raw EML and i*pi EML named specializations, restricted i*pi theory and branch diagnostics, family-aware training/snap integration, matched oscillatory/negative-control protocols, paired campaign outputs, and a claim-safe package under `artifacts/paper/v1.15-geml/`. The package decision is `inconclusive_smoke_only`, not a positive i*pi EML paper-section claim.
 
-v1.16 is now active. Its job is to turn the v1.15 i*pi/GEML signal from smoke-only and loss-only into paper-strength evidence if the method can earn it. The milestone targets optimizer/search improvements, branch-safe initialization, full matched raw versus i*pi campaigns, ablations, failure taxonomy, figures, and a final claim audit. A positive paper claim requires verifier-gated exact recovery under a matched protocol with negative controls still visible.
+v1.16 completed the paper-strength GEML/i*pi evidence workflow and produced a source-locked package under `artifacts/paper/v1.16-geml/`. The result is useful but not paper-positive: the final decision is `inconclusive`, `paper_claim_allowed` is `false`, the pilot evidence has 12 paired rows across 2 unique seeds, and both raw EML and i*pi EML have 0 verifier-gated exact recoveries. The full campaign was correctly stopped fail-closed because the signal remained loss-only.
 
-## Last Completed Milestone: v1.15 GEML family and i*pi EML exploration
+v1.17 is now active. Its job is to attack the bottleneck exposed by v1.16: promising soft/loss behavior does not survive snapping into exact verified formulas. The milestone focuses on snap-margin diagnostics, bounded exact-tree neighborhood search, verifier-first candidate ranking, and a tiny natural-bias recovery sandbox before any larger i*pi paper campaign is reopened.
 
-**Goal:** Generalize EML into `GEML_a`, treat `a = i*pi` as a controlled oscillatory specialization, prove restricted-domain identities, and compare raw EML against i*pi EML under matched protocols.
+## Last Completed Milestone: v1.16 Paper-Strength GEML Recovery Evidence
+
+**Goal:** Decide whether the v1.15 i*pi/GEML loss-only signal could become paper-strength verifier-gated exact recovery evidence under matched raw/i*pi protocols.
 
 **Shipped features:**
 
-- Fixed-parameter GEML semantics with raw EML as `a = 1` and i*pi EML as `a = i*pi`.
-- Restricted i*pi theory artifacts with branch assumptions, branch diagnostics, and explicit non-claims.
-- Family-aware optimizer, hardening, snapping, exact-candidate selection, verifier metrics, and manifests.
-- Matched raw/i*pi benchmark suites covering periodic, harmonic, damped/wave, log-periodic, and negative-control targets.
-- Paired campaign tables with recovery, loss, gradient, anomaly, branch, runtime, and v1.14 recovery-accounting fields.
-- Final v1.15 GEML package under `artifacts/paper/v1.15-geml/` with source locks, target-family classification, reproduction commands, and passing claim audit.
+- Paper-strength success gate with exact-recovery thresholds, claim categories, negative-control discipline, and fail-closed audit checks.
+- Branch-safe i*pi/GEML initializer metadata and matched raw-regression/accounting preservation.
+- Smoke and pilot budget ladder that prevented an expensive full campaign when no exact-recovery signal appeared.
+- Source-locked ablation table, failure taxonomy, figures, campaign manifests, and final decision package.
+- Final v1.16 package under `artifacts/paper/v1.16-geml/` with decision `inconclusive` and passing claim audit.
 
 ## Current Milestone
 
-**v1.16 Paper-Strength GEML Recovery Evidence**
+**v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search**
 
-**Goal:** Address the v1.15 problems directly: no exact recoveries, smoke-only scope, loss-only i*pi signal, branch-sensitive optimization, and no paper-positive claim. The milestone should either produce verifier-gated, paper-grade i*pi/GEML recovery evidence or a defensible negative/inconclusive result with clear diagnostics.
+**Goal:** Convert v1.16's loss-only and near-miss diagnostics into verifier-gated exact recovery by improving snap analysis, local exact-tree repair/search, candidate pooling, and targeted mini-campaign gates before any broader i*pi paper campaign.
 
 **Target features:**
 
-- Paper-strength success contract with exact-recovery thresholds, claim categories, and negative-control discipline.
-- i*pi/GEML-aware optimizer, initializer, hardening, and branch-safety improvements that do not leak exact target formulas.
-- Full matched raw EML versus i*pi EML multi-seed campaign with resource metadata, source locks, and reproducible commands.
-- Ablation and failure taxonomy covering branch guards, initialization, constants, depth, budget, snap mismatch, and verifier mismatch.
-- Paper evidence package with figures, tables, manifests, claim audit, and a final positive/promising/negative/inconclusive decision.
+- Snap-margin and low-confidence slot diagnostics for failed, loss-only, and fallback candidates.
+- Bounded one/two-slot exact-tree neighborhood generation around snapped candidates without target-formula leakage.
+- Verifier-first candidate ranking that separates exact recovery, symbolic evidence, post-snap loss, repair provenance, and loss-only diagnostics.
+- Focused natural-bias recovery sandbox for selected i*pi-friendly targets and negative controls under tiny matched gates.
+- v1.17 evidence package that reports whether exact recovery signal appeared and whether any broader campaign is justified.
 
 ## Requirements
 
@@ -143,14 +144,20 @@ v1.16 is now active. Its job is to turn the v1.15 i*pi/GEML signal from smoke-on
 - ✓ Matched oscillatory, log-periodic, and negative-control benchmark protocols — v1.15 Phase 85
 - ✓ Paired raw EML versus i*pi EML campaign outputs and diagnostics — v1.15 Phase 86
 - ✓ Final v1.15 GEML evidence package with claim audit and bounded decision — v1.15 Phase 87
+- ✓ Paper-strength i*pi/GEML exact-recovery gate and matched campaign contract — v1.16 Phase 88
+- ✓ Branch-safe i*pi initializer metadata and raw-regression preservation — v1.16 Phase 89
+- ✓ Smoke/pilot budget ladder with fail-closed full-campaign gate — v1.16 Phase 90
+- ✓ Full-campaign stop package with source-locked negative/inconclusive evidence — v1.16 Phase 91
+- ✓ Ablations, failure taxonomy, and deterministic paper figures for v1.16 GEML evidence — v1.16 Phase 92
+- ✓ Final v1.16 decision package, source locks, and passing claim audit — v1.16 Phase 93
 
 ### Active
 
-- [ ] Define paper-strength i*pi/GEML success gates in terms of verifier-gated exact recovery, not loss-only improvement.
-- [ ] Improve i*pi/GEML search enough to produce exact candidates on natural oscillatory or phase-log targets without formula leakage.
-- [ ] Run matched multi-seed raw EML versus i*pi EML campaigns with negative controls, branch diagnostics, and resource metadata.
-- [ ] Produce ablations and failure taxonomy that explain whether initialization, branch behavior, budget, depth, constants, or snapping blocks recovery.
-- [ ] Package paper-ready figures, tables, source locks, reproduction commands, and a claim audit that either supports a strong result or states why not.
+- [ ] Record snap-margin, active-slot, and soft-versus-hard mismatch diagnostics for loss-only and failed pilot candidates.
+- [ ] Generate bounded exact-tree neighborhoods around snapped candidates without formula-name recognizers or exact target leakage.
+- [ ] Rank and promote candidates through verifier-first exact recovery gates before post-snap loss or fit quality can influence claims.
+- [ ] Run a tiny matched natural-bias recovery sandbox with negative controls before reopening any larger i*pi paper campaign.
+- [ ] Package v1.17 evidence with before/after exact-recovery signal, failure taxonomy, source locks, and a claim-safe next-campaign decision.
 
 ### Out of Scope
 
@@ -187,7 +194,9 @@ The post-v1.13 public-materials audit found a higher-priority claim-integrity is
 
 v1.15 shifted from claim-surface repair back to operator-family research. The repo now supports `GEML_a(x, y) = exp(a*x) - log(y)/a` as a fixed-parameter family around EML, with `a = i*pi` as a phase-log specialization whose real-axis sensitivity is bounded while its second-slot log branch is explicit. The milestone classified what is true on controlled domains and produced a claim-safe matched-protocol package; the current evidence is inconclusive rather than paper-section positive.
 
-v1.16 addresses that inconclusive state. Strong results are desirable for the paper, but they must be earned by verifier-gated exact recovery, matched raw/i*pi comparisons, and negative controls. Loss-only wins, repaired candidates, same-AST seed retention, and target-specific shortcuts are useful diagnostics only; they cannot carry a paper-positive i*pi claim.
+v1.16 tested whether that inconclusive state could become paper-strength evidence under matched raw/i*pi protocols. It did not find verifier-gated exact recovery: both raw and i*pi had 0 exact recoveries in the 12-row paired pilot, all useful signal remained loss-only, and the full campaign was stopped fail-closed. That result is a good engineering outcome but an inconclusive scientific outcome.
+
+v1.17 responds by moving earlier in the failure chain. Before spending more budget on broader campaigns, it focuses on why soft candidates fail at the snap boundary, whether bounded exact-tree neighborhoods can repair near misses without target leakage, and whether verifier-first candidate ranking can surface any real exact-recovery signal on natural-bias targets.
 
 ## Constraints
 
@@ -216,10 +225,13 @@ v1.16 addresses that inconclusive state. Strong results are desirable for the pa
 - **Theorem honesty**: v1.15 may prove restricted-domain identities and closure results, but must not claim the EML paper's full scientific-calculator completeness unless a constructive proof is present.
 - **Matched comparison**: EML and i*pi EML comparisons must use the same depths, optimizer, initialization budget, snap rule, datasets, and verifier gates unless a deviation is recorded.
 - **Branch discipline**: i*pi EML artifacts must state the log branch convention and expose branch-cut proximity/crossing diagnostics.
-- **Paper-strength gate**: v1.16 can claim a positive i*pi/GEML result only when exact verifier-gated recovery improves over raw EML on a declared natural-bias family under a matched protocol.
+- **Paper-strength gate**: Positive i*pi/GEML claims still require exact verifier-gated recovery improving over raw EML on a declared natural-bias family under a matched protocol.
 - **Negative-control discipline**: Negative controls remain in the denominator or in an explicit companion table; they cannot be hidden because they weaken the story.
 - **Formula-leakage ban**: New initializers, priors, and candidate-pooling mechanisms must be generic to target families and cannot encode exact formula names or exact target trees.
-- **Fail-closed paper package**: If the evidence remains weak, v1.16 must produce a negative or inconclusive paper package rather than relaxing the recovery definition.
+- **Fail-closed paper package**: If the evidence remains weak, a milestone must produce a negative or inconclusive package rather than relaxing the recovery definition.
+- **v1.16 package preservation**: `artifacts/paper/v1.16-geml/` is the source-locked record of the inconclusive result and must not be rewritten to imply a stronger claim.
+- **Snap-first discipline**: v1.17 should not launch larger matched campaigns until snap/neighborhood work produces at least one verifier-gated exact-recovery signal under the tiny sandbox.
+- **Exact-neighborhood honesty**: Local exact-tree search may repair candidates, but accepted moves must be provenance-labeled and verifier-owned; post-snap loss alone cannot promote a result.
 
 ## Key Decisions
 
@@ -274,9 +286,12 @@ v1.16 addresses that inconclusive state. Strong results are desirable for the pa
 | v1.15 frames i*pi EML as a `GEML_a` specialization | The family story is stronger than presenting one isolated operator, and it keeps EML as the `a = 1` reference point. | ✓ Good |
 | v1.15 proves restricted-domain theorems before making broad claims | The original EML paper has a constructive completeness result; this milestone should not imply the same for i*pi EML without proof. | ✓ Good |
 | v1.15 benchmarks matched structural bias plus negative controls | i*pi EML is expected to help oscillatory/phase-log laws if it helps at all; credible reporting needs both its natural class and cases where EML may remain better. | ✓ Good |
-| v1.16 optimizes for paper-strength evidence but keeps verifier-owned recovery | Strong results matter for the paper, but weakening exact recovery would make the result less publishable, not more. | Active |
-| i*pi EML needs matched wins on its natural-bias family before positive claims | The v1.15 smoke result showed lower periodic loss only, while a negative-control row favored raw EML; full claims need exact recovery and controls. | Active |
-| Negative or inconclusive evidence is preferable to an overclaim | A clean failure taxonomy can still support a rigorous paper or next experiment, while an inflated positive claim would damage the project. | Active |
+| v1.16 optimized for paper-strength evidence but kept verifier-owned recovery | Strong results mattered for the paper, but weakening exact recovery would have made the result less publishable, not more. | ✓ Good |
+| i*pi EML needs matched wins on its natural-bias family before positive claims | The v1.16 package found lower-loss diagnostics only, with 0 exact recoveries; full claims still need exact recovery and controls. | ✓ Good |
+| Negative or inconclusive evidence is preferable to an overclaim | v1.16 produced a clean inconclusive package instead of relaxing the recovery definition. | ✓ Good |
+| v1.17 works snap-first before spending campaign budget | v1.16 showed the blocker is not just training loss; exact recovery fails at the hard candidate boundary. | Active |
+| Exact-neighborhood search must stay target-agnostic | Local repair is useful only if it avoids formula-name recognizers, exact target seeds, and verifier bypasses. | Active |
+| Candidate ranking should be verifier-first | Post-snap loss and soft-loss metrics are diagnostics; exact recovery claims need symbolic/verifier status before fit quality. | Active |
 
 ## Evolution
 
@@ -296,4 +311,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-22 after v1.16 milestone start*
+*Last updated: 2026-04-22 after v1.17 milestone start*

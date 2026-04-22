@@ -1,5 +1,22 @@
 # Milestones
 
+## v1.16 Paper-Strength GEML Recovery Evidence (Shipped: 2026-04-22)
+
+**Phases completed:** 6 phases, 6 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Defined a paper-strength i*pi/GEML success contract with exact-recovery thresholds, claim categories, negative-control discipline, and fail-closed audit behavior.
+- Added branch-safe i*pi/GEML initializer metadata and preserved raw EML regressions plus v1.14/v1.15 recovery-accounting fields.
+- Ran the smoke and pilot budget ladder for matched raw EML versus i*pi EML evidence.
+- Correctly stopped the full matched campaign fail-closed when the pilot produced no exact-recovery signal.
+- Generated ablation assets, failure taxonomy, deterministic figures, source locks, and representative diagnostics.
+- Assembled `artifacts/paper/v1.16-geml/` with a final decision package, reproduction context, and passing claim audit.
+
+**Known deferred items at close:** The final decision is `inconclusive`, not paper-positive. The checked pilot has 12 paired rows across 2 unique seeds, 0 exact recoveries for raw or i*pi EML, and 12 loss-only outcomes. The next milestone should focus on snap mismatch, exact-neighborhood search, and verifier-first candidate ranking before reopening broader i*pi campaigns.
+
+---
+
 ## v1.15 GEML family and i*pi EML exploration (Shipped: 2026-04-22)
 
 **Phases completed:** 6 phases, 6 plans, 0 tasks

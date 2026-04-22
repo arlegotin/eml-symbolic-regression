@@ -1,69 +1,63 @@
-# Requirements: EML Symbolic Regression v1.16
+# Requirements: EML Symbolic Regression v1.17
 
-**Milestone:** v1.16 Paper-Strength GEML Recovery Evidence
+**Milestone:** v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search
 **Created:** 2026-04-22
-**Source context:** v1.15 GEML evidence package decision `inconclusive_smoke_only`
+**Source context:** v1.16 final decision `inconclusive`, with 12 loss-only paired pilot rows and 0 verifier-gated exact recoveries
 
 ## Goal
 
-Address the problems surfaced by v1.15: no verifier-gated exact recoveries, only smoke-scale paired evidence, loss-only i*pi signals, branch-sensitive optimization, and no paper-positive claim. v1.16 must either produce paper-strength i*pi/GEML recovery evidence or a defensible negative/inconclusive result.
+Turn v1.16's loss-only and near-miss evidence into a precise snap/candidate-search investigation. v1.17 should determine whether low-margin snap alternatives and bounded exact-tree neighborhoods can produce verifier-gated exact recovery on natural-bias targets before any broader i*pi/GEML campaign is reopened.
 
 ## Success Definition
 
-A positive i*pi/GEML paper claim requires verifier-gated exact recovery under a matched raw EML versus i*pi EML protocol. Lower training or held-out loss is useful only as a diagnostic unless it snaps to exact candidates that pass the verifier. Negative controls, branch diagnostics, resource metadata, and source locks remain part of the evidence package even when they weaken the headline.
+The milestone succeeds if it produces a source-locked answer to a narrower question: can snap-first diagnostics plus target-agnostic exact-neighborhood search recover at least one verifier-gated exact candidate from the v1.16-style natural-bias setting? A positive signal must be exact-verifier owned. If no exact signal appears, the package must explain whether the blocker is margin ambiguity, candidate explosion, branch pathology, verifier mismatch, or a deeper representational/search limitation.
 
-## Paper-Strength Success Contract
+## Snap Diagnostics and Margins
 
-- **STRG-01**: Define paper-positive thresholds in terms of verifier-gated exact recovery, not loss-only improvement.
-- **STRG-02**: Report i*pi EML natural-bias wins against raw EML under matched depth, budget, data split, snap rule, and verifier gates.
-- **STRG-03**: Keep negative controls visible and prevent uncontrolled i*pi advantage from supporting paper-positive claims.
-- **STRG-04**: Classify the final result as `paper_positive`, `promising_preliminary`, `negative`, or `inconclusive` using predefined criteria.
+- **SNAP-01**: Record per-slot snap probabilities, margins, selected alternatives, and low-confidence alternatives for selected, fallback, and loss-only candidates.
+- **SNAP-02**: Classify snap mismatch rows by active-node changes, low-margin slot patterns, soft-versus-hard error deltas, and branch/fidelity diagnostics.
+- **SNAP-03**: Produce deterministic snap-neighborhood manifests for v1.16 failed and loss-only pilot rows, including budgets and source locks.
 
-## i*pi-Aware Search Improvements
+## Exact Neighborhood Search
 
-- **SRCH-01**: Add branch-safe periodic, phase-log, or related initialization/prior mechanisms that are generic to target families and do not embed exact formulas.
-- **SRCH-02**: Improve optimizer schedules, hardening, and candidate pooling for fixed GEML operators so i*pi rows can produce verifier-gated exact candidates, not just lower losses.
-- **SRCH-03**: Add branch-aware penalties, guards, schedules, or diagnostics while preserving the training-mode versus faithful-verification separation.
-- **SRCH-04**: Add a budget ladder from smoke to pilot to paper campaign so expensive runs happen only after meaningful exact-recovery signal.
-- **SRCH-05**: Preserve raw EML regressions and v1.14/v1.15 recovery-accounting fields under all search changes.
+- **NBR-01**: Generate bounded one-slot and two-slot exact AST alternatives around snapped candidates without target formula leakage.
+- **NBR-02**: Verify every neighborhood candidate through the same train, held-out, extrapolation, symbolic, and high-precision gates before promotion.
+- **NBR-03**: Preserve fallback and original snapped candidates with provenance for accepted moves, rejected moves, and unchanged candidates.
+- **NBR-04**: Cap candidate explosion with deterministic budgets, stable ordering, and source-locked limits.
 
-## Benchmark and Campaign Evidence
+## Candidate Ranking and Promotion
 
-- **CAMP-01**: Run a multi-seed matched raw EML versus i*pi EML campaign over the full v1.15 target set or a justified paper subset.
-- **CAMP-02**: Aggregate exact recovery, loss, branch, runtime/resource, and failure taxonomy metrics by target family and operator.
-- **CAMP-03**: Include confidence intervals or seed-level variation summaries so one lucky run cannot carry the claim.
-- **CAMP-04**: Store reproducible command manifests and source locks for all paper-candidate campaigns.
+- **RANK-01**: Rank candidates by exact verifier status first, symbolic/equivalence evidence second, and post-snap loss only as a diagnostic.
+- **RANK-02**: Expose why the winning candidate was selected and why lower-loss candidates were rejected when they fail exact recovery.
+- **RANK-03**: Keep loss-only, repaired, compile-only, same-AST, fallback, and original-snap accounting fields separate in every table.
 
-## Ablation and Failure Analysis
+## Focused Evidence
 
-- **ABL-01**: Compare branch guards, initialization, constants, depth, budget, and candidate-pooling variants against the same target families.
-- **ABL-02**: Separate exact recovery, verified-equivalent recovery, repaired candidate, same-AST/warm-start, and loss-only outcomes.
-- **ABL-03**: Classify failures as optimization miss, snap mismatch, branch pathology, verifier mismatch, unsupported/over-depth, or numerical instability.
-- **ABL-04**: Produce actionable next-step diagnostics if i*pi remains inconclusive or negative.
+- **EVID-01**: Run a tiny v1.17 snap-neighborhood smoke on selected v1.16 natural-bias rows before any broader campaign.
+- **EVID-02**: Compare raw and i*pi EML under matched budgets and negative controls only after neighborhood search is enabled.
+- **EVID-03**: Gate any pilot or full campaign expansion on at least one verifier-gated exact-recovery signal.
 
-## Paper Evidence Package
+## Evidence Package
 
-- **PAPER-01**: Generate paper-grade figures and tables for family recovery, loss before/after snap, branch anomalies, runtime, and representative fitted curves.
-- **PAPER-02**: Build a v1.16 evidence package with source locks, campaign manifests, aggregate tables, ablation tables, reproduction commands, and claim audit.
-- **PAPER-03**: Block global superiority, broad blind-recovery, full universality, loss-only recovery, and negative-control cherry-picking claims.
-- **PAPER-04**: State whether the result is paper-positive, promising-but-preliminary, negative, or inconclusive under the declared gate.
+- **PACK-01**: Produce a v1.17 evidence package with before/after exact recovery, failure taxonomy, source locks, manifests, and reproduction commands.
+- **PACK-02**: Classify the final result as `exact_signal_found`, `still_inconclusive`, or `negative` under predefined criteria.
+- **PACK-03**: Keep the v1.16 final package intact and make any v1.17 comparison explicitly additive.
 
 ## Future Requirements
 
-- **FUT-01**: Learn continuous `a` values after fixed i*pi evidence is meaningful.
-- **FUT-02**: Add external symbolic-regression baselines once the internal raw/i*pi comparison is stable.
-- **FUT-03**: Add formal theorem-prover certificates for restricted identities.
-- **FUT-04**: Run larger standardized hardware campaigns after the smoke and pilot gates justify them.
+- **FUT-01**: Learn continuous `a` values only after fixed exact recovery signal is established.
+- **FUT-02**: Reopen larger standardized hardware campaigns only after the v1.17 gate justifies them.
+- **FUT-03**: Add theorem or certificate machinery for exact-neighborhood promotions that become paper-critical.
 
 ## Out of Scope
 
-- Weakening the verifier or counting loss-only improvement as recovery.
-- Exact target seeding, formula-name recognizers, or hard-coded exact target trees.
-- Dropping negative controls because they hurt the story.
-- Claiming i*pi EML is globally better than raw EML.
-- Claiming full `GEML_a` or i*pi EML universality without constructive proof.
-- Large open-ended deep blind campaigns before smoke and pilot gates show exact-recovery signal.
+- Weakening the verifier or counting post-snap loss as recovery.
+- Exact target seeding, formula-name recognizers, hard-coded target trees, or hidden oracle simplification.
+- Large blind i*pi/GEML campaigns before the tiny snap-neighborhood smoke produces exact signal.
+- Positive paper claims from loss-only, repaired-only, compile-only, or same-AST evidence.
+- Dropping negative controls or unmatched raw EML comparisons because they weaken the result.
+- Rewriting the v1.16 source-locked package to imply a stronger outcome.
 
 ## Milestone Gate
 
-The milestone passes only if the final package is internally consistent with the predefined claim class. A positive result must satisfy the exact-recovery gate. A negative or inconclusive result passes only if it includes source-locked campaigns, ablations, failure taxonomy, and a clear explanation of what blocks a stronger paper claim.
+v1.17 passes if the final package truthfully answers whether snap-first exact-neighborhood search produced any verifier-gated exact-recovery signal. `exact_signal_found` requires at least one exact recovered candidate under the declared gate. `still_inconclusive` is acceptable only with source-locked diagnostics and next-step blockers. `negative` is acceptable if the evidence shows the approach fails under the declared budgets and controls.

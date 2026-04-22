@@ -1,8 +1,8 @@
 # Roadmap: EML Symbolic Regression
 
 **Updated:** 2026-04-22
-**Current milestone:** v1.16 Paper-Strength GEML Recovery Evidence
-**Phase numbering:** Continuing from v1.15 Phase 87.
+**Current milestone:** v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search
+**Phase numbering:** Continuing from v1.16 Phase 93.
 
 ## Milestones
 
@@ -22,139 +22,124 @@
 - **v1.13 Publication-grade reproduction and validation** - Phases 69-76 complete (completed 2026-04-20; archives: `.planning/milestones/v1.13-ROADMAP.md`, `.planning/milestones/v1.13-REQUIREMENTS.md`, `.planning/milestones/v1.13-MILESTONE-AUDIT.md`, `.planning/milestones/v1.13-phases/`)
 - **v1.14 Evidence claim integrity and audit hardening** - Phases 77-81 complete (completed 2026-04-21; archives: `.planning/milestones/v1.14-ROADMAP.md`, `.planning/milestones/v1.14-REQUIREMENTS.md`, `.planning/milestones/v1.14-phases/`)
 - **v1.15 GEML family and i*pi EML exploration** - Phases 82-87 complete (completed 2026-04-22; archives: `.planning/milestones/v1.15-ROADMAP.md`, `.planning/milestones/v1.15-REQUIREMENTS.md`, `.planning/milestones/v1.15-MILESTONE-AUDIT.md`, `.planning/milestones/v1.15-phases/`)
-- **v1.16 Paper-Strength GEML Recovery Evidence** - Phases 88-93 active
+- **v1.16 Paper-Strength GEML Recovery Evidence** - Phases 88-93 complete (completed 2026-04-22; archives: `.planning/milestones/v1.16-ROADMAP.md`, `.planning/milestones/v1.16-REQUIREMENTS.md`, `.planning/milestones/v1.16-MILESTONE-AUDIT.md`, `.planning/milestones/v1.16-phases/`)
+- **v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search** - Phases 94-98 active
 
 ## Current Status
 
-v1.16 is active. It starts from the v1.15 result: `artifacts/paper/v1.15-geml/` is claim-safe but inconclusive because the checked-in smoke campaign has two paired rows, no verifier-gated exact recovery, one periodic i*pi loss-only signal, and one negative-control raw loss-only signal.
+v1.17 starts from the v1.16 final decision: `artifacts/paper/v1.16-geml/` is source-locked, claim-audited, and inconclusive. The pilot evidence has 12 paired rows across 2 unique seeds, 0 raw exact recoveries, 0 i*pi exact recoveries, and 12 loss-only outcomes. The full matched campaign was blocked fail-closed.
 
-The v1.16 objective is intentionally evidence-gated. The milestone should produce a strong i*pi/GEML paper section only if exact verifier-gated recovery improves under a matched raw/i*pi protocol. If that does not happen, the milestone still succeeds by producing a source-locked negative or inconclusive package with ablations, failure taxonomy, and clear next-step diagnostics.
+The next bottleneck is the hard candidate boundary. Before spending more compute on broad raw/i*pi campaigns, v1.17 will inspect snap margins, generate bounded exact-tree neighborhoods around near-miss snapped candidates, rank candidates by verifier status first, and run a tiny natural-bias recovery sandbox.
 
 ## Phase Status
 
-- [x] Phase 88: Paper-Strength Success Gate and Campaign Contract (completed 2026-04-22)
-- [x] Phase 89: i*pi-Aware Search and Branch-Safe Initialization (completed 2026-04-22)
-- [x] Phase 90: Budget Ladder and Pilot Recovery Runs (completed 2026-04-22)
-- [x] Phase 91: Full Matched GEML Paper Campaign (completed 2026-04-22)
-- [x] Phase 92: Ablations, Failure Taxonomy, and Paper Figures (completed 2026-04-22)
-- [x] Phase 93: v1.16 Paper Decision Package and Claim Audit (completed 2026-04-22)
+- [ ] Phase 94: Snap-Mismatch Diagnostics and Low-Margin Inventory
+- [ ] Phase 95: Bounded Exact Neighborhood Generator
+- [ ] Phase 96: Verifier-First Candidate Ranking and Promotion
+- [ ] Phase 97: Focused v1.17 Natural-Bias Recovery Sandbox
+- [ ] Phase 98: v1.17 Evidence Package and Next-Campaign Gate
 
 ## Phase Overview
 
 | Phase | Name | Goal | Requirements |
 |-------|------|------|--------------|
-| 88 | 1/1 | Complete    | 2026-04-22 |
-| 89 | 1/1 | Complete    | 2026-04-22 |
-| 90 | 1/1 | Complete    | 2026-04-22 |
-| 91 | 1/1 | Complete    | 2026-04-22 |
-| 92 | 1/1 | Complete    | 2026-04-22 |
-| 93 | 1/1 | Complete    | 2026-04-22 |
+| 94 | Snap-Mismatch Diagnostics and Low-Margin Inventory | Explain where soft candidates fail when snapped into exact trees. | SNAP-01, SNAP-02, SNAP-03 |
+| 95 | Bounded Exact Neighborhood Generator | Generate deterministic one/two-slot exact alternatives around snapped candidates without target leakage. | NBR-01, NBR-03, NBR-04 |
+| 96 | Verifier-First Candidate Ranking and Promotion | Promote exact candidates only through verifier-owned gates and keep low-loss failures separated. | NBR-02, RANK-01, RANK-02, RANK-03 |
+| 97 | Focused v1.17 Natural-Bias Recovery Sandbox | Test whether snap-neighborhood search produces any exact signal on selected natural-bias targets and controls. | EVID-01, EVID-02, EVID-03 |
+| 98 | v1.17 Evidence Package and Next-Campaign Gate | Package the result and decide whether broader campaigns are justified. | PACK-01, PACK-02, PACK-03 |
 
 ## Phase Details
 
-### Phase 88: Paper-Strength Success Gate and Campaign Contract
+### Phase 94: Snap-Mismatch Diagnostics and Low-Margin Inventory
 
-**Goal:** Define the exact evidence gate for a paper-positive i*pi/GEML result and lock matched campaign denominators before optimizer changes.
+**Goal:** Add the diagnostic layer needed to understand why v1.16 soft/loss-only candidates fail after snapping.
 
-**Requirements:** STRG-01, STRG-02, STRG-03, STRG-04, CAMP-04
-
-**Success criteria:**
-
-1. Machine-readable gate config defines `paper_positive`, `promising_preliminary`, `negative`, and `inconclusive` outcomes.
-2. Claim audit rejects loss-only recovery, same-AST seed promotion, formula leakage, and negative-control cherry-picking.
-3. Campaign contract locks target families, seeds, budgets, depths, splits, verifier gates, branch metrics, and resource metadata.
-4. The package can fail closed when the exact-recovery gate is not met.
-
-### Phase 89: i*pi-Aware Search and Branch-Safe Initialization
-
-**Goal:** Improve i*pi/GEML search enough to produce exact candidates on natural targets without exact formula leakage.
-
-**Requirements:** SRCH-01, SRCH-02, SRCH-03, SRCH-04, SRCH-05
+**Requirements:** SNAP-01, SNAP-02, SNAP-03
 
 **Success criteria:**
 
-1. Periodic, phase-log, or related initializers/priors are generic to target families and not formula-name exact seeds.
-2. Optimizer schedules, candidate pooling, and hardening changes preserve verifier-owned exact-candidate selection.
-3. Branch guard metrics are surfaced while faithful verification semantics remain unchanged.
-4. Raw EML regression tests and recovery-accounting tests still pass.
+1. Campaign rows expose per-slot probabilities, margins, selected alternatives, and low-confidence alternatives for selected/fallback/loss-only candidates.
+2. Snap mismatch rows are classified by low-margin slots, active-node changes, soft-versus-hard error deltas, and branch/fidelity diagnostics.
+3. Deterministic manifests identify the v1.16 failed/loss-only rows that should seed neighborhood search.
+4. Regression tests cover raw EML and i*pi EML diagnostic emission without changing verifier recovery definitions.
 
-### Phase 90: Budget Ladder and Pilot Recovery Runs
+### Phase 95: Bounded Exact Neighborhood Generator
 
-**Goal:** Run cheap smoke and pilot campaigns to decide whether search improvements merit the full paper campaign.
+**Goal:** Generate local exact-tree alternatives around snapped candidates while preserving target-agnostic behavior.
 
-**Requirements:** SRCH-04, CAMP-02, CAMP-03, CAMP-04, ABL-01, ABL-03
-
-**Success criteria:**
-
-1. Smoke and pilot outputs compare raw EML versus i*pi EML by target family and seed.
-2. Pilot gate prevents an expensive full run if no exact-recovery signal appears.
-3. Failure taxonomy identifies optimization miss, snap mismatch, branch pathology, verifier mismatch, unsupported/over-depth, and numerical instability.
-4. Reproducible commands and source locks are written for every pilot run.
-
-### Phase 91: Full Matched GEML Paper Campaign
-
-**Goal:** Produce the full matched multi-seed raw EML versus i*pi EML evidence set if pilot gates pass; otherwise produce locked negative evidence.
-
-**Requirements:** CAMP-01, CAMP-02, CAMP-03, CAMP-04, ABL-02
+**Requirements:** NBR-01, NBR-03, NBR-04
 
 **Success criteria:**
 
-1. A full paper campaign or fail-closed negative package exists.
-2. Aggregates include exact recovery, loss, branch diagnostics, runtime/resource metadata, and seed-level variation.
-3. Loss-only, repaired, compile-only, and same-AST rows cannot contaminate trained exact-recovery denominators.
-4. Results are grouped by natural-bias families and negative controls.
+1. One-slot and two-slot alternatives are generated deterministically from low-margin candidate choices.
+2. Candidate budgets, ordering, and pruning are source-locked and reproducible.
+3. Original snapped candidates and fallback candidates remain present with provenance.
+4. Tests reject formula-name recognizers, exact target-tree seeds, and hidden oracle promotion paths.
 
-### Phase 92: Ablations, Failure Taxonomy, and Paper Figures
+### Phase 96: Verifier-First Candidate Ranking and Promotion
 
-**Goal:** Explain why the result is strong or not strong enough, with ablations and reviewer-facing visuals.
+**Goal:** Make exact verifier status the first-class promotion rule for all candidate pools.
 
-**Requirements:** ABL-01, ABL-02, ABL-03, ABL-04, PAPER-01
-
-**Success criteria:**
-
-1. Ablation tables show the contribution of initialization, branch guards, constants, depth, budget, and candidate pooling.
-2. Failure taxonomy is source-locked and maps failures to representative examples.
-3. Figures and tables are generated deterministically from campaign data.
-4. Representative curves show verified fits and failures honestly.
-
-### Phase 93: v1.16 Paper Decision Package and Claim Audit
-
-**Goal:** Assemble final paper-strength evidence package and decide whether i*pi/GEML deserves a positive paper section.
-
-**Requirements:** STRG-04, PAPER-02, PAPER-03, PAPER-04
+**Requirements:** NBR-02, RANK-01, RANK-02, RANK-03
 
 **Success criteria:**
 
-1. Package includes manifests, source locks, campaign tables, ablation tables, figure metadata, and reproduction commands.
-2. Claim audit blocks global superiority, broad blind-recovery, full universality, loss-only recovery, and negative-control cherry-picking.
-3. Final decision is `paper_positive`, `promising_preliminary`, `negative`, or `inconclusive` under the Phase 88 gate.
-4. README or paper-draft guidance is updated to match the decision.
+1. Every neighborhood candidate is checked through the same verifier gates before promotion.
+2. Ranking explains why the winner was selected and why lower-loss candidates failed.
+3. Tables separate exact recovery, verified equivalence, repair-only, loss-only, compile-only, same-AST, fallback, and original-snap outcomes.
+4. Existing recovery-accounting tests remain compatible with the new ranking fields.
+
+### Phase 97: Focused v1.17 Natural-Bias Recovery Sandbox
+
+**Goal:** Run the smallest useful matched experiment to see whether the snap-first workflow produces exact recovery signal.
+
+**Requirements:** EVID-01, EVID-02, EVID-03
+
+**Success criteria:**
+
+1. Selected v1.16 natural-bias rows are rerun with snap-neighborhood search enabled.
+2. Raw EML and i*pi EML use matched budgets, depth, splits, verifier gates, and negative controls.
+3. The sandbox records whether at least one verifier-gated exact recovery appears.
+4. The gate blocks broader pilot/full campaigns if exact signal remains absent.
+
+### Phase 98: v1.17 Evidence Package and Next-Campaign Gate
+
+**Goal:** Assemble the source-locked v1.17 answer and decide what work is justified next.
+
+**Requirements:** PACK-01, PACK-02, PACK-03
+
+**Success criteria:**
+
+1. Package includes manifests, before/after tables, source locks, failure taxonomy, reproduction commands, and claim audit.
+2. Final decision is `exact_signal_found`, `still_inconclusive`, or `negative` under the predefined gate.
+3. The v1.16 package remains intact and any comparison is explicitly additive.
+4. The package states whether broader i*pi/GEML paper campaigns are justified or still blocked.
 
 ## Dependency Notes
 
-- Phase 88 comes first because it defines the evidence standard before any optimizer work can move the goalposts.
-- Phase 89 depends on Phase 88's leakage and accounting rules.
-- Phase 90 depends on Phase 89 and protects local time by requiring exact-recovery signal before full campaigns.
-- Phase 91 depends on Phase 90's pilot gate; if the gate fails, Phase 91 should produce a locked negative package rather than a full expensive run.
-- Phase 92 depends on pilot/full campaign outputs.
-- Phase 93 is last because it audits claims against the predefined gate.
+- Phase 94 comes first because neighborhood search needs actual low-margin and snap-mismatch evidence.
+- Phase 95 depends on Phase 94's deterministic candidate inventories.
+- Phase 96 depends on Phase 95's candidate generation and preserves verifier-owned claims.
+- Phase 97 depends on Phase 96 so the smoke campaign can use the full ranking path.
+- Phase 98 is last because it audits the result and decides whether a larger campaign is justified.
 
 ## Requirements Traceability
 
 | Requirement Group | Covered By |
 |-------------------|------------|
-| STRG-01..STRG-04 | Phases 88, 93 |
-| SRCH-01..SRCH-05 | Phases 89, 90 |
-| CAMP-01..CAMP-04 | Phases 88, 90, 91 |
-| ABL-01..ABL-04 | Phases 90, 91, 92 |
-| PAPER-01..PAPER-04 | Phases 92, 93 |
+| SNAP-01..SNAP-03 | Phase 94 |
+| NBR-01, NBR-03, NBR-04 | Phase 95 |
+| NBR-02, RANK-01..RANK-03 | Phase 96 |
+| EVID-01..EVID-03 | Phase 97 |
+| PACK-01..PACK-03 | Phase 98 |
 
 ## Notes
 
-- No new external domain research was run during initialization; v1.16 is scoped from the v1.15 audit and current project evidence.
-- The milestone optimizes for strong paper results, but the recovery definition remains verifier-owned and exact-candidate based.
-- Full campaigns should not launch blindly. The milestone uses a smoke/pilot/full ladder because v1.15 already showed that loss-only signals are not enough.
-- A negative or inconclusive v1.16 result is acceptable only if it is source-locked, reproducible, and explains the blocker clearly enough to guide the next paper strategy.
+- No new external domain research was run during initialization; v1.17 is scoped from the v1.16 final package and current project evidence.
+- Larger matched raw/i*pi campaigns remain blocked until the tiny v1.17 sandbox produces verifier-gated exact signal.
+- Loss-only improvements remain diagnostics. The recovery definition remains exact-candidate and verifier-owned.
+- A still-inconclusive or negative v1.17 result is acceptable if it cleanly identifies the blocker and preserves the claim boundary.
 
 ---
-*Roadmap created for v1.16 on 2026-04-22*
+*Roadmap created for v1.17 on 2026-04-22*
