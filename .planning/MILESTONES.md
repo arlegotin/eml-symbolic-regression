@@ -1,5 +1,21 @@
 # Milestones
 
+## v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search (Shipped: 2026-04-22)
+
+**Phases completed:** 5 phases, 5 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added snap diagnostics for selected, fallback, failed, and loss-only candidates, including low-margin slot payloads and soft-versus-hard deltas.
+- Added bounded exact-tree neighborhood manifests with original/fallback provenance and target-leakage guards.
+- Added verifier-first candidate ranking so exact verifier status outranks post-snap loss.
+- Added a focused natural-bias sandbox gate with negative-control visibility and blocked broader campaigns without exact signal.
+- Generated `artifacts/paper/v1.17-geml/` with final decision `still_inconclusive`, source locks OK, reproduction commands, and passing claim audit.
+
+**Known deferred items at close:** Milestone audit status is `tech_debt`: Nyquist validation files are missing for phases 94-98, and the full pytest run reached 93% with no reported failures but hung in the tail and was stopped. The targeted v1.17 verification passed. The package remains `still_inconclusive`, so broader raw/i*pi campaigns remain blocked.
+
+---
+
 ## v1.16 Paper-Strength GEML Recovery Evidence (Shipped: 2026-04-22)
 
 **Phases completed:** 6 phases, 6 plans, 0 tasks

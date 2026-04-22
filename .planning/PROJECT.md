@@ -10,7 +10,7 @@ The current release is a research-grade Python package and CLI for recovering co
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.17 Active
+## Current State: v1.17 Complete
 
 The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, figure-asset, CI, dataset, baseline, release-gate, claim-integrity, GEML-family, and i*pi evidence foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, proof bundles, centered/scaled/GEML operator-family experiments, paper-decision artifacts, and source-locked publication packages are all in place and archived through v1.16.
 
@@ -30,33 +30,23 @@ v1.15 added the parameterized `GEML_a(x, y) = exp(a*x) - log(y)/a` family with r
 
 v1.16 completed the paper-strength GEML/i*pi evidence workflow and produced a source-locked package under `artifacts/paper/v1.16-geml/`. The result is useful but not paper-positive: the final decision is `inconclusive`, `paper_claim_allowed` is `false`, the pilot evidence has 12 paired rows across 2 unique seeds, and both raw EML and i*pi EML have 0 verifier-gated exact recoveries. The full campaign was correctly stopped fail-closed because the signal remained loss-only.
 
-v1.17 is now active. Its job is to attack the bottleneck exposed by v1.16: promising soft/loss behavior does not survive snapping into exact verified formulas. The milestone focuses on snap-margin diagnostics, bounded exact-tree neighborhood search, verifier-first candidate ranking, and a tiny natural-bias recovery sandbox before any larger i*pi paper campaign is reopened.
+v1.17 attacked the bottleneck exposed by v1.16: promising soft/loss behavior did not survive snapping into exact verified formulas. The milestone added snap-margin diagnostics, bounded exact-tree neighborhood search, verifier-first candidate ranking, a natural-bias recovery sandbox, and a source-locked package under `artifacts/paper/v1.17-geml/`. The final decision is `still_inconclusive`; broader i*pi/GEML campaigns remain blocked.
 
-## Last Completed Milestone: v1.16 Paper-Strength GEML Recovery Evidence
+## Last Completed Milestone: v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search
 
-**Goal:** Decide whether the v1.15 i*pi/GEML loss-only signal could become paper-strength verifier-gated exact recovery evidence under matched raw/i*pi protocols.
+**Goal:** Determine whether snap-first diagnostics and target-agnostic exact-neighborhood search could turn v1.16 loss-only near misses into verifier-gated exact recovery before reopening broader i*pi/GEML campaigns.
 
 **Shipped features:**
 
-- Paper-strength success gate with exact-recovery thresholds, claim categories, negative-control discipline, and fail-closed audit checks.
-- Branch-safe i*pi/GEML initializer metadata and matched raw-regression/accounting preservation.
-- Smoke and pilot budget ladder that prevented an expensive full campaign when no exact-recovery signal appeared.
-- Source-locked ablation table, failure taxonomy, figures, campaign manifests, and final decision package.
-- Final v1.16 package under `artifacts/paper/v1.16-geml/` with decision `inconclusive` and passing claim audit.
+- Snap diagnostics for selected, fallback, failed, and loss-only candidates, including low-margin slot and soft-versus-hard mismatch payloads.
+- Bounded exact-tree neighborhood generation with original/fallback provenance and target-leakage guards.
+- Verifier-first candidate ranking that keeps exact recovery, equivalence, repair-only, loss-only, same-AST, compile-only, fallback, and original-snap classes separated.
+- Focused sandbox gate for natural-bias exact-recovery signal with negative-control visibility.
+- Final v1.17 package under `artifacts/paper/v1.17-geml/` with decision `still_inconclusive`, source locks OK, and passing claim audit.
 
 ## Current Milestone
 
-**v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search**
-
-**Goal:** Convert v1.16's loss-only and near-miss diagnostics into verifier-gated exact recovery by improving snap analysis, local exact-tree repair/search, candidate pooling, and targeted mini-campaign gates before any broader i*pi paper campaign.
-
-**Target features:**
-
-- Snap-margin and low-confidence slot diagnostics for failed, loss-only, and fallback candidates.
-- Bounded one/two-slot exact-tree neighborhood generation around snapped candidates without target-formula leakage.
-- Verifier-first candidate ranking that separates exact recovery, symbolic evidence, post-snap loss, repair provenance, and loss-only diagnostics.
-- Focused natural-bias recovery sandbox for selected i*pi-friendly targets and negative controls under tiny matched gates.
-- v1.17 evidence package that reports whether exact recovery signal appeared and whether any broader campaign is justified.
+None active. Start the next milestone with `$gsd-new-milestone` after choosing whether to address the v1.17 candidate-boundary blocker or pivot to another bounded research question.
 
 ## Requirements
 
@@ -150,14 +140,15 @@ v1.17 is now active. Its job is to attack the bottleneck exposed by v1.16: promi
 - ✓ Full-campaign stop package with source-locked negative/inconclusive evidence — v1.16 Phase 91
 - ✓ Ablations, failure taxonomy, and deterministic paper figures for v1.16 GEML evidence — v1.16 Phase 92
 - ✓ Final v1.16 decision package, source locks, and passing claim audit — v1.16 Phase 93
+- ✓ Snap-margin, active-slot, and soft-versus-hard mismatch diagnostics for loss-only and failed pilot candidates — v1.17 Phase 94
+- ✓ Bounded exact-tree neighborhoods around snapped candidates without formula-name recognizers or exact target leakage — v1.17 Phase 95
+- ✓ Verifier-first candidate ranking and promotion before post-snap loss can influence claims — v1.17 Phase 96
+- ✓ Tiny matched natural-bias recovery sandbox with negative-control gate before broader campaign reopening — v1.17 Phase 97
+- ✓ v1.17 evidence package with before/after exact-recovery signal, failure taxonomy reference, source locks, and claim-safe next-campaign decision — v1.17 Phase 98
 
 ### Active
 
-- [ ] Record snap-margin, active-slot, and soft-versus-hard mismatch diagnostics for loss-only and failed pilot candidates.
-- [ ] Generate bounded exact-tree neighborhoods around snapped candidates without formula-name recognizers or exact target leakage.
-- [ ] Rank and promote candidates through verifier-first exact recovery gates before post-snap loss or fit quality can influence claims.
-- [ ] Run a tiny matched natural-bias recovery sandbox with negative controls before reopening any larger i*pi paper campaign.
-- [ ] Package v1.17 evidence with before/after exact-recovery signal, failure taxonomy, source locks, and a claim-safe next-campaign decision.
+None. The next milestone has not been defined yet.
 
 ### Out of Scope
 
@@ -289,9 +280,10 @@ v1.17 responds by moving earlier in the failure chain. Before spending more budg
 | v1.16 optimized for paper-strength evidence but kept verifier-owned recovery | Strong results mattered for the paper, but weakening exact recovery would have made the result less publishable, not more. | ✓ Good |
 | i*pi EML needs matched wins on its natural-bias family before positive claims | The v1.16 package found lower-loss diagnostics only, with 0 exact recoveries; full claims still need exact recovery and controls. | ✓ Good |
 | Negative or inconclusive evidence is preferable to an overclaim | v1.16 produced a clean inconclusive package instead of relaxing the recovery definition. | ✓ Good |
-| v1.17 works snap-first before spending campaign budget | v1.16 showed the blocker is not just training loss; exact recovery fails at the hard candidate boundary. | Active |
-| Exact-neighborhood search must stay target-agnostic | Local repair is useful only if it avoids formula-name recognizers, exact target seeds, and verifier bypasses. | Active |
-| Candidate ranking should be verifier-first | Post-snap loss and soft-loss metrics are diagnostics; exact recovery claims need symbolic/verifier status before fit quality. | Active |
+| v1.17 works snap-first before spending campaign budget | v1.16 showed the blocker is not just training loss; exact recovery fails at the hard candidate boundary. | ✓ Good |
+| Exact-neighborhood search must stay target-agnostic | Local repair is useful only if it avoids formula-name recognizers, exact target seeds, and verifier bypasses. | ✓ Good |
+| Candidate ranking should be verifier-first | Post-snap loss and soft-loss metrics are diagnostics; exact recovery claims need symbolic/verifier status before fit quality. | ✓ Good |
+| Broader i*pi/GEML campaigns remain blocked after v1.17 | The committed v1.17 package is `still_inconclusive`; no verifier-gated exact signal appeared. | ✓ Good |
 
 ## Evolution
 
@@ -311,4 +303,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-22 after v1.17 milestone start*
+*Last updated: 2026-04-22 after v1.17 milestone archive*

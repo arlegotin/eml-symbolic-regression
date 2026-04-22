@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.17
 milestone_name: Natural-Bias Recovery Sandbox
-current_phase: 98
-status: complete
-stopped_at: v1.17 milestone complete; ready for milestone audit and closeout
+current_phase: null
+status: archived
+stopped_at: v1.17 archived; ready for next milestone definition
 last_updated: "2026-04-22T12:42:37.054Z"
 last_activity: 2026-04-22
 progress:
@@ -18,7 +18,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 98
+**Current phase:** None
 **Mode:** YOLO
 
 ## Project Reference
@@ -26,27 +26,28 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-22)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.17 Snap-First Exact Recovery and Candidate Neighborhood Search.
+**Current focus:** No active milestone. v1.17 is archived; define the next milestone before new phase work.
 
 ## Current Position
 
-Phase: 98 - v1.17 Evidence Package and Next-Campaign Gate
-Plan: 98-01 complete
-Status: v1.17 phases 94-98 complete; final package decision `still_inconclusive`
+Phase: None active
+Plan: None active
+Status: v1.17 archived; final package decision `still_inconclusive`
 Last activity: 2026-04-22
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
 
-v1.17 is complete. The milestone started from the v1.16 final package decision `inconclusive`: 12 paired pilot rows, 0 exact recoveries for raw or i*pi EML, 12 loss-only outcomes, and a fail-closed stop before the full campaign. The final v1.17 package remains `still_inconclusive` and keeps broader i*pi/GEML campaigns blocked.
+No milestone is active. v1.17 is archived with final decision `still_inconclusive`; broader i*pi/GEML campaigns remain blocked.
 
 ## Artifacts
 
 | Artifact | Path | Status |
 |----------|------|--------|
 | Project context | `.planning/PROJECT.md` | Updated for v1.17 |
-| Requirements | `.planning/REQUIREMENTS.md` | Complete for v1.17 |
-| Roadmap | `.planning/ROADMAP.md` | Complete for v1.17; phases 94-98 |
+| Requirements | `.planning/milestones/v1.17-REQUIREMENTS.md` | Archived for v1.17 |
+| Roadmap | `.planning/milestones/v1.17-ROADMAP.md` | Archived for v1.17; phases 94-98 |
+| Milestone audit | `.planning/milestones/v1.17-MILESTONE-AUDIT.md` | Archived for v1.17; status `tech_debt` |
 | v1.17 evidence package | `artifacts/paper/v1.17-geml/` | Complete, audit passed, decision `still_inconclusive` |
 | Archived v1.16 requirements | `.planning/milestones/v1.16-REQUIREMENTS.md` | Complete |
 | Archived v1.16 roadmap | `.planning/milestones/v1.16-ROADMAP.md` | Complete |
@@ -58,7 +59,7 @@ v1.17 is complete. The milestone started from the v1.16 final package decision `
 | v1.13 clean-room evidence package | `artifacts/paper/v1.13/` | Complete, audit and release gate passed |
 | Research summary | `.planning/research/SUMMARY.md` | Existing context retained; no new domain research selected during initialization |
 | Workflow config | `.planning/config.json` | Complete |
-| Milestone log | `.planning/MILESTONES.md` | Complete through v1.16 |
+| Milestone log | `.planning/MILESTONES.md` | Complete through v1.17 |
 
 ## Accumulated Context
 
@@ -75,11 +76,11 @@ v1.17 is complete. The milestone started from the v1.16 final package decision `
 
 ### Pending Todos
 
-- None for v1.17. Run milestone audit and closeout next.
+- Start the next milestone with `$gsd-new-milestone`.
 
 ### Deferred Items
 
-Items acknowledged and deferred at milestone close on 2026-04-20:
+Items acknowledged and deferred across milestone closes (latest audit on 2026-04-22):
 
 | Category | Item | Status |
 |----------|------|--------|
@@ -90,6 +91,13 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 | quick_task | 260420-bia-fix-readme-plot-gallery-to-one-conservat | missing |
 | quick_task | 260420-g7h-include-useful-public-artifacts-in-sanit | unknown |
 | quick_task | 260420-ixp-return-tests-to-generated-main-branch | unknown |
+| quick_task | 260420-ng7-update-readme-with-v1-13-release-evidenc | missing |
+| quick_task | 260420-nll-replace-readme-plots-with-clearer-v1-13- | missing |
+| quick_task | 260420-nuw-simplify-readme-release-narrative-and-re | missing |
+| quick_task | 260420-o1v-update-readme-plot-gallery-with-data-spl | missing |
+| quick_task | 260420-o7r-simplify-readme-plot-gallery-labels-and- | missing |
+| quick_task | 260420-oij-remove-readme-release-framing-and-label- | missing |
+| quick_task | 260420-p9c-hide-github-workflows-from-generated-mai | unknown |
 
 ### Completed Quick Tasks
 
@@ -105,8 +113,8 @@ Historical quick-task records remain in prior state and milestone artifacts. No 
 ## Session Continuity
 
 Last session: 2026-04-22
-Stopped at: v1.17 milestone complete; ready for milestone audit and closeout
+Stopped at: v1.17 archived; ready for next milestone definition
 Resume file: None
 
 ---
-*Last updated: 2026-04-22 after v1.17 package completion*
+*Last updated: 2026-04-22 after v1.17 archive*
