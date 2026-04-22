@@ -1,5 +1,22 @@
 # Milestones
 
+## v1.15 GEML family and i*pi EML exploration (Shipped: 2026-04-22)
+
+**Phases completed:** 6 phases, 6 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Added fixed-parameter `GEML_a` semantics with raw EML as `a = 1` and i*pi EML as `a = i*pi`.
+- Created restricted-domain i*pi theory artifacts with explicit branch conventions, branch diagnostics, and non-claims.
+- Threaded fixed GEML operator families through training, hardening, snapping, exact-candidate selection, verifier metrics, and manifests.
+- Registered matched oscillatory, log-periodic, and negative-control benchmark suites for raw EML versus i*pi EML.
+- Added paired campaign outputs with recovery, loss, gradient, anomaly, branch, runtime, and v1.14 recovery-accounting fields.
+- Generated `artifacts/paper/v1.15-geml/` with source locks, benchmark manifests, target-family classification, reproduction commands, and a passing claim audit.
+
+**Known deferred items at close:** The full 20-row `geml-oscillatory` campaign remains a reproduction command. The checked-in package is intentionally `inconclusive_smoke_only`: two smoke pairs, no verifier-gated exact recovery, one periodic i*pi loss-only signal, and one negative-control raw loss-only signal.
+
+---
+
 ## v1.14 Evidence claim integrity and audit hardening (Shipped: 2026-04-21)
 
 **Phases completed:** 5 phases, 5 plans, 0 tasks

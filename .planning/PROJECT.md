@@ -4,13 +4,13 @@
 
 This project implements a hybrid symbolic-regression engine based on the paper "All elementary functions from a single binary operator." It searches over complete depth-bounded EML trees, optimizes soft categorical choices with PyTorch, snaps the result into an exact EML tree, cleans it up symbolically, and verifies candidate formulas against held-out data and high-precision evaluators.
 
-The current release is a research-grade Python package and CLI for recovering compact elementary laws from scientific datasets, with demos, benchmark campaigns, proof artifacts, centered/scaled operator-family experiments, publication evidence, claim audits, and release-gate artifacts drawn from `sources/FOR_DEMO.md`.
+The current release is a research-grade Python package and CLI for recovering compact elementary laws from scientific datasets, with demos, benchmark campaigns, proof artifacts, centered/scaled/GEML operator-family experiments, publication evidence, claim audits, and release-gate artifacts drawn from `sources/FOR_DEMO.md`.
 
 ## Core Value
 
 Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
 
-## Current State: v1.14 Shipped
+## Current State: v1.15 Shipped
 
 The repo now has strong representation, verification, reproducibility, proof-bundle, hybrid-search, compiler, motif-library, paper-package, current-code training, diagnostics, figure-asset, CI, dataset, baseline, release-gate, and claim-integrity foundations. Exact EML ASTs, soft master trees, compiler-driven warm starts, deterministic benchmark suites, campaign reports, proof bundles, centered/scaled operator-family experiments, paper-decision artifacts, and source-locked publication packages are all in place and archived through v1.14.
 
@@ -26,31 +26,24 @@ v1.13 hardens that paper-shaped evidence into a publication-grade release gate. 
 
 v1.14 repaired the public claim surface before further paper work. Compile-only verified support is no longer counted as trained exact recovery, zero-perturbation same-AST warm-start rows are labeled exact seed round-trips, unsupported baseline rows are quarantined from main comparison claims, and multivariate verifier target lookup now uses the full input row when needed. The corrected publication package is under `artifacts/paper/v1.14/`.
 
-## Last Completed Milestone: v1.14 Evidence claim integrity and audit hardening
+v1.15 added the parameterized `GEML_a(x, y) = exp(a*x) - log(y)/a` family with raw EML and i*pi EML named specializations, restricted i*pi theory and branch diagnostics, family-aware training/snap integration, matched oscillatory/negative-control protocols, paired campaign outputs, and a claim-safe package under `artifacts/paper/v1.15-geml/`. The package decision is `inconclusive_smoke_only`, not a positive i*pi EML paper-section claim.
 
-**Goal:** Repair public claim accounting and evidence labels so compile-only support, same-AST seed retention, unsupported baselines, and multivariate verifier behavior cannot be overstated.
+## Last Completed Milestone: v1.15 GEML family and i*pi EML exploration
+
+**Goal:** Generalize EML into `GEML_a`, treat `a = i*pi` as a controlled oscillatory specialization, prove restricted-domain identities, and compare raw EML against i*pi EML under matched protocols.
 
 **Shipped features:**
 
-- Two-axis recovery accounting separating verification outcome from evidence regime and discovery class.
-- Corrected public evidence numbers: 8 trained exact recoveries, 1 compile-only verified support row, 15 unsupported rows, and 0 failed rows.
-- Warm-start evidence labels that distinguish exact seed round-trips from perturbed-basin robustness.
-- Baseline claim-surface quarantine for unavailable, unsupported, or denominator-excluded external baselines.
-- Multivariate high-precision verifier target matching by full input row when no `target_mpmath` evaluator is present.
-- Corrected v1.14 evidence package under `artifacts/paper/v1.14/` with passing claim audit and release gate.
+- Fixed-parameter GEML semantics with raw EML as `a = 1` and i*pi EML as `a = i*pi`.
+- Restricted i*pi theory artifacts with branch assumptions, branch diagnostics, and explicit non-claims.
+- Family-aware optimizer, hardening, snapping, exact-candidate selection, verifier metrics, and manifests.
+- Matched raw/i*pi benchmark suites covering periodic, harmonic, damped/wave, log-periodic, and negative-control targets.
+- Paired campaign tables with recovery, loss, gradient, anomaly, branch, runtime, and v1.14 recovery-accounting fields.
+- Final v1.15 GEML package under `artifacts/paper/v1.15-geml/` with source locks, target-family classification, reproduction commands, and passing claim audit.
 
-## Current Milestone: v1.15 GEML family and i*pi EML exploration
+## Current Milestone
 
-**Goal:** Generalize EML into the parameterized `GEML_a` operator family, treat `a = i*pi` as the flagship oscillatory specialization, prove restricted-domain identities, and compare EML against i*pi EML under matched symbolic-regression protocols.
-
-**Target features:**
-
-- `GEML_a(x, y) = exp(a*x) - log(y)/a` semantics, exact AST serialization, and evaluator support for nonzero complex `a`, with EML as `a = 1` and i*pi EML as `a = i*pi`.
-- Theory artifacts centered on the identity `exp(a*GEML_a(u, v)) = exp(a*exp(a*u))/v`, including restricted-domain i*pi EML reciprocal, identity, derivative, and one-step composition results.
-- Branch convention, branch-crossing diagnostics, and safe-domain checks for complex-log behavior under i*pi EML.
-- Family-aware training, snapping, reporting, and benchmark metadata that can run EML and i*pi EML through the same depths, optimizer, initialization budget, and snapping rules.
-- A benchmark pack with periodic, damped-oscillatory, wave/log-periodic targets plus negative controls such as `exp`, `log`, polynomials, and rational functions.
-- A claim-safe comparison package that reports exact-recovery rates, losses, gradients, overflow/NaN counts, wall-clock/runtime metadata, and the boundary of any restricted closure theorem without claiming full universality.
+No active milestone. Start the next milestone with `$gsd-new-milestone`; the next phase number is 88.
 
 ## Requirements
 
@@ -132,14 +125,16 @@ v1.14 repaired the public claim surface before further paper work. Compile-only 
 - ✓ Baseline claim-surface quarantine for unavailable or unsupported external baselines — v1.14 Phase 79
 - ✓ Multivariate high-precision verifier target matching by full input row — v1.14 Phase 80
 - ✓ Corrected v1.14 publication package, source locks, claim audit, and release gate — v1.14 Phase 81
+- ✓ Fixed-parameter `GEML_a` semantics with raw and i*pi named specializations — v1.15 Phase 82
+- ✓ Restricted i*pi theory artifacts, branch convention, and branch diagnostics — v1.15 Phase 83
+- ✓ Family-aware training, snapping, verifier metrics, and raw-regression preservation — v1.15 Phase 84
+- ✓ Matched oscillatory, log-periodic, and negative-control benchmark protocols — v1.15 Phase 85
+- ✓ Paired raw EML versus i*pi EML campaign outputs and diagnostics — v1.15 Phase 86
+- ✓ Final v1.15 GEML evidence package with claim audit and bounded decision — v1.15 Phase 87
 
 ### Active
 
-- [ ] Define and implement the `GEML_a` operator family with EML and i*pi EML as named specializations.
-- [ ] Prove and test restricted-domain i*pi EML identities, sensitivity, and controlled composition bounds without claiming unproved full universality.
-- [ ] Add branch-cut diagnostics and safe-domain handling for i*pi EML training and verification.
-- [ ] Run matched EML versus i*pi EML symbolic-regression experiments under the same protocol and budgets.
-- [ ] Report i*pi EML wins and losses on structurally matched oscillatory targets and negative controls with claim-safe wording.
+- [ ] Define the next milestone.
 
 ### Out of Scope
 
@@ -174,7 +169,7 @@ The v1.13 audit changed the priority from paper shaping to publication hardening
 
 The post-v1.13 public-materials audit found a higher-priority claim-integrity issue: compile-only verified support was still counted inside the recovered headline even though the prose correctly says compiler output is not trained recovery. v1.14 fixes that accounting model before manuscript or release work continues. The same audit also flagged weak warm-start wording, baseline harness overexposure, and a latent multivariate verifier target-matching bug.
 
-v1.15 shifts from claim-surface repair back to operator-family research. The new hypothesis is that `GEML_a(x, y) = exp(a*x) - log(y)/a` is a useful continuous family around EML, with `a = i*pi` creating a phase-log specialization whose real-axis sensitivity is bounded while its second-slot log branch becomes central. The milestone should classify what is exactly true on controlled domains, then measure whether that geometry improves recovery for oscillatory and wave-like targets without hiding negative controls.
+v1.15 shifted from claim-surface repair back to operator-family research. The repo now supports `GEML_a(x, y) = exp(a*x) - log(y)/a` as a fixed-parameter family around EML, with `a = i*pi` as a phase-log specialization whose real-axis sensitivity is bounded while its second-slot log branch is explicit. The milestone classified what is true on controlled domains and produced a claim-safe matched-protocol package; the current evidence is inconclusive rather than paper-section positive.
 
 ## Constraints
 
@@ -254,9 +249,9 @@ v1.15 shifts from claim-surface repair back to operator-family research. The new
 | `main` updates only after the full rebuild passes | The public branch should receive publication-ready code and artifacts, not intermediate dev-only evidence. | ✓ Good |
 | Direct local force-pushes are not part of release closeout | Phase 76 validates the public snapshot and records readiness for the publish workflow; remote publication remains a workflow action. | ✓ Good |
 | v1.14 prioritizes claim-accounting repair before manuscript polish | Public materials must not mix compile-only support, same-AST seed retention, and trained recovery in one headline. | ✓ Good |
-| v1.15 frames i*pi EML as a `GEML_a` specialization | The family story is stronger than presenting one isolated operator, and it keeps EML as the `a = 1` reference point. | - Pending |
-| v1.15 proves restricted-domain theorems before making broad claims | The original EML paper has a constructive completeness result; this milestone should not imply the same for i*pi EML without proof. | - Pending |
-| v1.15 benchmarks matched structural bias plus negative controls | i*pi EML is expected to help oscillatory/phase-log laws if it helps at all; credible reporting needs both its natural class and cases where EML may remain better. | - Pending |
+| v1.15 frames i*pi EML as a `GEML_a` specialization | The family story is stronger than presenting one isolated operator, and it keeps EML as the `a = 1` reference point. | ✓ Good |
+| v1.15 proves restricted-domain theorems before making broad claims | The original EML paper has a constructive completeness result; this milestone should not imply the same for i*pi EML without proof. | ✓ Good |
+| v1.15 benchmarks matched structural bias plus negative controls | i*pi EML is expected to help oscillatory/phase-log laws if it helps at all; credible reporting needs both its natural class and cases where EML may remain better. | ✓ Good |
 
 ## Evolution
 
@@ -276,4 +271,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-22 after v1.15 milestone start*
+*Last updated: 2026-04-22 after v1.15 milestone completion*

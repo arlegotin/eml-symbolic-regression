@@ -138,6 +138,51 @@
 
 ---
 
+## Milestone: v1.15 — GEML family and i*pi EML exploration
+
+**Shipped:** 2026-04-22
+**Phases:** 6 | **Plans:** 6 | **Sessions:** 1
+
+### What Was Built
+
+- Fixed-parameter `GEML_a` semantics with raw EML and i*pi EML named specializations.
+- Restricted i*pi theory artifacts with branch convention, branch diagnostics, and explicit non-claims.
+- Family-aware training, snapping, candidate selection, verifier metrics, and manifest fields.
+- Matched raw EML versus i*pi EML benchmark suites over oscillatory targets and negative controls.
+- Paired campaign tables and final `artifacts/paper/v1.15-geml/` claim-boundary package.
+
+### What Worked
+
+- Treating i*pi EML as one fixed `GEML_a` specialization kept the implementation coherent and avoided a one-off operator path.
+- The claim audit made the final inconclusive decision explicit instead of relying on prose discipline.
+- Running the smoke campaign before packaging exposed a real target-family classification gap while it was still cheap to fix.
+
+### What Was Inefficient
+
+- Generated run artifacts dominate the diff size even for a four-row smoke campaign.
+- The GSD `audit-open` command still fails with `output is not defined`, so closeout had to record that tool failure and proceed manually.
+- Summary/frontmatter conventions remain inconsistent with the milestone audit workflow; requirement coverage had to be cross-checked from VERIFICATION files.
+
+### Patterns Established
+
+- Operator-family research milestones should end with a claim-boundary package, not only benchmark tables.
+- Loss-only signals should be separated from verifier-gated exact recovery in paired comparisons.
+- Negative controls must be present before interpreting any structural-bias signal.
+
+### Key Lessons
+
+1. The current i*pi evidence is useful but inconclusive; the project should not promote it to a positive paper section without the full matched campaign or stronger recovery.
+2. Branch contracts belong in artifacts and audits, not only in implementation comments.
+3. Family semantics and benchmark evidence can advance without changing the core verifier-owned recovery standard.
+
+### Cost Observations
+
+- Model mix: local Codex orchestration with no spawned subagents.
+- Sessions: 1
+- Notable: The campaign/package loop was cheap enough to regenerate after fixing classification and summary accounting.
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -149,6 +194,7 @@
 | v1.3 | 1 | 5 | Campaign reports made benchmark evidence presentation-ready. |
 | v1.6 | 2 | 5 | Hybrid exact-candidate recovery and regime-aware proof evidence became paper-grade. |
 | v1.13 | 1 | 8 | Publication-grade rebuild, audit, baseline, dataset, CI, and release-gate contracts replaced ad hoc paper packaging. |
+| v1.15 | 1 | 6 | GEML operator-family research shipped with restricted theory, matched protocols, paired evidence, and claim-boundary packaging. |
 
 ### Cumulative Quality
 
@@ -159,6 +205,7 @@
 | v1.3 | 45 | Campaign, CSV, plot, report, and CLI coverage | CSV export, SVG figures, Markdown report |
 | v1.6 | 120+ | Candidate pooling, cleanup, refit, compiler, campaign, proof, and report coverage | Hash-locked proof and comparison artifacts |
 | v1.13 | 150+ | CI contract, evidence regression, verifier, benchmark, publication, baseline, and dataset coverage | Claim audit, release gate, dataset manifests, baseline reports |
+| v1.15 | 150+ | GEML semantics, branch diagnostics, optimizer metrics, benchmark suites, campaign tables, and package audit coverage | GEML package, target-family tables, source locks |
 
 ### Top Lessons
 
@@ -167,3 +214,4 @@
 3. Reproducible artifacts are more useful than one-off demo output for this project.
 4. Manuscript claims should be written from aggregate-backed evidence rows, not from narrative report prose alone.
 5. Release credibility needs a machine-readable claim audit and public snapshot gate before any branch publication.
+6. New operator-family hypotheses should ship with negative controls and explicit claim boundaries before paper-positive framing.

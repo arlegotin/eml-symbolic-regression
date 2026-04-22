@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.15
 milestone_name: GEML family and i*pi EML exploration
-current_phase: 87
-current_phase_name: "GEML Evidence Package and Claim Boundary"
-status: v1.15 milestone audit passed; ready for milestone completion
-stopped_at: milestone audit passed
-last_updated: "2026-04-22T10:30:00.000Z"
+current_phase: null
+current_phase_name: null
+status: v1.15 archived; ready for next milestone
+stopped_at: v1.15 archived
+last_updated: "2026-04-22T10:40:00.000Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 6
@@ -19,7 +19,7 @@ progress:
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 87 - GEML Evidence Package and Claim Boundary
+**Current phase:** None
 **Mode:** YOLO
 
 ## Project Reference
@@ -27,19 +27,19 @@ progress:
 See: `.planning/PROJECT.md` (updated 2026-04-22)
 
 **Core value:** Recover verified, human-readable elementary formulas from data using the paper's uniform EML tree representation.
-**Current focus:** v1.15 GEML family theory, i*pi EML implementation, and matched EML versus i*pi EML evidence.
+**Current focus:** Planning the next milestone after v1.15 GEML evidence package completion.
 
 ## Current Position
 
-Phase: 87 - GEML Evidence Package and Claim Boundary
-Plan: `.planning/phases/87-geml-evidence-package-and-claim-boundary/87-PLAN.md`
-Status: Complete
-Last activity: 2026-04-22 - v1.15 milestone audit passed
+Phase: None
+Plan: -
+Status: v1.15 archived
+Last activity: 2026-04-22 - v1.15 milestone archived
 Progress: [##########] 100% by completed phases
 
 ## Current Milestone
 
-v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y) = exp(a*x) - log(y)/a`, specialize `a = i*pi` as the flagship oscillatory operator, prove restricted-domain identities, add branch diagnostics, and run matched recovery comparisons against raw EML.
+No active milestone. v1.15 is archived; start the next milestone with `$gsd-new-milestone`.
 
 ## Artifacts
 
@@ -51,12 +51,13 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 | Archived v1.14 requirements | `.planning/milestones/v1.14-REQUIREMENTS.md` | Complete |
 | Archived v1.14 roadmap | `.planning/milestones/v1.14-ROADMAP.md` | Complete |
 | Archived v1.14 phase artifacts | `.planning/milestones/v1.14-phases/` | Complete |
-| Requirements | `.planning/REQUIREMENTS.md` | Defined for v1.15 |
-| Roadmap | `.planning/ROADMAP.md` | Created for v1.15; next phase starts at 82 |
-| v1.15 milestone audit | `.planning/v1.15-MILESTONE-AUDIT.md` | Passed, 28/28 requirements satisfied |
+| Archived v1.15 requirements | `.planning/milestones/v1.15-REQUIREMENTS.md` | Complete |
+| Archived v1.15 roadmap | `.planning/milestones/v1.15-ROADMAP.md` | Complete |
+| Archived v1.15 milestone audit | `.planning/milestones/v1.15-MILESTONE-AUDIT.md` | Passed, 28/28 requirements satisfied |
+| Roadmap | `.planning/ROADMAP.md` | Archived for v1.15; next phase starts at 88 |
 | Research summary | `.planning/research/SUMMARY.md` | Existing context retained; no new domain research selected during initialization |
 | Workflow config | `.planning/config.json` | Complete |
-| Milestone log | `.planning/MILESTONES.md` | Complete through v1.14 |
+| Milestone log | `.planning/MILESTONES.md` | Complete through v1.15 |
 | v1.11 final paper package | `artifacts/paper/v1.11/` | Complete, audit passed |
 | v1.12 draft skeleton | `artifacts/paper/v1.11/draft/` | Phase 64 complete |
 | v1.12 evidence refresh | `artifacts/campaigns/v1.12-evidence-refresh/` | Phase 65 complete |
@@ -115,7 +116,7 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 
 ### Pending Todos
 
-- Archive and tag v1.15 milestone completion.
+- Start the next milestone with `$gsd-new-milestone`.
 
 ### Deferred Items
 
@@ -165,8 +166,8 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 ## Session Continuity
 
 Last session: 2026-04-22
-Stopped at: v1.15 milestone audit passed; ready for milestone completion/archive
+Stopped at: v1.15 archived; ready for next milestone
 Resume file: None
 
 ---
-*Last updated: 2026-04-22 after v1.15 milestone audit*
+*Last updated: 2026-04-22 after v1.15 archival*
