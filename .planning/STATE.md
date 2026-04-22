@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.16
 milestone_name: Paper Decision Package and Claim Audit
-current_phase: 89
+current_phase: 90
 status: planning
 stopped_at: v1.16 milestone initialized; ready for Phase 88 planning
-last_updated: "2026-04-22T11:00:28.586Z"
+last_updated: "2026-04-22T11:05:27.048Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 6
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
+  completed_phases: 2
+  total_plans: 2
+  completed_plans: 2
   percent: 100
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** 89
+**Current phase:** 90
 **Mode:** YOLO
 
 ## Project Reference
