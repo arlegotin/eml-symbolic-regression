@@ -36,7 +36,7 @@ The v1.16 objective is intentionally evidence-gated. The milestone should produc
 - [x] Phase 89: i*pi-Aware Search and Branch-Safe Initialization (completed 2026-04-22)
 - [x] Phase 90: Budget Ladder and Pilot Recovery Runs (completed 2026-04-22)
 - [x] Phase 91: Full Matched GEML Paper Campaign (completed 2026-04-22)
-- [ ] Phase 92: Ablations, Failure Taxonomy, and Paper Figures
+- [x] Phase 92: Ablations, Failure Taxonomy, and Paper Figures (completed 2026-04-22)
 - [ ] Phase 93: v1.16 Paper Decision Package and Claim Audit
 
 ## Phase Overview
@@ -47,7 +47,7 @@ The v1.16 objective is intentionally evidence-gated. The milestone should produc
 | 89 | 1/1 | Complete    | 2026-04-22 |
 | 90 | 1/1 | Complete    | 2026-04-22 |
 | 91 | 1/1 | Complete    | 2026-04-22 |
-| 92 | Ablations, Failure Taxonomy, and Paper Figures | Explain why the result is strong or not strong enough, with ablations and reviewer-facing visuals. | ABL-01, ABL-02, ABL-03, ABL-04, PAPER-01 |
+| 92 | 1/1 | Complete    | 2026-04-22 |
 | 93 | v1.16 Paper Decision Package and Claim Audit | Assemble final paper-strength evidence package and decide whether i*pi/GEML deserves a positive paper section. | STRG-04, PAPER-02, PAPER-03, PAPER-04 |
 
 ## Phase Details
