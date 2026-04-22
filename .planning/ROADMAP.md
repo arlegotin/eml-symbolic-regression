@@ -35,7 +35,7 @@ The next bottleneck is the hard candidate boundary. Before spending more compute
 
 - [x] Phase 94: Snap-Mismatch Diagnostics and Low-Margin Inventory (completed 2026-04-22)
 - [x] Phase 95: Bounded Exact Neighborhood Generator (completed 2026-04-22)
-- [ ] Phase 96: Verifier-First Candidate Ranking and Promotion
+- [x] Phase 96: Verifier-First Candidate Ranking and Promotion (completed 2026-04-22)
 - [ ] Phase 97: Focused v1.17 Natural-Bias Recovery Sandbox
 - [ ] Phase 98: v1.17 Evidence Package and Next-Campaign Gate
 
@@ -45,7 +45,7 @@ The next bottleneck is the hard candidate boundary. Before spending more compute
 |-------|------|------|--------------|
 | 94 | 1/1 | Complete    | 2026-04-22 |
 | 95 | 1/1 | Complete    | 2026-04-22 |
-| 96 | Verifier-First Candidate Ranking and Promotion | Promote exact candidates only through verifier-owned gates and keep low-loss failures separated. | NBR-02, RANK-01, RANK-02, RANK-03 |
+| 96 | 1/1 | Complete    | 2026-04-22 |
 | 97 | Focused v1.17 Natural-Bias Recovery Sandbox | Test whether snap-neighborhood search produces any exact signal on selected natural-bias targets and controls. | EVID-01, EVID-02, EVID-03 |
 | 98 | v1.17 Evidence Package and Next-Campaign Gate | Package the result and decide whether broader campaigns are justified. | PACK-01, PACK-02, PACK-03 |
 
