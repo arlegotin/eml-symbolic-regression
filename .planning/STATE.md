@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.15
 milestone_name: GEML family and i*pi EML exploration
-current_phase: 84
-current_phase_name: "Family-Aware Training and Snapping Integration"
-status: Ready to plan Phase 84
-stopped_at: phase 83 complete
+current_phase: 85
+current_phase_name: "Oscillatory Benchmark Pack and Negative Controls"
+status: Ready to plan Phase 85
+stopped_at: phase 84 complete
 last_updated: "2026-04-22T00:00:00.000Z"
 last_activity: 2026-04-22
 progress:
   total_phases: 6
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
-  percent: 33
+  completed_phases: 3
+  total_plans: 3
+  completed_plans: 3
+  percent: 50
 ---
 
 # GSD State: EML Symbolic Regression
 
 **Initialized:** 2026-04-15
-**Current phase:** Phase 84 - Family-Aware Training and Snapping Integration
+**Current phase:** Phase 85 - Oscillatory Benchmark Pack and Negative Controls
 **Mode:** YOLO
 
 ## Project Reference
@@ -31,11 +31,11 @@ See: `.planning/PROJECT.md` (updated 2026-04-22)
 
 ## Current Position
 
-Phase: 84 - Family-Aware Training and Snapping Integration
+Phase: 85 - Oscillatory Benchmark Pack and Negative Controls
 Plan: -
 Status: Ready to plan
-Last activity: 2026-04-22 - Phase 83 complete
-Progress: [###-------] 33% by completed phases
+Last activity: 2026-04-22 - Phase 84 complete
+Progress: [#####-----] 50% by completed phases
 
 ## Current Milestone
 
@@ -67,6 +67,7 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 | v1.14 corrected evidence package | `artifacts/paper/v1.14/` | Complete, claim audit and release gate passed |
 | Phase 82 artifacts | `.planning/phases/82-geml-family-semantics-and-structural-identity/` | Complete |
 | Phase 83 artifacts | `.planning/phases/83-i-pi-eml-restricted-theory-and-branch-contract/` | Complete |
+| Phase 84 artifacts | `.planning/phases/84-family-aware-training-and-snapping-integration/` | Complete |
 | i*pi restricted theory | `artifacts/theory/v1.15/` | Complete |
 
 ## Accumulated Context
@@ -101,10 +102,11 @@ v1.15 GEML family and i*pi EML exploration will generalize EML into `GEML_a(x, y
 - i*pi EML branch management is part of the operator contract, not a nuisance hidden in implementation details.
 - Phase 82 added fixed-parameter `GEML_a` semantics, canonical raw `a = 1` handling, i*pi EML helpers, exact AST JSON/SymPy export, and structural identity tests while preserving legacy raw/centered benchmark artifact compatibility.
 - Phase 83 added principal-log branch diagnostics, verifier branch-failure fields, training-only branch guard metadata, and executable i*pi restricted theory artifacts with explicit non-claims.
+- Phase 84 threaded fixed GEML specializations through optimizer, hardening, snapping, exact-candidate selection, semantics-alignment evidence, and manifest metrics without reusing raw-family scaffold witnesses for i*pi EML.
 
 ### Pending Todos
 
-- Plan Phase 84 with `$gsd-plan-phase 84`.
+- Plan Phase 85 with `$gsd-plan-phase 85`.
 
 ### Deferred Items
 
@@ -154,8 +156,8 @@ Items acknowledged and deferred at milestone close on 2026-04-20:
 ## Session Continuity
 
 Last session: 2026-04-22
-Stopped at: Phase 83 complete; ready for Phase 84
+Stopped at: Phase 84 complete; ready for Phase 85
 Resume file: None
 
 ---
-*Last updated: 2026-04-22 after Phase 83 completion*
+*Last updated: 2026-04-22 after Phase 84 completion*
