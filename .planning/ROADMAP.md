@@ -34,7 +34,7 @@ The v1.16 objective is intentionally evidence-gated. The milestone should produc
 
 - [x] Phase 88: Paper-Strength Success Gate and Campaign Contract (completed 2026-04-22)
 - [x] Phase 89: i*pi-Aware Search and Branch-Safe Initialization (completed 2026-04-22)
-- [ ] Phase 90: Budget Ladder and Pilot Recovery Runs
+- [x] Phase 90: Budget Ladder and Pilot Recovery Runs (completed 2026-04-22)
 - [ ] Phase 91: Full Matched GEML Paper Campaign
 - [ ] Phase 92: Ablations, Failure Taxonomy, and Paper Figures
 - [ ] Phase 93: v1.16 Paper Decision Package and Claim Audit
@@ -45,7 +45,7 @@ The v1.16 objective is intentionally evidence-gated. The milestone should produc
 |-------|------|------|--------------|
 | 88 | 1/1 | Complete    | 2026-04-22 |
 | 89 | 1/1 | Complete    | 2026-04-22 |
-| 90 | Budget Ladder and Pilot Recovery Runs | Run cheap smoke and pilot campaigns to decide whether search improvements merit the full paper campaign. | SRCH-04, CAMP-02, CAMP-03, CAMP-04, ABL-01, ABL-03 |
+| 90 | 1/1 | Complete    | 2026-04-22 |
 | 91 | Full Matched GEML Paper Campaign | Produce the full matched multi-seed raw EML versus i*pi EML evidence set if pilot gates pass; otherwise produce locked negative evidence. | CAMP-01, CAMP-02, CAMP-03, CAMP-04, ABL-02 |
 | 92 | Ablations, Failure Taxonomy, and Paper Figures | Explain why the result is strong or not strong enough, with ablations and reviewer-facing visuals. | ABL-01, ABL-02, ABL-03, ABL-04, PAPER-01 |
 | 93 | v1.16 Paper Decision Package and Claim Audit | Assemble final paper-strength evidence package and decide whether i*pi/GEML deserves a positive paper section. | STRG-04, PAPER-02, PAPER-03, PAPER-04 |
