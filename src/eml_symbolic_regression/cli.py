@@ -44,6 +44,7 @@ from .family_triage import (
     write_family_evidence_manifest,
     write_family_triage,
 )
+from .geml_package import DEFAULT_GEML_PACKAGE_DIR, DEFAULT_THEORY_DIR, write_geml_evidence_package
 from .optimize import TrainingConfig, fit_eml_tree
 from .paper_assets import DEFAULT_PAPER_ASSETS_OUTPUT_DIR, write_paper_assets
 from .paper_decision import DEFAULT_PAPER_OUTPUT_ROOT, write_paper_decision_package
@@ -549,6 +550,23 @@ def paper_package_command(args: argparse.Namespace) -> int:
     return 0 if audit["status"] == "passed" else 1
 
 
+def geml_package_command(args: argparse.Namespace) -> int:
+    paths = write_geml_evidence_package(
+        output_dir=Path(args.output_dir),
+        campaign_dir=Path(args.campaign_dir) if args.campaign_dir else None,
+        theory_dir=Path(args.theory_dir),
+        overwrite=args.overwrite,
+    )
+    audit = json.loads(paths.claim_audit_json.read_text(encoding="utf-8"))
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml package: manifest -> {paths.manifest_json}; "
+        f"audit -> {paths.claim_audit_json} ({audit['status']}); "
+        f"decision -> {manifest['decision']['decision']}"
+    )
+    return 0 if audit["status"] == "passed" else 1
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -883,6 +901,24 @@ def build_parser() -> argparse.ArgumentParser:
     )
     paper_package.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing package manifest.")
     paper_package.set_defaults(func=paper_package_command)
+
+    geml_package = sub.add_parser("geml-package", help="Assemble and audit the v1.15 GEML evidence package.")
+    geml_package.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_GEML_PACKAGE_DIR),
+        help="Directory for GEML manifest, source locks, claim audit, and claim boundary.",
+    )
+    geml_package.add_argument(
+        "--campaign-dir",
+        help="Campaign directory containing tables/geml-paired-comparison.csv. Defaults to the smoke campaign label.",
+    )
+    geml_package.add_argument(
+        "--theory-dir",
+        default=str(DEFAULT_THEORY_DIR),
+        help="Directory containing ipi-restricted-theory.json and ipi-restricted-theory.md.",
+    )
+    geml_package.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing GEML package manifest.")
+    geml_package.set_defaults(func=geml_package_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(

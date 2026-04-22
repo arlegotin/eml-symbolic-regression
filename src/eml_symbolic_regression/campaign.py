@@ -1176,6 +1176,13 @@ def _geml_target_family(raw: Mapping[str, Any], ipi: Mapping[str, Any]) -> str:
     for run in (raw, ipi):
         values = run.get("tags") if isinstance(run.get("tags"), (list, tuple)) else ()
         tags.update(str(tag) for tag in values if tag is not None)
+    tag_family = _geml_target_family_from_tags(tags)
+    if tag_family != "unknown":
+        return tag_family
+    return _geml_target_family_from_formula(str(raw.get("formula") or ipi.get("formula") or ""))
+
+
+def _geml_target_family_from_tags(tags: set[str]) -> str:
     if "negative_control" in tags:
         return "negative_control"
     if "log_periodic" in tags:
@@ -1187,6 +1194,22 @@ def _geml_target_family(raw: Mapping[str, Any], ipi: Mapping[str, Any]) -> str:
     if "harmonic" in tags:
         return "harmonic"
     if "periodic" in tags:
+        return "periodic"
+    return "unknown"
+
+
+def _geml_target_family_from_formula(formula: str) -> str:
+    if formula in {"exp", "log", "quadratic_polynomial", "rational_decay"}:
+        return "negative_control"
+    if formula == "log_periodic_oscillation":
+        return "log_periodic"
+    if formula == "damped_oscillator":
+        return "damped_oscillation"
+    if formula == "standing_wave_snapshot":
+        return "standing_wave"
+    if formula == "harmonic_sum":
+        return "harmonic"
+    if formula in {"sin_pi", "cos_pi"}:
         return "periodic"
     return "unknown"
 
@@ -1222,7 +1245,10 @@ def _geml_paired_summary(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
     ipi_wins = sum(1 for row in rows if row.get("comparison_outcome") == "ipi_recovery_win")
     raw_wins = sum(1 for row in rows if row.get("comparison_outcome") == "raw_recovery_win")
     both = sum(1 for row in rows if row.get("comparison_outcome") == "both_recovered")
-    neither = sum(1 for row in rows if row.get("comparison_outcome") == "neutral_no_recovery")
+    ipi_lower_loss = sum(1 for row in rows if row.get("comparison_outcome") == "ipi_lower_post_snap_mse")
+    raw_lower_loss = sum(1 for row in rows if row.get("comparison_outcome") == "raw_lower_post_snap_mse")
+    loss_only_outcomes = ipi_lower_loss + raw_lower_loss
+    neither = sum(1 for row in rows if row.get("comparison_outcome") == "neutral_no_recovery") + loss_only_outcomes
     ipi_recovered = sum(1 for row in rows if row.get("ipi_trained_exact_recovery") is True)
     raw_recovered = sum(1 for row in rows if row.get("raw_trained_exact_recovery") is True)
     return {
@@ -1236,6 +1262,9 @@ def _geml_paired_summary(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
         "raw_recovery_wins": raw_wins,
         "both_recovered": both,
         "neither_recovered": neither,
+        "loss_only_outcomes": loss_only_outcomes,
+        "ipi_lower_post_snap_mse": ipi_lower_loss,
+        "raw_lower_post_snap_mse": raw_lower_loss,
         "negative_control_pairs": sum(1 for row in rows if row.get("target_family") == "negative_control"),
         "target_families": _count_by_value(row.get("target_family") for row in rows),
         "comparison_outcomes": _count_by_value(row.get("comparison_outcome") for row in rows),

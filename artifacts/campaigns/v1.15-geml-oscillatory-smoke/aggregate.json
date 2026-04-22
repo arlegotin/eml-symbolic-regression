@@ -1,0 +1,1911 @@
+{
+  "counts": {
+    "compile_only_verified_support": 0,
+    "compile_only_verified_support_rate": 0.0,
+    "discovery_classes": {
+      "failed": 2,
+      "repaired_candidate": 2
+    },
+    "evidence_classes": {
+      "repaired_candidate": 2,
+      "snapped_but_failed": 2
+    },
+    "evidence_regimes": {
+      "repaired_candidate": 2,
+      "snapped_but_failed": 2
+    },
+    "execution_error": 0,
+    "failed": 2,
+    "repaired_candidate": 2,
+    "same_ast_return": 0,
+    "total": 4,
+    "trained_exact_recovery": 0,
+    "trained_exact_recovery_rate": 0.0,
+    "unsupported": 0,
+    "verification_passed": 0,
+    "verification_passed_rate": 0.0,
+    "verified_equivalent_ast": 0,
+    "verifier_recovered": 0,
+    "verifier_recovery_rate": 0.0
+  },
+  "depth_curve": [],
+  "environment": {
+    "code_version": "5497c98",
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "python": "3.11.5"
+  },
+  "generated_at": "2026-04-22T10:16:31.205197+00:00",
+  "groups": {
+    "ast_return_status": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2,
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "not_applicable",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 4,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "benchmark_track": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2,
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "literal_constants",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 4,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "constants_policy": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2,
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "literal_constants",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 4,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "depth": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "2",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 2,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2
+        },
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "3",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "evidence_class": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "repaired_candidate",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 2,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2
+        },
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "snapped_but_failed",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "formula": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "exp",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 2,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2
+        },
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "sin_pi",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "perturbation_noise": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2,
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "0.0",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 4,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "raw_status": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2,
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "none",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 4,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "repair_status": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2
+        },
+        "evidence_classes": {
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "not_repaired",
+        "repaired_candidate": 0,
+        "same_ast_return": 0,
+        "total": 2,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      },
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2
+        },
+        "execution_error": 0,
+        "failed": 0,
+        "key": "repaired",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 2,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "return_kind": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2,
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "none",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 4,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "seed_group": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2,
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "all",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 4,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "start_mode": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2,
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "blind",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 4,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ],
+    "warm_start_evidence": [
+      {
+        "compile_only_verified_support": 0,
+        "compile_only_verified_support_rate": 0.0,
+        "discovery_classes": {
+          "failed": 2,
+          "repaired_candidate": 2
+        },
+        "evidence_classes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "evidence_regimes": {
+          "repaired_candidate": 2,
+          "snapped_but_failed": 2
+        },
+        "execution_error": 0,
+        "failed": 2,
+        "key": "not_warm_start",
+        "repaired_candidate": 2,
+        "same_ast_return": 0,
+        "total": 4,
+        "trained_exact_recovery": 0,
+        "trained_exact_recovery_rate": 0.0,
+        "unsupported": 0,
+        "verification_passed": 0,
+        "verification_passed_rate": 0.0,
+        "verified_equivalent_ast": 0,
+        "verifier_recovered": 0,
+        "verifier_recovery_rate": 0.0
+      }
+    ]
+  },
+  "runs": [
+    {
+      "artifact_path": "artifacts/campaigns/v1.15-geml-oscillatory-smoke/runs/v1.15-geml-oscillatory-smoke/v1-15-geml-oscillatory-smoke-sin-pi-raw-blind-70170745a2b0.json",
+      "ast_return_status": "not_applicable",
+      "benchmark_track": "literal_constants",
+      "case_id": "sin-pi-raw-blind",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "constants_policy": "literal_constants",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "sin_pi",
+        "manifest_sha256": "0570fd468d9ea908be847b13ca3e6178ae663db4e287056b3b4179412a51dd28",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "sin_pi_catalog",
+          "description": "v1.15 periodic target: sin(pi*x) on a normalized real domain.",
+          "formula_id": "sin_pi",
+          "normalized_dimensionless": true,
+          "source_document": ".planning/ROADMAP.md",
+          "source_linkage": "v1.15 BENCH-01 periodic i*pi EML natural-bias target",
+          "symbolic_expression": "sin(pi*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              -1.0,
+              1.0
+            ],
+            "input_sha256": "ae087517b786b20eff545a77de01e8228e6b5d0333a48a1ad9875ec97a984b23",
+            "name": "train",
+            "target_sha256": "776533b791b3f9b8843f863700eec0d25b32cf09a41554831b71b10d0f8f61a9"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -0.9,
+              0.9
+            ],
+            "input_sha256": "7309426f9e239e62bf9ee49173e853ed1dbea7ea18b92db3a1998ca4004a6289",
+            "name": "heldout",
+            "target_sha256": "0f89b49967064151f19a6835df021c095ce501bfb7ca28929a4fd9aea2930a0c"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.05,
+              1.45
+            ],
+            "input_sha256": "44af63b86d35d49d81774329f77d66117c775dccb908296acfc71642988b2f53",
+            "name": "extrapolation",
+            "target_sha256": "99ce9cf688c91c917842acf57b3ac934ff04ce9a6752c0871e5d07540957ffad"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "discovery_class": "failed",
+      "evidence_class": "snapped_but_failed",
+      "evidence_regime": "snapped_but_failed",
+      "formula": "sin_pi",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_branch_input_count": 168,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_inf_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 12,
+        "anomaly_log_branch_cut_crossing_count": 0,
+        "anomaly_log_branch_cut_min_distance": 0.0,
+        "anomaly_log_branch_cut_proximity_count": 12,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 12,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_nan_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "ast_return_status": "not_applicable",
+        "best_loss": 0.7111489464540238,
+        "branch_diagnostics_status": "performed",
+        "branch_failure_class": "not_branch_related",
+        "candidate_complexity": null,
+        "candidate_pool_size": 4,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.6535512891542574,
+        "gradient_l2_norm_max": 14399.694260683938,
+        "gradient_max_abs_max": 7513.112515731366,
+        "high_precision_max_error": 1.420700467971452,
+        "legacy_best_loss": 0.7111489464540238,
+        "objective_matches_verifier_semantics": false,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "optimizer_attempt_count": 1,
+        "optimizer_candidate_count": 4,
+        "optimizer_wall_clock_seconds": 0.3220351249910891,
+        "post_snap_loss": 0.6535512891542574,
+        "post_snap_mse": 0.6535512891542574,
+        "pre_snap_mse": 2.9475289809869776,
+        "refit_accepted": false,
+        "refit_constant_count": 1,
+        "refit_post_snap_loss": 0.4776285122151882,
+        "refit_status": "rejected",
+        "refit_verifier_status": "failed",
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 24,
+        "repair_move_count": 40,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 24,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "semantics_fallback_reason": "guarded_training_uses_exp_clamp_and_optional_log_safety_penalty",
+        "snap_active_node_count": 5,
+        "snap_min_margin": 0.1859575508035472,
+        "total_restarts": 1,
+        "training_semantics_mode": "guarded",
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_evidence": "not_warm_start",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1",
+          "3.141592653589793"
+        ],
+        "depth": 3,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "semantics_mode": "guarded",
+        "steps": 24,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "sin_pi_catalog",
+        "description": "v1.15 periodic target: sin(pi*x) on a normalized real domain.",
+        "formula_id": "sin_pi",
+        "normalized_dimensionless": true,
+        "source_document": ".planning/ROADMAP.md",
+        "source_linkage": "v1.15 BENCH-01 periodic i*pi EML natural-bias target",
+        "symbolic_expression": "sin(pi*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "v1-15-geml-oscillatory-smoke-sin-pi-raw-blind-70170745a2b0",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "rejected"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.15-geml-oscillatory-smoke",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "total_restarts": 1,
+      "track": {
+        "basis_constants": [
+          "1"
+        ],
+        "constants_policy": "literal_constants",
+        "denominator_key": "literal_constants",
+        "literal_catalog": [
+          "3.141592653589793"
+        ],
+        "name": "literal_constants",
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "scaffold_status": "disabled",
+        "start_mode": "blind",
+        "uses_literal_constants": true,
+        "warm_start_or_scaffold_status": "no_scaffold_initializers",
+        "warm_start_status": "not_warm_start"
+      },
+      "training_mode": "blind_training",
+      "verification_outcome": "failed",
+      "warm_start_evidence": "not_warm_start"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.15-geml-oscillatory-smoke/runs/v1.15-geml-oscillatory-smoke/v1-15-geml-oscillatory-smoke-sin-pi-ipi-blind-ea7864a411cc.json",
+      "ast_return_status": "not_applicable",
+      "benchmark_track": "literal_constants",
+      "case_id": "sin-pi-ipi-blind",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "failed",
+      "classification": "snapped_but_failed",
+      "constants_policy": "literal_constants",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "sin_pi",
+        "manifest_sha256": "0570fd468d9ea908be847b13ca3e6178ae663db4e287056b3b4179412a51dd28",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "sin_pi_catalog",
+          "description": "v1.15 periodic target: sin(pi*x) on a normalized real domain.",
+          "formula_id": "sin_pi",
+          "normalized_dimensionless": true,
+          "source_document": ".planning/ROADMAP.md",
+          "source_linkage": "v1.15 BENCH-01 periodic i*pi EML natural-bias target",
+          "symbolic_expression": "sin(pi*x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              -1.0,
+              1.0
+            ],
+            "input_sha256": "ae087517b786b20eff545a77de01e8228e6b5d0333a48a1ad9875ec97a984b23",
+            "name": "train",
+            "target_sha256": "776533b791b3f9b8843f863700eec0d25b32cf09a41554831b71b10d0f8f61a9"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -0.9,
+              0.9
+            ],
+            "input_sha256": "7309426f9e239e62bf9ee49173e853ed1dbea7ea18b92db3a1998ca4004a6289",
+            "name": "heldout",
+            "target_sha256": "0f89b49967064151f19a6835df021c095ce501bfb7ca28929a4fd9aea2930a0c"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.05,
+              1.45
+            ],
+            "input_sha256": "44af63b86d35d49d81774329f77d66117c775dccb908296acfc71642988b2f53",
+            "name": "extrapolation",
+            "target_sha256": "99ce9cf688c91c917842acf57b3ac934ff04ce9a6752c0871e5d07540957ffad"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "discovery_class": "failed",
+      "evidence_class": "snapped_but_failed",
+      "evidence_regime": "snapped_but_failed",
+      "formula": "sin_pi",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_branch_input_count": 168,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_inf_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 12,
+        "anomaly_log_branch_cut_crossing_count": 0,
+        "anomaly_log_branch_cut_min_distance": 0.0,
+        "anomaly_log_branch_cut_proximity_count": 13,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 36,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_nan_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "ast_return_status": "not_applicable",
+        "best_loss": 0.7332548254585681,
+        "branch_diagnostics_status": "performed",
+        "branch_failure_class": "branch_related",
+        "candidate_complexity": null,
+        "candidate_pool_size": 4,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.4776427646613734,
+        "gradient_l2_norm_max": 7.023135344426269,
+        "gradient_max_abs_max": 4.96855470945392,
+        "high_precision_max_error": 0.9973896428407041,
+        "legacy_best_loss": 0.7332548254585681,
+        "objective_matches_verifier_semantics": false,
+        "operator_family": "ipi_eml",
+        "operator_schedule": "",
+        "optimizer_attempt_count": 1,
+        "optimizer_candidate_count": 4,
+        "optimizer_wall_clock_seconds": 0.13776433293242007,
+        "post_snap_loss": 0.4776427646613734,
+        "post_snap_mse": 0.4776427646613734,
+        "pre_snap_mse": 0.4791406818047513,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": null,
+        "repair_accepted_candidate_root_source": null,
+        "repair_accepted_candidate_source": null,
+        "repair_accepted_move_count": 0,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 32,
+        "repair_move_count": 56,
+        "repair_status": "not_repaired",
+        "repair_variant_count": 32,
+        "repair_verifier_status": null,
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "semantics_fallback_reason": "guarded_training_uses_exp_clamp_and_optional_log_safety_penalty",
+        "snap_active_node_count": 7,
+        "snap_min_margin": 0.06334178472803376,
+        "total_restarts": 1,
+        "training_semantics_mode": "guarded",
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_evidence": "not_warm_start",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1",
+          "3.141592653589793"
+        ],
+        "depth": 3,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "a": {
+            "imag": "3.141592653589793",
+            "real": "0.0"
+          },
+          "family": "geml_a",
+          "geml_parameter": {
+            "imag": "3.141592653589793",
+            "real": "0.0"
+          },
+          "label": "ipi_eml",
+          "named_specialization": "ipi_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "semantics_mode": "guarded",
+        "steps": 24,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "sin_pi_catalog",
+        "description": "v1.15 periodic target: sin(pi*x) on a normalized real domain.",
+        "formula_id": "sin_pi",
+        "normalized_dimensionless": true,
+        "source_document": ".planning/ROADMAP.md",
+        "source_linkage": "v1.15 BENCH-01 periodic i*pi EML natural-bias target",
+        "symbolic_expression": "sin(pi*x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "not_repaired",
+      "return_kind": null,
+      "run_id": "v1-15-geml-oscillatory-smoke-sin-pi-ipi-blind-ea7864a411cc",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "not_repaired",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "snapped_but_failed",
+      "suite_id": "v1.15-geml-oscillatory-smoke",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "total_restarts": 1,
+      "track": {
+        "basis_constants": [
+          "1"
+        ],
+        "constants_policy": "literal_constants",
+        "denominator_key": "literal_constants",
+        "literal_catalog": [
+          "3.141592653589793"
+        ],
+        "name": "literal_constants",
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "scaffold_status": "disabled",
+        "start_mode": "blind",
+        "uses_literal_constants": true,
+        "warm_start_or_scaffold_status": "no_scaffold_initializers",
+        "warm_start_status": "not_warm_start"
+      },
+      "training_mode": "blind_training",
+      "verification_outcome": "failed",
+      "warm_start_evidence": "not_warm_start"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.15-geml-oscillatory-smoke/runs/v1.15-geml-oscillatory-smoke/v1-15-geml-oscillatory-smoke-exp-raw-blind-5acc64d4b218.json",
+      "ast_return_status": "not_applicable",
+      "benchmark_track": "literal_constants",
+      "case_id": "exp-raw-blind",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "recovered",
+      "classification": "repaired_candidate",
+      "constants_policy": "literal_constants",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "exp",
+        "manifest_sha256": "c237c6da1b08d9529271554abe841aeb1f97b3e9467fb83a6451f2727ecf4c2d",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Paper smoke test: exp(x) = eml(x, 1).",
+          "formula_id": "exp",
+          "normalized_dimensionless": true,
+          "source_document": "sources/paper.pdf",
+          "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+          "symbolic_expression": "exp(x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              -1.0,
+              1.0
+            ],
+            "input_sha256": "ae087517b786b20eff545a77de01e8228e6b5d0333a48a1ad9875ec97a984b23",
+            "name": "train",
+            "target_sha256": "34fc2d1450f8ab2f64c5b176a129440c611bf605213b808a29169245a7e4d060"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -0.8,
+              0.8
+            ],
+            "input_sha256": "6454c09099a0b43ec50fbf16919e23428c7bcb1bf93e19be9bdece246d0c8834",
+            "name": "heldout",
+            "target_sha256": "04f4cdbe7f1c982c4b78b6daeb617cce8c8d0516c8207bf3e1b5915b9ef144af"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.05,
+              1.5
+            ],
+            "input_sha256": "c0e2780d052d629759eb24a599b6f9b1e870b3ebcd43347a769a46c41c60cf94",
+            "name": "extrapolation",
+            "target_sha256": "af97c80f3930f127278656c0aa1cf3b33dcd05418a1ab00b465cdc30d7fc8314"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "discovery_class": "repaired_candidate",
+      "evidence_class": "repaired_candidate",
+      "evidence_regime": "repaired_candidate",
+      "formula": "exp",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_branch_input_count": 72,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_inf_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 12,
+        "anomaly_log_branch_cut_crossing_count": 0,
+        "anomaly_log_branch_cut_min_distance": 0.0,
+        "anomaly_log_branch_cut_proximity_count": 12,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 12,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_nan_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "ast_return_status": "not_applicable",
+        "best_loss": 0.12249598499264491,
+        "branch_diagnostics_status": "performed",
+        "branch_failure_class": "branch_related",
+        "candidate_complexity": null,
+        "candidate_pool_size": 4,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 0.5638625830597994,
+        "gradient_l2_norm_max": 30.29541189908041,
+        "gradient_max_abs_max": 21.206410998047957,
+        "high_precision_max_error": 2.6033649020395915,
+        "legacy_best_loss": 0.12249598499264491,
+        "objective_matches_verifier_semantics": false,
+        "operator_family": "raw_eml",
+        "operator_schedule": "",
+        "optimizer_attempt_count": 1,
+        "optimizer_candidate_count": 4,
+        "optimizer_wall_clock_seconds": 0.04253179195802659,
+        "post_snap_loss": 0.5638625830597994,
+        "post_snap_mse": 0.5638625830597994,
+        "pre_snap_mse": 0.3113268104813511,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": "attempt-000-hardening-00",
+        "repair_accepted_candidate_root_source": "selected",
+        "repair_accepted_candidate_source": "hardening_checkpoint",
+        "repair_accepted_move_count": 2,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 15,
+        "repair_move_count": 24,
+        "repair_status": "repaired",
+        "repair_variant_count": 15,
+        "repair_verifier_status": "recovered",
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": 0,
+        "selected_candidate_id": "attempt-000-hardening-00",
+        "selected_candidate_source": "hardening_checkpoint",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "semantics_fallback_reason": "guarded_training_uses_exp_clamp_and_optional_log_safety_penalty",
+        "snap_active_node_count": 5,
+        "snap_min_margin": 0.15725782753187378,
+        "total_restarts": 1,
+        "training_semantics_mode": "guarded",
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_evidence": "not_warm_start",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "family": "raw_eml",
+          "label": "raw_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "semantics_mode": "guarded",
+        "steps": 24,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Paper smoke test: exp(x) = eml(x, 1).",
+        "formula_id": "exp",
+        "normalized_dimensionless": true,
+        "source_document": "sources/paper.pdf",
+        "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+        "symbolic_expression": "exp(x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "repaired",
+      "return_kind": null,
+      "run_id": "v1-15-geml-oscillatory-smoke-exp-raw-blind-5acc64d4b218",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "repaired_candidate",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "repaired_candidate",
+      "suite_id": "v1.15-geml-oscillatory-smoke",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "total_restarts": 1,
+      "track": {
+        "basis_constants": [
+          "1"
+        ],
+        "constants_policy": "literal_constants",
+        "denominator_key": "literal_constants",
+        "literal_catalog": [],
+        "name": "literal_constants",
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "scaffold_status": "disabled",
+        "start_mode": "blind",
+        "uses_literal_constants": false,
+        "warm_start_or_scaffold_status": "no_scaffold_initializers",
+        "warm_start_status": "not_warm_start"
+      },
+      "training_mode": "blind_training",
+      "verification_outcome": "failed",
+      "warm_start_evidence": "not_warm_start"
+    },
+    {
+      "artifact_path": "artifacts/campaigns/v1.15-geml-oscillatory-smoke/runs/v1.15-geml-oscillatory-smoke/v1-15-geml-oscillatory-smoke-exp-ipi-blind-a38affbc171c.json",
+      "ast_return_status": "not_applicable",
+      "benchmark_track": "literal_constants",
+      "case_id": "exp-ipi-blind",
+      "claim_class": null,
+      "claim_id": null,
+      "claim_status": "recovered",
+      "classification": "repaired_candidate",
+      "constants_policy": "literal_constants",
+      "dataset": {
+        "points": 24,
+        "tolerance": 1e-08
+      },
+      "dataset_manifest": {
+        "formula_id": "exp",
+        "manifest_sha256": "c237c6da1b08d9529271554abe841aeb1f97b3e9467fb83a6451f2727ecf4c2d",
+        "points": 24,
+        "provenance": {
+          "candidate_name": "exact_eml",
+          "description": "Paper smoke test: exp(x) = eml(x, 1).",
+          "formula_id": "exp",
+          "normalized_dimensionless": true,
+          "source_document": "sources/paper.pdf",
+          "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+          "symbolic_expression": "exp(x)",
+          "variable": "x"
+        },
+        "sample_policy": "linspace_with_seeded_0.2_percent_jitter",
+        "schema": "eml.proof_dataset_manifest.v1",
+        "seed": 0,
+        "splits": [
+          {
+            "count": 24,
+            "domain": [
+              -1.0,
+              1.0
+            ],
+            "input_sha256": "ae087517b786b20eff545a77de01e8228e6b5d0333a48a1ad9875ec97a984b23",
+            "name": "train",
+            "target_sha256": "34fc2d1450f8ab2f64c5b176a129440c611bf605213b808a29169245a7e4d060"
+          },
+          {
+            "count": 16,
+            "domain": [
+              -0.8,
+              0.8
+            ],
+            "input_sha256": "6454c09099a0b43ec50fbf16919e23428c7bcb1bf93e19be9bdece246d0c8834",
+            "name": "heldout",
+            "target_sha256": "04f4cdbe7f1c982c4b78b6daeb617cce8c8d0516c8207bf3e1b5915b9ef144af"
+          },
+          {
+            "count": 16,
+            "domain": [
+              1.05,
+              1.5
+            ],
+            "input_sha256": "c0e2780d052d629759eb24a599b6f9b1e870b3ebcd43347a769a46c41c60cf94",
+            "name": "extrapolation",
+            "target_sha256": "af97c80f3930f127278656c0aa1cf3b33dcd05418a1ab00b465cdc30d7fc8314"
+          }
+        ],
+        "tolerance": 1e-08,
+        "variable": "x"
+      },
+      "discovery_class": "repaired_candidate",
+      "evidence_class": "repaired_candidate",
+      "evidence_regime": "repaired_candidate",
+      "formula": "exp",
+      "metrics": {
+        "active_slot_count": null,
+        "anomaly_branch_input_count": 72,
+        "anomaly_clamp_count": 0,
+        "anomaly_exp_overflow_count": 0,
+        "anomaly_expm1_overflow_count": 0,
+        "anomaly_inf_count": 0,
+        "anomaly_log1p_branch_cut_count": 0,
+        "anomaly_log_branch_cut_count": 24,
+        "anomaly_log_branch_cut_crossing_count": 0,
+        "anomaly_log_branch_cut_min_distance": 0.0,
+        "anomaly_log_branch_cut_proximity_count": 24,
+        "anomaly_log_non_finite_input_count": 0,
+        "anomaly_log_non_positive_real_count": 24,
+        "anomaly_log_safety_penalty": 0.0,
+        "anomaly_log_small_magnitude_count": 0,
+        "anomaly_nan_count": 0,
+        "anomaly_shifted_singularity_min_distance": null,
+        "anomaly_shifted_singularity_near_count": 0,
+        "ast_return_status": "not_applicable",
+        "best_loss": 1.046576760612318,
+        "branch_diagnostics_status": "performed",
+        "branch_failure_class": "branch_related",
+        "candidate_complexity": null,
+        "candidate_pool_size": 4,
+        "changed_slot_count": null,
+        "fallback_candidate_attempt_index": 0,
+        "fallback_candidate_checkpoint_index": null,
+        "fallback_candidate_id": "attempt-000-legacy-final-snap",
+        "fallback_candidate_source": "legacy_final_snap",
+        "fallback_post_snap_loss": 71.79304446934118,
+        "gradient_l2_norm_max": 9505.117115828009,
+        "gradient_max_abs_max": 6720.860235590202,
+        "high_precision_max_error": 30.2932383766853,
+        "legacy_best_loss": 1.046576760612318,
+        "objective_matches_verifier_semantics": false,
+        "operator_family": "ipi_eml",
+        "operator_schedule": "",
+        "optimizer_attempt_count": 1,
+        "optimizer_candidate_count": 4,
+        "optimizer_wall_clock_seconds": 0.04644258297048509,
+        "post_snap_loss": 71.79304446934118,
+        "post_snap_mse": 71.79304446934118,
+        "pre_snap_mse": 2.726399042887268,
+        "refit_accepted": false,
+        "refit_constant_count": 0,
+        "refit_post_snap_loss": null,
+        "refit_status": "not_attempted",
+        "refit_verifier_status": null,
+        "repair_accepted_candidate_id": "attempt-000-legacy-final-snap",
+        "repair_accepted_candidate_root_source": "selected",
+        "repair_accepted_candidate_source": "legacy_final_snap",
+        "repair_accepted_move_count": 1,
+        "repair_candidate_root_count": 1,
+        "repair_candidate_root_summary_count": 1,
+        "repair_deduped_variant_count": 15,
+        "repair_move_count": 24,
+        "repair_status": "repaired",
+        "repair_variant_count": 15,
+        "repair_verifier_status": "recovered",
+        "scaffold_coefficient": null,
+        "scaffold_exclusions": [],
+        "scaffold_source": null,
+        "scaffold_strategy": null,
+        "selected_candidate_attempt_index": 0,
+        "selected_candidate_checkpoint_index": null,
+        "selected_candidate_id": "attempt-000-legacy-final-snap",
+        "selected_candidate_source": "legacy_final_snap",
+        "selection_mode": "verifier_gated_exact_candidate_pool",
+        "semantics_fallback_reason": "guarded_training_uses_exp_clamp_and_optional_log_safety_penalty",
+        "snap_active_node_count": 5,
+        "snap_min_margin": 0.01759074204040839,
+        "total_restarts": 1,
+        "training_semantics_mode": "guarded",
+        "unsupported_reason": null,
+        "verifier_status": "failed",
+        "warm_start_evidence": "not_warm_start",
+        "warm_start_mechanism": null,
+        "warm_start_status": null
+      },
+      "optimizer": {
+        "clamp_exp_real": 40.0,
+        "constants": [
+          "1"
+        ],
+        "depth": 2,
+        "hardening_emit_interval": 2,
+        "hardening_steps": 4,
+        "hardening_temperature_end": 0.02,
+        "log_domain_epsilon": 1e-09,
+        "log_safety_imag_tolerance": 1e-06,
+        "log_safety_margin": 1e-06,
+        "log_safety_weight": 0.0,
+        "lr": 0.05,
+        "max_compile_depth": 13,
+        "max_compile_nodes": 256,
+        "max_power": 3,
+        "max_warm_depth": 14,
+        "operator_family": {
+          "a": {
+            "imag": "3.141592653589793",
+            "real": "0.0"
+          },
+          "family": "geml_a",
+          "geml_parameter": {
+            "imag": "3.141592653589793",
+            "real": "0.0"
+          },
+          "label": "ipi_eml",
+          "named_specialization": "ipi_eml",
+          "s": 1.0,
+          "t": 1.0,
+          "terminal": "one"
+        },
+        "operator_schedule": [],
+        "refit_lr": 0.02,
+        "refit_steps": 80,
+        "restarts": 1,
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "semantics_mode": "guarded",
+        "steps": 24,
+        "warm_depth": 0,
+        "warm_restarts": 1,
+        "warm_steps": 8
+      },
+      "perturbation_noise": 0.0,
+      "provenance": {
+        "candidate_name": "exact_eml",
+        "description": "Paper smoke test: exp(x) = eml(x, 1).",
+        "formula_id": "exp",
+        "normalized_dimensionless": true,
+        "source_document": "sources/paper.pdf",
+        "source_linkage": "sources/NORTH_STAR.md paper EML identity smoke test for exp(x)",
+        "symbolic_expression": "exp(x)",
+        "variable": "x"
+      },
+      "raw_status": null,
+      "reason": "train_failed",
+      "repair_status": "repaired",
+      "return_kind": null,
+      "run_id": "v1-15-geml-oscillatory-smoke-exp-ipi-blind-a38affbc171c",
+      "seed": 0,
+      "stage_statuses": {
+        "blind_baseline": "failed",
+        "local_repair": "repaired_candidate",
+        "post_snap_refit": "not_attempted"
+      },
+      "start_mode": "blind",
+      "status": "repaired_candidate",
+      "suite_id": "v1.15-geml-oscillatory-smoke",
+      "threshold": null,
+      "threshold_policy_id": null,
+      "total_restarts": 1,
+      "track": {
+        "basis_constants": [
+          "1"
+        ],
+        "constants_policy": "literal_constants",
+        "denominator_key": "literal_constants",
+        "literal_catalog": [],
+        "name": "literal_constants",
+        "scaffold_exclusions": [],
+        "scaffold_initializers": [],
+        "scaffold_status": "disabled",
+        "start_mode": "blind",
+        "uses_literal_constants": false,
+        "warm_start_or_scaffold_status": "no_scaffold_initializers",
+        "warm_start_status": "not_warm_start"
+      },
+      "training_mode": "blind_training",
+      "verification_outcome": "failed",
+      "warm_start_evidence": "not_warm_start"
+    }
+  ],
+  "schema": "eml.benchmark_aggregate.v1",
+  "suite": {
+    "artifact_root": "artifacts/campaigns/v1.15-geml-oscillatory-smoke/runs",
+    "cases": [
+      {
+        "benchmark_track": {
+          "basis_constants": [
+            "1"
+          ],
+          "constants_policy": "literal_constants",
+          "denominator_key": "literal_constants",
+          "literal_catalog": [
+            "3.141592653589793"
+          ],
+          "name": "literal_constants",
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "scaffold_status": "disabled",
+          "start_mode": "blind",
+          "uses_literal_constants": true,
+          "warm_start_or_scaffold_status": "no_scaffold_initializers",
+          "warm_start_status": "not_warm_start"
+        },
+        "claim_id": null,
+        "constants_policy": "literal_constants",
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "sin_pi",
+        "id": "sin-pi-raw-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1",
+            "3.141592653589793"
+          ],
+          "depth": 3,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "semantics_mode": "guarded",
+          "steps": 24,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.15",
+          "geml_oscillatory",
+          "oscillatory_target",
+          "periodic",
+          "branch_safe_by_construction",
+          "operator:raw"
+        ],
+        "threshold_policy_id": null,
+        "track": "literal_constants",
+        "training_mode": null
+      },
+      {
+        "benchmark_track": {
+          "basis_constants": [
+            "1"
+          ],
+          "constants_policy": "literal_constants",
+          "denominator_key": "literal_constants",
+          "literal_catalog": [
+            "3.141592653589793"
+          ],
+          "name": "literal_constants",
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "scaffold_status": "disabled",
+          "start_mode": "blind",
+          "uses_literal_constants": true,
+          "warm_start_or_scaffold_status": "no_scaffold_initializers",
+          "warm_start_status": "not_warm_start"
+        },
+        "claim_id": null,
+        "constants_policy": "literal_constants",
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "sin_pi",
+        "id": "sin-pi-ipi-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1",
+            "3.141592653589793"
+          ],
+          "depth": 3,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "a": {
+              "imag": "3.141592653589793",
+              "real": "0.0"
+            },
+            "family": "geml_a",
+            "geml_parameter": {
+              "imag": "3.141592653589793",
+              "real": "0.0"
+            },
+            "label": "ipi_eml",
+            "named_specialization": "ipi_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "semantics_mode": "guarded",
+          "steps": 24,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.15",
+          "geml_oscillatory",
+          "oscillatory_target",
+          "periodic",
+          "branch_safe_by_construction",
+          "operator:ipi"
+        ],
+        "threshold_policy_id": null,
+        "track": "literal_constants",
+        "training_mode": null
+      },
+      {
+        "benchmark_track": {
+          "basis_constants": [
+            "1"
+          ],
+          "constants_policy": "literal_constants",
+          "denominator_key": "literal_constants",
+          "literal_catalog": [],
+          "name": "literal_constants",
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "scaffold_status": "disabled",
+          "start_mode": "blind",
+          "uses_literal_constants": false,
+          "warm_start_or_scaffold_status": "no_scaffold_initializers",
+          "warm_start_status": "not_warm_start"
+        },
+        "claim_id": null,
+        "constants_policy": "literal_constants",
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "exp",
+        "id": "exp-raw-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "family": "raw_eml",
+            "label": "raw_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "semantics_mode": "guarded",
+          "steps": 24,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.15",
+          "geml_oscillatory",
+          "negative_control",
+          "negative_control_domain",
+          "operator:raw"
+        ],
+        "threshold_policy_id": null,
+        "track": "literal_constants",
+        "training_mode": null
+      },
+      {
+        "benchmark_track": {
+          "basis_constants": [
+            "1"
+          ],
+          "constants_policy": "literal_constants",
+          "denominator_key": "literal_constants",
+          "literal_catalog": [],
+          "name": "literal_constants",
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "scaffold_status": "disabled",
+          "start_mode": "blind",
+          "uses_literal_constants": false,
+          "warm_start_or_scaffold_status": "no_scaffold_initializers",
+          "warm_start_status": "not_warm_start"
+        },
+        "claim_id": null,
+        "constants_policy": "literal_constants",
+        "dataset": {
+          "points": 24,
+          "tolerance": 1e-08
+        },
+        "expect_recovery": false,
+        "formula": "exp",
+        "id": "exp-ipi-blind",
+        "optimizer": {
+          "clamp_exp_real": 40.0,
+          "constants": [
+            "1"
+          ],
+          "depth": 2,
+          "hardening_emit_interval": 2,
+          "hardening_steps": 4,
+          "hardening_temperature_end": 0.02,
+          "log_domain_epsilon": 1e-09,
+          "log_safety_imag_tolerance": 1e-06,
+          "log_safety_margin": 1e-06,
+          "log_safety_weight": 0.0,
+          "lr": 0.05,
+          "max_compile_depth": 13,
+          "max_compile_nodes": 256,
+          "max_power": 3,
+          "max_warm_depth": 14,
+          "operator_family": {
+            "a": {
+              "imag": "3.141592653589793",
+              "real": "0.0"
+            },
+            "family": "geml_a",
+            "geml_parameter": {
+              "imag": "3.141592653589793",
+              "real": "0.0"
+            },
+            "label": "ipi_eml",
+            "named_specialization": "ipi_eml",
+            "s": 1.0,
+            "t": 1.0,
+            "terminal": "one"
+          },
+          "operator_schedule": [],
+          "refit_lr": 0.02,
+          "refit_steps": 80,
+          "restarts": 1,
+          "scaffold_exclusions": [],
+          "scaffold_initializers": [],
+          "semantics_mode": "guarded",
+          "steps": 24,
+          "warm_depth": 0,
+          "warm_restarts": 1,
+          "warm_steps": 8
+        },
+        "perturbation_noise": [
+          0.0
+        ],
+        "seeds": [
+          0
+        ],
+        "start_mode": "blind",
+        "tags": [
+          "v1.15",
+          "geml_oscillatory",
+          "negative_control",
+          "negative_control_domain",
+          "operator:ipi"
+        ],
+        "threshold_policy_id": null,
+        "track": "literal_constants",
+        "training_mode": null
+      }
+    ],
+    "description": "Cheap v1.15 raw EML versus i*pi EML smoke subset over one natural oscillatory target and one negative control with matched blind-training budgets.",
+    "id": "v1.15-geml-oscillatory-smoke",
+    "schema": "eml.benchmark_suite.v1"
+  },
+  "thresholds": [],
+  "tracks": [
+    {
+      "compile_only_verified_support": 0,
+      "constants_policies": [
+        "literal_constants"
+      ],
+      "discovery_classes": {
+        "failed": 2,
+        "repaired_candidate": 2
+      },
+      "evidence_classes": {
+        "repaired_candidate": 2,
+        "snapped_but_failed": 2
+      },
+      "evidence_regimes": {
+        "repaired_candidate": 2,
+        "snapped_but_failed": 2
+      },
+      "failed": 2,
+      "formulas": [
+        "exp",
+        "sin_pi"
+      ],
+      "total": 4,
+      "track": "literal_constants",
+      "trained_exact_recovery": 0,
+      "trained_exact_recovery_rate": 0.0,
+      "unsupported": 0,
+      "verification_passed": 0,
+      "verifier_recovered": 0,
+      "verifier_recovery_rate": 0.0
+    }
+  ]
+}

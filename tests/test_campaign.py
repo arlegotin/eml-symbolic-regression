@@ -533,6 +533,27 @@ def test_campaign_tables_emit_geml_paired_comparison(tmp_path):
     assert "ipi_recovery_win" in markdown
 
 
+def test_campaign_tables_classify_geml_pairs_by_formula_without_tags(tmp_path):
+    runs = [
+        _geml_pair_run(operator_family="raw", formula="exp", recovered=False, post_snap_mse=0.2),
+        _geml_pair_run(operator_family="ipi", formula="exp", recovered=False, post_snap_mse=0.3),
+    ]
+    for run in runs:
+        run.pop("tags")
+    aggregate = {"runs": runs, "counts": {"total": 2, "verifier_recovered": 0, "evidence_classes": {}}, "thresholds": []}
+
+    paths = write_campaign_tables(aggregate, tmp_path / "tables")
+
+    rows = list(csv.DictReader(paths["geml_paired_comparison_csv"].open(encoding="utf-8")))
+    summary = json.loads(paths["geml_paired_summary_json"].read_text(encoding="utf-8"))
+    assert rows[0]["target_family"] == "negative_control"
+    assert summary["negative_control_pairs"] == 1
+    assert summary["neither_recovered"] == 1
+    assert summary["loss_only_outcomes"] == 1
+    assert summary["raw_lower_post_snap_mse"] == 1
+    assert summary["target_families"] == {"negative_control": 1}
+
+
 def test_proof_campaign_tables_and_manifest_preserve_claim_metadata(tmp_path):
     result = run_campaign(
         "proof-shallow",
