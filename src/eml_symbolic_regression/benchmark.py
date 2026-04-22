@@ -3464,6 +3464,24 @@ def _extract_run_metrics(payload: Mapping[str, Any]) -> dict[str, Any]:
         "fallback_candidate_attempt_index": fallback.get("attempt_index") if isinstance(fallback, Mapping) else None,
         "fallback_candidate_checkpoint_index": fallback.get("checkpoint_index") if isinstance(fallback, Mapping) else None,
         "selection_mode": selection.get("mode") if isinstance(selection, Mapping) else None,
+        "snap_low_margin_slot_count": selected.get("low_margin_slot_count") if isinstance(selected, Mapping) else None,
+        "snap_lowest_margin_slots": selected.get("lowest_margin_slots") if isinstance(selected, Mapping) else None,
+        "snap_low_confidence_alternatives": selected.get("slot_alternatives") if isinstance(selected, Mapping) else None,
+        "fallback_snap_min_margin": fallback.get("snap", {}).get("min_margin") if isinstance(fallback, Mapping) else None,
+        "fallback_snap_active_node_count": fallback.get("snap", {}).get("active_node_count") if isinstance(fallback, Mapping) else None,
+        "fallback_low_margin_slot_count": fallback.get("low_margin_slot_count") if isinstance(fallback, Mapping) else None,
+        "fallback_lowest_margin_slots": fallback.get("lowest_margin_slots") if isinstance(fallback, Mapping) else None,
+        "fallback_low_confidence_alternatives": fallback.get("slot_alternatives") if isinstance(fallback, Mapping) else None,
+        "post_snap_minus_soft_best": (
+            semantics_alignment.get("post_snap_mismatch", {}).get("post_snap_minus_soft_best")
+            if isinstance(semantics_alignment.get("post_snap_mismatch"), Mapping)
+            else None
+        ),
+        "post_snap_minus_pre_snap": (
+            semantics_alignment.get("post_snap_mismatch", {}).get("post_snap_minus_pre_snap")
+            if isinstance(semantics_alignment.get("post_snap_mismatch"), Mapping)
+            else None
+        ),
         "scaffold_source": initialization.get("kind") if isinstance(initialization, Mapping) else None,
         "scaffold_strategy": initialization.get("strategy") if isinstance(initialization, Mapping) else None,
         "scaffold_coefficient": initialization.get("coefficient") if isinstance(initialization, Mapping) else None,

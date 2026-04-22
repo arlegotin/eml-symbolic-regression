@@ -75,6 +75,7 @@ from .paper_v116 import (
     write_v116_final_decision_package,
     write_v116_paper_package,
 )
+from .paper_v117 import DEFAULT_V117_SNAP_DIAGNOSTICS_DIR, write_v117_snap_diagnostics
 from .proof import list_claims
 from .proof_campaign import DEFAULT_PROOF_OUTPUT_ROOT, PROOF_CAMPAIGN_PRESETS, run_proof_campaign
 from .publication import DEFAULT_PUBLICATION_DIR, write_publication_rebuild
@@ -647,6 +648,22 @@ def geml_v116_final_command(args: argparse.Namespace) -> int:
     return 0 if manifest["claim_audit_status"] == "passed" else 1
 
 
+def geml_v117_snap_diagnostics_command(args: argparse.Namespace) -> int:
+    paths = write_v117_snap_diagnostics(
+        output_dir=Path(args.output_dir),
+        campaign_dir=Path(args.campaign_dir),
+        overwrite=args.overwrite,
+        low_margin_threshold=args.low_margin_threshold,
+    )
+    manifest = json.loads(paths.manifest_json.read_text(encoding="utf-8"))
+    print(
+        f"geml v1.17 snap diagnostics: manifest -> {paths.manifest_json}; "
+        f"seeds -> {paths.snap_neighborhood_seeds_json}; "
+        f"diagnostic rows -> {manifest['counts']['diagnostic_rows']}"
+    )
+    return 0
+
+
 def paper_draft_command(args: argparse.Namespace) -> int:
     paths = write_v112_draft(output_dir=Path(args.output_dir))
     print(
@@ -1096,6 +1113,26 @@ def build_parser() -> argparse.ArgumentParser:
     )
     geml_v116_final.add_argument("--overwrite", action="store_true", help="Allow refreshing an existing final manifest.")
     geml_v116_final.set_defaults(func=geml_v116_final_command)
+
+    geml_v117_snap = sub.add_parser("geml-v117-snap-diagnostics", help="Write v1.17 snap-mismatch diagnostics from a GEML campaign.")
+    geml_v117_snap.add_argument(
+        "--output-dir",
+        default=str(DEFAULT_V117_SNAP_DIAGNOSTICS_DIR),
+        help="Directory for v1.17 snap diagnostics and neighborhood seed artifacts.",
+    )
+    geml_v117_snap.add_argument(
+        "--campaign-dir",
+        default=str(DEFAULT_V116_CAMPAIGN_DIR),
+        help="Campaign directory containing tables/geml-paired-comparison.csv.",
+    )
+    geml_v117_snap.add_argument(
+        "--low-margin-threshold",
+        type=float,
+        default=0.1,
+        help="Snap margin threshold used to tag low-confidence slots.",
+    )
+    geml_v117_snap.add_argument("--overwrite", action="store_true", help="Allow refreshing existing v1.17 diagnostics.")
+    geml_v117_snap.set_defaults(func=geml_v117_snap_diagnostics_command)
 
     paper_draft = sub.add_parser("paper-draft", help="Write the v1.12 paper draft skeleton and claim taxonomy.")
     paper_draft.add_argument(

@@ -110,8 +110,29 @@ def _geml_pair_run(
             "pre_snap_mse": post_snap_mse / 3,
             "post_snap_loss": post_snap_mse,
             "post_snap_mse": post_snap_mse,
+            "post_snap_minus_soft_best": post_snap_mse / 2,
+            "post_snap_minus_pre_snap": post_snap_mse / 3,
             "gradient_l2_norm_max": 1.0,
             "gradient_max_abs_max": 0.5,
+            "snap_min_margin": 0.04,
+            "snap_active_node_count": 3,
+            "snap_low_margin_slot_count": 1,
+            "snap_lowest_margin_slots": [{"slot": "root.left", "choice": "var:x", "probability": 0.52, "margin": 0.04}],
+            "snap_low_confidence_alternatives": [
+                {
+                    "slot": "root.left",
+                    "current_choice": "var:x",
+                    "current_probability": 0.52,
+                    "current_margin": 0.04,
+                    "alternatives": [{"choice": "child", "probability": 0.48, "probability_gap": 0.04, "rank": 1}],
+                }
+            ],
+            "selected_candidate_id": f"{formula}-{operator_family}-selected",
+            "fallback_candidate_id": f"{formula}-{operator_family}-fallback",
+            "selection_mode": "verifier_gated_exact_candidate_pool",
+            "candidate_pool_size": 2,
+            "fallback_snap_min_margin": 0.03,
+            "fallback_low_margin_slot_count": 1,
             "anomaly_exp_overflow_count": 2,
             "anomaly_nan_count": 0,
             "anomaly_inf_count": 0,
@@ -534,6 +555,12 @@ def test_campaign_tables_emit_geml_paired_comparison(tmp_path):
     assert row["comparison_outcome"] == "ipi_recovery_win"
     assert row["raw_post_snap_mse"] == "0.2"
     assert row["ipi_post_snap_mse"] == "0.01"
+    assert row["raw_snap_min_margin"] == "0.04"
+    assert row["ipi_low_margin_slot_count"] == "1.0"
+    assert row["raw_selected_candidate_id"] == "sin_pi-raw-selected"
+    assert row["ipi_selection_mode"] == "verifier_gated_exact_candidate_pool"
+    assert "root.left" in row["raw_lowest_margin_slots_json"]
+    assert "child" in row["ipi_low_confidence_alternatives_json"]
     assert row["ipi_branch_cut_proximity_count"] == "1.0"
     assert row["ipi_optimizer_wall_clock_seconds"] == "0.25"
     assert summary["schema"] == "eml.geml_paired_summary.v1"
